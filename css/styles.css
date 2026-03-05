@@ -254,14 +254,14 @@ body::after {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  padding: 1.3rem 0;
+  padding: 0.6rem 0;
   transition: var(--transition);
 }
 .nav.scrolled {
   background: rgba(5, 12, 8, 0.93);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  padding: 0.85rem 0;
+  padding: 0.4rem 0;
   border-bottom: 1px solid var(--color-border);
   box-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
 }
@@ -276,8 +276,8 @@ body::after {
 }
 .nav__logo { flex-shrink: 0; }
 .nav__logo-img {
-  height: 62px;
-  width: 62px;
+  height: 80px;
+  width: 80px;
   border-radius: 0;
   object-fit: contain;
   border: none;
