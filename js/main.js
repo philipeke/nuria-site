@@ -249,9 +249,13 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    const email  = form.querySelector('#deleteEmail')?.value  || '';
-    const reason = form.querySelector('#deleteReason')?.value || '';
-    const msg    = `Hello,\n\nI would like to request the deletion of my Nuria account.\n\nEmail: ${email}\nReason: ${reason}\n\nThank you.`;
+    const email  = form.querySelector('#deleteEmail')?.value.trim()  || '';
+    const reason = form.querySelector('#deleteReason')?.value        || '';
+    const note   = form.querySelector('#deleteNote')?.value.trim()   || '';
+    let msg = `Hello,\n\nI would like to request the deletion of my Nuria account.\n\nEmail: ${email}`;
+    if (reason) msg += `\nReason: ${reason}`;
+    if (note)   msg += `\nAdditional notes: ${note}`;
+    msg += '\n\nThank you.';
     const mailto = `mailto:hello@oakdev.app?subject=Account%20Deletion%20Request&body=${encodeURIComponent(msg)}`;
     window.location.href = mailto;
   });
