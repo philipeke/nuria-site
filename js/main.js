@@ -45,8 +45,8 @@
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fillStyle = s.gold
-        ? `rgba(201,168,76,${s.alpha * 0.75})`
-        : `rgba(210,240,225,${s.alpha * 0.48})`;
+        ? `rgba(201,168,76,${s.alpha * 0.9})`
+        : `rgba(210,240,225,${s.alpha * 0.65})`;
       ctx.fill();
     }
 

@@ -35,9 +35,9 @@ button { font-family: inherit; }
 /* ===== CUSTOM PROPERTIES ===== */
 :root {
   /* Backgrounds */
-  --color-bg:       #050c08;
-  --color-bg-2:     #071210;
-  --color-bg-3:     #040a06;
+  --color-bg:       #060e0a;
+  --color-bg-2:     #0a1812;
+  --color-bg-3:     #050b07;
 
   /* Greens */
   --color-green-deep:   #0b3d26;
@@ -59,13 +59,13 @@ button { font-family: inherit; }
   --color-text-dimmer:#3d6a50;
 
   /* Surfaces */
-  --color-surface:      rgba(13, 74, 47, 0.12);
-  --color-surface-mid:  rgba(13, 74, 47, 0.28);
-  --color-surface-high: rgba(13, 74, 47, 0.45);
+  --color-surface:      rgba(13, 74, 47, 0.18);
+  --color-surface-mid:  rgba(13, 74, 47, 0.35);
+  --color-surface-high: rgba(13, 74, 47, 0.52);
 
   /* Borders */
-  --color-border:        rgba(201, 168, 76, 0.09);
-  --color-border-mid:    rgba(201, 168, 76, 0.25);
+  --color-border:        rgba(201, 168, 76, 0.13);
+  --color-border-mid:    rgba(201, 168, 76, 0.3);
   --color-border-bright: rgba(201, 168, 76, 0.55);
 
   /* Typography */
@@ -105,10 +105,30 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 55% at 25% 35%, rgba(26, 122, 74, 0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 55% 45% at 78% 75%, rgba(201, 168, 76, 0.04) 0%, transparent 50%);
+    /* top divine light beam */
+    radial-gradient(ellipse 100% 45% at 50% -5%,  rgba(45, 190, 108, 0.14) 0%, transparent 55%),
+    /* left side green glow */
+    radial-gradient(ellipse 80%  55% at 20% 40%,  rgba(26, 122, 74,  0.18) 0%, transparent 60%),
+    /* right bottom gold accent */
+    radial-gradient(ellipse 55%  45% at 80% 80%,  rgba(201, 168, 76, 0.08) 0%, transparent 50%),
+    /* center subtle warmth */
+    radial-gradient(ellipse 60%  40% at 60% 55%,  rgba(45, 190, 108, 0.05) 0%, transparent 55%);
   pointer-events: none;
   z-index: -3;
+}
+
+/* Top light ray overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 280px;
+  background: linear-gradient(180deg,
+    rgba(45, 190, 108, 0.07) 0%,
+    rgba(45, 190, 108, 0.03) 50%,
+    transparent 100%);
+  pointer-events: none;
+  z-index: -2;
 }
 
 /* ===== CONTAINER ===== */
@@ -255,9 +275,16 @@ body::before {
 }
 .nav__logo { flex-shrink: 0; }
 .nav__logo-img {
-  height: 34px;
-  width: auto;
-  filter: brightness(1.1);
+  height: 42px;
+  width: 42px;
+  border-radius: 11px;
+  object-fit: cover;
+  box-shadow: 0 0 14px rgba(45, 190, 108, 0.3), 0 2px 8px rgba(0,0,0,0.4);
+  transition: var(--transition);
+}
+.nav__logo-img:hover {
+  box-shadow: 0 0 22px rgba(45, 190, 108, 0.5), 0 4px 12px rgba(0,0,0,0.4);
+  transform: scale(1.05);
 }
 .nav__links {
   display: flex;
@@ -329,7 +356,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -2;
-  opacity: 0.025;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 5 L47 30 L72 22 L58 44 L78 52 L54 55 L55 80 L40 62 L25 80 L26 55 L2 52 L22 44 L8 22 L33 30Z' fill='%23c9a84c'/%3E%3C/svg%3E");
   background-size: 80px 80px;
   pointer-events: none;
@@ -345,21 +372,39 @@ body::before {
 
 .hero__bismillah {
   font-family: var(--font-arabic);
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   color: var(--color-gold);
-  opacity: 0.82;
-  letter-spacing: 0.04em;
+  opacity: 0.9;
+  letter-spacing: 0.05em;
   animation: fadeInDown 1s ease 0.2s both;
+  text-shadow: 0 0 30px rgba(201, 168, 76, 0.55), 0 0 60px rgba(201, 168, 76, 0.2);
 }
 
 .hero__logo-wrap {
   animation: fadeInUp 1s ease 0.3s both;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+/* radiant halo behind the logo */
+.hero__logo-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(45, 190, 108, 0.22) 0%, rgba(201, 168, 76, 0.06) 45%, transparent 70%);
+  border-radius: 50%;
+  animation: breathe 5s ease infinite;
+  pointer-events: none;
 }
 
 .hero__logo {
-  height: 56px;
+  height: 200px;
   width: auto;
-  filter: drop-shadow(0 0 24px rgba(45, 190, 108, 0.35));
+  position: relative;
+  filter:
+    drop-shadow(0 0 40px rgba(45, 190, 108, 0.6))
+    drop-shadow(0 0 80px rgba(45, 190, 108, 0.25))
+    drop-shadow(0 0 15px rgba(201, 168, 76, 0.2));
 }
 
 .hero__title {
@@ -379,7 +424,9 @@ body::before {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 40px rgba(45, 190, 108, 0.25));
+  filter:
+    drop-shadow(0 0 40px rgba(45, 190, 108, 0.5))
+    drop-shadow(0 0 80px rgba(45, 190, 108, 0.2));
 }
 .hero__title-arabic {
   font-family: var(--font-arabic);
@@ -617,6 +664,7 @@ body::before {
   text-transform: uppercase;
   color: var(--color-green-bright);
   margin-bottom: 0.9rem;
+  text-shadow: 0 0 18px rgba(45, 190, 108, 0.5);
 }
 .section__title {
   font-family: var(--font-heading);
@@ -678,6 +726,7 @@ body::before {
   margin-bottom: 1.5rem;
   line-height: 1.85;
   direction: rtl;
+  text-shadow: 0 0 30px rgba(201, 168, 76, 0.5), 0 0 60px rgba(201, 168, 76, 0.2);
 }
 .featured-quote__text {
   font-family: var(--font-heading);
@@ -735,7 +784,7 @@ body::before {
 .feature-card:hover {
   border-color: var(--color-border-mid);
   transform: translateY(-5px);
-  box-shadow: var(--shadow-hover), var(--glow-green);
+  box-shadow: var(--shadow-hover), 0 0 60px rgba(45, 190, 108, 0.18), 0 0 20px rgba(201, 168, 76, 0.08);
 }
 .feature-card:hover::before { opacity: 1; }
 .feature-card__icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
@@ -916,13 +965,19 @@ body::before {
   box-shadow: var(--shadow-hover);
 }
 .pricing-card--barakah {
-  background: linear-gradient(150deg, rgba(13, 74, 47, 0.38) 0%, rgba(26, 122, 74, 0.12) 100%);
+  background: linear-gradient(150deg, rgba(13, 74, 47, 0.45) 0%, rgba(26, 122, 74, 0.18) 100%);
   border-color: var(--color-border-mid);
-  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.04), var(--glow-gold);
+  box-shadow:
+    0 0 0 1px rgba(201, 168, 76, 0.08),
+    0 0 60px rgba(201, 168, 76, 0.14),
+    0 0 120px rgba(201, 168, 76, 0.06);
 }
 .pricing-card--barakah:hover {
   border-color: var(--color-border-bright);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45), var(--glow-gold);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.45),
+    0 0 80px rgba(201, 168, 76, 0.22),
+    0 0 140px rgba(201, 168, 76, 0.1);
 }
 .pricing-card__badge {
   position: absolute;
@@ -1066,7 +1121,14 @@ body::before {
   margin-bottom: 3.5rem;
 }
 .footer__brand { flex: 1; max-width: 290px; }
-.footer__logo { height: 38px; width: auto; margin-bottom: 1rem; }
+.footer__logo {
+  height: 56px;
+  width: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 0 20px rgba(45, 190, 108, 0.25), 0 4px 16px rgba(0,0,0,0.4);
+}
 .footer__tagline {
   font-size: 0.88rem;
   color: var(--color-text-dimmer);
@@ -1077,8 +1139,9 @@ body::before {
   font-family: var(--font-arabic);
   font-size: 1.35rem;
   color: var(--color-gold);
-  opacity: 0.4;
+  opacity: 0.55;
   direction: rtl;
+  text-shadow: 0 0 20px rgba(201, 168, 76, 0.4);
 }
 
 .footer__links {
