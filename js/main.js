@@ -252,7 +252,7 @@
     const email  = form.querySelector('#deleteEmail')?.value  || '';
     const reason = form.querySelector('#deleteReason')?.value || '';
     const msg    = `Hello,\n\nI would like to request the deletion of my Nuria account.\n\nEmail: ${email}\nReason: ${reason}\n\nThank you.`;
-    const mailto = `mailto:support@oakdev.ai?subject=Account%20Deletion%20Request&body=${encodeURIComponent(msg)}`;
+    const mailto = `mailto:hello@oakdev.app?subject=Account%20Deletion%20Request&body=${encodeURIComponent(msg)}`;
     window.location.href = mailto;
   });
 }());
@@ -269,7 +269,7 @@
     const subject = form.querySelector('#contactSubject')?.value || 'Support Request';
     const message = form.querySelector('#contactMessage')?.value || '';
     const body    = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-    const mailto  = `mailto:support@oakdev.ai?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailto  = `mailto:hello@oakdev.app?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
   });
 }());

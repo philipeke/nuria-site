@@ -1258,6 +1258,81 @@ body::after {
 }
 .page-content__card a:hover { color: var(--color-gold); }
 
+/* Legal page components */
+.legal-toc {
+  background: rgba(13, 74, 47, 0.28);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  margin: 1.75rem 0 2.25rem;
+  font-size: 0.9rem;
+}
+.legal-toc strong {
+  display: block;
+  color: var(--color-gold);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+.legal-toc ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  columns: 2;
+  column-gap: 2rem;
+}
+.legal-toc li {
+  color: var(--color-text-dim);
+  margin-bottom: 0.35rem;
+  break-inside: avoid;
+}
+.legal-toc a {
+  color: var(--color-text-dim) !important;
+  text-decoration: none !important;
+  font-size: 0.88rem;
+}
+.legal-toc a:hover { color: var(--color-gold) !important; }
+
+address.legal-address {
+  font-style: normal;
+  background: rgba(13, 74, 47, 0.22);
+  border-left: 3px solid rgba(201, 168, 76, 0.5);
+  border-radius: 0 10px 10px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0 1.5rem;
+  color: var(--color-text-dim);
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+address.legal-address strong { color: var(--color-text); }
+
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 1.25rem 0 1.75rem;
+}
+.legal-table th {
+  background: rgba(201, 168, 76, 0.1);
+  color: var(--color-gold);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.25);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.legal-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(45, 190, 108, 0.1);
+  color: var(--color-text-dim);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.legal-table tr:last-child td { border-bottom: none; }
+.legal-table td:first-child { color: var(--color-text); }
+
 /* ===== SUPPORT PAGE ===== */
 .support-grid {
   display: grid;
@@ -1296,6 +1371,61 @@ body::after {
   font-weight: 700;
 }
 .support-card a:hover { color: var(--color-gold); }
+
+/* Contact layout */
+.support-contact-wrap {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+.support-contact-info {
+  background: rgba(13, 74, 47, 0.22);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 18px;
+  padding: 2rem 1.75rem;
+}
+.support-contact-info h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}
+.support-contact-info > p {
+  color: var(--color-text-dim);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.contact-info-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  font-size: 0.92rem;
+  color: var(--color-text-dim);
+  line-height: 1.55;
+}
+.contact-info-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+.contact-info-item strong {
+  display: block;
+  color: var(--color-text);
+  font-weight: 700;
+  margin-bottom: 0.1rem;
+}
+.contact-info-item a {
+  color: var(--color-green-bright);
+  text-decoration: none;
+}
+.contact-info-item a:hover { color: var(--color-gold); }
 
 /* FAQ */
 .faq-wrap {
@@ -1516,9 +1646,13 @@ body::after {
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
   .pricing-grid { grid-template-columns: 1fr; }
   .support-grid { grid-template-columns: 1fr; }
+  .support-contact-wrap { grid-template-columns: 1fr; }
   .footer__links { flex-wrap: wrap; gap: 2rem; }
   .footer__bottom { flex-direction: column; text-align: center; }
   .page-content__card { padding: 2rem; }
+  .legal-toc ol { columns: 1; }
+  .legal-table { font-size: 0.82rem; }
+  .legal-table th, .legal-table td { padding: 0.55rem 0.75rem; }
   .featured-quote { padding: 2.5rem 1.5rem; }
 }
 
