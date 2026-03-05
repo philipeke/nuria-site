@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delete Account — Nuria</title>
+  <meta name="description" content="Request deletion of your Nuria account and all associated data." />
+  <meta name="theme-color" content="#050c08" />
+  <link rel="icon" type="image/png" href="../assets/icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+
+  <!-- =========================================================
+       NAVIGATION
+  ========================================================= -->
+  <nav class="nav scrolled" id="nav" role="navigation" aria-label="Main">
+    <div class="nav__container">
+      <a href="/" class="nav__logo" aria-label="Nuria — Home">
+        <img src="../assets/logo.png" alt="Nuria" class="nav__logo-img" />
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="/#about"      class="nav__link">About</a>
+        <a href="/#daily"      class="nav__link">Daily</a>
+        <a href="/#categories" class="nav__link">Categories</a>
+        <a href="/#pricing"    class="nav__link">Plans</a>
+        <a href="/support"     class="nav__link">Support</a>
+      </div>
+      <div class="nav__cta">
+        <a href="/#download" class="btn btn--gold">Download</a>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       PAGE HERO
+  ========================================================= -->
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <header class="page-hero">
+    <div class="container">
+      <p class="page-hero__label">Account</p>
+      <h1 class="page-hero__title">Delete Your Account</h1>
+      <p class="page-hero__subtitle">
+        We are sorry to see you go. You may request permanent deletion of your
+        Nuria account and all associated data at any time.
+      </p>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       CONTENT
+  ========================================================= -->
+  <main class="page-content">
+    <div class="container">
+
+      <!-- Info cards -->
+      <div class="support-grid" style="margin-bottom:2rem;">
+        <div class="support-card animate-on-scroll">
+          <span class="support-card__icon">📱</span>
+          <h3>Delete in the App</h3>
+          <p>The fastest way to delete your account is directly inside Nuria: go to <strong>Settings &rarr; Account &rarr; Delete Account</strong> and follow the steps.</p>
+        </div>
+        <div class="support-card animate-on-scroll" data-delay="100">
+          <span class="support-card__icon">✉️</span>
+          <h3>Request via Email</h3>
+          <p>You can also email us directly at <a href="mailto:support@oakdev.ai">support@oakdev.ai</a> with the subject "Account Deletion Request" and we will process it within 30 days.</p>
+        </div>
+      </div>
+
+      <!-- Warning + Form -->
+      <div class="page-content__card animate-on-scroll" style="margin-top:0;">
+        <h2>Submit a Deletion Request</h2>
+        <p>Use the form below to submit a formal account deletion request. Please provide the email address linked to your Nuria account.</p>
+
+        <div class="form-warning" role="alert">
+          <strong>Please read before continuing:</strong><br />
+          Account deletion is <strong>permanent and irreversible</strong>. Once your account is deleted:
+          <ul style="margin-top:0.75rem;margin-left:1.25rem;list-style:disc;">
+            <li>All your account data and preferences will be permanently removed.</li>
+            <li>Your reflection history will be deleted and cannot be recovered.</li>
+            <li>If you have an active Barakah subscription, please cancel it via your App Store or Google Play settings <strong>before</strong> deleting your account — we are unable to issue refunds for remaining subscription time.</li>
+            <li>Standard accounts may be recreated at any time. Barakah access does not transfer to new accounts.</li>
+          </ul>
+        </div>
+
+        <form id="deleteAccountForm">
+          <div class="form-group">
+            <label class="form-label" for="deleteEmail">Email Address on your Nuria account</label>
+            <input
+              class="form-input"
+              type="email"
+              id="deleteEmail"
+              name="email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="deleteReason">Reason for leaving (optional)</label>
+            <select class="form-input form-select" id="deleteReason" name="reason">
+              <option value="">I'd rather not say</option>
+              <option value="Not using the app">I no longer use the app</option>
+              <option value="Privacy concerns">Privacy concerns</option>
+              <option value="Switching devices">Switching devices or accounts</option>
+              <option value="Technical issues">Technical issues</option>
+              <option value="Content concerns">Content concerns</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="deleteNote">Additional notes (optional)</label>
+            <textarea
+              class="form-input form-textarea"
+              id="deleteNote"
+              name="note"
+              placeholder="Any additional information or feedback you would like to share with us…"
+            ></textarea>
+          </div>
+
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-top:0.5rem;">
+            <button type="submit" class="btn btn--danger">
+              Request Account Deletion
+            </button>
+            <a href="/" class="btn btn--outline">Cancel &amp; Go Back</a>
+          </div>
+        </form>
+
+        <h2>What Happens Next</h2>
+        <p>After we receive your request:</p>
+        <ul>
+          <li>We will send a confirmation email to the address you provided.</li>
+          <li>Your account will be scheduled for deletion within <strong>30 days</strong>.</li>
+          <li>During this period, you can cancel the deletion request by contacting <a href="mailto:support@oakdev.ai">support@oakdev.ai</a>.</li>
+          <li>After 30 days, all personal data associated with your account will be permanently and irreversibly deleted from our systems.</li>
+          <li>Some anonymised, non-identifiable usage data may be retained for statistical purposes only.</li>
+        </ul>
+
+        <h2>Need Help Instead?</h2>
+        <p>
+          Before you go, we would love to help if something isn't working as expected.
+          Please reach out to us at <a href="mailto:support@oakdev.ai">support@oakdev.ai</a>
+          or visit our <a href="/support">Support Center</a> — we're here for you, in shaa Allah.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img src="../assets/logo.png" alt="Nuria" class="footer__logo" />
+          <p class="footer__tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__bismillah" lang="ar">الله أكبر</p>
+        </div>
+        <nav class="footer__links" aria-label="Footer navigation">
+          <div class="footer__col">
+            <span class="footer__col-title">App</span>
+            <a href="/">Home</a>
+            <a href="/#about">About</a>
+            <a href="/#pricing">Plans</a>
+            <a href="/#download">Download</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title">Legal</span>
+            <a href="../privacy">Privacy Policy</a>
+            <a href="../terms">Terms of Service</a>
+            <a href="/delete-account">Delete Account</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title">Help</span>
+            <a href="/support">Support Center</a>
+            <a href="/support#contact">Contact Us</a>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <div class="footer__bottom-links">
+          <a href="../privacy">Privacy</a>
+          <a href="../terms">Terms</a>
+          <a href="/support">Support</a>
+          <a href="/delete-account">Delete Account</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

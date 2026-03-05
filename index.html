@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuria — Daily Sunni Islamic Guidance & Reflection</title>
+  <meta name="description" content="Nuria is your daily companion for Sunni Islamic guidance, prayers, wisdom, and personal reflection. Carry the light of faith with you — every single day." />
+  <meta name="theme-color" content="#050c08" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Nuria — Daily Sunni Islamic Guidance" />
+  <meta property="og:description" content="Receive daily prayers, wisdom, scripture, and personal reflection rooted in the Sunnah." />
+  <meta property="og:image"       content="assets/logo.png" />
+  <meta property="og:type"        content="website" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- =========================================================
+       NAVIGATION
+  ========================================================= -->
+  <nav class="nav" id="nav" role="navigation" aria-label="Main">
+    <div class="nav__container">
+      <a href="/" class="nav__logo" aria-label="Nuria — Home">
+        <img src="assets/logo.png" alt="Nuria" class="nav__logo-img" />
+      </a>
+
+      <div class="nav__links" id="navLinks">
+        <a href="#about"      class="nav__link">About</a>
+        <a href="#daily"      class="nav__link">Daily</a>
+        <a href="#categories" class="nav__link">Categories</a>
+        <a href="#pricing"    class="nav__link">Plans</a>
+        <a href="/support"    class="nav__link">Support</a>
+      </div>
+
+      <div class="nav__cta">
+        <a href="#download" class="btn btn--gold">Download</a>
+      </div>
+
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       HERO
+  ========================================================= -->
+  <canvas class="hero__canvas" id="starCanvas" aria-hidden="true"></canvas>
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <section class="hero" id="hero" aria-label="Hero">
+    <!-- Content -->
+    <div class="hero__content">
+      <p class="hero__bismillah" lang="ar">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم</p>
+
+      <div class="hero__logo-wrap">
+        <img src="assets/logo.png" alt="Nuria" class="hero__logo" />
+      </div>
+
+      <h1 class="hero__title">
+        <span class="hero__title-nuria">Nuria</span>
+        <span class="hero__title-arabic" lang="ar">نور</span>
+      </h1>
+
+      <p class="hero__subtitle">Daily Sunni Islamic Guidance, Prayer &amp; Reflection</p>
+
+      <p class="hero__desc">
+        Begin each day in the light of faith. Receive heartfelt prayers, timeless wisdom, and meaningful guidance rooted in the beautiful tradition of Sunni Islam.
+      </p>
+
+      <div class="hero__stats">
+        <div>
+          <span class="hero__stat-number" data-count="15">15</span>
+          <span class="hero__stat-label">Categories</span>
+        </div>
+        <div>
+          <span class="hero__stat-number" data-count="365">365</span>
+          <span class="hero__stat-label">Days of Guidance</span>
+        </div>
+        <div>
+          <span class="hero__stat-number">∞</span>
+          <span class="hero__stat-label">Barakah</span>
+        </div>
+      </div>
+
+      <div class="hero__actions">
+        <a href="#" class="btn btn--store" aria-label="Download Nuria on the App Store">
+          <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+          <span>
+            <small>Download on the</small>
+            App Store
+          </span>
+        </a>
+
+        <a href="#" class="btn btn--store" aria-label="Get Nuria on Google Play">
+          <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"/>
+          </svg>
+          <span>
+            <small>Get it on</small>
+            Google Play
+          </span>
+        </a>
+      </div>
+
+      <div class="hero__scroll-indicator" aria-hidden="true">
+        <div class="hero__scroll-line"></div>
+        <span>Discover Nuria</span>
+      </div>
+    </div>
+
+    <!-- Phone Mockup -->
+    <div class="hero__phone-wrap" aria-hidden="true">
+      <div class="hero__phone">
+        <div class="hero__phone-screen">
+          <div class="phone-ui">
+            <div class="phone-ui__header">
+              <div class="phone-ui__greeting" lang="ar">السلام عليكم</div>
+              <div class="phone-ui__date">Wednesday · 5 Sha'ban 1447</div>
+            </div>
+            <div class="phone-ui__card">
+              <div class="phone-ui__card-label">✦ Daily Scripture</div>
+              <p class="phone-ui__card-text">"Indeed, with hardship comes ease."</p>
+              <div class="phone-ui__card-ref">Quran 94:5</div>
+            </div>
+            <div class="phone-ui__card phone-ui__card--gold">
+              <div class="phone-ui__card-label">✦ Role Model Today</div>
+              <p class="phone-ui__card-name">Imam Al-Ghazali</p>
+              <p class="phone-ui__card-small">Hujjat ul-Islam · Scholar of the Heart</p>
+            </div>
+            <div class="phone-ui__card">
+              <div class="phone-ui__card-label">✦ Daily Reflection</div>
+              <p class="phone-ui__card-text">"Start this day with gratitude, for every breath is a gift from Allah."</p>
+            </div>
+            <div class="phone-ui__categories">
+              <div class="phone-ui__cat">🌅 Fajr</div>
+              <div class="phone-ui__cat">🧭 Guidance</div>
+              <div class="phone-ui__cat phone-ui__cat--locked">🔒 Strength</div>
+            </div>
+            <div class="phone-ui__reflection-label">✦ Your Reflections</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       QURAN QUOTE
+  ========================================================= -->
+  <section class="section section--quote" aria-label="Featured verse">
+    <div class="container">
+      <blockquote class="featured-quote animate-on-scroll">
+        <span class="featured-quote__star" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span>
+        <p class="featured-quote__arabic" lang="ar">وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا</p>
+        <p class="featured-quote__text">"And whoever fears Allah — He will make for him a way out."</p>
+        <cite class="featured-quote__cite">Quran · At-Talaq 65:2</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       ABOUT / FEATURES
+  ========================================================= -->
+  <section class="section section--about" id="about" aria-label="About Nuria">
+    <div class="container">
+      <div class="section__label">About Nuria</div>
+      <h2 class="section__title">A Companion of <em>Light</em> for Every Soul</h2>
+      <p class="section__subtitle">
+        Nuria — meaning <em>luminous</em> — is designed to bring the timeless teachings of Sunni Islam
+        into the rhythm of your daily life. Authentic prayers, beautiful wisdom, and guidance
+        rooted in the Sunnah, beautifully delivered to your pocket.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll" data-delay="0">
+          <span class="feature-card__icon">🌙</span>
+          <h3 class="feature-card__title">Daily Prayers</h3>
+          <p class="feature-card__text">Begin and end each day with beautifully crafted supplications aligned with Fajr and Isha, grounded in the Sunnah of the Prophet ﷺ.</p>
+        </div>
+        <div class="feature-card animate-on-scroll" data-delay="80">
+          <span class="feature-card__icon">📖</span>
+          <h3 class="feature-card__title">Daily Scripture</h3>
+          <p class="feature-card__text">Receive a meaningful verse from the Holy Quran or the Hadith each day, with deep reflection and spiritual context to enrich your understanding.</p>
+        </div>
+        <div class="feature-card animate-on-scroll" data-delay="160">
+          <span class="feature-card__icon">⭐</span>
+          <h3 class="feature-card__title">Daily Role Models</h3>
+          <p class="feature-card__text">Discover the luminaries of Sunni Islam — from the noble Sahabah to the great Imams — whose lives illuminate the straight path.</p>
+        </div>
+        <div class="feature-card animate-on-scroll" data-delay="0">
+          <span class="feature-card__icon">✨</span>
+          <h3 class="feature-card__title">Personal Reflections</h3>
+          <p class="feature-card__text">Choose from 15 spiritual categories and receive deeply personal guidance crafted with care and intention — a private companion for the soul.</p>
+        </div>
+        <div class="feature-card animate-on-scroll" data-delay="80">
+          <span class="feature-card__icon">🕌</span>
+          <h3 class="feature-card__title">Authentic Sunni Perspective</h3>
+          <p class="feature-card__text">Every word is rooted in authentic Sunni scholarship, the Quran, and the Hadith. Traditional wisdom delivered with warmth, clarity, and care.</p>
+        </div>
+        <div class="feature-card animate-on-scroll" data-delay="160">
+          <span class="feature-card__icon">🌿</span>
+          <h3 class="feature-card__title">Spiritual Growth</h3>
+          <p class="feature-card__text">Build consistent habits of dhikr, reflection, and closeness to Allah. Nuria grows with you on your journey toward the best version of yourself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       DAILY BLESSINGS
+  ========================================================= -->
+  <section class="section section--daily" id="daily" aria-label="Daily features">
+    <div class="container">
+      <div class="section__label">What Awaits You Each Day</div>
+      <h2 class="section__title">Every Morning, a New <em>Blessing</em></h2>
+
+      <div class="ornament" aria-hidden="true">✦</div>
+
+      <div class="daily-grid">
+        <div class="daily-card animate-on-scroll" data-delay="0">
+          <div class="daily-card__number" aria-hidden="true">01</div>
+          <span class="daily-card__icon">📜</span>
+          <h3>Daily Scripture</h3>
+          <p>A carefully chosen verse from the Holy Quran or the Hadith of the Prophet ﷺ, accompanied by reflection and context to deepen your connection with the Divine Word.</p>
+        </div>
+        <div class="daily-card animate-on-scroll" data-delay="120">
+          <div class="daily-card__number" aria-hidden="true">02</div>
+          <span class="daily-card__icon">🌟</span>
+          <h3>Daily Role Model</h3>
+          <p>Meet a luminary of Sunni Islam — a Companion, a great Imam, a scholar of the heart. Each day, a new light from our tradition to inspire your own journey.</p>
+        </div>
+        <div class="daily-card animate-on-scroll" data-delay="240">
+          <div class="daily-card__number" aria-hidden="true">03</div>
+          <span class="daily-card__icon">💎</span>
+          <h3>Personal Reflection</h3>
+          <p>Your daily spiritual companion. A reflection crafted with wisdom and intention, speaking directly to where you are on your path — every single day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       HADITH QUOTE
+  ========================================================= -->
+  <section class="section section--quote" aria-label="Featured Hadith">
+    <div class="container">
+      <blockquote class="featured-quote animate-on-scroll">
+        <span class="featured-quote__star" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span>
+        <p class="featured-quote__arabic" lang="ar">إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ</p>
+        <p class="featured-quote__text">"Indeed, Allah is beautiful and He loves beauty."</p>
+        <cite class="featured-quote__cite">Sahih Muslim · 91</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CATEGORIES
+  ========================================================= -->
+  <section class="section section--categories" id="categories" aria-label="Reflection categories">
+    <div class="container">
+      <div class="section__label">15 Reflection Categories</div>
+      <h2 class="section__title">Every Dimension of Your <em>Soul</em></h2>
+      <p class="section__subtitle">
+        Choose the aspect of your life where your heart seeks guidance.
+        Receive wisdom and reflection crafted with deep care for your spiritual need.
+      </p>
+
+      <div class="categories-grid">
+        <div class="cat-card animate-on-scroll" data-delay="0">
+          <span class="cat-card__icon">🌅</span>
+          <h4>Morning Prayer</h4>
+          <span class="cat-card__arabic" lang="ar">فجر</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="50">
+          <span class="cat-card__icon">🌙</span>
+          <h4>Evening Prayer</h4>
+          <span class="cat-card__arabic" lang="ar">عشاء</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="100">
+          <span class="cat-card__icon">🧭</span>
+          <h4>Daily Guidance</h4>
+          <span class="cat-card__arabic" lang="ar">هداية</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="150">
+          <span class="cat-card__icon">💪</span>
+          <h4>Strength &amp; Patience</h4>
+          <span class="cat-card__arabic" lang="ar">صبر</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="200">
+          <span class="cat-card__icon">🙏</span>
+          <h4>Gratitude</h4>
+          <span class="cat-card__arabic" lang="ar">شكر</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="250">
+          <span class="cat-card__icon">🕊️</span>
+          <h4>Trust in Allah</h4>
+          <span class="cat-card__arabic" lang="ar">توكل</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="300">
+          <span class="cat-card__icon">👨‍👩‍👧</span>
+          <h4>Family &amp; Love</h4>
+          <span class="cat-card__arabic" lang="ar">أسرة</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="350">
+          <span class="cat-card__icon">🌾</span>
+          <h4>Provision &amp; Work</h4>
+          <span class="cat-card__arabic" lang="ar">رزق</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="400">
+          <span class="cat-card__icon">💧</span>
+          <h4>Repentance</h4>
+          <span class="cat-card__arabic" lang="ar">توبة</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="450">
+          <span class="cat-card__icon">📚</span>
+          <h4>Knowledge</h4>
+          <span class="cat-card__arabic" lang="ar">علم</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="500">
+          <span class="cat-card__icon">🤲</span>
+          <h4>Generosity</h4>
+          <span class="cat-card__arabic" lang="ar">صدقة</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="550">
+          <span class="cat-card__icon">🌿</span>
+          <h4>Healing &amp; Health</h4>
+          <span class="cat-card__arabic" lang="ar">شفاء</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="600">
+          <span class="cat-card__icon">❤️</span>
+          <h4>Marriage &amp; Love</h4>
+          <span class="cat-card__arabic" lang="ar">زواج</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="650">
+          <span class="cat-card__icon">⚡</span>
+          <h4>Hardship &amp; Trials</h4>
+          <span class="cat-card__arabic" lang="ar">ابتلاء</span>
+        </div>
+        <div class="cat-card animate-on-scroll" data-delay="700">
+          <span class="cat-card__icon">✨</span>
+          <h4>Spiritual Growth</h4>
+          <span class="cat-card__arabic" lang="ar">تزكية</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PRICING
+  ========================================================= -->
+  <section class="section section--pricing" id="pricing" aria-label="Plans">
+    <div class="container">
+      <div class="section__label">Choose Your Path</div>
+      <h2 class="section__title">Begin with <em>Standard</em>, Flourish with <em>Barakah</em></h2>
+      <p class="section__subtitle" style="margin-left:auto;margin-right:auto;text-align:center;">
+        Every Muslim deserves access to spiritual guidance. Start free, and when you are ready —
+        unlock the full abundance of Nuria.
+      </p>
+
+      <div class="pricing-grid">
+        <!-- Standard -->
+        <div class="pricing-card animate-on-scroll" data-delay="0">
+          <div class="pricing-card__header">
+            <div class="pricing-card__tier">Standard</div>
+            <div class="pricing-card__price">Free to begin</div>
+            <p class="pricing-card__desc">Start your journey with Nuria and discover the beauty of daily Islamic guidance — no commitment required.</p>
+          </div>
+          <ul class="pricing-card__features">
+            <li>✓ &nbsp;Daily Scripture</li>
+            <li>✓ &nbsp;Daily Role Model</li>
+            <li>✓ &nbsp;Daily Personal Reflection</li>
+            <li>✓ &nbsp;Access to select categories</li>
+            <li>✓ &nbsp;Limited reflections each month</li>
+            <li class="pricing-card__feature--locked">✗ &nbsp;All 15 reflection categories</li>
+            <li class="pricing-card__feature--locked">✗ &nbsp;More reflections per month</li>
+            <li class="pricing-card__feature--locked">✗ &nbsp;Upcoming exclusive features</li>
+          </ul>
+          <a href="#download" class="btn btn--outline">Begin for Free</a>
+        </div>
+
+        <!-- Barakah -->
+        <div class="pricing-card pricing-card--barakah animate-on-scroll" data-delay="150">
+          <div class="pricing-card__badge">Most Beloved</div>
+          <div class="pricing-card__header">
+            <div class="pricing-card__tier">
+              <span class="pricing-card__barakah-text">Barakah</span>
+              <span class="pricing-card__barakah-arabic" lang="ar">بركة</span>
+            </div>
+            <div class="pricing-card__price">Unlock the full light</div>
+            <p class="pricing-card__desc">Receive the full blessing of Nuria. Abundant reflections, all 15 categories, and first access to everything new.</p>
+          </div>
+          <ul class="pricing-card__features">
+            <li>✓ &nbsp;Everything in Standard</li>
+            <li>✓ &nbsp;All 15 reflection categories</li>
+            <li>✓ &nbsp;Many more reflections per month</li>
+            <li>✓ &nbsp;Early access to new categories</li>
+            <li>✓ &nbsp;Priority upcoming features</li>
+            <li>✓ &nbsp;Support the mission of Nuria</li>
+          </ul>
+          <a href="#download" class="btn btn--gold">Receive Barakah</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       DOWNLOAD CTA
+  ========================================================= -->
+  <section class="section section--download" id="download" aria-label="Download Nuria">
+    <div class="container">
+      <div class="download-wrap">
+        <div class="download__launcher animate-on-scroll">
+          <img
+            src="assets/logo-launcher.png"
+            alt="Nuria App"
+            class="download__launcher-img"
+          />
+        </div>
+
+        <div class="download__content animate-on-scroll" data-delay="150">
+          <div class="section__label">Available Now</div>
+          <h2 class="download__title">
+            Carry the Light of Islam<br /><em>with You Today</em>
+          </h2>
+          <p class="download__desc">
+            Download Nuria and begin your daily journey of faith, reflection, and
+            closeness to Allah — in your pocket, in your heart, every morning you wake.
+          </p>
+          <div class="download__buttons">
+            <a href="#" class="btn btn--store btn--store-lg" aria-label="Download on the App Store">
+              <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+              <span>
+                <small>Download on the</small>
+                App Store
+              </span>
+            </a>
+            <a href="#" class="btn btn--store btn--store-lg" aria-label="Get Nuria on Google Play">
+              <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"/>
+              </svg>
+              <span>
+                <small>Get it on</small>
+                Google Play
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img src="assets/logo.png" alt="Nuria" class="footer__logo" />
+          <p class="footer__tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__bismillah" lang="ar">الله أكبر</p>
+        </div>
+
+        <nav class="footer__links" aria-label="Footer navigation">
+          <div class="footer__col">
+            <span class="footer__col-title">App</span>
+            <a href="#about">About Nuria</a>
+            <a href="#daily">Daily Features</a>
+            <a href="#categories">Categories</a>
+            <a href="#pricing">Plans</a>
+            <a href="#download">Download</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title">Legal</span>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+            <a href="/delete-account">Delete Account</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title">Help</span>
+            <a href="/support">Support Center</a>
+            <a href="/support#contact">Contact Us</a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer__bottom">
+        <p>© 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <div class="footer__bottom-links">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="/support">Support</a>
+          <a href="/delete-account">Delete Account</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
