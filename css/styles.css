@@ -1908,6 +1908,19 @@ address.legal-address strong { color: var(--color-text); }
   .nav__lang-dropdown { right: 0; left: auto; }
 }
 
+/* ===== LEGAL LANG NOTICE ===== */
+.legal-lang-notice {
+  background: rgba(196,154,60,0.1);
+  border-bottom: 1px solid rgba(196,154,60,0.25);
+  padding: 0.75rem 0;
+  text-align: center;
+}
+.legal-lang-notice p {
+  font-size: 0.82rem;
+  color: var(--color-gold);
+  margin: 0;
+}
+
 /* ===== RTL OVERRIDES ===== */
 [dir="rtl"] {
   text-align: right;

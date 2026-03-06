@@ -79,35 +79,35 @@
       <div class="support-grid" style="margin-bottom:2rem;">
         <div class="support-card animate-on-scroll">
           <span class="support-card__icon">📱</span>
-          <h3>Delete in the App</h3>
-          <p>The fastest way to delete your account is directly inside Nuria: go to <strong>Settings &rarr; Account &rarr; Delete Account</strong> and follow the steps.</p>
+          <h3 data-i18n="del.app_title">Delete in the App</h3>
+          <p data-i18n-html="del.app_text">The fastest way to delete your account is directly inside Nuria: go to <strong>Settings → Account → Delete Account</strong> and follow the steps.</p>
         </div>
         <div class="support-card animate-on-scroll" data-delay="100">
           <span class="support-card__icon">✉️</span>
-          <h3>Request via Email</h3>
-          <p>You can also email us directly at <a href="mailto:hello@oakdev.app">hello@oakdev.app</a> with the subject "Account Deletion Request" and we will process it within 30 days.</p>
+          <h3 data-i18n="del.email_title">Request via Email</h3>
+          <p data-i18n-html="del.email_text">You can also email us directly at <a href="mailto:hello@oakdev.app">hello@oakdev.app</a> with the subject "Account Deletion Request" and we will process it within 30 days.</p>
         </div>
       </div>
 
       <!-- Warning + Form -->
       <div class="page-content__card animate-on-scroll" style="margin-top:0;">
-        <h2>Submit a Deletion Request</h2>
-        <p>Use the form below to submit a formal account deletion request. Please provide the email address linked to your Nuria account.</p>
+        <h2 data-i18n="del.form_title">Submit a Deletion Request</h2>
+        <p data-i18n="del.form_desc">Use the form below to submit a formal account deletion request. Please provide the email address linked to your Nuria account.</p>
 
         <div class="form-warning" role="alert">
           <strong>Please read before continuing:</strong><br />
-          Account deletion is <strong>permanent and irreversible</strong>. Once your account is deleted:
+          Account deletion is <strong data-i18n="del.warn_bold">permanent and irreversible</strong>. Once your account is deleted:
           <ul style="margin-top:0.75rem;margin-left:1.25rem;list-style:disc;">
-            <li>All your account data and preferences will be permanently removed.</li>
-            <li>Your reflection history will be deleted and cannot be recovered.</li>
-            <li>If you have an active Barakah subscription, please cancel it via your App Store or Google Play settings <strong>before</strong> deleting your account — we are unable to issue refunds for remaining subscription time.</li>
-            <li>Standard accounts may be recreated at any time. Barakah access does not transfer to new accounts.</li>
+            <li data-i18n="del.warn_li1">All your account data and preferences will be permanently removed.</li>
+            <li data-i18n="del.warn_li2">Your reflection history will be deleted and cannot be recovered.</li>
+            <li data-i18n-html="del.warn_li3">If you have an active Barakah subscription, please cancel it via your App Store or Google Play settings <strong>before</strong> deleting your account — we are unable to issue refunds for remaining subscription time.</li>
+            <li data-i18n="del.warn_li4">Standard accounts may be recreated at any time. Barakah access does not transfer to new accounts.</li>
           </ul>
         </div>
 
         <form id="deleteAccountForm">
           <div class="form-group">
-            <label class="form-label" for="deleteEmail">Email Address on your Nuria account</label>
+            <label class="form-label" for="deleteEmail" data-i18n="del.label_email">Email Address on your Nuria account</label>
             <input
               class="form-input"
               type="email"
@@ -118,47 +118,48 @@
             />
           </div>
           <div class="form-group">
-            <label class="form-label" for="deleteReason">Reason for leaving (optional)</label>
+            <label class="form-label" for="deleteReason" data-i18n="del.label_reason">Reason for leaving (optional)</label>
             <select class="form-input form-select" id="deleteReason" name="reason">
-              <option value="">I'd rather not say</option>
-              <option value="Not using the app">I no longer use the app</option>
-              <option value="Privacy concerns">Privacy concerns</option>
-              <option value="Switching devices">Switching devices or accounts</option>
-              <option value="Technical issues">Technical issues</option>
-              <option value="Content concerns">Content concerns</option>
-              <option value="Other">Other</option>
+              <option value="" data-i18n="del.r0">I'd rather not say</option>
+              <option value="Not using the app" data-i18n="del.r1">I no longer use the app</option>
+              <option value="Privacy concerns" data-i18n="del.r2">Privacy concerns</option>
+              <option value="Switching devices" data-i18n="del.r3">Switching devices or accounts</option>
+              <option value="Technical issues" data-i18n="del.r4">Technical issues</option>
+              <option value="Content concerns" data-i18n="del.r5">Content concerns</option>
+              <option value="Other" data-i18n="del.r6">Other</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label" for="deleteNote">Additional notes (optional)</label>
+            <label class="form-label" for="deleteNote" data-i18n="del.label_notes">Additional notes (optional)</label>
             <textarea
               class="form-input form-textarea"
               id="deleteNote"
               name="note"
               placeholder="Any additional information or feedback you would like to share with us…"
+              data-i18n-placeholder="del.ph_notes"
             ></textarea>
           </div>
 
           <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-top:0.5rem;">
-            <button type="submit" class="btn btn--danger">
+            <button type="submit" class="btn btn--danger" data-i18n="del.btn_submit">
               Request Account Deletion
             </button>
-            <a href="/" class="btn btn--outline">Cancel &amp; Go Back</a>
+            <a href="/" class="btn btn--outline" data-i18n="del.btn_cancel">Cancel &amp; Go Back</a>
           </div>
         </form>
 
-        <h2>What Happens Next</h2>
-        <p>After we receive your request:</p>
+        <h2 data-i18n="del.next_title">What Happens Next</h2>
+        <p data-i18n="del.next_intro">After we receive your request:</p>
         <ul>
-          <li>We will send a confirmation email to the address you provided.</li>
-          <li>Your account will be scheduled for deletion within <strong>30 days</strong>.</li>
-          <li>During this period, you can cancel the deletion request by contacting <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>.</li>
-          <li>After 30 days, all personal data associated with your account will be permanently and irreversibly deleted from our systems.</li>
-          <li>Some anonymised, non-identifiable usage data may be retained for statistical purposes only.</li>
+          <li data-i18n="del.next_li1">We will send a confirmation email to the address you provided.</li>
+          <li data-i18n-html="del.next_li2">Your account will be scheduled for deletion within <strong>30 days</strong>.</li>
+          <li data-i18n-html="del.next_li3">During this period, you can cancel the deletion request by contacting <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>.</li>
+          <li data-i18n="del.next_li4">After 30 days, all personal data associated with your account will be permanently and irreversibly deleted from our systems.</li>
+          <li data-i18n="del.next_li5">Some anonymised, non-identifiable usage data may be retained for statistical purposes only.</li>
         </ul>
 
-        <h2>Need Help Instead?</h2>
-        <p>
+        <h2 data-i18n="del.help_title">Need Help Instead?</h2>
+        <p data-i18n-html="del.help_text">
           Before you go, we would love to help if something isn't working as expected.
           Please reach out to us at <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>
           or visit our <a href="/support">Support Center</a> — we're here for you, in shaa Allah.
@@ -176,32 +177,32 @@
       <div class="footer__top">
         <div class="footer__brand">
           <img src="../assets/icon.png" alt="Nuria" class="footer__logo" />
-          <p class="footer__tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul — every single day.</p>
           <p class="footer__bismillah" lang="ar">الله أكبر</p>
         </div>
         <nav class="footer__links" aria-label="Footer navigation">
           <div class="footer__col">
-            <span class="footer__col-title">App</span>
-            <a href="/">Home</a>
-            <a href="/#about">About</a>
-            <a href="/#pricing">Plans</a>
-            <a href="/#download">Download</a>
+            <span class="footer__col-title" data-i18n="footer.col1">App</span>
+            <a href="/" data-i18n="footer.home">Home</a>
+            <a href="/#about" data-i18n="footer.about">About</a>
+            <a href="/#pricing" data-i18n="footer.plans">Plans</a>
+            <a href="/#download" data-i18n="footer.dl">Download</a>
           </div>
           <div class="footer__col">
-            <span class="footer__col-title">Legal</span>
-            <a href="../privacy">Privacy Policy</a>
-            <a href="../terms">Terms of Service</a>
-            <a href="/delete-account">Delete Account</a>
+            <span class="footer__col-title" data-i18n="footer.col2">Legal</span>
+            <a href="../privacy" data-i18n="footer.privacy">Privacy Policy</a>
+            <a href="../terms" data-i18n="footer.terms">Terms of Service</a>
+            <a href="/delete-account" data-i18n="footer.delete">Delete Account</a>
           </div>
           <div class="footer__col">
-            <span class="footer__col-title">Help</span>
-            <a href="/support">Support Center</a>
-            <a href="/support#contact">Contact Us</a>
+            <span class="footer__col-title" data-i18n="footer.col3">Help</span>
+            <a href="/support" data-i18n="footer.support_center">Support Center</a>
+            <a href="/support#contact" data-i18n="footer.contact">Contact Us</a>
           </div>
         </nav>
       </div>
       <div class="footer__bottom">
-        <p>© 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
           <a href="../privacy">Privacy</a>
           <a href="../terms">Terms</a>
