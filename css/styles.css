@@ -904,6 +904,178 @@ body::after {
   direction: rtl;
 }
 
+/* ===== NEW FEATURES ===== */
+.section--new-features {
+  background: var(--color-bg-2);
+  position: relative;
+  overflow: hidden;
+}
+.section--new-features::before {
+  content: '';
+  position: absolute;
+  right: -120px; top: -120px;
+  width: 480px; height: 480px;
+  background: radial-gradient(circle, rgba(196, 154, 60, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.feature-card--new {
+  border-color: rgba(196, 154, 60, 0.2);
+}
+.feature-card--new::after {
+  content: 'New';
+  position: absolute;
+  top: 1rem; right: 1rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  background: rgba(196, 154, 60, 0.12);
+  border: 1px solid rgba(196, 154, 60, 0.3);
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.new-features-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.new-feature-card {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  transition: var(--transition);
+}
+.new-feature-card:hover {
+  border-color: var(--color-border-mid);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+.new-feature-card__icon-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: var(--color-surface-mid);
+  border: 1px solid rgba(45, 190, 108, 0.2);
+  flex-shrink: 0;
+}
+.new-feature-card__icon-wrap--gold {
+  background: rgba(196, 154, 60, 0.07);
+  border-color: rgba(196, 154, 60, 0.25);
+}
+.new-feature-card__icon {
+  font-size: 2rem;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.new-feature-card__body { display: flex; flex-direction: column; gap: 0.6rem; }
+.new-feature-card__tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-green-bright);
+  background: var(--color-green-glow);
+  border: 1px solid rgba(45, 190, 108, 0.2);
+  border-radius: 20px;
+  padding: 2px 10px;
+  align-self: flex-start;
+}
+.new-feature-card__tag--free {
+  color: var(--color-gold);
+  background: rgba(196, 154, 60, 0.08);
+  border-color: rgba(196, 154, 60, 0.25);
+}
+.new-feature-card__title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  color: var(--color-text);
+  margin: 0;
+}
+.new-feature-card__text {
+  font-size: 0.9rem;
+  color: var(--color-text-dim);
+  line-height: 1.75;
+  margin: 0;
+}
+.new-feature-card__list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.new-feature-card__list li {
+  font-size: 0.82rem;
+  color: var(--color-text-dimmer);
+  padding-left: 1.1rem;
+  position: relative;
+}
+.new-feature-card__list li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  font-size: 0.5rem;
+  top: 0.15em;
+  color: var(--color-gold);
+}
+
+/* Prayer times in phone mockup */
+.phone-ui__prayer-times {
+  display: flex;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #ced9ca;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 4px rgba(12, 58, 30, 0.06);
+}
+.phone-ui__prayer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.5rem;
+  color: #5a8a65;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.phone-ui__prayer span {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #0a1e0e;
+}
+.phone-ui__prayer--active {
+  color: #c49a3c;
+}
+.phone-ui__prayer--active span {
+  color: #c49a3c;
+}
+
+@media (max-width: 768px) {
+  .new-feature-card {
+    grid-template-columns: 1fr;
+  }
+  .new-feature-card__icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+  }
+}
+
 /* ===== PRICING ===== */
 .section--pricing {
   position: relative;
