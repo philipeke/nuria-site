@@ -496,7 +496,7 @@ body::after {
   content: '';
   position: absolute;
   width: 320px; height: 320px;
-  background: radial-gradient(circle, rgba(45, 190, 108, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(196, 154, 60, 0.14) 0%, transparent 70%);
   border-radius: 50%;
   animation: breathe 4s ease infinite;
 }
@@ -504,13 +504,13 @@ body::after {
 .hero__phone {
   width: 285px;
   height: 590px;
-  background: linear-gradient(165deg, #1a2820 0%, #0c1812 100%);
+  background: linear-gradient(165deg, #1a1a1a 0%, #0a0a0a 100%);
   border-radius: 46px;
   border: 2px solid rgba(255,255,255,0.11);
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.04),
     0 35px 90px rgba(0, 0, 0, 0.75),
-    0 0 70px rgba(45, 190, 108, 0.08),
+    0 0 70px rgba(196, 154, 60, 0.10),
     inset 0 1px 0 rgba(255,255,255,0.09);
   overflow: hidden;
   position: relative;
@@ -522,13 +522,13 @@ body::after {
   top: 16px; left: 50%;
   transform: translateX(-50%);
   width: 78px; height: 6px;
-  background: rgba(255,255,255,0.13);
+  background: rgba(0,0,0,0.25);
   border-radius: 10px;
   z-index: 10;
 }
 .hero__phone-screen {
   height: 100%;
-  background: linear-gradient(185deg, #060f09 0%, #0a1a0f 100%);
+  background: linear-gradient(185deg, #f5f1e8 0%, #eadfca 100%);
   overflow: hidden;
 }
 
@@ -543,60 +543,61 @@ body::after {
 .phone-ui__header {
   text-align: center;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+  border-bottom: 1px solid rgba(196, 154, 60, 0.25);
   margin-bottom: 2px;
 }
 .phone-ui__greeting {
   font-family: var(--font-arabic);
   font-size: 1.15rem;
-  color: var(--color-gold);
+  color: #c49a3c;
   margin-bottom: 4px;
 }
 .phone-ui__date {
   font-size: 0.62rem;
-  color: var(--color-text-dimmer);
+  color: #5a8a65;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .phone-ui__card {
-  background: rgba(13, 74, 47, 0.28);
-  border: 1px solid rgba(45, 190, 108, 0.14);
+  background: #ffffff;
+  border: 1px solid #ced9ca;
   border-radius: 12px;
   padding: 13px;
+  box-shadow: 0 1px 4px rgba(12, 58, 30, 0.08);
 }
 .phone-ui__card--gold {
-  background: rgba(201, 168, 76, 0.07);
-  border-color: rgba(201, 168, 76, 0.2);
+  background: rgba(196, 154, 60, 0.06);
+  border-color: rgba(196, 154, 60, 0.35);
 }
 .phone-ui__card-label {
   font-size: 0.58rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-green-bright);
+  color: #1a5c35;
   margin-bottom: 7px;
 }
-.phone-ui__card--gold .phone-ui__card-label { color: var(--color-gold); }
+.phone-ui__card--gold .phone-ui__card-label { color: #c49a3c; }
 .phone-ui__card-text {
   font-family: var(--font-heading);
   font-size: 0.78rem;
-  color: var(--color-text);
+  color: #0a1e0e;
   font-style: italic;
   line-height: 1.45;
   margin-bottom: 5px;
 }
 .phone-ui__card-ref {
   font-size: 0.58rem;
-  color: var(--color-text-dimmer);
+  color: #5a8a65;
 }
 .phone-ui__card-name {
   font-size: 0.82rem;
-  color: var(--color-gold-bright);
+  color: #c49a3c;
   font-weight: 700;
   margin-bottom: 2px;
 }
 .phone-ui__card-small {
   font-size: 0.58rem;
-  color: var(--color-text-dimmer);
+  color: #5a8a65;
 }
 .phone-ui__categories {
   display: grid;
@@ -605,13 +606,13 @@ body::after {
   margin-top: auto;
 }
 .phone-ui__cat {
-  background: rgba(13, 74, 47, 0.22);
-  border: 1px solid rgba(45, 190, 108, 0.1);
+  background: #ffffff;
+  border: 1px solid #ced9ca;
   border-radius: 10px;
   padding: 8px 4px;
   text-align: center;
   font-size: 0.56rem;
-  color: var(--color-text-dim);
+  color: #2a5a38;
 }
 .phone-ui__cat--locked {
   opacity: 0.45;
@@ -621,7 +622,7 @@ body::after {
   font-size: 0.58rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-text-dimmer);
+  color: #5a8a65;
   text-align: center;
   padding-top: 4px;
 }
