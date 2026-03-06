@@ -35,15 +35,31 @@
       </a>
 
       <div class="nav__links" id="navLinks">
-        <a href="#about"      class="nav__link">About</a>
-        <a href="#daily"      class="nav__link">Daily</a>
-        <a href="#categories" class="nav__link">Categories</a>
-        <a href="#pricing"    class="nav__link">Plans</a>
-        <a href="/support"    class="nav__link">Support</a>
+        <a href="#about"      class="nav__link" data-i18n="nav.about">About</a>
+        <a href="#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
+        <a href="#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support"    class="nav__link" data-i18n="nav.support">Support</a>
       </div>
 
       <div class="nav__cta">
-        <a href="#download" class="btn btn--gold">Download</a>
+        <a href="#download" class="btn btn--gold" data-i18n="nav.download">Download</a>
+      </div>
+
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
       </div>
 
       <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
@@ -69,24 +85,24 @@
         <img src="assets/logo.png" alt="Nuria" class="hero__logo" />
       </div>
 
-      <p class="hero__subtitle">Daily Sunni Islamic Guidance, Prayer &amp; Reflection</p>
+      <p class="hero__subtitle" data-i18n="hero.subtitle">Daily Sunni Islamic Guidance, Prayer &amp; Reflection</p>
 
-      <p class="hero__desc">
+      <p class="hero__desc" data-i18n="hero.desc">
         Begin each day in the light of faith. Receive heartfelt prayers, timeless wisdom, and meaningful guidance rooted in the beautiful tradition of Sunni Islam.
       </p>
 
       <div class="hero__stats">
         <div>
           <span class="hero__stat-number" data-count="15">15</span>
-          <span class="hero__stat-label">Categories</span>
+          <span class="hero__stat-label" data-i18n="hero.stat_categories">Categories</span>
         </div>
         <div>
           <span class="hero__stat-number" data-count="365">365</span>
-          <span class="hero__stat-label">Days of Guidance</span>
+          <span class="hero__stat-label" data-i18n="hero.stat_days">Days of Guidance</span>
         </div>
         <div>
           <span class="hero__stat-number">∞</span>
-          <span class="hero__stat-label">Barakah</span>
+          <span class="hero__stat-label" data-i18n="hero.stat_barakah">Barakah</span>
         </div>
       </div>
 
@@ -114,7 +130,7 @@
 
       <div class="hero__scroll-indicator" aria-hidden="true">
         <div class="hero__scroll-line"></div>
-        <span>Discover Nuria</span>
+        <span data-i18n="hero.discover">Discover Nuria</span>
       </div>
     </div>
 
@@ -167,8 +183,8 @@
       <blockquote class="featured-quote animate-on-scroll">
         <span class="featured-quote__star" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span>
         <p class="featured-quote__arabic" lang="ar">وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا</p>
-        <p class="featured-quote__text">"And whoever fears Allah — He will make for him a way out."</p>
-        <cite class="featured-quote__cite">Quran · At-Talaq 65:2</cite>
+        <p class="featured-quote__text" data-i18n="quote1.text">"And whoever fears Allah — He will make for him a way out."</p>
+        <cite class="featured-quote__cite" data-i18n="quote1.cite">Quran · At-Talaq 65:2</cite>
       </blockquote>
     </div>
   </section>
@@ -178,9 +194,9 @@
   ========================================================= -->
   <section class="section section--about" id="about" aria-label="About Nuria">
     <div class="container">
-      <div class="section__label">About Nuria</div>
-      <h2 class="section__title">A Companion of <em>Light</em> for Every Soul</h2>
-      <p class="section__subtitle">
+      <div class="section__label" data-i18n="about.label">About Nuria</div>
+      <h2 class="section__title" data-i18n-html="about.title">A Companion of <em>Light</em> for Every Soul</h2>
+      <p class="section__subtitle" data-i18n-html="about.subtitle">
         Nuria — meaning <em>luminous</em> — is designed to bring the timeless teachings of Sunni Islam
         into the rhythm of your daily life. Authentic prayers, beautiful wisdom, and guidance
         rooted in the Sunnah, beautifully delivered to your pocket.
@@ -189,48 +205,48 @@
       <div class="features-grid">
         <div class="feature-card animate-on-scroll" data-delay="0">
           <span class="feature-card__icon">🌙</span>
-          <h3 class="feature-card__title">Daily Prayers</h3>
-          <p class="feature-card__text">Begin and end each day with beautifully crafted supplications aligned with Fajr and Isha, grounded in the Sunnah of the Prophet ﷺ.</p>
+          <h3 class="feature-card__title" data-i18n="about.f1_title">Daily Prayers</h3>
+          <p class="feature-card__text" data-i18n="about.f1_text">Begin and end each day with beautifully crafted supplications aligned with Fajr and Isha, grounded in the Sunnah of the Prophet ﷺ.</p>
         </div>
         <div class="feature-card animate-on-scroll" data-delay="80">
           <span class="feature-card__icon">📖</span>
-          <h3 class="feature-card__title">Daily Scripture</h3>
-          <p class="feature-card__text">Receive a meaningful verse from the Holy Quran or the Hadith each day, with deep reflection and spiritual context to enrich your understanding.</p>
+          <h3 class="feature-card__title" data-i18n="about.f2_title">Daily Scripture</h3>
+          <p class="feature-card__text" data-i18n="about.f2_text">Receive a meaningful verse from the Holy Quran or the Hadith each day, with deep reflection and spiritual context to enrich your understanding.</p>
         </div>
         <div class="feature-card animate-on-scroll" data-delay="160">
           <span class="feature-card__icon">⭐</span>
-          <h3 class="feature-card__title">Daily Role Models</h3>
-          <p class="feature-card__text">Discover the luminaries of Sunni Islam — from the noble Sahabah to the great Imams — whose lives illuminate the straight path.</p>
+          <h3 class="feature-card__title" data-i18n="about.f3_title">Daily Role Models</h3>
+          <p class="feature-card__text" data-i18n="about.f3_text">Discover the luminaries of Sunni Islam — from the noble Sahabah to the great Imams — whose lives illuminate the straight path.</p>
         </div>
         <div class="feature-card animate-on-scroll" data-delay="0">
           <span class="feature-card__icon">✨</span>
-          <h3 class="feature-card__title">Personal Reflections</h3>
-          <p class="feature-card__text">Choose from 15 spiritual categories and receive deeply personal guidance crafted with care and intention — a private companion for the soul.</p>
+          <h3 class="feature-card__title" data-i18n="about.f4_title">Personal Reflections</h3>
+          <p class="feature-card__text" data-i18n="about.f4_text">Choose from 15 spiritual categories and receive deeply personal guidance crafted with care and intention — a private companion for the soul.</p>
         </div>
         <div class="feature-card animate-on-scroll" data-delay="80">
           <span class="feature-card__icon">🕌</span>
-          <h3 class="feature-card__title">Authentic Sunni Perspective</h3>
-          <p class="feature-card__text">Every word is rooted in authentic Sunni scholarship, the Quran, and the Hadith. Traditional wisdom delivered with warmth, clarity, and care.</p>
+          <h3 class="feature-card__title" data-i18n="about.f5_title">Authentic Sunni Perspective</h3>
+          <p class="feature-card__text" data-i18n="about.f5_text">Every word is rooted in authentic Sunni scholarship, the Quran, and the Hadith. Traditional wisdom delivered with warmth, clarity, and care.</p>
         </div>
         <div class="feature-card animate-on-scroll" data-delay="160">
           <span class="feature-card__icon">🌿</span>
-          <h3 class="feature-card__title">Spiritual Growth</h3>
-          <p class="feature-card__text">Build consistent habits of dhikr, reflection, and closeness to Allah. Nuria grows with you on your journey toward the best version of yourself.</p>
+          <h3 class="feature-card__title" data-i18n="about.f6_title">Spiritual Growth</h3>
+          <p class="feature-card__text" data-i18n="about.f6_text">Build consistent habits of dhikr, reflection, and closeness to Allah. Nuria grows with you on your journey toward the best version of yourself.</p>
         </div>
         <div class="feature-card feature-card--new animate-on-scroll" data-delay="0">
           <span class="feature-card__icon">💬</span>
-          <h3 class="feature-card__title">Ask Nuria Anything</h3>
-          <p class="feature-card__text">Have a question about your deen, a hardship on your heart, or something you've always wondered? Ask freely — Nuria answers with wisdom rooted in the Sunni tradition. One reflection, one answer, directly for you.</p>
+          <h3 class="feature-card__title" data-i18n="about.f7_title">Ask Nuria Anything</h3>
+          <p class="feature-card__text" data-i18n="about.f7_text">Have a question about your deen, a hardship on your heart, or something you've always wondered? Ask freely — Nuria answers with wisdom rooted in the Sunni tradition. One reflection, one answer, directly for you.</p>
         </div>
         <div class="feature-card feature-card--new animate-on-scroll" data-delay="80">
           <span class="feature-card__icon">🧭</span>
-          <h3 class="feature-card__title">Qibla Compass</h3>
-          <p class="feature-card__text">Wherever you are in the world, face the sacred direction with confidence. Nuria's built-in Qibla compass points you toward the Kaaba in Mecca — always accurate, always available.</p>
+          <h3 class="feature-card__title" data-i18n="about.f8_title">Qibla Compass</h3>
+          <p class="feature-card__text" data-i18n="about.f8_text">Wherever you are in the world, face the sacred direction with confidence. Nuria's built-in Qibla compass points you toward the Kaaba in Mecca — always accurate, always available.</p>
         </div>
         <div class="feature-card feature-card--new animate-on-scroll" data-delay="160">
           <span class="feature-card__icon">🕐</span>
-          <h3 class="feature-card__title">Daily Prayer Times</h3>
-          <p class="feature-card__text">Never miss Salah. Nuria displays the precise times for all five daily prayers — Fajr, Dhuhr, Asr, Maghrib, and Isha — calculated for your exact location every single day.</p>
+          <h3 class="feature-card__title" data-i18n="about.f9_title">Daily Prayer Times</h3>
+          <p class="feature-card__text" data-i18n="about.f9_text">Never miss Salah. Nuria displays the precise times for all five daily prayers — Fajr, Dhuhr, Asr, Maghrib, and Isha — calculated for your exact location every single day.</p>
         </div>
       </div>
     </div>
@@ -241,8 +257,8 @@
   ========================================================= -->
   <section class="section section--daily" id="daily" aria-label="Daily features">
     <div class="container">
-      <div class="section__label">What Awaits You Each Day</div>
-      <h2 class="section__title">Every Morning, a New <em>Blessing</em></h2>
+      <div class="section__label" data-i18n="daily.label">What Awaits You Each Day</div>
+      <h2 class="section__title" data-i18n-html="daily.title">Every Morning, a New <em>Blessing</em></h2>
 
       <div class="ornament" aria-hidden="true">✦</div>
 
@@ -250,20 +266,20 @@
         <div class="daily-card animate-on-scroll" data-delay="0">
           <div class="daily-card__number" aria-hidden="true">01</div>
           <span class="daily-card__icon">📜</span>
-          <h3>Daily Scripture</h3>
-          <p>A carefully chosen verse from the Holy Quran or the Hadith of the Prophet ﷺ, accompanied by reflection and context to deepen your connection with the Divine Word.</p>
+          <h3 data-i18n="daily.d1_title">Daily Scripture</h3>
+          <p data-i18n="daily.d1_text">A carefully chosen verse from the Holy Quran or the Hadith of the Prophet ﷺ, accompanied by reflection and context to deepen your connection with the Divine Word.</p>
         </div>
         <div class="daily-card animate-on-scroll" data-delay="120">
           <div class="daily-card__number" aria-hidden="true">02</div>
           <span class="daily-card__icon">🌟</span>
-          <h3>Daily Role Model</h3>
-          <p>Meet a luminary of Sunni Islam — a Companion, a great Imam, a scholar of the heart. Each day, a new light from our tradition to inspire your own journey.</p>
+          <h3 data-i18n="daily.d2_title">Daily Role Model</h3>
+          <p data-i18n="daily.d2_text">Meet a luminary of Sunni Islam — a Companion, a great Imam, a scholar of the heart. Each day, a new light from our tradition to inspire your own journey.</p>
         </div>
         <div class="daily-card animate-on-scroll" data-delay="240">
           <div class="daily-card__number" aria-hidden="true">03</div>
           <span class="daily-card__icon">💎</span>
-          <h3>Personal Reflection</h3>
-          <p>Your daily spiritual companion. A reflection crafted with wisdom and intention, speaking directly to where you are on your path — every single day.</p>
+          <h3 data-i18n="daily.d3_title">Personal Reflection</h3>
+          <p data-i18n="daily.d3_text">Your daily spiritual companion. A reflection crafted with wisdom and intention, speaking directly to where you are on your path — every single day.</p>
         </div>
       </div>
     </div>
@@ -277,8 +293,8 @@
       <blockquote class="featured-quote animate-on-scroll">
         <span class="featured-quote__star" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span>
         <p class="featured-quote__arabic" lang="ar">إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ</p>
-        <p class="featured-quote__text">"Indeed, Allah is beautiful and He loves beauty."</p>
-        <cite class="featured-quote__cite">Sahih Muslim · 91</cite>
+        <p class="featured-quote__text" data-i18n="quote2.text">"Indeed, Allah is beautiful and He loves beauty."</p>
+        <cite class="featured-quote__cite" data-i18n="quote2.cite">Sahih Muslim · 91</cite>
       </blockquote>
     </div>
   </section>
@@ -288,9 +304,9 @@
   ========================================================= -->
   <section class="section section--categories" id="categories" aria-label="Reflection categories">
     <div class="container">
-      <div class="section__label">15 Reflection Categories</div>
-      <h2 class="section__title">Every Dimension of Your <em>Soul</em></h2>
-      <p class="section__subtitle">
+      <div class="section__label" data-i18n="categories.label">15 Reflection Categories</div>
+      <h2 class="section__title" data-i18n-html="categories.title">Every Dimension of Your <em>Soul</em></h2>
+      <p class="section__subtitle" data-i18n="categories.subtitle">
         Choose the aspect of your life where your heart seeks guidance.
         Receive wisdom and reflection crafted with deep care for your spiritual need.
       </p>
@@ -298,77 +314,77 @@
       <div class="categories-grid">
         <div class="cat-card animate-on-scroll" data-delay="0">
           <span class="cat-card__icon">🧭</span>
-          <h4>Daily Guidance</h4>
+          <h4 data-i18n="categories.c1">Daily Guidance</h4>
           <span class="cat-card__arabic" lang="ar">هداية يومية</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="50">
           <span class="cat-card__icon">🕊️</span>
-          <h4>Iman &amp; Trust</h4>
+          <h4 data-i18n="categories.c2">Iman &amp; Trust</h4>
           <span class="cat-card__arabic" lang="ar">إيمان وتوكل</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="100">
           <span class="cat-card__icon">🙏</span>
-          <h4>Prayer Reflection</h4>
+          <h4 data-i18n="categories.c3">Prayer Reflection</h4>
           <span class="cat-card__arabic" lang="ar">صلاة وتأمل</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="150">
           <span class="cat-card__icon">🌅</span>
-          <h4>Patience &amp; Hope</h4>
+          <h4 data-i18n="categories.c4">Patience &amp; Hope</h4>
           <span class="cat-card__arabic" lang="ar">صبر وأمل</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="200">
           <span class="cat-card__icon">💧</span>
-          <h4>Seek Forgiveness</h4>
+          <h4 data-i18n="categories.c5">Seek Forgiveness</h4>
           <span class="cat-card__arabic" lang="ar">طلب المغفرة</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="250">
           <span class="cat-card__icon">❤️</span>
-          <h4>Mercy &amp; Compassion</h4>
+          <h4 data-i18n="categories.c6">Mercy &amp; Compassion</h4>
           <span class="cat-card__arabic" lang="ar">رحمة وشفقة</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="300">
           <span class="cat-card__icon">💪</span>
-          <h4>Faith &amp; Strength</h4>
+          <h4 data-i18n="categories.c7">Faith &amp; Strength</h4>
           <span class="cat-card__arabic" lang="ar">قوة الإيمان</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="350">
           <span class="cat-card__icon">✨</span>
-          <h4>Grateful Heart</h4>
+          <h4 data-i18n="categories.c8">Grateful Heart</h4>
           <span class="cat-card__arabic" lang="ar">قلب شاكر</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="400">
           <span class="cat-card__icon">⭐</span>
-          <h4>Life Purpose</h4>
+          <h4 data-i18n="categories.c9">Life Purpose</h4>
           <span class="cat-card__arabic" lang="ar">هدف الحياة</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="450">
           <span class="cat-card__icon">👨‍👩‍👧</span>
-          <h4>Family Ties</h4>
+          <h4 data-i18n="categories.c10">Family Ties</h4>
           <span class="cat-card__arabic" lang="ar">صلة الرحم</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="500">
           <span class="cat-card__icon">🌿</span>
-          <h4>Inner Peace</h4>
+          <h4 data-i18n="categories.c11">Inner Peace</h4>
           <span class="cat-card__arabic" lang="ar">سكينة القلب</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="550">
           <span class="cat-card__icon">📖</span>
-          <h4>Prophet Wisdom</h4>
+          <h4 data-i18n="categories.c12">Prophet Wisdom</h4>
           <span class="cat-card__arabic" lang="ar">حكمة الأنبياء</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="600">
           <span class="cat-card__icon">🤲</span>
-          <h4>Good Character</h4>
+          <h4 data-i18n="categories.c13">Good Character</h4>
           <span class="cat-card__arabic" lang="ar">حسن الخُلق</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="650">
           <span class="cat-card__icon">🛡️</span>
-          <h4>Resist Temptation</h4>
+          <h4 data-i18n="categories.c14">Resist Temptation</h4>
           <span class="cat-card__arabic" lang="ar">مقاومة الإغراء</span>
         </div>
         <div class="cat-card animate-on-scroll" data-delay="700">
           <span class="cat-card__icon">🌙</span>
-          <h4>Evening Dhikr</h4>
+          <h4 data-i18n="categories.c15">Evening Dhikr</h4>
           <span class="cat-card__arabic" lang="ar">ذكر المساء</span>
         </div>
       </div>
@@ -380,9 +396,9 @@
   ========================================================= -->
   <section class="section section--new-features" id="tools" aria-label="New features">
     <div class="container">
-      <div class="section__label">New in Nuria</div>
-      <h2 class="section__title">More Than Reflection — <em>Complete</em> Islamic Companion</h2>
-      <p class="section__subtitle">
+      <div class="section__label" data-i18n="newfeatures.label">New in Nuria</div>
+      <h2 class="section__title" data-i18n-html="newfeatures.title">More Than Reflection — <em>Complete</em> Islamic Companion</h2>
+      <p class="section__subtitle" data-i18n="newfeatures.subtitle">
         Nuria has grown. Alongside your daily blessings and personal reflections,
         three powerful new tools are now at your fingertips.
       </p>
@@ -395,18 +411,18 @@
             <span class="new-feature-card__icon">💬</span>
           </div>
           <div class="new-feature-card__body">
-            <div class="new-feature-card__tag">1 Reflection</div>
-            <h3 class="new-feature-card__title">Ask Nuria Anything</h3>
-            <p class="new-feature-card__text">
+            <div class="new-feature-card__tag" data-i18n="newfeatures.ask_tag">1 Reflection</div>
+            <h3 class="new-feature-card__title" data-i18n="newfeatures.ask_title">Ask Nuria Anything</h3>
+            <p class="new-feature-card__text" data-i18n="newfeatures.ask_text">
               A question about your deen. A hardship weighing on your heart. Something you've always
               wondered about in Islam. Ask it. Nuria responds with a thoughtful, personalised answer
               rooted in the authentic Sunni tradition — in the same spirit as your reflections.
               One reflection spent, one answer received, crafted directly for you.
             </p>
             <ul class="new-feature-card__list">
-              <li>Ask about Quran, Hadith, or Islamic rulings</li>
-              <li>Seek guidance on personal struggles</li>
-              <li>Get answers in your own language</li>
+              <li data-i18n="newfeatures.ask_li1">Ask about Quran, Hadith, or Islamic rulings</li>
+              <li data-i18n="newfeatures.ask_li2">Seek guidance on personal struggles</li>
+              <li data-i18n="newfeatures.ask_li3">Get answers in your own language</li>
             </ul>
           </div>
         </div>
@@ -417,17 +433,17 @@
             <span class="new-feature-card__icon">🧭</span>
           </div>
           <div class="new-feature-card__body">
-            <div class="new-feature-card__tag new-feature-card__tag--free">Free · Always On</div>
-            <h3 class="new-feature-card__title">Qibla Direction</h3>
-            <p class="new-feature-card__text">
+            <div class="new-feature-card__tag new-feature-card__tag--free" data-i18n="newfeatures.qibla_tag">Free · Always On</div>
+            <h3 class="new-feature-card__title" data-i18n="newfeatures.qibla_title">Qibla Direction</h3>
+            <p class="new-feature-card__text" data-i18n="newfeatures.qibla_text">
               Wherever you find yourself — at home, travelling, or somewhere unfamiliar — face
               the sacred direction with certainty. Nuria's Qibla compass points toward the
               Holy Kaaba in Mecca using your device's compass, precise and always available.
             </p>
             <ul class="new-feature-card__list">
-              <li>Real-time compass toward the Kaaba</li>
-              <li>Works anywhere in the world</li>
-              <li>No setup required</li>
+              <li data-i18n="newfeatures.qibla_li1">Real-time compass toward the Kaaba</li>
+              <li data-i18n="newfeatures.qibla_li2">Works anywhere in the world</li>
+              <li data-i18n="newfeatures.qibla_li3">No setup required</li>
             </ul>
           </div>
         </div>
@@ -438,17 +454,17 @@
             <span class="new-feature-card__icon">🕐</span>
           </div>
           <div class="new-feature-card__body">
-            <div class="new-feature-card__tag new-feature-card__tag--free">Free · Daily</div>
-            <h3 class="new-feature-card__title">5 Daily Prayer Times</h3>
-            <p class="new-feature-card__text">
+            <div class="new-feature-card__tag new-feature-card__tag--free" data-i18n="newfeatures.prayer_tag">Free · Daily</div>
+            <h3 class="new-feature-card__title" data-i18n="newfeatures.prayer_title">5 Daily Prayer Times</h3>
+            <p class="new-feature-card__text" data-i18n="newfeatures.prayer_text">
               Salah is the pillar of Islam. Never miss a prayer. Nuria calculates and displays
               the precise times for all five daily prayers based on your location —
               Fajr, Dhuhr, Asr, Maghrib, and Isha — refreshed every day, perfectly timed for where you are.
             </p>
             <ul class="new-feature-card__list">
-              <li>Fajr · Dhuhr · Asr · Maghrib · Isha</li>
-              <li>Location-accurate prayer times</li>
-              <li>Displayed clearly every day</li>
+              <li data-i18n="newfeatures.prayer_li1">Fajr · Dhuhr · Asr · Maghrib · Isha</li>
+              <li data-i18n="newfeatures.prayer_li2">Location-accurate prayer times</li>
+              <li data-i18n="newfeatures.prayer_li3">Displayed clearly every day</li>
             </ul>
           </div>
         </div>
@@ -462,9 +478,9 @@
   ========================================================= -->
   <section class="section section--pricing" id="pricing" aria-label="Plans">
     <div class="container">
-      <div class="section__label">Choose Your Path</div>
-      <h2 class="section__title">Begin with <em>Standard</em>, Flourish with <em>Barakah</em></h2>
-      <p class="section__subtitle" style="margin-left:auto;margin-right:auto;text-align:center;">
+      <div class="section__label" data-i18n="pricing.label">Choose Your Path</div>
+      <h2 class="section__title" data-i18n-html="pricing.title">Begin with <em>Standard</em>, Flourish with <em>Barakah</em></h2>
+      <p class="section__subtitle" style="margin-left:auto;margin-right:auto;text-align:center;" data-i18n="pricing.subtitle">
         Every Muslim deserves access to spiritual guidance. Start free, and when you are ready —
         unlock the full abundance of Nuria.
       </p>
@@ -473,47 +489,47 @@
         <!-- Standard -->
         <div class="pricing-card animate-on-scroll" data-delay="0">
           <div class="pricing-card__header">
-            <div class="pricing-card__tier">Standard</div>
-            <div class="pricing-card__price">Included with the app &nbsp;· &nbsp;150 reflections</div>
-            <p class="pricing-card__desc">When you download Nuria you receive 150 reflections to use across your chosen categories — your first steps on the illuminated path.</p>
+            <div class="pricing-card__tier" data-i18n="pricing.std_tier">Standard</div>
+            <div class="pricing-card__price" data-i18n="pricing.std_price">Included with the app &nbsp;· &nbsp;150 reflections</div>
+            <p class="pricing-card__desc" data-i18n="pricing.std_desc">When you download Nuria you receive 150 reflections to use across your chosen categories — your first steps on the illuminated path.</p>
           </div>
           <ul class="pricing-card__features">
-            <li>✓ &nbsp;Daily Scripture</li>
-            <li>✓ &nbsp;Daily Role Model</li>
-            <li>✓ &nbsp;Daily Personal Reflection</li>
-            <li>✓ &nbsp;Qibla compass</li>
-            <li>✓ &nbsp;5 daily prayer times</li>
-            <li>✓ &nbsp;150 reflections included</li>
-            <li>✓ &nbsp;Ask Nuria Anything (uses reflections)</li>
-            <li>✓ &nbsp;Access to select categories</li>
-            <li class="pricing-card__feature--locked">✗ &nbsp;All 15 reflection categories</li>
-            <li class="pricing-card__feature--locked">✗ &nbsp;300 additional Barakah reflections</li>
-            <li class="pricing-card__feature--locked">✗ &nbsp;Reflection top-ups &amp; upcoming features</li>
+            <li data-i18n="pricing.std_f1">✓ &nbsp;Daily Scripture</li>
+            <li data-i18n="pricing.std_f2">✓ &nbsp;Daily Role Model</li>
+            <li data-i18n="pricing.std_f3">✓ &nbsp;Daily Personal Reflection</li>
+            <li data-i18n="pricing.std_f4">✓ &nbsp;Qibla compass</li>
+            <li data-i18n="pricing.std_f5">✓ &nbsp;5 daily prayer times</li>
+            <li data-i18n="pricing.std_f6">✓ &nbsp;150 reflections included</li>
+            <li data-i18n="pricing.std_f7">✓ &nbsp;Ask Nuria Anything (uses reflections)</li>
+            <li data-i18n="pricing.std_f8">✓ &nbsp;Access to select categories</li>
+            <li class="pricing-card__feature--locked" data-i18n="pricing.std_f9">✗ &nbsp;All 15 reflection categories</li>
+            <li class="pricing-card__feature--locked" data-i18n="pricing.std_f10">✗ &nbsp;300 additional Barakah reflections</li>
+            <li class="pricing-card__feature--locked" data-i18n="pricing.std_f11">✗ &nbsp;Reflection top-ups &amp; upcoming features</li>
           </ul>
-          <a href="#download" class="btn btn--outline">Download Nuria</a>
+          <a href="#download" class="btn btn--outline" data-i18n="pricing.std_btn">Download Nuria</a>
         </div>
 
         <!-- Barakah -->
         <div class="pricing-card pricing-card--barakah animate-on-scroll" data-delay="150">
-          <div class="pricing-card__badge">Most Beloved</div>
+          <div class="pricing-card__badge" data-i18n="pricing.bar_badge">Most Beloved</div>
           <div class="pricing-card__header">
             <div class="pricing-card__tier">
               <span class="pricing-card__barakah-text">Barakah</span>
               <span class="pricing-card__barakah-arabic" lang="ar">بركة</span>
             </div>
-            <div class="pricing-card__price">+300 reflections &nbsp;· &nbsp;Top-ups available</div>
-            <p class="pricing-card__desc">Purchase Barakah and receive 300 additional reflections on top of your Standard allowance — plus top-ups whenever you need more.</p>
+            <div class="pricing-card__price" data-i18n="pricing.bar_price">+300 reflections &nbsp;· &nbsp;Top-ups available</div>
+            <p class="pricing-card__desc" data-i18n="pricing.bar_desc">Purchase Barakah and receive 300 additional reflections on top of your Standard allowance — plus top-ups whenever you need more.</p>
           </div>
           <ul class="pricing-card__features">
-            <li>✓ &nbsp;Everything in Standard</li>
-            <li>✓ &nbsp;300 additional reflections</li>
-            <li>✓ &nbsp;All 15 reflection categories unlocked</li>
-            <li>✓ &nbsp;Ask Nuria Anything — unlimited by balance</li>
-            <li>✓ &nbsp;Buy reflection top-ups anytime</li>
-            <li>✓ &nbsp;Early access to new categories</li>
-            <li>✓ &nbsp;Priority upcoming features</li>
+            <li data-i18n="pricing.bar_f1">✓ &nbsp;Everything in Standard</li>
+            <li data-i18n="pricing.bar_f2">✓ &nbsp;300 additional reflections</li>
+            <li data-i18n="pricing.bar_f3">✓ &nbsp;All 15 reflection categories unlocked</li>
+            <li data-i18n="pricing.bar_f4">✓ &nbsp;Ask Nuria Anything — unlimited by balance</li>
+            <li data-i18n="pricing.bar_f5">✓ &nbsp;Buy reflection top-ups anytime</li>
+            <li data-i18n="pricing.bar_f6">✓ &nbsp;Early access to new categories</li>
+            <li data-i18n="pricing.bar_f7">✓ &nbsp;Priority upcoming features</li>
           </ul>
-          <a href="#download" class="btn btn--gold">Receive Barakah</a>
+          <a href="#download" class="btn btn--gold" data-i18n="pricing.bar_btn">Receive Barakah</a>
         </div>
       </div>
     </div>
@@ -534,11 +550,11 @@
         </div>
 
         <div class="download__content animate-on-scroll" data-delay="150">
-          <div class="section__label">Available Now</div>
-          <h2 class="download__title">
+          <div class="section__label" data-i18n="download.label">Available Now</div>
+          <h2 class="download__title" data-i18n-html="download.title">
             Carry the Light of Islam<br /><em>with You Today</em>
           </h2>
-          <p class="download__desc">
+          <p class="download__desc" data-i18n="download.desc">
             Download Nuria and begin your daily journey of faith, reflection, and
             closeness to Allah — in your pocket, in your heart, every morning you wake.
           </p>
@@ -575,35 +591,34 @@
       <div class="footer__top">
         <div class="footer__brand">
           <img src="assets/icon.png" alt="Nuria" class="footer__logo" />
-          <p class="footer__tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul — every single day.</p>
           <p class="footer__bismillah" lang="ar">الله أكبر</p>
         </div>
 
         <nav class="footer__links" aria-label="Footer navigation">
           <div class="footer__col">
-            <span class="footer__col-title">App</span>
-            <a href="#about">About Nuria</a>
-            <a href="#daily">Daily Features</a>
-            <a href="#categories">Categories</a>
-            <a href="#pricing">Plans</a>
-            <a href="#download">Download</a>
+            <span class="footer__col-title" data-i18n="footer.col1">App</span>
+            <a href="#about" data-i18n="footer.about">About Nuria</a>
+            <a href="#categories" data-i18n="nav.categories">Categories</a>
+            <a href="#pricing" data-i18n="footer.plans">Plans</a>
+            <a href="#download" data-i18n="footer.dl">Download</a>
           </div>
           <div class="footer__col">
-            <span class="footer__col-title">Legal</span>
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/terms">Terms of Service</a>
-            <a href="/delete-account">Delete Account</a>
+            <span class="footer__col-title" data-i18n="footer.col2">Legal</span>
+            <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a>
+            <a href="/terms" data-i18n="footer.terms">Terms of Service</a>
+            <a href="/delete-account" data-i18n="footer.delete">Delete Account</a>
           </div>
           <div class="footer__col">
-            <span class="footer__col-title">Help</span>
-            <a href="/support">Support Center</a>
-            <a href="/support#contact">Contact Us</a>
+            <span class="footer__col-title" data-i18n="footer.col3">Help</span>
+            <a href="/support" data-i18n="footer.support_center">Support Center</a>
+            <a href="/support#contact" data-i18n="footer.contact">Contact Us</a>
           </div>
         </nav>
       </div>
 
       <div class="footer__bottom">
-        <p>© 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
@@ -614,6 +629,7 @@
     </div>
   </footer>
 
+  <script src="js/i18n.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

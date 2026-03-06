@@ -332,6 +332,83 @@ body::after {
 .nav__hamburger.active span:nth-child(2) { opacity: 0; }
 .nav__hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+/* ===== LANG SWITCHER ===== */
+.nav__lang {
+  position: relative;
+}
+.nav__lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-family: inherit;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.nav__lang-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--color-text);
+  border-color: rgba(255,255,255,0.25);
+}
+.nav__lang-btn .lang-flag { font-size: 1rem; line-height: 1; }
+.nav__lang-btn .lang-code { font-weight: 600; letter-spacing: 0.03em; }
+.nav__lang-btn .lang-chevron {
+  font-size: 0.6rem;
+  transition: transform 0.2s ease;
+  margin-left: 2px;
+}
+.nav__lang.open .lang-chevron { transform: rotate(180deg); }
+
+.nav__lang-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #0f1f12;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 6px;
+  min-width: 150px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 200;
+}
+.nav__lang.open .nav__lang-dropdown { display: block; }
+
+.nav__lang-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.nav__lang-option:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--color-text);
+}
+.nav__lang-option.active {
+  color: var(--color-gold);
+  background: rgba(196,154,60,0.1);
+}
+.nav__lang-option .opt-flag { font-size: 1rem; }
+.nav__lang-option .opt-name { flex: 1; }
+.nav__lang-option .opt-tick { margin-left: auto; color: var(--color-gold); font-size: 0.75rem; }
+
 /* ===== HERO ===== */
 .hero {
   min-height: 100vh;
@@ -1802,6 +1879,7 @@ address.legal-address strong { color: var(--color-text); }
   .nav__links.open { display: flex; }
   .nav__hamburger { display: flex; }
   .nav__cta { display: none; }
+  .nav__lang { margin-left: auto; }
 
   .features-grid { grid-template-columns: 1fr; }
   .daily-grid { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -1824,3 +1902,32 @@ address.legal-address strong { color: var(--color-text); }
   .download__buttons { flex-direction: column; align-items: center; }
   .hero__stats { gap: 1.5rem; }
 }
+
+/* Mobile lang dropdown opens upward on small screens */
+@media (max-width: 768px) {
+  .nav__lang-dropdown { right: 0; left: auto; }
+}
+
+/* ===== RTL OVERRIDES ===== */
+[dir="rtl"] {
+  text-align: right;
+}
+[dir="rtl"] .nav__links { flex-direction: row-reverse; }
+[dir="rtl"] .nav__lang-dropdown { right: auto; left: 0; }
+[dir="rtl"] .nav__lang-btn { flex-direction: row-reverse; }
+[dir="rtl"] .nav__lang-option { flex-direction: row-reverse; text-align: right; }
+[dir="rtl"] .nav__lang-option .opt-tick { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .hero { direction: rtl; }
+[dir="rtl"] .hero__content { text-align: right; }
+[dir="rtl"] .hero__actions { justify-content: flex-start; }
+[dir="rtl"] .hero__stats { justify-content: flex-start; }
+[dir="rtl"] .feature-card { text-align: right; }
+[dir="rtl"] .new-feature-card { text-align: right; }
+[dir="rtl"] .category-card { text-align: right; }
+[dir="rtl"] .pricing-card { text-align: right; }
+[dir="rtl"] .pricing-card__features { padding-right: 0; padding-left: 0; }
+[dir="rtl"] .pricing-card__features li { padding-left: 0; padding-right: 1.5rem; }
+[dir="rtl"] .pricing-card__features li::before { left: auto; right: 0; }
+[dir="rtl"] .footer__links { flex-direction: row-reverse; }
+[dir="rtl"] .about__grid { direction: rtl; }
+[dir="rtl"] .section--new-features .new-features-grid { direction: rtl; }

@@ -23,14 +23,29 @@
         <img src="../assets/icon.png" alt="Nuria" class="nav__logo-img" />
       </a>
       <div class="nav__links" id="navLinks">
-        <a href="/#about"      class="nav__link">About</a>
-        <a href="/#daily"      class="nav__link">Daily</a>
-        <a href="/#categories" class="nav__link">Categories</a>
-        <a href="/#pricing"    class="nav__link">Plans</a>
-        <a href="/support"     class="nav__link">Support</a>
+        <a href="/#about"      class="nav__link" data-i18n="nav.about">About</a>
+        <a href="/#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
+        <a href="/#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support"     class="nav__link" data-i18n="nav.support">Support</a>
       </div>
       <div class="nav__cta">
-        <a href="/#download" class="btn btn--gold">Download</a>
+        <a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>
+      </div>
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
       </div>
       <button class="nav__hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -45,9 +60,9 @@
 
   <header class="page-hero">
     <div class="container">
-      <p class="page-hero__label">Legal</p>
-      <h1 class="page-hero__title">Terms of Service</h1>
-      <p class="page-hero__subtitle">
+      <p class="page-hero__label" data-i18n="pages.terms_label">Legal</p>
+      <h1 class="page-hero__title" data-i18n="pages.terms_title">Terms of Service</h1>
+      <p class="page-hero__subtitle" data-i18n="pages.terms_subtitle">
         Please read these terms carefully before using Nuria.
         By downloading or using the App, you agree to be bound by them.
       </p>
@@ -61,7 +76,7 @@
     <div class="container">
       <div class="page-content__card animate-on-scroll">
 
-        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 1 March 2026</p>
+        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 6 March 2026</p>
 
         <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("you" or "User") and <strong>OakDev &amp; AI AB</strong> ("we", "us", or "our") governing your access to and use of the Nuria mobile application ("the App") and associated services. By downloading, installing, or using the App, you confirm that you have read, understood, and agree to be bound by these Terms and our <a href="../privacy">Privacy Policy</a>, which is incorporated herein by reference.</p>
 
@@ -82,16 +97,18 @@
             <li><a href="#terms-9">Acceptable Use</a></li>
             <li><a href="#terms-10">Intellectual Property</a></li>
             <li><a href="#terms-11">Content Disclaimer</a></li>
-            <li><a href="#terms-12">Disclaimer of Warranties</a></li>
-            <li><a href="#terms-13">Limitation of Liability</a></li>
-            <li><a href="#terms-14">Indemnification</a></li>
-            <li><a href="#terms-15">Termination</a></li>
-            <li><a href="#terms-16">Consumer Rights and Mandatory Law</a></li>
-            <li><a href="#terms-17">Governing Law and Dispute Resolution</a></li>
-            <li><a href="#terms-18">Changes to These Terms</a></li>
-            <li><a href="#terms-19">Severability and Waiver</a></li>
-            <li><a href="#terms-20">Entire Agreement</a></li>
-            <li><a href="#terms-21">Contact</a></li>
+            <li><a href="#terms-12">Ask Nuria — AI-Powered Guidance</a></li>
+            <li><a href="#terms-13">Location-Based Features (Qibla &amp; Prayer Times)</a></li>
+            <li><a href="#terms-14">Disclaimer of Warranties</a></li>
+            <li><a href="#terms-15">Limitation of Liability</a></li>
+            <li><a href="#terms-16">Indemnification</a></li>
+            <li><a href="#terms-17">Termination</a></li>
+            <li><a href="#terms-18">Consumer Rights and Mandatory Law</a></li>
+            <li><a href="#terms-19">Governing Law and Dispute Resolution</a></li>
+            <li><a href="#terms-20">Changes to These Terms</a></li>
+            <li><a href="#terms-21">Severability and Waiver</a></li>
+            <li><a href="#terms-22">Entire Agreement</a></li>
+            <li><a href="#terms-23">Contact</a></li>
           </ol>
         </nav>
 
@@ -114,6 +131,9 @@
           <li>A daily role model — a profile of a significant figure from Sunni Islamic history.</li>
           <li>A daily personal spiritual reflection.</li>
           <li>On-demand personalised reflections across 15 spiritual categories, drawn from your reflection balance.</li>
+          <li><strong>Ask Nuria:</strong> An AI-powered feature allowing you to submit a free-form question and receive a personalised answer rooted in the Sunni Islamic tradition, using one reflection per question.</li>
+          <li><strong>Qibla Compass:</strong> A tool that uses your device location and compass to indicate the direction of the Kaaba in Mecca, enabling you to face the correct direction for Salah.</li>
+          <li><strong>Prayer Times:</strong> Display of the five daily prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) calculated for your device's current location.</li>
         </ul>
         <p>All content is rooted in the Holy Quran, the Sunnah of the Prophet Muhammad &#65018;, and the authentic Sunni Islamic scholarly tradition.</p>
 
@@ -138,8 +158,8 @@
         <p>Included with your App purchase are <strong>150 reflections</strong> credited to your balance, access to daily features (scripture, role model, daily reflection), and access to a selection of reflection categories as specified in the App at the time of purchase.</p>
 
         <h2 id="terms-6">6. Reflections — Your Balance</h2>
-        <p>"Reflections" are units of personalised spiritual content delivered by the App upon your request. Each request for a personalised reflection from any category deducts one reflection from your balance.</p>
-        <p>Your reflection balance is clearly displayed within the App at all times. Daily features (daily scripture, daily role model, daily personal reflection) are provided as part of the App and do <strong>not</strong> deduct from your balance.</p>
+        <p>"Reflections" are units of personalised spiritual content delivered by the App upon your request. Each request for a personalised reflection from any category deducts one reflection from your balance. Each question submitted via the <strong>Ask Nuria</strong> feature also deducts one reflection from your balance (see Section 12).</p>
+        <p>Your reflection balance is clearly displayed within the App at all times. Daily features (daily scripture, daily role model, daily personal reflection), the Qibla Compass, and Prayer Times are provided as part of the App and do <strong>not</strong> deduct from your balance.</p>
         <p>Unused reflections carry over indefinitely and do not expire, subject to your account remaining active. Reflections have no monetary value, cannot be transferred between accounts, and are not redeemable for cash.</p>
 
         <h2 id="terms-7">7. Barakah and Top-Up Purchases</h2>
@@ -206,10 +226,49 @@
 
         <h2 id="terms-11">11. Content Disclaimer</h2>
         <p>The spiritual content provided through Nuria — including prayers, reflections, role model profiles, and daily guidance — is intended for personal spiritual enrichment and is rooted in the authentic Sunni Islamic tradition as understood through the Quran and Sunnah.</p>
-        <p><strong>This content is not a substitute for qualified Islamic scholarly guidance.</strong> We encourage all users to seek qualified Islamic scholars and institutions for specific religious rulings (<em>fatawa</em>), serious life decisions, or matters of Islamic law (<em>fiqh</em>).</p>
+        <p><strong>This content is not a substitute for qualified Islamic scholarly guidance.</strong> We encourage all users to seek qualified Islamic scholars and institutions for specific religious rulings (<em>fatawa</em>), serious life decisions, or matters of Islamic law (<em>fiqh</em>). This applies equally to AI-generated responses from the Ask Nuria feature — see Section 12 for specific terms governing that feature.</p>
         <p>While we strive for accuracy and authenticity in all content, we do not warrant that any specific content is free from error or that it reflects the position of any particular school of Islamic jurisprudence (<em>madhab</em>). Differences in scholarly opinion represent the natural diversity within the Sunni tradition.</p>
 
-        <h2 id="terms-12">12. Disclaimer of Warranties</h2>
+        <h2 id="terms-12">12. Ask Nuria — AI-Powered Guidance</h2>
+
+        <h3>12.1 Nature of the Feature</h3>
+        <p>Ask Nuria allows you to type a free-form question and receive an AI-generated answer rooted in the authentic Sunni Islamic tradition. The feature is powered by a large language model (AI) and is designed to provide thoughtful, faith-centred responses. Each submitted question deducts <strong>one (1) reflection</strong> from your balance, regardless of the length or nature of the question or the answer provided.</p>
+
+        <h3>12.2 Not a Substitute for Scholarly Guidance</h3>
+        <p>Responses generated through Ask Nuria are <strong>not Islamic legal rulings (<em>fatawa</em>)</strong> and do not constitute the advice of a qualified Islamic scholar. They are intended for personal spiritual reflection and general Islamic guidance only. For specific religious rulings, serious matters of <em>fiqh</em> (Islamic jurisprudence), or significant life decisions, you should always consult a qualified Islamic scholar or institution.</p>
+
+        <h3>12.3 Accuracy and Limitations</h3>
+        <p>Although we strive to ensure that AI-generated responses are consistent with authentic Sunni scholarship, AI systems can make mistakes, produce inaccuracies, or fail to represent all valid scholarly opinions within the tradition. We do not warrant that any specific answer is free from error. You use the responses at your own discretion and should apply critical judgement.</p>
+
+        <h3>12.4 Acceptable Questions</h3>
+        <p>You may use Ask Nuria only to seek genuine personal spiritual guidance. You must not submit questions or prompts that:</p>
+        <ul>
+          <li>Are designed to elicit content that contradicts, mocks, or undermines Sunni Islamic values or the Muslim community.</li>
+          <li>Seek to generate unlawful, harmful, abusive, or offensive content.</li>
+          <li>Attempt to manipulate or "jailbreak" the AI into producing content outside its intended spiritual purpose.</li>
+          <li>Contain personal data of third parties without their consent.</li>
+          <li>Constitute automated, bulk, or commercial use of the feature.</li>
+        </ul>
+        <p>We reserve the right to suspend or terminate accounts that misuse Ask Nuria, including where submissions are clearly contrary to the App's purpose. A reflection will still be deducted for questions that are submitted but cannot be answered due to policy violations.</p>
+
+        <h3>12.5 Content Ownership</h3>
+        <p>AI-generated answers delivered to you through Ask Nuria are provided for your personal use only. You may not reproduce, distribute, or commercialise them. We retain the right to use de-identified question and answer data to monitor quality and improve the feature, in accordance with our <a href="../privacy">Privacy Policy</a>.</p>
+
+        <h2 id="terms-13">13. Location-Based Features (Qibla &amp; Prayer Times)</h2>
+
+        <h3>13.1 How These Features Work</h3>
+        <p>The Qibla Compass and Prayer Times features require access to your device's location. The App will request your permission to access location data before these features activate. Location data is used solely on-device to calculate the direction toward the Kaaba in Mecca and to compute accurate prayer times for your position. Your location is <strong>not</strong> transmitted to or stored on our servers.</p>
+
+        <h3>13.2 Permission and Revocation</h3>
+        <p>By granting location permission you consent to the App accessing your device's location for the purposes described above. You may revoke this permission at any time through your device's operating system settings (iOS: Settings → Nuria → Location; Android: Settings → Apps → Nuria → Permissions → Location). Revoking permission disables the Qibla and Prayer Times features but does not affect any other App functionality.</p>
+
+        <h3>13.3 Accuracy</h3>
+        <p>Prayer times and Qibla direction are calculated using standard astronomical and geographic formulae based on your device's reported coordinates. Accuracy depends on your device's GPS and compass hardware. We do not guarantee that the results will be precise in all environments (e.g., indoors, in areas with weak GPS signal). For critical religious observance, you should verify prayer times through a local mosque or trusted Islamic calendar source.</p>
+
+        <h3>13.4 No Additional Cost</h3>
+        <p>The Qibla Compass and Prayer Times features are available to all users at no additional cost and do not deduct from your reflection balance.</p>
+
+        <h2 id="terms-14">14. Disclaimer of Warranties</h2>
         <p>To the fullest extent permitted by applicable law:</p>
         <ul>
           <li>The App is provided <strong>"as is"</strong> and <strong>"as available"</strong>, without warranties of any kind, whether express, implied, statutory, or otherwise.</li>
@@ -219,26 +278,26 @@
         </ul>
         <p>Where mandatory consumer protection laws in your jurisdiction provide implied warranties that cannot be excluded, those protections remain in force to the extent required by law.</p>
 
-        <h2 id="terms-13">13. Limitation of Liability</h2>
+        <h2 id="terms-15">15. Limitation of Liability</h2>
         <p>To the fullest extent permitted by applicable law, OakDev &amp; AI AB, its directors, employees, agents, licensors, and service providers shall not be liable for any <strong>indirect, incidental, special, consequential, or punitive damages</strong>, including but not limited to loss of profits, loss of data, loss of goodwill, business interruption, or the cost of substitute services, even if we have been advised of the possibility of such damages.</p>
         <p>In all cases, our total aggregate liability to you for any claims arising under or related to these Terms or the App shall not exceed the greater of (a) the total amount you paid to us for the App in the 12 months preceding the event giving rise to the claim, or (b) EUR 50.</p>
         <p><strong>Nothing in these Terms excludes or limits our liability for:</strong> death or personal injury caused by our negligence; fraud or fraudulent misrepresentation; or any liability that cannot lawfully be excluded or limited under applicable Swedish or EU consumer law.</p>
 
-        <h2 id="terms-14">14. Indemnification</h2>
+        <h2 id="terms-16">16. Indemnification</h2>
         <p>You agree to indemnify, defend, and hold harmless OakDev &amp; AI AB and its officers, directors, employees, contractors, agents, and licensors from and against any claims, damages, losses, liabilities, costs, and expenses (including reasonable legal fees) arising from or relating to: your use or misuse of the App; your violation of these Terms; your violation of any applicable law or the rights of a third party; or any content you submit through the App.</p>
 
-        <h2 id="terms-15">15. Termination</h2>
+        <h2 id="terms-17">17. Termination</h2>
 
-        <h3>15.1 Termination by You</h3>
+        <h3>17.1 Termination by You</h3>
         <p>You may stop using the App at any time. You may delete your account via <strong>Settings &rarr; Account &rarr; Delete Account</strong> in the App, or by submitting a request at <a href="../delete-account">our deletion page</a> or emailing <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>. Deleting your account forfeits any unused reflections without compensation.</p>
 
-        <h3>15.2 Termination by Us</h3>
+        <h3>17.2 Termination by Us</h3>
         <p>We may suspend or terminate your account and access to the App immediately, with or without notice, if you breach these Terms, we are required to do so by law, we have reasonable grounds to suspect fraud or abuse, or we decide to discontinue the App (in which case we will provide reasonable advance notice).</p>
 
-        <h3>15.3 Effect of Termination</h3>
+        <h3>17.3 Effect of Termination</h3>
         <p>Upon termination, your right to access and use the App ceases immediately. Provisions that by their nature should survive termination — including intellectual property, warranties, limitation of liability, indemnification, and governing law — shall survive. Personal data will be handled in accordance with our Privacy Policy and applicable data retention obligations.</p>
 
-        <h2 id="terms-16">16. Consumer Rights and Mandatory Law</h2>
+        <h2 id="terms-18">18. Consumer Rights and Mandatory Law</h2>
         <p>If you are a consumer resident in the European Union (including Sweden), you may have rights under EU and national consumer protection law that cannot be excluded or limited by these Terms. Nothing in these Terms is intended to restrict those rights, including:</p>
         <ul>
           <li>Rights under the EU Consumer Rights Directive and Swedish Consumer Purchase Act (<em>Konsumentköplagen</em>).</li>
@@ -247,21 +306,21 @@
         </ul>
         <p>For consumer complaints or disputes, you may contact the Swedish National Board for Consumer Disputes (<em>Allmänna reklamationsnämnden</em>, ARN) at <a href="https://www.arn.se" target="_blank" rel="noopener">arn.se</a>, or use the EU Online Dispute Resolution platform at <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.</p>
 
-        <h2 id="terms-17">17. Governing Law and Dispute Resolution</h2>
+        <h2 id="terms-19">19. Governing Law and Dispute Resolution</h2>
         <p>These Terms are governed by and construed in accordance with the laws of Sweden, without regard to its conflict of law provisions.</p>
         <p>We encourage you to contact us first at <a href="mailto:hello@oakdev.app">hello@oakdev.app</a> to seek an amicable resolution for any dispute. If a dispute cannot be resolved informally, it shall be submitted to the exclusive jurisdiction of the Swedish courts, with the District Court of Gothenburg (<em>Göteborgs tingsrätt</em>) as the court of first instance, unless mandatory consumer protection law in your country of residence grants you the right to bring proceedings before a court in that country.</p>
         <p>EU consumers may also refer disputes to ARN or the EU ODR platform referenced in Section 16.</p>
 
-        <h2 id="terms-18">18. Changes to These Terms</h2>
+        <h2 id="terms-20">20. Changes to These Terms</h2>
         <p>We may update these Terms at any time. For material changes, we will update the "Last updated" date and notify you via a prominent notice in the App or by email at least <strong>14 days</strong> before the changes take effect. Your continued use of the App after that date constitutes acceptance of the revised Terms. If you do not accept the revised Terms, you must stop using the App.</p>
 
-        <h2 id="terms-19">19. Severability and Waiver</h2>
+        <h2 id="terms-21">21. Severability and Waiver</h2>
         <p>If any provision of these Terms is found invalid or unenforceable, it shall be modified to the minimum extent necessary, or severed if modification is not possible, with the remaining provisions continuing in full force. Our failure to enforce any provision shall not constitute a waiver of that provision or any subsequent breach.</p>
 
-        <h2 id="terms-20">20. Entire Agreement</h2>
+        <h2 id="terms-22">22. Entire Agreement</h2>
         <p>These Terms, together with our <a href="../privacy">Privacy Policy</a>, constitute the entire agreement between you and OakDev &amp; AI AB regarding your use of the App and supersede all prior agreements, representations, or understandings on the same subject matter.</p>
 
-        <h2 id="terms-21">21. Contact</h2>
+        <h2 id="terms-23">23. Contact</h2>
         <p>For any questions or notices relating to these Terms:</p>
         <address class="legal-address">
           <strong>OakDev &amp; AI AB</strong><br />
@@ -318,6 +377,7 @@
     </div>
   </footer>
 
+  <script src="../js/i18n.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

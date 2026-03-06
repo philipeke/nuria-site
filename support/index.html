@@ -23,14 +23,29 @@
         <img src="../assets/icon.png" alt="Nuria" class="nav__logo-img" />
       </a>
       <div class="nav__links" id="navLinks">
-        <a href="/#about"      class="nav__link">About</a>
-        <a href="/#daily"      class="nav__link">Daily</a>
-        <a href="/#categories" class="nav__link">Categories</a>
-        <a href="/#pricing"    class="nav__link">Plans</a>
-        <a href="/support"     class="nav__link active">Support</a>
+        <a href="/#about"      class="nav__link" data-i18n="nav.about">About</a>
+        <a href="/#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
+        <a href="/#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support"     class="nav__link active" data-i18n="nav.support">Support</a>
       </div>
       <div class="nav__cta">
-        <a href="/#download" class="btn btn--gold">Download</a>
+        <a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>
+      </div>
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
       </div>
       <button class="nav__hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -45,9 +60,9 @@
 
   <header class="page-hero">
     <div class="container">
-      <p class="page-hero__label">We&rsquo;re Here to Help</p>
-      <h1 class="page-hero__title">Support Center</h1>
-      <p class="page-hero__subtitle">
+      <p class="page-hero__label" data-i18n="pages.support_label">We&rsquo;re Here to Help</p>
+      <h1 class="page-hero__title" data-i18n="pages.support_title">Support Center</h1>
+      <p class="page-hero__subtitle" data-i18n="pages.support_subtitle">
         Find answers to your questions or reach out to us directly.
         We're committed to your experience with Nuria.
       </p>
@@ -347,6 +362,7 @@
     </div>
   </footer>
 
+  <script src="../js/i18n.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

@@ -23,14 +23,29 @@
         <img src="../assets/icon.png" alt="Nuria" class="nav__logo-img" />
       </a>
       <div class="nav__links" id="navLinks">
-        <a href="/#about"      class="nav__link">About</a>
-        <a href="/#daily"      class="nav__link">Daily</a>
-        <a href="/#categories" class="nav__link">Categories</a>
-        <a href="/#pricing"    class="nav__link">Plans</a>
-        <a href="/support"     class="nav__link">Support</a>
+        <a href="/#about"      class="nav__link" data-i18n="nav.about">About</a>
+        <a href="/#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
+        <a href="/#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support"     class="nav__link" data-i18n="nav.support">Support</a>
       </div>
       <div class="nav__cta">
-        <a href="/#download" class="btn btn--gold">Download</a>
+        <a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>
+      </div>
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
       </div>
       <button class="nav__hamburger" id="hamburger" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -45,9 +60,9 @@
 
   <header class="page-hero">
     <div class="container">
-      <p class="page-hero__label">Legal</p>
-      <h1 class="page-hero__title">Privacy Policy</h1>
-      <p class="page-hero__subtitle">
+      <p class="page-hero__label" data-i18n="pages.privacy_label">Legal</p>
+      <h1 class="page-hero__title" data-i18n="pages.privacy_title">Privacy Policy</h1>
+      <p class="page-hero__subtitle" data-i18n="pages.privacy_subtitle">
         We respect your privacy and handle your personal data with honesty,
         care, and full transparency — in accordance with GDPR and Swedish law.
       </p>
@@ -61,7 +76,7 @@
     <div class="container">
       <div class="page-content__card animate-on-scroll">
 
-        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;·&nbsp; <strong>Last updated:</strong> 1 March 2026</p>
+        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;·&nbsp; <strong>Last updated:</strong> 6 March 2026</p>
 
         <p>This Privacy Policy describes how <strong>OakDev &amp; AI AB</strong> ("we", "us", or "our") collects, uses, stores, and protects your personal data when you use the Nuria mobile application ("the App") and this website. We are established in Sweden and are subject to the General Data Protection Regulation (EU) 2016/679 ("GDPR") and the Swedish Data Protection Act (<em>Lag (2018:218) med kompletterande bestämmelser till EU:s dataskyddsförordning</em>).</p>
 
@@ -73,7 +88,8 @@
           <ol>
             <li><a href="#priv-1">Who We Are — Data Controller</a></li>
             <li><a href="#priv-2">What Data We Collect and Why</a></li>
-            <li><a href="#priv-3">Special Category Data (Religious Beliefs)</a></li>
+            <li><a href="#priv-2-8">Location Data (Qibla &amp; Prayer Times)</a></li>
+            <li><a href="#priv-3">Special Category Data (Religious Beliefs &amp; Personal Questions)</a></li>
             <li><a href="#priv-4">Legal Bases for Processing</a></li>
             <li><a href="#priv-5">How We Use Your Data</a></li>
             <li><a href="#priv-6">Third-Party Processors and Sharing</a></li>
@@ -124,12 +140,36 @@
         <h3>2.7 Support Communications</h3>
         <p>When you contact us by email or through any form on this website, we retain your name, email address, and the content of your message in order to respond to you and maintain a record of our communications.</p>
 
-        <h3>2.8 What We Do Not Collect</h3>
-        <p>We do <strong>not</strong> collect your precise location, contacts, camera data, microphone data, or any biometric data. We do <strong>not</strong> build advertising profiles or sell your data to any third party, ever, under any circumstances.</p>
+        <h3 id="priv-2-8">2.8 Location Data (Qibla &amp; Prayer Times)</h3>
+        <p>When you use the <strong>Qibla Compass</strong> or <strong>Prayer Times</strong> features, the App requests access to your device's location. Specifically:</p>
+        <ul>
+          <li><strong>What is accessed:</strong> Your device's approximate or precise GPS coordinates, using the standard location permission granted by your operating system (iOS or Android).</li>
+          <li><strong>Purpose:</strong> Location data is used solely to calculate the direction toward the Kaaba in Mecca (Qibla) and to determine accurate prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) for your current position.</li>
+          <li><strong>Processing:</strong> These calculations are performed <strong>on-device</strong>. Your coordinates are <strong>not transmitted to our servers</strong>, not stored in your account, and not shared with any third party.</li>
+          <li><strong>Permission:</strong> The App will request your permission before accessing location data. You may grant or deny this permission at any time via your device settings. Denying location permission means the Qibla and Prayer Times features will not function, but all other App features remain fully available.</li>
+          <li><strong>Legal basis:</strong> Consent (Article 6(1)(a) GDPR). You may withdraw consent at any time by revoking location permission in your device settings.</li>
+        </ul>
 
-        <h2 id="priv-3">3. Special Category Data (Religious Beliefs)</h2>
-        <p>Nuria is an Islamic spiritual app. By choosing to use it, you engage with content related to Islamic faith and practice. The categories you select (such as Prayer &amp; Reflection or Faith &amp; Trust) may, in some contexts, constitute data that reveals your religious beliefs — which is a <strong>special category of personal data</strong> under Article 9 of the GDPR.</p>
-        <p>We process this data on the basis of your <strong>explicit consent</strong> (Article 9(2)(a) GDPR), which you provide by creating an account and using these features. You may withdraw this consent at any time by deleting your account. We do not share your reflection history or category usage with any third party for any purpose other than operating the App.</p>
+        <h3>2.9 "Ask Nuria" — Free-Form Questions</h3>
+        <p>When you use the <strong>Ask Nuria</strong> feature, you type a free-form question and submit it to receive a personalised AI-generated response in the Sunni Islamic spirit. Regarding this data:</p>
+        <ul>
+          <li><strong>What is collected:</strong> The text of the question you submit and the AI-generated answer returned to you.</li>
+          <li><strong>Purpose:</strong> To generate and deliver a relevant, personalised spiritual answer; to store the exchange in your reflection history; and to improve response quality.</li>
+          <li><strong>Sensitive content:</strong> Questions you submit may touch on personal matters, spiritual struggles, or religious beliefs. This content may constitute special category data under Article 9 GDPR if it reveals your religious beliefs. See Section 3.</li>
+          <li><strong>What we do not do:</strong> We do not use the content of your questions to build advertising profiles or share them with third parties for any commercial purpose.</li>
+        </ul>
+
+        <h3>2.10 What We Do Not Collect</h3>
+        <p>We do <strong>not</strong> collect contacts, camera data, microphone data, or any biometric data. We do <strong>not</strong> store your location on our servers (see Section 2.8). We do <strong>not</strong> build advertising profiles or sell your data to any third party, ever, under any circumstances.</p>
+
+        <h2 id="priv-3">3. Special Category Data (Religious Beliefs &amp; Personal Questions)</h2>
+        <p>Nuria is an Islamic spiritual app. By choosing to use it, you engage with content related to Islamic faith and practice. The following types of data may constitute <strong>special category personal data</strong> under Article 9 of the GDPR, as they may reveal your religious beliefs:</p>
+        <ul>
+          <li><strong>Reflection categories selected:</strong> The spiritual categories you choose (such as Iman &amp; Trust, Prayer Reflection, or Seek Forgiveness) may indicate your religious beliefs and practices.</li>
+          <li><strong>Reflection history:</strong> The personalised reflections you have received are stored in your account history.</li>
+          <li><strong>Ask Nuria questions:</strong> Free-form questions you submit through the Ask Nuria feature may contain personal spiritual matters, religious questions, or information about your beliefs, struggles, or life circumstances that constitute special category data.</li>
+        </ul>
+        <p>We process this special category data on the basis of your <strong>explicit consent</strong> (Article 9(2)(a) GDPR), which you provide by creating an account and actively using these features. You may withdraw this consent at any time by deleting your account. We do not share your reflection history, category usage, or submitted questions with any third party for any purpose other than operating the App and, where applicable, generating your AI response through our AI service provider (who acts as a data processor under a binding data processing agreement).</p>
 
         <h2 id="priv-4">4. Legal Bases for Processing</h2>
         <p>We process your personal data under the following legal bases (Article 6 GDPR):</p>
@@ -178,8 +218,16 @@
               <td>Legal obligation (Art. 6(1)(c))</td>
             </tr>
             <tr>
-              <td>Processing religious-category data (reflections)</td>
+              <td>Processing religious-category data (reflections &amp; categories)</td>
               <td>Explicit consent (Art. 9(2)(a))</td>
+            </tr>
+            <tr>
+              <td>Processing Ask Nuria questions and answers (may contain religious/personal data)</td>
+              <td>Performance of a contract (Art. 6(1)(b)) + Explicit consent (Art. 9(2)(a))</td>
+            </tr>
+            <tr>
+              <td>Accessing device location for Qibla direction and prayer times</td>
+              <td>Consent (Art. 6(1)(a)) — granted via device permission prompt</td>
             </tr>
           </tbody>
         </table>
@@ -190,7 +238,10 @@
           <li>Create, authenticate, and maintain your Nuria account.</li>
           <li>Verify your purchase entitlements (Standard, Barakah, top-ups) and credit your reflection balance accordingly.</li>
           <li>Generate and deliver personalised spiritual reflections based on your chosen category.</li>
-          <li>Store your reflection history so you can review it within the App.</li>
+          <li>Process free-form questions submitted via Ask Nuria and generate AI-powered responses rooted in the Sunni Islamic tradition.</li>
+          <li>Store your reflection history (including Ask Nuria exchanges) so you can review them within the App.</li>
+          <li>Calculate and display your local prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha) using your device location, processed entirely on-device.</li>
+          <li>Display the Qibla direction toward the Kaaba using your device compass and location, processed entirely on-device.</li>
           <li>Deliver daily content (scripture, role model, daily reflection).</li>
           <li>Respond to your support enquiries and process deletion requests.</li>
           <li>Improve the App through analysis of anonymised, aggregated usage data.</li>
@@ -334,6 +385,7 @@
     </div>
   </footer>
 
+  <script src="../js/i18n.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>
