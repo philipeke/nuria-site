@@ -1759,6 +1759,10 @@ address.legal-address strong { color: var(--color-text); }
 .form-input::placeholder { color: var(--color-text-dimmer); }
 .form-textarea { min-height: 120px; resize: vertical; }
 .form-select { appearance: none; cursor: pointer; }
+.form-select option {
+  background: #0f2017;
+  color: #e8f5ee;
+}
 .form-warning {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.2);
