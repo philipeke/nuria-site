@@ -69,6 +69,26 @@
   init();
 }());
 
+/* ===== DOWNLOAD DROPDOWN ===== */
+(function () {
+  const wrapper = document.getElementById('navDownload');
+  const btn     = document.getElementById('downloadBtn');
+  if (!wrapper || !btn) return;
+
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const open = wrapper.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  });
+
+  document.addEventListener('click', () => {
+    wrapper.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  });
+
+  wrapper.addEventListener('click', e => e.stopPropagation());
+}());
+
 /* ===== NAVIGATION HAMBURGER ===== */
 (function () {
   const hamburger = document.getElementById('hamburger');
