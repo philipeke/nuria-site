@@ -285,15 +285,187 @@
 (function () {
   const form = document.getElementById('contactForm');
   if (!form) return;
+  const attachmentsInput = form.querySelector('#contactAttachments');
+  const attachmentList = form.querySelector('#contactAttachmentList');
+  const statusEl = form.querySelector('#contactFormStatus');
+  const maxFiles = 3;
+  const maxFileSize = 10 * 1024 * 1024;
+  let previewUrls = [];
 
-  form.addEventListener('submit', function (e) {
+  function currentLang() {
+    return document.documentElement.lang || 'en';
+  }
+
+  function t(key, fallback) {
+    if (typeof getVal === 'function') {
+      const value = getVal(currentLang(), key);
+      if (value) return value;
+      const english = getVal('en', key);
+      if (english) return english;
+    }
+    return fallback;
+  }
+
+  function setStatus(message, tone) {
+    if (!statusEl) return;
+    statusEl.textContent = message || '';
+    statusEl.classList.remove('is-error', 'is-success');
+    if (tone === 'error') statusEl.classList.add('is-error');
+    if (tone === 'success') statusEl.classList.add('is-success');
+  }
+
+  function setStatusFromKey(key, tone, fallback) {
+    setStatus(t(key, fallback), tone);
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  function clearPreviewUrls() {
+    previewUrls.forEach(url => URL.revokeObjectURL(url));
+    previewUrls = [];
+  }
+
+  function renderAttachments(files) {
+    if (!attachmentList) return;
+    clearPreviewUrls();
+    attachmentList.innerHTML = '';
+
+    if (!files.length) {
+      const empty = document.createElement('p');
+      empty.className = 'contact-upload__empty';
+      empty.textContent = t('supp.form_attachments_empty', 'No images selected yet.');
+      attachmentList.appendChild(empty);
+      return;
+    }
+
+    files.forEach(file => {
+      const item = document.createElement('div');
+      item.className = 'contact-upload__item';
+
+      const thumb = document.createElement('img');
+      thumb.className = 'contact-upload__thumb';
+      thumb.alt = '';
+      const thumbUrl = URL.createObjectURL(file);
+      previewUrls.push(thumbUrl);
+      thumb.src = thumbUrl;
+
+      const meta = document.createElement('div');
+      meta.className = 'contact-upload__meta';
+
+      const name = document.createElement('span');
+      name.className = 'contact-upload__name';
+      name.textContent = file.name;
+
+      const details = document.createElement('span');
+      details.className = 'contact-upload__details';
+      details.textContent = `${file.type || 'image'} • ${formatSize(file.size)}`;
+
+      meta.appendChild(name);
+      meta.appendChild(details);
+      item.appendChild(thumb);
+      item.appendChild(meta);
+      attachmentList.appendChild(item);
+    });
+  }
+
+  function syncInputFiles(validFiles) {
+    if (!attachmentsInput || typeof DataTransfer === 'undefined') return;
+    const dataTransfer = new DataTransfer();
+    validFiles.forEach(file => dataTransfer.items.add(file));
+    attachmentsInput.files = dataTransfer.files;
+  }
+
+  function sanitizeAttachments() {
+    if (!attachmentsInput) return [];
+
+    const validFiles = [];
+    let errorKey = '';
+    const selectedFiles = Array.from(attachmentsInput.files || []);
+
+    selectedFiles.forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        errorKey = errorKey || 'supp.form_error_type';
+        return;
+      }
+      if (file.size > maxFileSize) {
+        errorKey = errorKey || 'supp.form_error_size';
+        return;
+      }
+      if (validFiles.length >= maxFiles) {
+        errorKey = errorKey || 'supp.form_error_limit';
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    syncInputFiles(validFiles);
+    renderAttachments(validFiles);
+
+    if (errorKey) {
+      setStatusFromKey(errorKey, 'error', 'Please review your selected images and try again.');
+    } else if (statusEl && !statusEl.classList.contains('is-success')) {
+      setStatus('');
+    }
+
+    return validFiles;
+  }
+
+  if (attachmentsInput) {
+    renderAttachments([]);
+    attachmentsInput.addEventListener('change', sanitizeAttachments);
+  }
+
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const name    = form.querySelector('#contactName')?.value  || '';
-    const email   = form.querySelector('#contactEmail')?.value || '';
+    if (!form.reportValidity()) return;
+
+    const name = form.querySelector('#contactName')?.value.trim() || '';
+    const email = form.querySelector('#contactEmail')?.value.trim() || '';
     const subject = form.querySelector('#contactSubject')?.value || 'Support Request';
-    const message = form.querySelector('#contactMessage')?.value || '';
-    const body    = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-    const mailto  = `mailto:hello@oakdev.app?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const message = form.querySelector('#contactMessage')?.value.trim() || '';
+    const files = sanitizeAttachments();
+    const mailSubject = `[Nuria Support] ${subject}`;
+    const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
+    const mailto = `mailto:hello@oakdev.app?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
+
+    if (files.length && navigator.share && navigator.canShare && navigator.canShare({ files })) {
+      try {
+        await navigator.share({
+          title: mailSubject,
+          text: body,
+          files,
+        });
+        setStatusFromKey(
+          'supp.form_share_success',
+          'success',
+          'Your share sheet opened. Please choose your email app to send the message with attachments.'
+        );
+        form.reset();
+        renderAttachments([]);
+        return;
+      } catch (error) {
+        if (error && error.name === 'AbortError') {
+          setStatusFromKey(
+            'supp.form_share_cancelled',
+            'error',
+            'Sharing was cancelled. Your message and selected images are still here.'
+          );
+          return;
+        }
+      }
+    }
+
+    if (files.length) {
+      setStatusFromKey(
+        'supp.form_attachment_fallback',
+        'error',
+        'Your browser cannot attach files directly here. We opened an email draft with your message. Please add the selected images manually before sending.'
+      );
+    }
+
     window.location.href = mailto;
   });
 }());

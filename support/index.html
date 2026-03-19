@@ -223,76 +223,99 @@
   ========================================================= -->
   <section class="page-content" id="contact" style="padding-top:2rem;">
     <div class="container">
-      <div class="support-contact-wrap">
+      <div class="support-contact-shell">
+        <div class="support-contact-wrap">
 
-        <!-- Contact info -->
-        <div class="support-contact-info animate-on-scroll">
-          <h2 data-i18n="supp.contact_title">Get in Touch</h2>
-          <p data-i18n="supp.contact_desc">We read every message and aim to respond within 1–2 business days, in shaa Allah.</p>
+          <!-- Contact info -->
+          <div class="support-contact-panel support-contact-info animate-on-scroll">
+            <p class="support-contact-info__eyebrow" data-i18n="supp.contact_label">Support Team</p>
+            <h2 data-i18n="supp.contact_title">Get in Touch</h2>
+            <p data-i18n="supp.contact_desc">We read every message and aim to respond within 1–2 business days, in shaa Allah.</p>
 
-          <div class="contact-info-list">
-            <div class="contact-info-item">
-              <span class="contact-info-icon">📍</span>
-              <div>
-                <strong data-i18n="supp.addr_label">Address</strong><br />
-                Kristevik 633<br />
-                451 96 Uddevalla, Sweden
+            <div class="contact-info-list">
+              <div class="contact-info-item">
+                <span class="contact-info-icon">📍</span>
+                <div>
+                  <strong data-i18n="supp.addr_label">Address</strong><br />
+                  Kristevik 633<br />
+                  451 96 Uddevalla, Sweden
+                </div>
+              </div>
+              <div class="contact-info-item">
+                <span class="contact-info-icon">✉️</span>
+                <div>
+                  <strong data-i18n="supp.email_label">Email</strong><br />
+                  <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>
+                </div>
+              </div>
+              <div class="contact-info-item">
+                <span class="contact-info-icon">📞</span>
+                <div>
+                  <strong data-i18n="supp.phone_label">Phone</strong><br />
+                  <a href="tel:+46708105766">+46 70 810 57 66</a>
+                </div>
+              </div>
+              <div class="contact-info-item">
+                <span class="contact-info-icon">🏢</span>
+                <div>
+                  <strong data-i18n="supp.regno_label">Reg. no.</strong><br />
+                  559431-6787
+                </div>
               </div>
             </div>
-            <div class="contact-info-item">
-              <span class="contact-info-icon">✉️</span>
-              <div>
-                <strong data-i18n="supp.email_label">Email</strong><br />
-                <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>
-              </div>
-            </div>
-            <div class="contact-info-item">
-              <span class="contact-info-icon">📞</span>
-              <div>
-                <strong data-i18n="supp.phone_label">Phone</strong><br />
-                <a href="tel:+46708105766">+46 70 810 57 66</a>
-              </div>
-            </div>
-            <div class="contact-info-item">
-              <span class="contact-info-icon">🏢</span>
-              <div>
-                <strong data-i18n="supp.regno_label">Reg. no.</strong><br />
-                559431-6787
-              </div>
+
+            <div class="support-contact-note">
+              <strong data-i18n="supp.attach_note_title">Reporting a bug?</strong>
+              <p data-i18n="supp.attach_note_text">Attach up to three screenshots and describe what you expected to happen. That helps us fix issues much faster.</p>
             </div>
           </div>
-        </div>
 
-        <!-- Form -->
-        <div class="page-content__card animate-on-scroll" data-delay="100" style="margin-top:0; flex:1; min-width:0;">
-          <form id="contactForm">
-            <div class="form-group">
-              <label class="form-label" for="contactName" data-i18n="supp.form_name">Your Name</label>
-              <input class="form-input" type="text" id="contactName" name="name" placeholder="Name..." data-i18n-placeholder="supp.form_name_ph" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contactEmail" data-i18n="supp.form_email">Email Address</label>
-              <input class="form-input" type="email" id="contactEmail" name="email" placeholder="you@example.com" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contactSubject" data-i18n="supp.form_subject">Subject</label>
-              <select class="form-input form-select" id="contactSubject" name="subject">
-                <option data-i18n="supp.subj_1">General Question</option>
-                <option data-i18n="supp.subj_2">Barakah &amp; Billing</option>
-                <option data-i18n="supp.subj_3">Technical Issue</option>
-                <option data-i18n="supp.subj_4">Feature Request</option>
-                <option data-i18n="supp.subj_5">Account / Privacy</option>
-                <option data-i18n="supp.subj_6">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="contactMessage" data-i18n="supp.form_message">Message</label>
-              <textarea class="form-input form-textarea" id="contactMessage" name="message" placeholder="Please describe your question or issue in detail…" data-i18n-placeholder="supp.form_message_ph" required></textarea>
-            </div>
-            <button type="submit" class="btn btn--gold" data-i18n="supp.form_btn">Send Message</button>
-          </form>
-        </div>
+          <!-- Form -->
+          <div class="support-contact-panel support-contact-form-card animate-on-scroll" data-delay="100">
+            <form id="contactForm" class="contact-form">
+              <div class="form-group">
+                <label class="form-label" for="contactName" data-i18n="supp.form_name">Your Name</label>
+                <input class="form-input" type="text" id="contactName" name="name" placeholder="Name..." data-i18n-placeholder="supp.form_name_ph" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactEmail" data-i18n="supp.form_email">Email Address</label>
+                <input class="form-input" type="email" id="contactEmail" name="email" placeholder="you@example.com" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactSubject" data-i18n="supp.form_subject">Subject</label>
+                <select class="form-input form-select" id="contactSubject" name="subject">
+                  <option data-i18n="supp.subj_1">General Question</option>
+                  <option data-i18n="supp.subj_2">Barakah &amp; Billing</option>
+                  <option data-i18n="supp.subj_3">Technical Issue</option>
+                  <option data-i18n="supp.subj_4">Feature Request</option>
+                  <option data-i18n="supp.subj_5">Account / Privacy</option>
+                  <option data-i18n="supp.subj_6">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactMessage" data-i18n="supp.form_message">Message</label>
+                <textarea class="form-input form-textarea" id="contactMessage" name="message" placeholder="Please describe your question or issue in detail…" data-i18n-placeholder="supp.form_message_ph" required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactAttachments" data-i18n="supp.form_attachments">Screenshots or Photos</label>
+                <label class="contact-upload" for="contactAttachments">
+                  <input class="contact-upload__input" type="file" id="contactAttachments" name="attachments" accept="image/*" multiple />
+                  <span class="contact-upload__cta" data-i18n="supp.form_attachments_btn">Choose images</span>
+                  <span class="contact-upload__hint" data-i18n="supp.form_attachments_hint">Attach up to 3 images for bugs, errors, or unexpected behaviour. Max 10 MB per image.</span>
+                </label>
+                <div class="contact-upload__list" id="contactAttachmentList">
+                  <p class="contact-upload__empty" data-i18n="supp.form_attachments_empty">No images selected yet.</p>
+                </div>
+              </div>
+              <p class="contact-form__privacy" data-i18n="supp.form_privacy_note">Do not include passwords, payment details, or other sensitive personal information in screenshots.</p>
+              <div class="contact-form__actions">
+                <button type="submit" class="btn btn--gold" data-i18n="supp.form_btn">Send Message</button>
+              </div>
+              <p class="contact-form__status" id="contactFormStatus" role="status" aria-live="polite"></p>
+            </form>
+          </div>
 
+        </div>
       </div>
     </div>
   </section>
