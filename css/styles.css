@@ -1557,8 +1557,9 @@ body::after {
   border-top: 1px solid var(--color-border);
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  gap: 2rem;
+  gap: 2.15rem;
   align-items: start;
+  margin-bottom: 1.15rem;
 }
 .support-founder__media {
   min-width: 0;
@@ -1566,21 +1567,22 @@ body::after {
 }
 .support-founder__frame {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 4.5;
   overflow: hidden;
   border-radius: 24px;
   border: 1px solid rgba(201, 168, 76, 0.18);
   background:
     radial-gradient(circle at top right, rgba(201, 168, 76, 0.12), transparent 35%),
-    rgba(5, 12, 8, 0.92);
+    linear-gradient(180deg, rgba(10, 23, 16, 0.82) 0%, rgba(10, 23, 16, 0.58) 100%);
   box-shadow: 0 14px 44px rgba(0, 0, 0, 0.42);
+  isolation: isolate;
 }
 .support-founder__frame::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(4, 9, 7, 0.08) 0%, rgba(4, 9, 7, 0.12) 38%, rgba(4, 9, 7, 0.72) 100%),
+    linear-gradient(180deg, rgba(4, 9, 7, 0.03) 0%, rgba(4, 9, 7, 0.08) 42%, rgba(4, 9, 7, 0.28) 100%),
     radial-gradient(circle at top left, rgba(45, 190, 108, 0.18), transparent 38%);
   z-index: 1;
   pointer-events: none;
@@ -1590,14 +1592,14 @@ body::after {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 12%;
+  object-position: center 6%;
   filter: saturate(0.92) contrast(1.04);
-  transform: scale(1.02);
+  transform: scale(1);
 }
 .support-founder__badge {
   position: absolute;
   left: 1.15rem;
-  bottom: 1.15rem;
+  top: 1.15rem;
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -1616,7 +1618,7 @@ body::after {
 }
 .support-founder__content {
   min-width: 0;
-  padding: 2rem;
+  padding: 1.85rem 2rem;
   border-radius: 24px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.015) 100%),
@@ -1997,6 +1999,7 @@ address.legal-address strong { color: var(--color-text); }
 .faq-wrap {
   max-width: 820px;
   margin: 0 auto;
+  padding-top: 3rem;
 }
 .faq-section-title {
   font-family: var(--font-heading);
