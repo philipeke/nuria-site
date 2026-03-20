@@ -1603,7 +1603,8 @@ body::after {
 .support-founder__badge {
   position: absolute;
   left: 1.15rem;
-  top: 1.15rem;
+  bottom: 0;
+  transform: translateY(50%);
   z-index: 2;
   display: inline-flex;
   align-items: center;
