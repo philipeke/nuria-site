@@ -1603,9 +1603,9 @@ body::after {
 }
 .support-founder__badge {
   position: absolute;
-  left: 1.15rem;
+  left: 50%;
   bottom: 0;
-  transform: translateY(50%);
+  transform: translate(-50%, 50%);
   z-index: 2;
   display: inline-flex;
   align-items: center;
