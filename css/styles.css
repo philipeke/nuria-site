@@ -641,6 +641,7 @@ body::after {
 .phone-frame-wrap {
   position: relative;
   display: inline-flex;
+  animation: float 6s ease-in-out infinite;
 }
 
 /* Side hardware buttons */
@@ -655,27 +656,27 @@ body::after {
 }
 /* Volume up */
 .phone-frame-btn--vol-up {
-  left: -6px;
+  left: -4px;
   top: 108px;
-  width: 6px;
+  width: 4px;
   height: 42px;
-  border-radius: 4px 0 0 4px;
+  border-radius: 3px 0 0 3px;
 }
 /* Volume down */
 .phone-frame-btn--vol-dn {
-  left: -6px;
+  left: -4px;
   top: 163px;
-  width: 6px;
+  width: 4px;
   height: 42px;
-  border-radius: 4px 0 0 4px;
+  border-radius: 3px 0 0 3px;
 }
 /* Power / sleep button */
 .phone-frame-btn--power {
-  right: -6px;
+  right: -4px;
   top: 148px;
-  width: 6px;
+  width: 4px;
   height: 72px;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 3px 3px 0;
 }
 
 .hero__phone {
@@ -702,7 +703,6 @@ body::after {
     0 40px 100px rgba(0,0,0,0.85);
   overflow: hidden;
   position: relative;
-  animation: float 6s ease-in-out infinite;
 }
 
 /* Dynamic island notch */
