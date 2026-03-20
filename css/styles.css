@@ -1565,9 +1565,10 @@ body::after {
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
 }
 .support-founder__media {
+  position: relative;
   float: right;
   width: min(38%, 320px);
-  margin: 0.15rem 0 1.2rem 1.7rem;
+  margin: 0.15rem 0 2.1rem 1.7rem;
 }
 .support-founder__frame {
   position: relative;
@@ -1620,6 +1621,7 @@ body::after {
   text-transform: uppercase;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 .support-founder__content {
   min-width: 0;
@@ -2237,7 +2239,7 @@ address.legal-address strong { color: var(--color-text); }
   .support-founder__media {
     float: none;
     width: min(100%, 380px);
-    margin: 0 auto 1.45rem;
+    margin: 0 auto 2rem;
   }
   .support-founder__content { padding: 0; }
   .support-founder__eyebrow,
