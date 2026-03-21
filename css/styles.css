@@ -2453,7 +2453,7 @@ address.legal-address strong { color: var(--color-text); }
     padding: 120px 1.25rem 32px;
   }
   .hero__phone-wrap {
-    margin-top: 1rem;
+    margin-top: 1.75rem;
     padding-top: 0;
   }
   .phone-frame-wrap {
@@ -2513,7 +2513,7 @@ address.legal-address strong { color: var(--color-text); }
     padding: 112px 1rem 24px;
   }
   .hero__phone-wrap {
-    margin-top: 0.75rem;
+    margin-top: 1.5rem;
   }
   .phone-frame-wrap {
     transform: scale(0.43);
