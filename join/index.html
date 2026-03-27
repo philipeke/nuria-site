@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Referral Code | Nuria</title>
+  <meta name="description" content="Validate your Nuria referral code, copy it, and complete your subscription inside the Nuria app through Apple or Google in-app purchase." />
+  <meta name="theme-color" content="#050c08" />
+  <link rel="icon" type="image/png" href="../assets/favicon-tab.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+
+  <nav class="nav scrolled" id="nav" role="navigation" aria-label="Main">
+    <div class="nav__container">
+      <a href="/" class="nav__logo" aria-label="Nuria home">
+        <img src="../assets/icon.png" alt="Nuria" class="nav__logo-img" />
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="/" class="nav__link">Home</a>
+        <a href="/#pricing" class="nav__link">Plans</a>
+        <a href="/support" class="nav__link">Support</a>
+      </div>
+      <div class="nav__cta">
+        <a href="#referral" class="btn btn--gold">Check code</a>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <header class="page-hero page-hero--referral">
+    <div class="container">
+      <p class="page-hero__label">Affiliate referral</p>
+      <h1 class="page-hero__title">Validate your code here. Enter it inside Nuria.</h1>
+      <p class="page-hero__subtitle">
+        This page confirms the referral code and helps you copy it. Any subscription purchase still happens inside the Nuria app through Apple or Google in-app purchase.
+      </p>
+    </div>
+  </header>
+
+  <main class="page-content referral-page" data-referral-page>
+    <div class="container referral-layout">
+      <section class="referral-card referral-card--primary" id="referral">
+        <div class="referral-view" data-referral-view="loading" hidden>
+          <span class="referral-status-chip">Checking code</span>
+          <div class="referral-loading">
+            <div class="referral-spinner" aria-hidden="true"></div>
+            <div>
+              <h2 class="referral-title">Verifying <span id="referralLoadingCode">your code</span></h2>
+              <p class="referral-copy">
+                We are checking the referral code with Nuria&apos;s public validation service.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="referral-view" data-referral-view="valid" hidden>
+          <span class="referral-status-chip referral-status-chip--valid">Verified referral</span>
+          <p class="referral-kicker">You are joining through</p>
+          <h2 class="referral-title">Support <span data-affiliate-name>your organisation</span> with Nuria</h2>
+          <p class="referral-copy">
+            Try Open in Nuria first. If your browser or device stays on the website, copy the code and enter it manually inside the app before your first subscription purchase.
+          </p>
+
+          <div class="referral-code-row">
+            <div class="referral-code-badge">
+              <span>Referral code</span>
+              <strong data-referral-code>MASJIDSTHLM</strong>
+            </div>
+            <button type="button" class="btn btn--outline referral-copy-btn" id="referralCopyButton">Copy code</button>
+          </div>
+
+          <p class="referral-copy-status" id="referralCopyStatus" aria-live="polite"></p>
+
+          <div class="referral-app-actions">
+            <a
+              href="https://nuria.oakdev.app/join?ref=MASJIDSTHLM"
+              class="btn btn--gold"
+              id="referralOpenInAppButton"
+              data-referral-open="https"
+            >
+              Open in Nuria
+            </a>
+            <a
+              href="nuria://join?ref=MASJIDSTHLM"
+              class="btn btn--outline"
+              id="referralOpenInAppFallback"
+              data-referral-open="scheme"
+            >
+              Try Nuria link
+            </a>
+          </div>
+
+          <p class="referral-open-note">
+            Open in Nuria uses the Nuria website link and may open the app on supported devices. If it does not, copy the code and continue manually inside Nuria.
+          </p>
+
+          <div class="referral-store-actions" id="referralStores">
+            <a
+              href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913"
+              class="btn btn--store btn--store-lg"
+              data-store-link="app-store"
+              data-referral-store="app-store"
+              aria-label="Download on the App Store"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"></path>
+              </svg>
+              <span>
+                <small>Download on the</small>
+                App Store
+              </span>
+            </a>
+
+            <a
+              href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv"
+              class="btn btn--store btn--store-lg"
+              data-store-link="google-play"
+              data-referral-store="google-play"
+              aria-label="Get it on Google Play"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"></path>
+              </svg>
+              <span>
+                <small>Get it on</small>
+                Google Play
+              </span>
+            </a>
+          </div>
+
+          <ol class="referral-steps">
+            <li>Open Nuria.</li>
+            <li>If the app does not open directly, copy the code.</li>
+            <li>Open the subscription screen.</li>
+            <li>Enter this code before the first subscription purchase.</li>
+          </ol>
+
+          <div class="referral-trust-note">
+            Subscription billing is handled by Apple or Google inside Nuria. This website only validates the code and guides you into the app.
+          </div>
+        </div>
+
+        <div class="referral-view" data-referral-view="invalid" hidden>
+          <span class="referral-status-chip referral-status-chip--warning">Code issue</span>
+          <p class="referral-kicker">Referral lookup</p>
+          <h2 class="referral-title" id="referralInvalidTitle">This referral code is invalid or inactive</h2>
+          <p class="referral-copy" id="referralInvalidBody">
+            We could not verify this code. Check the spelling, then try another one.
+          </p>
+
+          <div class="referral-code-row referral-code-row--invalid">
+            <div class="referral-code-badge referral-code-badge--muted">
+              <span>Tried code</span>
+              <strong data-referral-code>No code</strong>
+            </div>
+            <a href="/" class="btn btn--outline">Back to Nuria</a>
+          </div>
+        </div>
+
+        <div class="referral-view" data-referral-view="missing" hidden>
+          <span class="referral-status-chip">Referral code required</span>
+          <p class="referral-kicker">Start here</p>
+          <h2 class="referral-title">Enter your Nuria referral code</h2>
+          <p class="referral-copy">
+            Paste the code you received from the organisation or person who invited you. We will validate it before you continue to Nuria.
+          </p>
+        </div>
+
+        <div class="referral-lookup-panel">
+          <div>
+            <p class="referral-form-label">Try another code</p>
+            <h3 class="referral-form-title">Validate a referral before you open the app</h3>
+            <p class="referral-form-copy">
+              We automatically trim spaces and uppercase the code before checking it.
+            </p>
+          </div>
+
+          <form class="referral-form" id="referralLookupForm">
+            <label class="form-label" for="referralCodeInput">Referral code</label>
+            <div class="referral-form-row">
+              <input
+                class="form-input referral-form-input"
+                id="referralCodeInput"
+                name="ref"
+                type="text"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                placeholder="Enter referral code"
+              />
+              <button type="submit" class="btn btn--gold">Check code</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <aside class="referral-card referral-card--aside" id="referralHelp">
+        <span class="referral-side-label">Important</span>
+        <h2 class="referral-side-title">The code does not move from the website into the app automatically.</h2>
+        <p class="referral-side-copy">
+          Validating the code here confirms it is active. Before your first subscription purchase, you still need to open Nuria and enter the code yourself on the subscription screen.
+        </p>
+
+        <div class="referral-facts">
+          <div class="referral-fact">
+            <span class="referral-fact__label">On this page</span>
+            <strong>Validate the code and copy it</strong>
+          </div>
+          <div class="referral-fact">
+            <span class="referral-fact__label">Inside Nuria</span>
+            <strong>Enter the code before the first purchase</strong>
+          </div>
+          <div class="referral-fact">
+            <span class="referral-fact__label">Billing</span>
+            <strong>Apple App Store or Google Play handles payment</strong>
+          </div>
+        </div>
+
+        <div class="referral-side-note">
+          Nuria subscriptions are never purchased on this website. If you already have the app, open it and keep the copied code ready before you start your first subscription checkout.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img src="../assets/icon.png" alt="Nuria" class="footer__logo" />
+          <p class="footer__tagline">Light for the Muslim soul - every single day.</p>
+          <p class="footer__bismillah" lang="ar">Allah Akbar</p>
+        </div>
+
+        <nav class="footer__links" aria-label="Footer navigation">
+          <div class="footer__col">
+            <span class="footer__col-title">App</span>
+            <a href="/">Home</a>
+            <a href="/#pricing">Plans</a>
+            <a href="/join">Referral</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title">Legal</span>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
+            <a href="/delete-account">Delete Account</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title">Help</span>
+            <a href="/support">Support Center</a>
+            <a href="/support#contact">Contact Us</a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer__bottom">
+        <p>&copy; 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <div class="footer__bottom-links">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="/support">Support</a>
+          <a href="/delete-account">Delete Account</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/site-utils.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/referral.js"></script>
+</body>
+</html>

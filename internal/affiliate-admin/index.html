@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Affiliate Admin | Nuria Internal</title>
+  <meta
+    name="description"
+    content="Internal affiliate administration for Nuria."
+  />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="theme-color" content="#050c08" />
+  <link rel="icon" type="image/png" href="../../assets/favicon-tab.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="../../css/styles.css" />
+</head>
+<body class="admin-body">
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <div class="admin-shell" data-affiliate-admin-page>
+    <header class="admin-topbar">
+      <a href="/" class="admin-topbar__brand" aria-label="Nuria home">
+        <img src="../../assets/icon.png" alt="Nuria" class="admin-topbar__logo" />
+        <div>
+          <p class="admin-topbar__eyebrow">Internal</p>
+          <strong class="admin-topbar__title">Affiliate Admin</strong>
+        </div>
+      </a>
+
+      <div class="admin-topbar__actions">
+        <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
+        <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
+          Sign out
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section class="admin-hero">
+        <p class="admin-hero__eyebrow">Private route</p>
+        <h1 class="admin-hero__title">Affiliate operations for Nuria</h1>
+        <p class="admin-hero__copy">
+          This page is intentionally unlisted. Sign in with an authorized Firebase Auth
+          account to review affiliate codes, payout reports, and payout actions.
+        </p>
+      </section>
+
+      <div class="admin-banner" id="adminGlobalNotice" hidden></div>
+
+      <section class="admin-state-card" data-admin-view="loading-auth">
+        <div class="referral-loading">
+          <div class="referral-spinner" aria-hidden="true"></div>
+          <div>
+            <h2 class="admin-state-card__title">Checking access</h2>
+            <p class="admin-state-card__copy">
+              Verifying your Firebase Auth session before loading admin tools.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-state-card" data-admin-view="signed-out" hidden>
+        <p class="admin-state-card__eyebrow">Sign in required</p>
+        <h2 class="admin-state-card__title">Use your Nuria admin account</h2>
+        <p class="admin-state-card__copy">
+          Verified <code>@oakdev.app</code> users are allowed automatically. Other
+          accounts must be active in <code>admin_users/{uid}</code> with the
+          <code>affiliate_admin</code> role.
+        </p>
+
+        <div class="admin-auth-actions">
+          <button type="button" class="btn btn--gold" id="adminGoogleSignIn">
+            Sign in with Google
+          </button>
+        </div>
+
+        <form class="admin-auth-form" id="adminEmailSignInForm">
+          <div class="form-group">
+            <label class="form-label" for="adminEmailInput">Email</label>
+            <input
+              class="form-input"
+              id="adminEmailInput"
+              name="email"
+              type="email"
+              autocomplete="username"
+              placeholder="admin@oakdev.app"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="adminPasswordInput">Password</label>
+            <input
+              class="form-input"
+              id="adminPasswordInput"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn--outline">Sign in with email</button>
+        </form>
+
+        <p class="admin-state-card__helper" id="adminAuthError" hidden></p>
+      </section>
+
+      <section class="admin-state-card" data-admin-view="not-authorized" hidden>
+        <p class="admin-state-card__eyebrow">Access blocked</p>
+        <h2 class="admin-state-card__title">This account is not authorized</h2>
+        <p class="admin-state-card__copy" id="adminUnauthorizedCopy">
+          The backend returned permission denied for this account.
+        </p>
+        <div class="admin-auth-actions">
+          <button type="button" class="btn btn--outline" id="adminSignOutUnauthorized">
+            Sign out
+          </button>
+        </div>
+      </section>
+
+      <section class="admin-state-card" data-admin-view="loading-dashboard" hidden>
+        <div class="referral-loading">
+          <div class="referral-spinner" aria-hidden="true"></div>
+          <div>
+            <h2 class="admin-state-card__title">Loading affiliate admin tools</h2>
+            <p class="admin-state-card__copy">
+              Fetching overview data, recent reports, and current referral codes.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-state-card" data-admin-view="error" hidden>
+        <p class="admin-state-card__eyebrow">Something went wrong</p>
+        <h2 class="admin-state-card__title">The admin dashboard could not load</h2>
+        <p class="admin-state-card__copy" id="adminErrorCopy">
+          An unexpected error blocked the page from loading.
+        </p>
+        <div class="admin-auth-actions">
+          <button type="button" class="btn btn--outline" id="adminRetryLoad">
+            Try again
+          </button>
+        </div>
+      </section>
+
+      <section class="admin-dashboard" data-admin-view="ready" hidden>
+        <div class="admin-grid admin-grid--overview">
+          <article class="admin-panel">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Overview</p>
+                <h2 class="admin-panel__title">Current admin session</h2>
+              </div>
+              <button type="button" class="btn btn--outline" id="adminRefreshOverview">
+                Refresh
+              </button>
+            </div>
+
+            <div class="admin-stat-grid">
+              <div class="admin-stat-card">
+                <span class="admin-stat-card__label">Admin email</span>
+                <strong class="admin-stat-card__value" id="adminCurrentEmail">-</strong>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-card__label">Roles</span>
+                <strong class="admin-stat-card__value" id="adminCurrentRoles">-</strong>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-card__label">Access source</span>
+                <strong class="admin-stat-card__value" id="adminCurrentSource">-</strong>
+              </div>
+            </div>
+
+            <div class="admin-split admin-split--stack">
+              <div>
+                <h3 class="admin-section-title">Recent payout reports</h3>
+                <div class="admin-mini-list" id="adminOverviewReports"></div>
+              </div>
+              <div>
+                <h3 class="admin-section-title">Recent affiliate codes</h3>
+                <div class="admin-mini-list" id="adminOverviewCodes"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="admin-panel">
+            <div class="admin-panel__header">
+              <div>
+                <p class="admin-panel__eyebrow">Manual generation</p>
+                <h2 class="admin-panel__title">Generate payout report</h2>
+              </div>
+            </div>
+
+            <form class="admin-form admin-form--compact" id="adminGenerateReportForm">
+              <div class="form-group">
+                <label class="form-label" for="adminReportMonth">Month</label>
+                <input
+                  class="form-input"
+                  id="adminReportMonth"
+                  name="month"
+                  type="month"
+                  required
+                />
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminSendEmail" name="sendEmail" checked />
+                <span>Send payout email after generation</span>
+              </label>
+
+              <button type="submit" class="btn btn--gold" id="adminGenerateReportButton">
+                Generate report
+              </button>
+            </form>
+
+            <p class="admin-panel__helper">
+              This triggers the backend callable and then refreshes the report list.
+            </p>
+          </article>
+        </div>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Affiliate codes</p>
+              <h2 class="admin-panel__title">Create and update referral codes</h2>
+            </div>
+
+            <div class="admin-panel__actions">
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminIncludeInactiveCodes" />
+                <span>Include inactive</span>
+              </label>
+              <button type="button" class="btn btn--outline" id="adminRefreshCodes">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewCode">
+                New code
+              </button>
+            </div>
+          </div>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Affiliate</th>
+                    <th>Status</th>
+                    <th>Revenue share</th>
+                    <th>Fixed payout</th>
+                  </tr>
+                </thead>
+                <tbody id="adminCodesTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminCodesEmpty" hidden>No codes found.</p>
+            </div>
+
+            <form class="admin-form" id="adminCodeForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminCodeFormTitle">Create code</h3>
+                <p class="admin-panel__helper" id="adminCodeFormHelper">
+                  Create a new affiliate code or update metadata on an existing one.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminEditingExistingCode" value="false" />
+
+              <div class="form-group">
+                <label class="form-label" for="adminCodeValue">Code</label>
+                <input
+                  class="form-input"
+                  id="adminCodeValue"
+                  name="code"
+                  type="text"
+                  autocomplete="off"
+                  autocapitalize="characters"
+                  spellcheck="false"
+                  placeholder="MASJIDSTHLM"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAffiliateId">Affiliate ID</label>
+                <input
+                  class="form-input"
+                  id="adminAffiliateId"
+                  name="affiliateId"
+                  type="text"
+                  placeholder="masjid_stockholm"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminDisplayName">Display name</label>
+                <input
+                  class="form-input"
+                  id="adminDisplayName"
+                  name="displayName"
+                  type="text"
+                  placeholder="Masjid Stockholm"
+                />
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminCodeStatus">Status</label>
+                  <select class="form-input form-select" id="adminCodeStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="inactive">inactive</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminRevenueShareBps">Revenue share BPS</label>
+                  <input
+                    class="form-input"
+                    id="adminRevenueShareBps"
+                    name="revenueShareBps"
+                    type="number"
+                    min="0"
+                    max="10000"
+                    step="1"
+                    placeholder="5000"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminFixedPayoutMinor">Fixed payout minor</label>
+                  <input
+                    class="form-input"
+                    id="adminFixedPayoutMinor"
+                    name="fixedPayoutMinor"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="4900"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminCurrency">Currency</label>
+                  <input
+                    class="form-input"
+                    id="adminCurrency"
+                    name="currency"
+                    type="text"
+                    maxlength="3"
+                    placeholder="SEK"
+                  />
+                </div>
+              </div>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveCodeButton">
+                  Save code
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetCodeForm">
+                  Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Payout reports</p>
+              <h2 class="admin-panel__title">Recent payout periods</h2>
+            </div>
+            <button type="button" class="btn btn--outline" id="adminRefreshReports">
+              Refresh
+            </button>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Status</th>
+                  <th>Source</th>
+                  <th>Rows</th>
+                  <th>Affiliates</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody id="adminReportsTableBody"></tbody>
+            </table>
+            <p class="admin-empty" id="adminReportsEmpty" hidden>No payout reports found.</p>
+          </div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Report detail</p>
+              <h2 class="admin-panel__title" id="adminReportDetailTitle">
+                Select a payout report
+              </h2>
+            </div>
+
+            <div class="admin-panel__actions">
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminIncludeRowsToggle" />
+                <span>Include rows</span>
+              </label>
+              <button type="button" class="btn btn--outline" id="adminLoadReportRows" disabled>
+                Load detail
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-empty" id="adminReportDetailEmpty">
+            Choose a report from the table above to load its summary.
+          </p>
+
+          <div class="admin-report-detail" id="adminReportDetailContent" hidden>
+            <div class="admin-stat-grid" id="adminReportStats"></div>
+
+            <div class="admin-detail-meta" id="adminReportMeta"></div>
+
+            <div class="admin-detail-section">
+              <h3 class="admin-section-title">Affiliate summaries</h3>
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Affiliate</th>
+                      <th>Codes</th>
+                      <th>Known total</th>
+                      <th>Payout-ready rows</th>
+                      <th>Reconciliation rows</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminReportAffiliatesBody"></tbody>
+                </table>
+                <p class="admin-empty" id="adminReportAffiliatesEmpty" hidden>
+                  No affiliate summaries found.
+                </p>
+              </div>
+            </div>
+
+            <div class="admin-detail-section" id="adminReportRowsSection" hidden>
+              <h3 class="admin-section-title">Report rows</h3>
+              <div class="admin-table-wrap">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Ledger ID</th>
+                      <th>Event</th>
+                      <th>Payout status</th>
+                      <th>Commission</th>
+                      <th>Currency</th>
+                      <th>Affiliate</th>
+                      <th>Earned</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminReportRowsBody"></tbody>
+                </table>
+                <p class="admin-empty" id="adminReportRowsEmpty" hidden>
+                  No rows loaded for this report.
+                </p>
+              </div>
+            </div>
+
+            <div class="admin-detail-section">
+              <h3 class="admin-section-title">Mark report as paid</h3>
+              <form class="admin-form admin-form--compact" id="adminMarkPaidForm">
+                <div class="form-group">
+                  <label class="form-label" for="adminPaymentReference">Payment reference</label>
+                  <input
+                    class="form-input"
+                    id="adminPaymentReference"
+                    name="paymentReference"
+                    type="text"
+                    placeholder="Bank transfer ID or payout batch reference"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminPaymentNote">Note</label>
+                  <textarea
+                    class="form-input form-textarea"
+                    id="adminPaymentNote"
+                    name="note"
+                    placeholder="Optional note stored with the paid report"
+                  ></textarea>
+                </div>
+
+                <button type="submit" class="btn btn--gold" id="adminMarkPaidButton" disabled>
+                  Mark report as paid
+                </button>
+              </form>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="../../js/site-config.js"></script>
+  <script src="../../js/site-utils.js"></script>
+  <script type="module" src="../../js/affiliate-admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Not Found | Nuria</title>
+  <meta name="description" content="Nuria page not found." />
+  <meta name="theme-color" content="#050c08" />
+  <link rel="icon" type="image/png" href="assets/favicon-tab.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      var path = window.location.pathname || '';
+      var match = path.match(/^\/r\/([^/?#]+)/i);
+
+      if (!match) {
+        return;
+      }
+
+      var rawCode = match[1];
+
+      try {
+        rawCode = decodeURIComponent(rawCode);
+      } catch (error) {
+        rawCode = match[1];
+      }
+
+      var code = String(rawCode || '').trim().toUpperCase().replace(/\s+/g, '');
+      var nextUrl = code ? '/join?ref=' + encodeURIComponent(code) + '&route=r' : '/join';
+      window.location.replace(nextUrl);
+    }());
+  </script>
+</head>
+<body>
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <header class="page-hero">
+    <div class="container">
+      <p class="page-hero__label">Nuria</p>
+      <h1 class="page-hero__title">Page not found</h1>
+      <p class="page-hero__subtitle">
+        The page you requested is not available. If you were trying to open a referral link, please check the URL or return to Nuria.
+      </p>
+      <div class="hero__actions" style="justify-content:center; margin-top: 2rem;">
+        <a href="/" class="btn btn--gold">Go to homepage</a>
+        <a href="/join" class="btn btn--outline">Referral page</a>
+      </div>
+    </div>
+  </header>
+</body>
+</html>

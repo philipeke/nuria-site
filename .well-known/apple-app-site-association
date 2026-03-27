@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "7BYCW8LYYQ.com.oakdev.nuria",
+        "paths": ["/join", "/r/*"]
+      }
+    ]
+  }
+}
