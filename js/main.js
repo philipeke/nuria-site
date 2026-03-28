@@ -11,12 +11,29 @@
   if (!canvas) return;
 
   const ctx = canvas.getContext('2d');
+  const hero = document.getElementById('hero');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let stars = [];
-  let raf;
+  let raf = 0;
+  let lastFrame = 0;
+  let heroVisible = true;
+
+  function isLowPowerDevice() {
+    return window.innerWidth < 1024 ||
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      (navigator.connection && navigator.connection.saveData);
+  }
+
+  function getStarCount() {
+    if (reduceMotion.matches) return 0;
+    if (isLowPowerDevice()) return window.innerWidth < 768 ? 18 : 30;
+    return window.innerWidth < 768 ? 32 : 56;
+  }
 
   function resize() {
     canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
+    createStars(getStarCount());
   }
 
   function createStars(n) {
@@ -34,7 +51,30 @@
     }
   }
 
-  function draw() {
+  function shouldAnimate() {
+    return !reduceMotion.matches && !document.hidden && heroVisible && stars.length > 0;
+  }
+
+  function stop() {
+    if (raf) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+  }
+
+  function draw(now = 0) {
+    if (!shouldAnimate()) {
+      raf = 0;
+      return;
+    }
+
+    const frameBudget = isLowPowerDevice() ? 50 : 33;
+    if (now - lastFrame < frameBudget) {
+      raf = requestAnimationFrame(draw);
+      return;
+    }
+    lastFrame = now;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (const s of stars) {
@@ -53,20 +93,51 @@
     raf = requestAnimationFrame(draw);
   }
 
-  function init() {
-    resize();
-    createStars(100);
-    draw();
+  function start() {
+    if (!shouldAnimate() || raf) return;
+    lastFrame = 0;
+    raf = requestAnimationFrame(draw);
+  }
+
+  function handleAnimationState() {
+    if (shouldAnimate()) {
+      start();
+    } else {
+      stop();
+    }
   }
 
   window.addEventListener('resize', () => {
-    cancelAnimationFrame(raf);
     resize();
-    createStars(100);
-    draw();
-  });
+    if (!stars.length) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    handleAnimationState();
+  }, { passive: true });
 
-  init();
+  document.addEventListener('visibilitychange', handleAnimationState);
+
+  if (hero && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      heroVisible = entries[0] ? entries[0].isIntersecting : true;
+      handleAnimationState();
+    }, { threshold: 0.08 });
+
+    observer.observe(hero);
+  }
+
+  if (typeof reduceMotion.addEventListener === 'function') {
+    reduceMotion.addEventListener('change', () => {
+      resize();
+      handleAnimationState();
+    });
+  } else if (typeof reduceMotion.addListener === 'function') {
+    reduceMotion.addListener(() => {
+      resize();
+      handleAnimationState();
+    });
+  }
+
+  resize();
+  handleAnimationState();
 }());
 
 /* ===== DOWNLOAD DROPDOWN ===== */
@@ -148,20 +219,32 @@
   const nav        = document.getElementById('nav');
   const sections   = document.querySelectorAll('section[id]');
   const navAnchors = document.querySelectorAll('.nav__link[href^="#"]');
+  const sectionPositions = [];
   let ticking = false;
+
+  function updateSectionPositions() {
+    sectionPositions.length = 0;
+    sections.forEach(sec => {
+      sectionPositions.push({
+        id: sec.id,
+        top: sec.getBoundingClientRect().top + window.scrollY - 110,
+      });
+    });
+  }
 
   function update() {
     const y = window.scrollY;
 
     // Nav backdrop
-    if (nav) nav.classList.toggle('scrolled', y > 50);
+    if (nav) nav.classList.toggle('scrolled', y > 24);
 
     // Active nav highlight
-    if (sections.length && navAnchors.length) {
-      let current = '';
-      sections.forEach(sec => {
-        if (y >= sec.offsetTop - 110) current = sec.id;
-      });
+    if (sectionPositions.length && navAnchors.length) {
+      let current = sectionPositions[0].id;
+      for (const sec of sectionPositions) {
+        if (y >= sec.top) current = sec.id;
+        else break;
+      }
       navAnchors.forEach(a => {
         a.classList.toggle('active', a.getAttribute('href') === `#${current}`);
       });
@@ -177,6 +260,17 @@
     }
   }, { passive: true });
 
+  window.addEventListener('resize', () => {
+    updateSectionPositions();
+    update();
+  }, { passive: true });
+
+  window.addEventListener('load', () => {
+    updateSectionPositions();
+    update();
+  });
+
+  updateSectionPositions();
   update(); // run once on load
 }());
 

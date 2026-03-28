@@ -173,7 +173,7 @@ const T = {
     },
     footer: {
       tagline: 'Light for the Muslim soul — every single day.',
-      col1: 'App', home: 'Home', about: 'About', plans: 'Plans', dl: 'Download',
+      col1: 'App', home: 'Home', about: 'About', plans: 'Plans', partner: 'Nuria Partner', dl: 'Download',
       col2: 'Legal', privacy: 'Privacy Policy', terms: 'Terms of Service', delete: 'Delete Account',
       col3: 'Help', support_center: 'Support Center', contact: 'Contact Us',
       copy: '\u00a9 2026 OakDev & AI AB. All rights reserved.',
@@ -446,7 +446,7 @@ const T = {
     },
     footer: {
       tagline: 'نور للروح المسلمة — كل يوم.',
-      col1: 'التطبيق', home: 'الرئيسية', about: 'عن نوريا', plans: 'الباقات', dl: 'تحميل',
+      col1: 'التطبيق', home: 'الرئيسية', about: 'عن نوريا', plans: 'الباقات', partner: '\u0634\u0631\u064a\u0643 \u0646\u0648\u0631\u064a\u0627', dl: 'تحميل',
       col2: 'قانوني', privacy: 'سياسة الخصوصية', terms: 'شروط الخدمة', delete: 'حذف الحساب',
       col3: 'مساعدة', support_center: 'مركز الدعم', contact: 'اتصل بنا',
       copy: '© 2026 OakDev & AI AB. جميع الحقوق محفوظة.',
@@ -708,7 +708,7 @@ const T = {
     },
     footer: {
       tagline: 'مسلم روح کے لیے نور — ہر روز۔',
-      col1: 'ایپ', home: 'ہوم', about: 'ہمارے بارے میں', plans: 'منصوبے', dl: 'ڈاؤن لوڈ',
+      col1: 'ایپ', home: 'ہوم', about: 'ہمارے بارے میں', plans: 'منصوبے', partner: '\u0634\u0631\u06cc\u06a9 \u0646\u0648\u0631\u06cc\u06c1', dl: 'ڈاؤن لوڈ',
       col2: 'قانونی', privacy: 'پرائیویسی پالیسی', terms: 'سروس کی شرائط', delete: 'اکاؤنٹ حذف کریں',
       col3: 'مدد', support_center: 'سپورٹ سینٹر', contact: 'ہم سے رابطہ',
       copy: '© 2026 OakDev & AI AB. جملہ حقوق محفوظ ہیں۔',
@@ -970,7 +970,7 @@ const T = {
     },
     footer: {
       tagline: 'Cahaya untuk jiwa Muslim — setiap hari.',
-      col1: 'Aplikasi', home: 'Beranda', about: 'Tentang', plans: 'Paket', dl: 'Unduh',
+      col1: 'Aplikasi', home: 'Beranda', about: 'Tentang', plans: 'Paket', partner: 'Mitra Nuria', dl: 'Unduh',
       col2: 'Hukum', privacy: 'Kebijakan Privasi', terms: 'Syarat Layanan', delete: 'Hapus Akun',
       col3: 'Bantuan', support_center: 'Pusat Dukungan', contact: 'Hubungi Kami',
       copy: '\u00a9 2026 OakDev & AI AB. Semua hak dilindungi.',
@@ -1232,7 +1232,7 @@ const T = {
     },
     footer: {
       tagline: 'Lumi\u00e8re pour l\'\u00e2me musulmane — chaque jour.',
-      col1: 'Application', home: 'Accueil', about: '\u00c0 propos', plans: 'Formules', dl: 'T\u00e9l\u00e9charger',
+      col1: 'Application', home: 'Accueil', about: '\u00c0 propos', plans: 'Formules', partner: 'Partenaire Nuria', dl: 'T\u00e9l\u00e9charger',
       col2: 'L\u00e9gal', privacy: 'Politique de confidentialit\u00e9', terms: 'Conditions d\'utilisation', delete: 'Supprimer le compte',
       col3: 'Aide', support_center: 'Centre d\'assistance', contact: 'Nous contacter',
       copy: '\u00a9 2026 OakDev & AI AB. Tous droits r\u00e9serv\u00e9s.',
@@ -1494,7 +1494,7 @@ const T = {
     },
     footer: {
       tagline: 'Müslüman ruh için ışık — her gün.',
-      col1: 'Uygulama', home: 'Ana Sayfa', about: 'Hakkında', plans: 'Planlar', dl: 'İndir',
+      col1: 'Uygulama', home: 'Ana Sayfa', about: 'Hakkında', plans: 'Planlar', partner: 'Nuria Partneri', dl: 'İndir',
       col2: 'Hukuki', privacy: 'Gizlilik Politikası', terms: 'Kullanım Şartları', delete: 'Hesabı Sil',
       col3: 'Yardım', support_center: 'Destek Merkezi', contact: 'Bize Ulaşın',
       copy: '\u00a9 2026 OakDev & AI AB. Tüm hakları saklıdır.',
