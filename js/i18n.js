@@ -1930,32 +1930,13 @@ function getLang() {
 }
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const lang = getLang();
-  applyLang(lang);
-
-  // toggle dropdown
-  document.querySelectorAll('.nav__lang-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const wrapper = btn.closest('.nav__lang');
-      wrapper.classList.toggle('open');
-      btn.setAttribute('aria-expanded', wrapper.classList.contains('open'));
-    });
-  });
-
-  // select language
-  document.querySelectorAll('.nav__lang-option').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      setLang(btn.dataset.lang);
-      btn.closest('.nav__lang').classList.remove('open');
-    });
-  });
-
-  // close on outside click
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.nav__lang.open')
-      .forEach(w => w.classList.remove('open'));
-  });
-});
+(function () {
+  function boot() {
+    applyLang(getLang());
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
+}());

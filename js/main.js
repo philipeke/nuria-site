@@ -160,6 +160,34 @@
   wrapper.addEventListener('click', e => e.stopPropagation());
 }());
 
+/* ===== LANGUAGE SWITCHER ===== */
+(function () {
+  document.querySelectorAll('.nav__lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var wrapper = btn.closest('.nav__lang');
+      if (!wrapper) return;
+      var isOpen = wrapper.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+    });
+  });
+
+  document.querySelectorAll('.nav__lang-option').forEach(function (opt) {
+    opt.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var wrapper = opt.closest('.nav__lang');
+      if (wrapper) wrapper.classList.remove('open');
+      if (typeof setLang === 'function') setLang(opt.dataset.lang);
+    });
+  });
+
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.nav__lang.open').forEach(function (w) {
+      w.classList.remove('open');
+    });
+  });
+}());
+
 /* ===== NAVIGATION HAMBURGER ===== */
 (function () {
   const hamburger = document.getElementById('hamburger');
