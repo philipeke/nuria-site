@@ -591,3 +591,74 @@
     window.location.href = mailto;
   });
 }());
+
+/* ===== COOKIE CONSENT ===== */
+(function () {
+  const STORAGE_KEY = 'nuria_cookie_consent_v1';
+  const CONSENT_ACCEPTED = 'accepted';
+
+  function hasAcceptedCookies() {
+    try {
+      return window.localStorage.getItem(STORAGE_KEY) === CONSENT_ACCEPTED;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function setAcceptedCookies() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, CONSENT_ACCEPTED);
+    } catch (error) {
+      // Ignore storage errors and keep UX flow.
+    }
+  }
+
+  function buildBanner() {
+    const wrapper = document.createElement('section');
+    wrapper.className = 'cookie-consent';
+    wrapper.id = 'cookieConsent';
+    wrapper.setAttribute('role', 'dialog');
+    wrapper.setAttribute('aria-live', 'polite');
+    wrapper.setAttribute('aria-label', 'Cookie consent');
+
+    wrapper.innerHTML = [
+      '<div class="cookie-consent__icon" aria-hidden="true">🍪</div>',
+      '<div class="cookie-consent__content">',
+      '  <p class="cookie-consent__title">We use cookies to improve your visit</p>',
+      '  <p class="cookie-consent__text">',
+      '    We use essential and analytics cookies to keep Nuria secure and continuously better.',
+      '    Read our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Service</a>.',
+      '  </p>',
+      '</div>',
+      '<div class="cookie-consent__actions">',
+      '  <button type="button" class="btn btn--gold cookie-consent__btn" id="cookieConsentAccept">Accept cookies</button>',
+      '</div>',
+    ].join('');
+
+    return wrapper;
+  }
+
+  function showBanner() {
+    if (document.getElementById('cookieConsent')) return;
+    const banner = buildBanner();
+    document.body.appendChild(banner);
+    requestAnimationFrame(() => {
+      banner.classList.add('is-visible');
+    });
+
+    const acceptButton = banner.querySelector('#cookieConsentAccept');
+    if (acceptButton) {
+      acceptButton.addEventListener('click', function () {
+        setAcceptedCookies();
+        banner.classList.remove('is-visible');
+        window.setTimeout(function () {
+          banner.remove();
+        }, 260);
+      });
+    }
+  }
+
+  if (!hasAcceptedCookies()) {
+    showBanner();
+  }
+}());

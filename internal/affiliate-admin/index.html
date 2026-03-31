@@ -25,7 +25,7 @@
   <div class="admin-shell" data-affiliate-admin-page>
     <header class="admin-topbar">
       <a href="/" class="admin-topbar__brand" aria-label="Nuria home">
-        <img src="../../assets/icon.png" alt="Nuria" class="admin-topbar__logo" />
+        <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-topbar__logo" />
         <div>
           <p class="admin-topbar__eyebrow">Internal</p>
           <strong class="admin-topbar__title">Affiliate Admin</strong>
@@ -108,6 +108,9 @@
 
           <button type="submit" class="btn btn--outline">Sign in with email</button>
         </form>
+        <button type="button" class="btn btn--outline" id="adminSendPasswordResetButton">
+          Send password reset link
+        </button>
 
         <p class="admin-state-card__helper" id="adminAuthError" hidden></p>
       </section>
@@ -176,6 +179,18 @@
                 <span class="admin-stat-card__label">Access source</span>
                 <strong class="admin-stat-card__value" id="adminCurrentSource">-</strong>
               </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-card__label">Active codes</span>
+                <strong class="admin-stat-card__value" id="adminActiveCodesCount">0</strong>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-card__label">Tracked affiliates</span>
+                <strong class="admin-stat-card__value" id="adminTrackedAffiliatesCount">0</strong>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-card__label">Latest report rows</span>
+                <strong class="admin-stat-card__value" id="adminLatestReportRows">0</strong>
+              </div>
             </div>
 
             <div class="admin-split admin-split--stack">
@@ -223,8 +238,167 @@
             <p class="admin-panel__helper">
               This triggers the backend callable and then refreshes the report list.
             </p>
+
+            <div class="admin-detail-section">
+              <h3 class="admin-section-title">Scheduled report recipients</h3>
+              <p class="admin-panel__helper">
+                Add finance emails that should receive monthly payout reports when backend scheduling is enabled.
+              </p>
+              <form class="admin-form admin-form--compact" id="adminRecipientForm">
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminRecipientEmail">Recipient email</label>
+                    <input
+                      class="form-input"
+                      id="adminRecipientEmail"
+                      name="email"
+                      type="email"
+                      placeholder="finance@company.com"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn--outline" id="adminAddRecipientButton">Add recipient</button>
+                  </div>
+                </div>
+              </form>
+              <div class="admin-mini-list" id="adminRecipientList"></div>
+            </div>
           </article>
         </div>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Operations</p>
+              <h2 class="admin-panel__title">Payout health, shortcuts, and activity</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminOpenOnboarding">
+                Quick tour
+              </button>
+              <button type="button" class="btn btn--outline" id="adminCopyReportDeepLink" disabled>
+                Copy report link
+              </button>
+              <button type="button" class="btn btn--outline" id="adminOpenPartnerJoin">
+                Open partner join page
+              </button>
+              <button type="button" class="btn btn--outline btn--safe" id="adminExportOpsSnapshotJson">
+                <span class="admin-btn-icon">JSON</span>
+                Export ops JSON
+              </button>
+              <button type="button" class="btn btn--outline btn--safe" id="adminExportOpsSnapshotCsv">
+                <span class="admin-btn-icon">CSV</span>
+                Export ops CSV
+              </button>
+              <button type="button" class="btn btn--outline" id="adminToggleCompactMode">
+                Compact mode
+              </button>
+              <button type="button" class="btn btn--outline" id="adminClearOpsLog">
+                Clear activity log
+              </button>
+            </div>
+          </div>
+          <p class="admin-panel__helper">
+            Use this section for quick audit exports, deep links, and the recommended month-end flow.
+          </p>
+
+          <div class="admin-stat-grid">
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Unpaid reports</span>
+              <strong class="admin-stat-card__value" id="adminUnpaidReportsCount">0</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Draft reports</span>
+              <strong class="admin-stat-card__value" id="adminDraftReportsCount">0</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Last export</span>
+              <strong class="admin-stat-card__value" id="adminLastExportAt">Never</strong>
+            </div>
+          </div>
+
+          <div class="admin-ops-log">
+            <h3 class="admin-section-title">Action center</h3>
+            <div class="admin-action-center">
+              <p class="admin-panel__helper admin-action-center__copy" id="adminNextStepCopy">
+                Pick a report to see the recommended next step.
+              </p>
+              <button type="button" class="btn btn--gold btn--action" id="adminRunNextStep">
+                Do next step
+              </button>
+            </div>
+
+            <h3 class="admin-section-title">Simple workflow</h3>
+            <ol class="admin-workflow">
+              <li>Create the monthly report, then open it.</li>
+              <li>Load rows and review totals before payout.</li>
+              <li>Export files (CSV/PDF or close package) and save them internally.</li>
+              <li>Mark the report paid, then lock the month after finance approval.</li>
+            </ol>
+
+            <h3 class="admin-section-title">Recent activity</h3>
+            <div class="admin-ops-log__list" id="adminOpsLogList"></div>
+            <div class="admin-panel__actions" style="margin-top:0.7rem;">
+              <h3 class="admin-section-title">Backend audit log</h3>
+              <button type="button" class="btn btn--outline" id="adminRefreshBackendAudit">
+                Refresh audit log
+              </button>
+            </div>
+            <div class="admin-ops-log__list" id="adminBackendAuditList"></div>
+          </div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Monthly close</p>
+              <h2 class="admin-panel__title">Payout close checklist</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminToggleMonthLock">
+                Lock month
+              </button>
+              <button type="button" class="btn btn--outline" id="adminChecklistMarkAll">
+                Mark all done
+              </button>
+              <button type="button" class="btn btn--outline" id="adminChecklistReset">
+                Reset checklist
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper" id="adminChecklistMonthLabel">
+            Checklist for the selected payout month.
+          </p>
+          <div class="admin-banner admin-banner--info" id="adminChecklistLockBanner" hidden></div>
+
+          <div class="admin-checklist" id="adminMonthlyChecklist">
+            <label class="admin-checklist__item">
+              <input type="checkbox" data-checklist-item="generated" />
+              <span>Generate monthly payout report</span>
+            </label>
+            <label class="admin-checklist__item">
+              <input type="checkbox" data-checklist-item="verified" />
+              <span>Verify affiliates and ledger rows</span>
+            </label>
+            <label class="admin-checklist__item">
+              <input type="checkbox" data-checklist-item="exported" />
+              <span>Export CSV/PDF and archive files</span>
+            </label>
+            <label class="admin-checklist__item">
+              <input type="checkbox" data-checklist-item="paid" />
+              <span>Mark report paid with payment reference</span>
+            </label>
+            <label class="admin-checklist__item">
+              <input type="checkbox" data-checklist-item="receipt" />
+              <span>Save payout receipt PDF in finance records</span>
+            </label>
+          </div>
+
+          <p class="admin-empty admin-empty--inline" id="adminChecklistProgress">0 / 5 complete</p>
+        </article>
 
         <article class="admin-panel">
           <div class="admin-panel__header">
@@ -238,6 +412,18 @@
                 <input type="checkbox" id="adminIncludeInactiveCodes" />
                 <span>Include inactive</span>
               </label>
+              <input
+                class="form-input admin-filter-input"
+                id="adminCodeSearchInput"
+                type="search"
+                placeholder="Search code, affiliate, status"
+              />
+              <select class="form-input form-select admin-filter-select" id="adminCodeStatusFilter">
+                <option value="">All statuses</option>
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+                <option value="archived">archived</option>
+              </select>
               <button type="button" class="btn btn--outline" id="adminRefreshCodes">
                 Refresh
               </button>
@@ -261,7 +447,9 @@
                 </thead>
                 <tbody id="adminCodesTableBody"></tbody>
               </table>
-              <p class="admin-empty" id="adminCodesEmpty" hidden>No codes found.</p>
+              <p class="admin-empty" id="adminCodesEmpty" hidden>
+                No referral codes yet. Create your first partner code to start tracking signups and monthly payouts.
+              </p>
             </div>
 
             <form class="admin-form" id="adminCodeForm">
@@ -373,6 +561,8 @@
                   Reset
                 </button>
               </div>
+
+              <p class="admin-form-error" id="adminCodeFormError" hidden></p>
             </form>
           </div>
         </article>
@@ -386,6 +576,20 @@
             <button type="button" class="btn btn--outline" id="adminRefreshReports">
               Refresh
             </button>
+          </div>
+
+          <div class="admin-panel__actions" style="margin-bottom:0.8rem;">
+            <input
+              class="form-input admin-filter-input"
+              id="adminReportSearchInput"
+              type="search"
+              placeholder="Search month, report ID, status, source"
+            />
+            <select class="form-input form-select admin-filter-select" id="adminReportStatusFilter">
+              <option value="">All statuses</option>
+              <option value="draft">draft</option>
+              <option value="paid">paid</option>
+            </select>
           </div>
 
           <div class="admin-table-wrap">
@@ -402,7 +606,9 @@
               </thead>
               <tbody id="adminReportsTableBody"></tbody>
             </table>
-            <p class="admin-empty" id="adminReportsEmpty" hidden>No payout reports found.</p>
+            <p class="admin-empty" id="adminReportsEmpty" hidden>
+              No payout reports yet. Generate a monthly report to prepare partner payout reconciliation.
+            </p>
           </div>
         </article>
 
@@ -423,6 +629,18 @@
               <button type="button" class="btn btn--outline" id="adminLoadReportRows" disabled>
                 Load detail
               </button>
+              <button type="button" class="btn btn--outline btn--safe" id="adminExportCsvButton" disabled>
+                <span class="admin-btn-icon">CSV</span>
+                Export CSV
+              </button>
+              <button type="button" class="btn btn--outline btn--safe" id="adminExportPdfButton" disabled>
+                <span class="admin-btn-icon">PDF</span>
+                Export PDF
+              </button>
+              <button type="button" class="btn btn--outline btn--safe" id="adminExportTestButton">
+                <span class="admin-btn-icon">TEST</span>
+                Export sample file
+              </button>
             </div>
           </div>
 
@@ -431,6 +649,15 @@
           </p>
 
           <div class="admin-report-detail" id="adminReportDetailContent" hidden>
+            <div class="admin-export-branding">
+              <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-export-branding__logo" />
+              <span class="admin-export-branding__divider" aria-hidden="true"></span>
+              <img src="../../assets/oakdev-logo.png" alt="OakDev &amp; AI AB" class="admin-export-branding__oakdev" />
+            </div>
+            <p class="admin-panel__helper admin-export-branding__copy">
+              Export payout reports with Nuria and OakDev branding for finance reconciliation and partner records.
+            </p>
+
             <div class="admin-stat-grid" id="adminReportStats"></div>
 
             <div class="admin-detail-meta" id="adminReportMeta"></div>
@@ -480,6 +707,11 @@
             </div>
 
             <div class="admin-detail-section">
+              <h3 class="admin-section-title">Payout discrepancy alerts</h3>
+              <div class="admin-mini-list" id="adminDiscrepancyList"></div>
+            </div>
+
+            <div class="admin-detail-section">
               <h3 class="admin-section-title">Mark report as paid</h3>
               <form class="admin-form admin-form--compact" id="adminMarkPaidForm">
                 <div class="form-group">
@@ -504,9 +736,21 @@
                 </div>
 
                 <button type="submit" class="btn btn--gold" id="adminMarkPaidButton" disabled>
-                  Mark report as paid
+                  <span class="admin-btn-icon">PAY</span>
+                  Mark as paid
+                </button>
+                <button type="button" class="btn btn--mutate" id="adminFinalizePayoutButton" disabled>
+                  <span class="admin-btn-icon">DONE</span>
+                  Finalize payout now
+                </button>
+                <button type="button" class="btn btn--outline btn--safe" id="adminClosePackageButton" disabled>
+                  <span class="admin-btn-icon">PKG</span>
+                  Generate month-end package
                 </button>
               </form>
+              <p class="admin-panel__helper">
+                Finalize payout exports CSV, marks paid, and opens a branded receipt. Month-end package exports payout CSV + ops snapshot and opens receipt PDF view.
+              </p>
             </div>
           </div>
         </article>
@@ -514,8 +758,68 @@
     </main>
   </div>
 
+  <div class="admin-modal" id="adminOnboardingModal" hidden>
+    <div class="admin-modal__backdrop" data-modal-close></div>
+    <div class="admin-modal__card" role="dialog" aria-modal="true" aria-labelledby="adminOnboardingTitle">
+      <button type="button" class="admin-modal__close" id="adminOnboardingClose" aria-label="Close quick tour">
+        ×
+      </button>
+      <div class="admin-modal__hero">
+        <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-modal__logo" />
+        <img src="../../assets/oakdev-logo.png" alt="OakDev &amp; AI AB" class="admin-modal__oakdev" />
+      </div>
+      <p class="admin-panel__eyebrow">Welcome</p>
+      <h2 class="admin-panel__title" id="adminOnboardingTitle">Quick tour: monthly payout workflow</h2>
+      <p class="admin-panel__helper">
+        This admin center helps you run the full affiliate payout cycle with clear audit records.
+      </p>
+
+      <p class="admin-onboarding-progress" id="adminOnboardingProgress">Step 1 of 4</p>
+      <div class="admin-onboarding-track">
+        <div class="admin-onboarding-step" data-onboarding-step="0">
+          <h3>Generate and open report</h3>
+          <p>Choose the payout month, generate the report, then open the report detail section.</p>
+        </div>
+        <div class="admin-onboarding-step" data-onboarding-step="1" hidden>
+          <h3>Verify rows</h3>
+          <p>Load rows and confirm affiliates, totals, and payout-ready entries before payout.</p>
+        </div>
+        <div class="admin-onboarding-step" data-onboarding-step="2" hidden>
+          <h3>Export records</h3>
+          <p>Export CSV/PDF or use the month-end package for a complete archive.</p>
+        </div>
+        <div class="admin-onboarding-step" data-onboarding-step="3" hidden>
+          <h3>Complete and lock</h3>
+          <p>Mark as paid, save the receipt, and lock the month with a reason after finance approval.</p>
+        </div>
+      </div>
+      <div class="admin-onboarding-dots" id="adminOnboardingDots">
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="0" aria-label="Go to step 1"></button>
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="1" aria-label="Go to step 2"></button>
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="2" aria-label="Go to step 3"></button>
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="3" aria-label="Go to step 4"></button>
+      </div>
+
+      <div class="admin-modal__actions">
+        <button type="button" class="btn btn--outline" id="adminOnboardingPrev">
+          Back
+        </button>
+        <button type="button" class="btn btn--outline" id="adminOnboardingNext">
+          Next
+        </button>
+        <button type="button" class="btn btn--outline" id="adminOnboardingDontShow">
+          Don't show again
+        </button>
+        <button type="button" class="btn btn--gold" id="adminOnboardingStart">
+          Got it, start
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="../../js/site-config.js"></script>
   <script src="../../js/site-utils.js"></script>
+  <script src="../../js/main.js"></script>
   <script type="module" src="../../js/affiliate-admin.js"></script>
 </body>
 </html>

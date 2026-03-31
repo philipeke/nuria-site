@@ -1,6 +1,11 @@
 import {
+  addAffiliateAdminAuditLog,
   callFirebaseFunction,
+  getAffiliateAdminSettings,
   getCurrentUser,
+  listAffiliateAdminAuditLogs,
+  saveAffiliateAdminSettings,
+  sendPasswordReset,
   signInWithEmailPassword,
   signInWithGoogle,
   signOutUser,
@@ -9,6 +14,13 @@ import {
 
 const site = window.NuriaSite || {};
 const page = document.querySelector('[data-affiliate-admin-page]');
+const ACTIVITY_LOG_KEY = 'nuria_affiliate_admin_activity_log_v1';
+const CHECKLIST_STATE_KEY = 'nuria_affiliate_admin_monthly_checklist_v1';
+const MONTH_LOCK_STATE_KEY = 'nuria_affiliate_admin_month_lock_v1';
+const COMPACT_MODE_KEY = 'nuria_affiliate_admin_compact_mode_v1';
+const ONBOARDING_DISMISSED_KEY = 'nuria_affiliate_admin_onboarding_dismissed_v1';
+const LOGIN_SUCCESS_SOUND_URL = '/assets/nuria%20site.wav';
+const CHECKLIST_STEPS = ['generated', 'verified', 'exported', 'paid', 'receipt'];
 
 if (!page) {
   throw new Error('affiliate_admin_page_missing');
@@ -22,6 +34,7 @@ const elements = {
   googleSignIn: document.getElementById('adminGoogleSignIn'),
   emailSignInForm: document.getElementById('adminEmailSignInForm'),
   authError: document.getElementById('adminAuthError'),
+  sendPasswordResetButton: document.getElementById('adminSendPasswordResetButton'),
   signOutUnauthorized: document.getElementById('adminSignOutUnauthorized'),
   unauthorizedCopy: document.getElementById('adminUnauthorizedCopy'),
   retryLoad: document.getElementById('adminRetryLoad'),
@@ -30,9 +43,45 @@ const elements = {
   currentEmail: document.getElementById('adminCurrentEmail'),
   currentRoles: document.getElementById('adminCurrentRoles'),
   currentSource: document.getElementById('adminCurrentSource'),
+  activeCodesCount: document.getElementById('adminActiveCodesCount'),
+  trackedAffiliatesCount: document.getElementById('adminTrackedAffiliatesCount'),
+  latestReportRows: document.getElementById('adminLatestReportRows'),
+  unpaidReportsCount: document.getElementById('adminUnpaidReportsCount'),
+  draftReportsCount: document.getElementById('adminDraftReportsCount'),
+  lastExportAt: document.getElementById('adminLastExportAt'),
   overviewReports: document.getElementById('adminOverviewReports'),
   overviewCodes: document.getElementById('adminOverviewCodes'),
+  opsLogList: document.getElementById('adminOpsLogList'),
+  clearOpsLog: document.getElementById('adminClearOpsLog'),
+  copyReportDeepLink: document.getElementById('adminCopyReportDeepLink'),
+  openPartnerJoin: document.getElementById('adminOpenPartnerJoin'),
+  openOnboarding: document.getElementById('adminOpenOnboarding'),
+  toggleCompactMode: document.getElementById('adminToggleCompactMode'),
+  exportOpsSnapshotJson: document.getElementById('adminExportOpsSnapshotJson'),
+  exportOpsSnapshotCsv: document.getElementById('adminExportOpsSnapshotCsv'),
+  refreshBackendAudit: document.getElementById('adminRefreshBackendAudit'),
+  backendAuditList: document.getElementById('adminBackendAuditList'),
+  nextStepCopy: document.getElementById('adminNextStepCopy'),
+  runNextStep: document.getElementById('adminRunNextStep'),
+  checklistMonthLabel: document.getElementById('adminChecklistMonthLabel'),
+  checklistProgress: document.getElementById('adminChecklistProgress'),
+  checklistContainer: document.getElementById('adminMonthlyChecklist'),
+  checklistMarkAll: document.getElementById('adminChecklistMarkAll'),
+  checklistReset: document.getElementById('adminChecklistReset'),
+  checklistLockBanner: document.getElementById('adminChecklistLockBanner'),
+  toggleMonthLock: document.getElementById('adminToggleMonthLock'),
+  onboardingModal: document.getElementById('adminOnboardingModal'),
+  onboardingClose: document.getElementById('adminOnboardingClose'),
+  onboardingDontShow: document.getElementById('adminOnboardingDontShow'),
+  onboardingStart: document.getElementById('adminOnboardingStart'),
+  onboardingPrev: document.getElementById('adminOnboardingPrev'),
+  onboardingNext: document.getElementById('adminOnboardingNext'),
+  onboardingProgress: document.getElementById('adminOnboardingProgress'),
+  onboardingDots: document.getElementById('adminOnboardingDots'),
+  onboardingSteps: Array.from(document.querySelectorAll('[data-onboarding-step]')),
   includeInactiveCodes: document.getElementById('adminIncludeInactiveCodes'),
+  codeSearchInput: document.getElementById('adminCodeSearchInput'),
+  codeStatusFilter: document.getElementById('adminCodeStatusFilter'),
   refreshCodes: document.getElementById('adminRefreshCodes'),
   newCode: document.getElementById('adminNewCode'),
   codeTableBody: document.getElementById('adminCodesTableBody'),
@@ -50,7 +99,10 @@ const elements = {
   currency: document.getElementById('adminCurrency'),
   saveCodeButton: document.getElementById('adminSaveCodeButton'),
   resetCodeForm: document.getElementById('adminResetCodeForm'),
+  codeFormError: document.getElementById('adminCodeFormError'),
   refreshReports: document.getElementById('adminRefreshReports'),
+  reportSearchInput: document.getElementById('adminReportSearchInput'),
+  reportStatusFilter: document.getElementById('adminReportStatusFilter'),
   reportsTableBody: document.getElementById('adminReportsTableBody'),
   reportsEmpty: document.getElementById('adminReportsEmpty'),
   reportMonth: document.getElementById('adminReportMonth'),
@@ -60,6 +112,9 @@ const elements = {
   reportDetailTitle: document.getElementById('adminReportDetailTitle'),
   includeRowsToggle: document.getElementById('adminIncludeRowsToggle'),
   loadReportRows: document.getElementById('adminLoadReportRows'),
+  exportCsvButton: document.getElementById('adminExportCsvButton'),
+  exportPdfButton: document.getElementById('adminExportPdfButton'),
+  exportTestButton: document.getElementById('adminExportTestButton'),
   reportDetailEmpty: document.getElementById('adminReportDetailEmpty'),
   reportDetailContent: document.getElementById('adminReportDetailContent'),
   reportStats: document.getElementById('adminReportStats'),
@@ -69,10 +124,17 @@ const elements = {
   reportRowsSection: document.getElementById('adminReportRowsSection'),
   reportRowsBody: document.getElementById('adminReportRowsBody'),
   reportRowsEmpty: document.getElementById('adminReportRowsEmpty'),
+  discrepancyList: document.getElementById('adminDiscrepancyList'),
   markPaidForm: document.getElementById('adminMarkPaidForm'),
   paymentReference: document.getElementById('adminPaymentReference'),
   paymentNote: document.getElementById('adminPaymentNote'),
   markPaidButton: document.getElementById('adminMarkPaidButton'),
+  finalizePayoutButton: document.getElementById('adminFinalizePayoutButton'),
+  closePackageButton: document.getElementById('adminClosePackageButton'),
+  recipientForm: document.getElementById('adminRecipientForm'),
+  recipientEmail: document.getElementById('adminRecipientEmail'),
+  addRecipientButton: document.getElementById('adminAddRecipientButton'),
+  recipientList: document.getElementById('adminRecipientList'),
 };
 
 const state = {
@@ -83,9 +145,33 @@ const state = {
   recentCodes: [],
   codes: [],
   reports: [],
+  backendAuditLogs: [],
+  reportRecipients: [],
   selectedReportId: getReportIdFromUrl(),
   selectedReport: null,
+  activityLog: [],
+  checklistByMonth: {},
+  monthLocks: {},
+  nextStepAction: 'none',
+  compactMode: false,
+  onboardingDismissed: false,
+  onboardingStep: 0,
+  filters: {
+    codeQuery: '',
+    codeStatus: '',
+    reportQuery: '',
+    reportStatus: '',
+  },
+  backendAuditUnavailableReason: '',
+  recipientSettingsUnavailableReason: '',
+  saveCodeInFlight: false,
+  generateReportInFlight: false,
+  markPaidInFlight: false,
+  exportInFlight: false,
+  finalizeInFlight: false,
+  closePackageInFlight: false,
 };
+let loginSuccessSound = null;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -145,6 +231,66 @@ function getErrorParts(error) {
   };
 }
 
+function getActionableErrorMessage(error, fallbackMessage) {
+  const parts = getErrorParts(error);
+  const code = parts.code;
+  const message = parts.message.toLowerCase();
+
+  if (code === 'unauthenticated') {
+    return 'Session expired. Sign in again to continue.';
+  }
+
+  if (code === 'permission-denied') {
+    return 'This account is signed in but is not allowed to perform this admin action.';
+  }
+
+  if (code === 'wrong-password') {
+    return 'Wrong password. Try again or send a password reset link.';
+  }
+
+  if (code === 'user-not-found') {
+    return 'No Firebase Auth account exists for this email yet.';
+  }
+
+  if (code === 'invalid-email') {
+    return 'Email format is invalid.';
+  }
+
+  if (code === 'too-many-requests') {
+    return 'Too many attempts. Wait a moment and try again.';
+  }
+
+  if (message.includes('code_already_exists')) {
+    return 'This referral code already exists. Open it from the table and update the existing record instead.';
+  }
+
+  if (message.includes('invalid_code_format')) {
+    return 'Code format is invalid. Use 3-64 characters: A-Z, 0-9, underscore, or dash.';
+  }
+
+  if (message.includes('invalid_affiliate_id')) {
+    return 'Affiliate ID is invalid. Use a stable ID like masjid_stockholm.';
+  }
+
+  if (message.includes('invalid_revenue_share_bps')) {
+    return 'Revenue share BPS must be between 0 and 10000.';
+  }
+
+  if (message.includes('invalid_fixed_payout_minor')) {
+    return 'Fixed payout must be a whole number >= 0.';
+  }
+
+  if (message.includes('report_not_found')) {
+    return 'The selected payout report could not be found. Refresh reports and try again.';
+  }
+
+  if (code === 'failed-precondition' && message.includes('callable-only compliance')) {
+    return 'Backend callable is required in callable-only compliance mode. Deploy affiliate admin compliance callables first.';
+  }
+
+  return fallbackMessage || parts.message;
+}
+
 function humanizeAccessSource(source) {
   if (source === 'email_domain') return 'Verified @oakdev.app';
   if (source === 'allowlist_doc') return 'Firestore allowlist';
@@ -198,6 +344,897 @@ function formatList(values) {
   return values.join(', ');
 }
 
+function normalizeSearchValue(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
+function readActivityLog() {
+  try {
+    const raw = window.localStorage.getItem(ACTIVITY_LOG_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_error) {
+    return [];
+  }
+}
+
+function readCompactMode() {
+  try {
+    return window.localStorage.getItem(COMPACT_MODE_KEY) === '1';
+  } catch (_error) {
+    return false;
+  }
+}
+
+function persistCompactMode() {
+  try {
+    window.localStorage.setItem(COMPACT_MODE_KEY, state.compactMode ? '1' : '0');
+  } catch (_error) {
+    // ignore storage errors
+  }
+}
+
+function applyCompactMode() {
+  page.classList.toggle('admin-shell--compact', state.compactMode);
+  if (elements.toggleCompactMode) {
+    elements.toggleCompactMode.textContent = state.compactMode ? 'Standard mode' : 'Compact mode';
+  }
+}
+
+function readOnboardingDismissed() {
+  try {
+    return window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) === '1';
+  } catch (_error) {
+    return false;
+  }
+}
+
+function persistOnboardingDismissed(value) {
+  try {
+    window.localStorage.setItem(ONBOARDING_DISMISSED_KEY, value ? '1' : '0');
+  } catch (_error) {
+    // ignore storage errors
+  }
+}
+
+function setOnboardingOpen(open) {
+  if (!elements.onboardingModal) {
+    return;
+  }
+
+  if (open) {
+    setOnboardingStep(0);
+  }
+
+  elements.onboardingModal.hidden = !open;
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+function getLoginSuccessSound() {
+  if (!loginSuccessSound) {
+    loginSuccessSound = new Audio(LOGIN_SUCCESS_SOUND_URL);
+    loginSuccessSound.preload = 'auto';
+    loginSuccessSound.volume = 0.8;
+  }
+
+  return loginSuccessSound;
+}
+
+async function playLoginSuccessSound() {
+  try {
+    const sound = getLoginSuccessSound();
+    sound.currentTime = 0;
+    await sound.play();
+  } catch (_error) {
+    // Browser autoplay policies can block audio; ignore silently.
+  }
+}
+
+function setOnboardingStep(nextIndex) {
+  const max = elements.onboardingSteps.length - 1;
+  const clamped = Math.max(0, Math.min(Number(nextIndex) || 0, max));
+  state.onboardingStep = clamped;
+
+  elements.onboardingSteps.forEach((step, idx) => {
+    step.hidden = idx !== clamped;
+  });
+
+  if (elements.onboardingProgress) {
+    elements.onboardingProgress.textContent = `Step ${clamped + 1} of ${max + 1}`;
+  }
+
+  if (elements.onboardingDots) {
+    Array.from(elements.onboardingDots.querySelectorAll('[data-onboarding-dot]')).forEach((dot) => {
+      const dotIdx = Number(dot.dataset.onboardingDot);
+      dot.classList.toggle('is-active', dotIdx === clamped);
+    });
+  }
+
+  if (elements.onboardingPrev) {
+    elements.onboardingPrev.disabled = clamped === 0;
+  }
+
+  if (elements.onboardingNext) {
+    elements.onboardingNext.disabled = clamped === max;
+  }
+
+  if (elements.onboardingStart) {
+    elements.onboardingStart.textContent = clamped === max ? 'Got it, start' : 'Skip tour';
+  }
+}
+
+function persistActivityLog() {
+  try {
+    window.localStorage.setItem(ACTIVITY_LOG_KEY, JSON.stringify(state.activityLog.slice(0, 50)));
+  } catch (_error) {
+    // ignore persistence failures (private mode / storage disabled)
+  }
+}
+
+function getActivityActor() {
+  return state.admin?.email || state.user?.email || 'admin';
+}
+
+async function persistBackendAuditLog(item) {
+  if (!state.user) return;
+
+  try {
+    await addAffiliateAdminAuditLog({
+      message: item.message,
+      kind: item.kind,
+      actor: item.actor,
+      actorUid: state.user.uid || null,
+      reportId: state.selectedReport?.report?.reportId || null,
+      periodMonth: state.selectedReport?.report?.periodMonth || getChecklistMonthKey(),
+    });
+    state.backendAuditUnavailableReason = '';
+  } catch (error) {
+    state.backendAuditUnavailableReason = getActionableErrorMessage(
+      error,
+      'Backend audit log write is currently unavailable.'
+    );
+    renderBackendAuditLog();
+  }
+}
+
+function addActivityLog(message, kind) {
+  const item = {
+    message: String(message || '').trim() || 'Action completed',
+    kind: kind || 'info',
+    actor: getActivityActor(),
+    at: new Date().toISOString(),
+  };
+
+  state.activityLog = [item].concat(state.activityLog || []).slice(0, 50);
+  state.backendAuditLogs = [
+    {
+      message: item.message,
+      kind: item.kind,
+      actor: item.actor,
+      createdAtIso: item.at,
+    },
+  ].concat(state.backendAuditLogs || []).slice(0, 60);
+  persistActivityLog();
+  renderActivityLog();
+  renderBackendAuditLog();
+  persistBackendAuditLog(item);
+}
+
+function renderActivityLog() {
+  if (!elements.opsLogList) return;
+
+  const items = Array.isArray(state.activityLog) ? state.activityLog : [];
+  if (!items.length) {
+    elements.opsLogList.innerHTML = '<p class="admin-empty admin-empty--inline">No activity yet in this browser session.</p>';
+    return;
+  }
+
+  elements.opsLogList.innerHTML = items
+    .slice(0, 12)
+    .map((item) => {
+      const when = formatTimestamp({ iso: item.at });
+      return `
+        <div class="admin-ops-log__item">
+          ${escapeHtml(item.message)}
+          <span class="admin-ops-log__meta">${escapeHtml(item.actor || 'admin')} &middot; ${escapeHtml(when)}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function clearActivityLog() {
+  state.activityLog = [];
+  persistActivityLog();
+  renderActivityLog();
+}
+
+function renderBackendAuditLog() {
+  if (!elements.backendAuditList) return;
+
+  if (state.backendAuditUnavailableReason) {
+    elements.backendAuditList.innerHTML = `<p class="admin-empty admin-empty--inline">${escapeHtml(state.backendAuditUnavailableReason)}</p>`;
+    return;
+  }
+
+  const items = Array.isArray(state.backendAuditLogs) ? state.backendAuditLogs : [];
+  if (!items.length) {
+    elements.backendAuditList.innerHTML = '<p class="admin-empty admin-empty--inline">No backend audit entries available yet.</p>';
+    return;
+  }
+
+  elements.backendAuditList.innerHTML = items
+    .slice(0, 16)
+    .map((item) => {
+      const when = formatTimestamp({ iso: item.createdAtIso || item.at || '' });
+      return `
+        <div class="admin-ops-log__item">
+          ${escapeHtml(item.message || 'Action completed')}
+          <span class="admin-ops-log__meta">${escapeHtml(item.actor || 'admin')} &middot; ${escapeHtml(item.kind || 'info')} &middot; ${escapeHtml(when)}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function getOpsSnapshot() {
+  const monthKey = getChecklistMonthKey();
+  return {
+    generatedAt: new Date().toISOString(),
+    actor: getActivityActor(),
+    selectedReportId: state.selectedReportId || '',
+    selectedMonth: monthKey,
+    selectedMonthChecklist: getChecklistForMonth(monthKey),
+    selectedMonthLock: state.monthLocks?.[monthKey] || {
+      locked: false,
+      reason: '',
+      updatedAt: '',
+      updatedBy: '',
+    },
+    recentActivity: (state.activityLog || []).slice(0, 50),
+    backendAuditLogs: (state.backendAuditLogs || []).slice(0, 50),
+    scheduledRecipients: (state.reportRecipients || []).slice(),
+    reportSummaries: (state.reports || []).map((item) => ({
+      reportId: item.reportId || '',
+      periodMonth: item.periodMonth || '',
+      status: item.status || '',
+      source: item.source || '',
+      ledgerRowCount: Number(item.ledgerRowCount ?? 0),
+      affiliateCount: Number(item.affiliateCount ?? 0),
+      updatedAt: toIsoDate(item.updatedAt),
+    })),
+    codeSummaries: (state.codes || []).map((item) => ({
+      code: item.code || '',
+      affiliateId: item.affiliateId || '',
+      displayName: item.displayName || '',
+      status: item.status || '',
+      revenueShareBps: Number(item.revenueShareBps ?? 0),
+      fixedPayoutMinor: item.fixedPayoutMinor ?? null,
+      currency: item.currency || '',
+    })),
+    checklistByMonth: state.checklistByMonth || {},
+    monthLocks: state.monthLocks || {},
+  };
+}
+
+function buildOpsSnapshotCsv(snapshot) {
+  const lines = [];
+  lines.push('Nuria Affiliate Admin Ops Snapshot');
+  lines.push([csvCell('Generated At'), csvCell(snapshot.generatedAt), csvCell('Actor'), csvCell(snapshot.actor)].join(','));
+  lines.push([csvCell('Selected Month'), csvCell(snapshot.selectedMonth), csvCell('Selected Report'), csvCell(snapshot.selectedReportId)].join(','));
+  lines.push('');
+
+  lines.push('Selected Month Checklist');
+  lines.push([csvCell('Step'), csvCell('Done')].join(','));
+  CHECKLIST_STEPS.forEach((step) => {
+    lines.push([csvCell(step), csvCell(Boolean(snapshot.selectedMonthChecklist?.[step]))].join(','));
+  });
+  lines.push('');
+
+  lines.push('Month Lock');
+  lines.push([csvCell('Locked'), csvCell(Boolean(snapshot.selectedMonthLock?.locked)), csvCell('Reason'), csvCell(snapshot.selectedMonthLock?.reason || '')].join(','));
+  lines.push('');
+
+  lines.push('Scheduled Recipients');
+  lines.push([csvCell('Email')].join(','));
+  (snapshot.scheduledRecipients || []).forEach((email) => {
+    lines.push([csvCell(email)].join(','));
+  });
+  lines.push('');
+
+  lines.push('Report Summaries');
+  lines.push([csvCell('Report ID'), csvCell('Month'), csvCell('Status'), csvCell('Source'), csvCell('Rows'), csvCell('Affiliates'), csvCell('Updated At')].join(','));
+  (snapshot.reportSummaries || []).forEach((row) => {
+    lines.push([
+      csvCell(row.reportId),
+      csvCell(row.periodMonth),
+      csvCell(row.status),
+      csvCell(row.source),
+      csvCell(row.ledgerRowCount),
+      csvCell(row.affiliateCount),
+      csvCell(row.updatedAt),
+    ].join(','));
+  });
+  lines.push('');
+
+  lines.push('Recent Activity');
+  lines.push([csvCell('When'), csvCell('Actor'), csvCell('Kind'), csvCell('Message')].join(','));
+  (snapshot.recentActivity || []).forEach((row) => {
+    lines.push([
+      csvCell(row.at || ''),
+      csvCell(row.actor || ''),
+      csvCell(row.kind || ''),
+      csvCell(row.message || ''),
+    ].join(','));
+  });
+
+  return lines.join('\n');
+}
+
+function readChecklistState() {
+  try {
+    const raw = window.localStorage.getItem(CHECKLIST_STATE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (_error) {
+    return {};
+  }
+}
+
+function persistChecklistState() {
+  try {
+    window.localStorage.setItem(CHECKLIST_STATE_KEY, JSON.stringify(state.checklistByMonth || {}));
+  } catch (_error) {
+    // ignore storage errors
+  }
+}
+
+function getChecklistMonthKey() {
+  return state.selectedReport?.report?.periodMonth || elements.reportMonth?.value || getPreviousUtcMonth();
+}
+
+function getChecklistForMonth(monthKey) {
+  const current = state.checklistByMonth?.[monthKey];
+  if (current && typeof current === 'object') {
+    return Object.assign({}, current);
+  }
+
+  return {
+    generated: false,
+    verified: false,
+    exported: false,
+    paid: false,
+    receipt: false,
+  };
+}
+
+function setChecklistStep(step, value, monthKey) {
+  if (CHECKLIST_STEPS.indexOf(step) < 0) {
+    return;
+  }
+
+  const key = monthKey || getChecklistMonthKey();
+  const next = getChecklistForMonth(key);
+  next[step] = Boolean(value);
+  state.checklistByMonth[key] = next;
+  persistChecklistState();
+  renderChecklist();
+}
+
+function markChecklistSteps(steps, value, monthKey) {
+  const key = monthKey || getChecklistMonthKey();
+  const next = getChecklistForMonth(key);
+  steps.forEach((step) => {
+    if (CHECKLIST_STEPS.indexOf(step) >= 0) {
+      next[step] = Boolean(value);
+    }
+  });
+  state.checklistByMonth[key] = next;
+  persistChecklistState();
+  renderChecklist();
+}
+
+function renderChecklist() {
+  if (!elements.checklistContainer) return;
+
+  const monthKey = getChecklistMonthKey();
+  const status = getChecklistForMonth(monthKey);
+  const locked = isMonthLocked(monthKey);
+  const lockReason = getMonthLockReason(monthKey);
+  const checkboxes = Array.from(elements.checklistContainer.querySelectorAll('[data-checklist-item]'));
+
+  checkboxes.forEach((input) => {
+    const step = input.dataset.checklistItem;
+    input.checked = Boolean(status[step]);
+    input.disabled = locked;
+  });
+
+  const completed = CHECKLIST_STEPS.filter((step) => status[step]).length;
+  if (elements.checklistProgress) {
+    elements.checklistProgress.textContent = `${completed} / ${CHECKLIST_STEPS.length} complete`;
+  }
+
+  if (elements.checklistMonthLabel) {
+    elements.checklistMonthLabel.textContent = `Tracking checklist for month ${monthKey}.`;
+  }
+
+  if (elements.checklistContainer) {
+    elements.checklistContainer.classList.toggle('admin-checklist--locked', locked);
+  }
+
+  if (elements.checklistLockBanner) {
+    elements.checklistLockBanner.hidden = !locked;
+    elements.checklistLockBanner.textContent = locked
+      ? `Month ${monthKey} is locked. Checklist and payout mutation actions are read-only.${lockReason ? ` Reason: ${lockReason}` : ''}`
+      : '';
+  }
+
+  if (elements.toggleMonthLock) {
+    elements.toggleMonthLock.textContent = locked ? 'Unlock month' : 'Lock month';
+  }
+
+  if (elements.checklistMarkAll) {
+    elements.checklistMarkAll.disabled = locked;
+  }
+
+  if (elements.checklistReset) {
+    elements.checklistReset.disabled = locked;
+  }
+
+  if (typeof renderNextStep === 'function') {
+    renderNextStep();
+  }
+}
+
+function readMonthLocks() {
+  try {
+    const raw = window.localStorage.getItem(MONTH_LOCK_STATE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return {};
+
+    const normalized = {};
+    Object.keys(parsed).forEach((key) => {
+      const value = parsed[key];
+      if (typeof value === 'boolean') {
+        normalized[key] = {
+          locked: value,
+          reason: '',
+          updatedAt: '',
+          updatedBy: '',
+        };
+        return;
+      }
+
+      normalized[key] = {
+        locked: Boolean(value?.locked),
+        reason: String(value?.reason || '').trim(),
+        updatedAt: String(value?.updatedAt || ''),
+        updatedBy: String(value?.updatedBy || ''),
+      };
+    });
+
+    return normalized;
+  } catch (_error) {
+    return {};
+  }
+}
+
+function persistMonthLocks() {
+  try {
+    window.localStorage.setItem(MONTH_LOCK_STATE_KEY, JSON.stringify(state.monthLocks || {}));
+  } catch (_error) {
+    // ignore storage issues
+  }
+}
+
+function isMonthLocked(monthKey) {
+  const key = monthKey || getChecklistMonthKey();
+  return Boolean(state.monthLocks?.[key]?.locked === true);
+}
+
+function getMonthLockReason(monthKey) {
+  const key = monthKey || getChecklistMonthKey();
+  return String(state.monthLocks?.[key]?.reason || '').trim();
+}
+
+function setMonthLocked(monthKey, locked, reason) {
+  const key = monthKey || getChecklistMonthKey();
+  state.monthLocks[key] = {
+    locked: Boolean(locked),
+    reason: Boolean(locked) ? String(reason || '').trim() : '',
+    updatedAt: new Date().toISOString(),
+    updatedBy: getActivityActor(),
+  };
+  persistMonthLocks();
+  renderChecklist();
+}
+
+function guardMonthUnlocked(actionLabel, monthKey) {
+  const key = monthKey || getChecklistMonthKey();
+  if (!isMonthLocked(key)) {
+    return true;
+  }
+
+  const reason = getMonthLockReason(key);
+  showBanner(
+    `Month ${key} is locked. Unlock it first to ${actionLabel}.${reason ? ` Reason: ${reason}` : ''}`,
+    'info'
+  );
+  return false;
+}
+
+function csvCell(value) {
+  const raw = String(value ?? '');
+  const escaped = raw.replace(/"/g, '""');
+  return `"${escaped}"`;
+}
+
+function toIsoDate(value) {
+  if (!value?.iso) return '';
+  return value.iso;
+}
+
+function buildExportFilename(report, extension) {
+  const month = String(report?.periodMonth || 'unknown-month').replace(/[^0-9-]/g, '');
+  return `nuria-affiliate-report-${month}.${extension}`;
+}
+
+function createAndDownloadFile(filename, content, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
+async function loadReportDetailForExport(reportId) {
+  const data = await callFirebaseFunction('getAffiliatePayoutReportAdmin', {
+    reportId,
+    includeRows: true,
+    rowsLimit: 5000,
+    affiliatesLimit: 2000,
+  });
+
+  if (!data?.report) {
+    throw new Error('report_not_found');
+  }
+
+  return {
+    report: data.report,
+    affiliates: Array.isArray(data.affiliates) ? data.affiliates : [],
+    rows: Array.isArray(data.rows) ? data.rows : [],
+    rowsIncluded: data.rowsIncluded === true,
+  };
+}
+
+function buildCsvExport(detail) {
+  const report = detail.report || {};
+  const affiliates = detail.affiliates || [];
+  const rows = detail.rows || [];
+  const lines = [];
+
+  lines.push('Nuria Affiliate Payout Report');
+  lines.push(
+    [
+      csvCell('Report ID'),
+      csvCell(report.reportId || ''),
+      csvCell('Period Month'),
+      csvCell(report.periodMonth || ''),
+      csvCell('Status'),
+      csvCell(report.status || ''),
+    ].join(',')
+  );
+  lines.push(
+    [
+      csvCell('Source'),
+      csvCell(report.source || ''),
+      csvCell('Created At'),
+      csvCell(toIsoDate(report.createdAt)),
+      csvCell('Updated At'),
+      csvCell(toIsoDate(report.updatedAt)),
+    ].join(',')
+  );
+  lines.push('');
+
+  lines.push('Affiliate Summaries');
+  lines.push([
+    csvCell('Affiliate ID'),
+    csvCell('Affiliate Name'),
+    csvCell('Referral Codes'),
+    csvCell('Known Commission Total Minor'),
+    csvCell('Currencies'),
+    csvCell('Payout-ready Rows'),
+    csvCell('Reconciliation Rows'),
+  ].join(','));
+
+  affiliates.forEach((item) => {
+    lines.push([
+      csvCell(item.affiliateId || ''),
+      csvCell(item.affiliateDisplayName || ''),
+      csvCell(Array.isArray(item.referralCodes) ? item.referralCodes.join(' | ') : ''),
+      csvCell(item.knownCommissionTotalMinor ?? ''),
+      csvCell(Array.isArray(item.currencies) ? item.currencies.join(' | ') : ''),
+      csvCell(item.payoutReadyRowCount ?? 0),
+      csvCell(item.reconciliationRowCount ?? 0),
+    ].join(','));
+  });
+
+  lines.push('');
+  lines.push('Ledger Rows');
+  lines.push([
+    csvCell('Ledger ID'),
+    csvCell('Event Type'),
+    csvCell('Payout Status'),
+    csvCell('Commission Amount Minor'),
+    csvCell('Currency'),
+    csvCell('Affiliate ID'),
+    csvCell('Affiliate Name'),
+    csvCell('Referral Code'),
+    csvCell('Earned At'),
+  ].join(','));
+
+  rows.forEach((item) => {
+    lines.push([
+      csvCell(item.ledgerId || ''),
+      csvCell(item.eventType || ''),
+      csvCell(item.payoutStatus || ''),
+      csvCell(item.commissionAmountMinor ?? ''),
+      csvCell(item.currency || ''),
+      csvCell(item.affiliateId || ''),
+      csvCell(item.affiliateDisplayName || ''),
+      csvCell(item.referralCode || ''),
+      csvCell(toIsoDate(item.earnedAt)),
+    ].join(','));
+  });
+
+  return lines.join('\n');
+}
+
+function renderPdfTableRows(rows, mapper) {
+  return rows
+    .map((item) => `<tr>${mapper(item)}</tr>`)
+    .join('');
+}
+
+function buildPrintableHtml(detail, options) {
+  const report = detail.report || {};
+  const affiliates = detail.affiliates || [];
+  const rows = detail.rows || [];
+  const generatedAt = new Date().toISOString();
+  const settings = Object.assign({
+    title: 'Nuria Affiliate Payout Report',
+    subtitle: 'Generated by OakDev & AI AB internal admin',
+    footerNote: '',
+    includeRows: true,
+  }, options || {});
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuria Affiliate Report ${escapeHtml(report.periodMonth || '')}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #10231b; margin: 24px; }
+    .top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .top img.nuria { width: 52px; height: 52px; border-radius: 12px; }
+    .top img.oakdev { height: 28px; width: auto; }
+    .meta { margin: 10px 0 18px; font-size: 12px; }
+    h1 { margin: 0; font-size: 22px; }
+    h2 { margin: 22px 0 8px; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; }
+    th, td { border: 1px solid #d4dfd8; padding: 6px; vertical-align: top; text-align: left; }
+    th { background: #f4f8f5; }
+    .muted { color: #4a6357; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <img class="nuria" src="${window.location.origin}/assets/nuria-admin.png" alt="Nuria Admin" />
+    <img class="oakdev" src="${window.location.origin}/assets/oakdev-logo.png" alt="OakDev & AI AB" />
+    <div>
+      <h1>${escapeHtml(settings.title)}</h1>
+      <div class="muted">${escapeHtml(settings.subtitle)}</div>
+    </div>
+  </div>
+
+  <div class="meta">
+    <strong>Report ID:</strong> ${escapeHtml(report.reportId || '-')}<br />
+    <strong>Period:</strong> ${escapeHtml(report.periodMonth || '-')}<br />
+    <strong>Status:</strong> ${escapeHtml(report.status || '-')}<br />
+    <strong>Generated At (UTC):</strong> ${escapeHtml(generatedAt)}
+  </div>
+
+  <h2>Affiliate Summaries</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Affiliate</th>
+        <th>Codes</th>
+        <th>Known Total</th>
+        <th>Payout-ready</th>
+        <th>Reconciliation</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${renderPdfTableRows(affiliates, (item) => `
+        <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+        <td>${escapeHtml(formatList(item.referralCodes))}</td>
+        <td>${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
+        <td>${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
+        <td>${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
+      `)}
+    </tbody>
+  </table>
+
+  ${settings.includeRows ? '<h2>Ledger Rows</h2>' : ''}
+  ${settings.includeRows ? `
+  <table>
+    <thead>
+      <tr>
+        <th>Ledger ID</th>
+        <th>Event</th>
+        <th>Payout status</th>
+        <th>Commission minor</th>
+        <th>Currency</th>
+        <th>Affiliate</th>
+        <th>Earned at</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${renderPdfTableRows(rows, (item) => `
+        <td>${escapeHtml(item.ledgerId || '-')}</td>
+        <td>${escapeHtml(item.eventType || '-')}</td>
+        <td>${escapeHtml(item.payoutStatus || '-')}</td>
+        <td>${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
+        <td>${escapeHtml(item.currency || '-')}</td>
+        <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+        <td>${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
+      `)}
+    </tbody>
+  </table>
+  ` : ''}
+  ${settings.footerNote ? `<p class="muted">${escapeHtml(settings.footerNote)}</p>` : ''}
+</body>
+</html>`;
+}
+
+function openPrintableExport(html) {
+  const exportWindow = window.open('', '_blank', 'noopener,noreferrer');
+  if (!exportWindow) {
+    return false;
+  }
+
+  exportWindow.document.open();
+  exportWindow.document.write(html);
+  exportWindow.document.close();
+  exportWindow.focus();
+  exportWindow.print();
+  return true;
+}
+
+function createSampleExportDetail() {
+  return {
+    report: {
+      reportId: 'sample-report-2026-03',
+      periodMonth: '2026-03',
+      status: 'draft',
+      source: 'sample_data',
+      createdAt: { iso: '2026-03-01T00:00:00.000Z' },
+      updatedAt: { iso: '2026-03-31T00:00:00.000Z' },
+      paymentReference: null,
+      note: null,
+    },
+    affiliates: [
+      {
+        affiliateId: 'masjid_stockholm',
+        affiliateDisplayName: 'Masjid Stockholm',
+        referralCodes: ['MASJIDSTHLM'],
+        knownCommissionTotalMinor: 24900,
+        currencies: ['SEK'],
+        payoutReadyRowCount: 18,
+        reconciliationRowCount: 2,
+      },
+      {
+        affiliateId: 'example_partner',
+        affiliateDisplayName: 'Example Partner',
+        referralCodes: ['EXAMPLE01'],
+        knownCommissionTotalMinor: 12900,
+        currencies: ['SEK'],
+        payoutReadyRowCount: 9,
+        reconciliationRowCount: 1,
+      },
+    ],
+    rows: [
+      {
+        ledgerId: 'ledger_1001',
+        eventType: 'subscription_purchase',
+        payoutStatus: 'ready',
+        commissionAmountMinor: 4900,
+        currency: 'SEK',
+        affiliateId: 'masjid_stockholm',
+        affiliateDisplayName: 'Masjid Stockholm',
+        referralCode: 'MASJIDSTHLM',
+        earnedAt: { iso: '2026-03-12T10:30:00.000Z' },
+      },
+      {
+        ledgerId: 'ledger_1002',
+        eventType: 'subscription_purchase',
+        payoutStatus: 'ready',
+        commissionAmountMinor: 3900,
+        currency: 'SEK',
+        affiliateId: 'example_partner',
+        affiliateDisplayName: 'Example Partner',
+        referralCode: 'EXAMPLE01',
+        earnedAt: { iso: '2026-03-13T11:15:00.000Z' },
+      },
+    ],
+    rowsIncluded: true,
+  };
+}
+
+function buildPayoutReceiptHtml(detail, paymentReference, note) {
+  const report = detail.report || {};
+  const receiptFooter = `Payment reference: ${paymentReference || report.paymentReference || 'not provided'} | Note: ${note || report.note || 'none'}`;
+  return buildPrintableHtml(detail, {
+    title: `Nuria Partner Payout Receipt ${report.periodMonth || ''}`.trim(),
+    subtitle: 'Finalized payout receipt (internal finance record)',
+    footerNote: receiptFooter,
+    includeRows: false,
+  });
+}
+
+function isValidAffiliateCodeFormat(value) {
+  return /^[A-Z0-9_-]{3,64}$/.test(String(value || ''));
+}
+
+function validateCodePayload(payload) {
+  if (!payload.code) {
+    return 'Code is required.';
+  }
+
+  if (!isValidAffiliateCodeFormat(payload.code)) {
+    return 'Code must use 3-64 characters: A-Z, 0-9, underscore, or dash.';
+  }
+
+  if (!payload.affiliateId) {
+    return 'Affiliate ID is required.';
+  }
+
+  if (!/^[a-z0-9][a-z0-9_-]{1,63}$/i.test(payload.affiliateId)) {
+    return 'Affiliate ID format is invalid. Use letters, numbers, underscore, and dash.';
+  }
+
+  if (!Number.isInteger(payload.revenueShareBps) || payload.revenueShareBps < 0 || payload.revenueShareBps > 10000) {
+    return 'Revenue share BPS must be an integer between 0 and 10000.';
+  }
+
+  if (payload.fixedPayoutMinor != null && (!Number.isInteger(payload.fixedPayoutMinor) || payload.fixedPayoutMinor < 0)) {
+    return 'Fixed payout minor must be a whole number >= 0.';
+  }
+
+  if (payload.currency && !/^[A-Z]{3}$/.test(payload.currency)) {
+    return 'Currency must be a 3-letter code, e.g. SEK or USD.';
+  }
+
+  return '';
+}
+
 function setButtonBusy(button, busy, busyLabel) {
   if (!button) return;
 
@@ -217,6 +1254,15 @@ function setButtonBusy(button, busy, busyLabel) {
     button.textContent = button.dataset.originalLabel;
     delete button.dataset.originalLabel;
   }
+}
+
+function setCodeFormError(message) {
+  if (!elements.codeFormError) {
+    return;
+  }
+
+  elements.codeFormError.hidden = !message;
+  elements.codeFormError.textContent = message || '';
 }
 
 function getReportIdFromUrl() {
@@ -287,6 +1333,7 @@ function setCodeFormMode(mode) {
 function resetCodeForm(item) {
   const value = item || null;
 
+  setCodeFormError('');
   setCodeFormMode(value ? 'edit' : 'create');
   elements.codeForm.reset();
   elements.codeStatus.value = 'active';
@@ -320,7 +1367,10 @@ function renderMiniList(container, items, type) {
   if (!container) return;
 
   if (!items.length) {
-    container.innerHTML = '<p class="admin-empty admin-empty--inline">Nothing to show yet.</p>';
+    const emptyCopy = type === 'report'
+      ? 'No recent payout reports yet.'
+      : 'No recent referral codes yet.';
+    container.innerHTML = `<p class="admin-empty admin-empty--inline">${emptyCopy}</p>`;
     return;
   }
 
@@ -349,13 +1399,119 @@ function renderOverview() {
   elements.currentEmail.textContent = state.admin?.email || state.user?.email || '-';
   elements.currentRoles.textContent = state.admin?.roles?.join(', ') || '-';
   elements.currentSource.textContent = humanizeAccessSource(state.admin?.source || '');
+  const codes = Array.isArray(state.codes) ? state.codes : [];
+  const reports = Array.isArray(state.reports) ? state.reports : [];
+  const activeCodes = codes.filter((item) => item.status === 'active').length;
+  const trackedAffiliates = new Set(
+    codes
+      .map((item) => String(item.affiliateId || '').trim())
+      .filter(Boolean)
+  ).size;
+  const latestReportRows = reports.length ? Number(reports[0].ledgerRowCount ?? 0) : 0;
+  const unpaidReports = reports.filter((item) => item.status !== 'paid').length;
+  const draftReports = reports.filter((item) => item.status === 'draft').length;
+  const latestExport = (state.activityLog || []).find((item) =>
+    String(item.message || '').toLowerCase().includes('export')
+  );
+
+  if (elements.activeCodesCount) {
+    elements.activeCodesCount.textContent = String(activeCodes);
+  }
+
+  if (elements.trackedAffiliatesCount) {
+    elements.trackedAffiliatesCount.textContent = String(trackedAffiliates);
+  }
+
+  if (elements.latestReportRows) {
+    elements.latestReportRows.textContent = String(latestReportRows);
+  }
+
+  if (elements.unpaidReportsCount) {
+    elements.unpaidReportsCount.textContent = String(unpaidReports);
+  }
+
+  if (elements.draftReportsCount) {
+    elements.draftReportsCount.textContent = String(draftReports);
+  }
+
+  if (elements.lastExportAt) {
+    elements.lastExportAt.textContent = latestExport ? formatTimestamp({ iso: latestExport.at }) : 'Never';
+  }
 
   renderMiniList(elements.overviewReports, state.recentReports, 'report');
   renderMiniList(elements.overviewCodes, state.recentCodes, 'code');
+  renderActivityLog();
+  renderBackendAuditLog();
+  renderRecipientList();
+  renderNextStep();
+}
+
+function renderNextStep() {
+  const monthKey = getChecklistMonthKey();
+  const locked = isMonthLocked(monthKey);
+  const status = getChecklistForMonth(monthKey);
+  const hasSelectedReport = Boolean(state.selectedReportId);
+
+  let action = 'none';
+  let copy = 'All monthly close steps are complete.';
+
+  if (!hasSelectedReport) {
+    action = 'select_latest_report';
+    copy = 'Start by opening the latest payout report.';
+  } else if (locked) {
+    action = 'unlock_month';
+    copy = `Month ${monthKey} is locked. Unlock it to continue payout actions.`;
+  } else if (!status.verified) {
+    action = 'load_rows';
+    copy = 'Next: load rows and verify affiliates and totals.';
+  } else if (!status.paid) {
+    action = 'finalize_payout';
+    copy = 'Next: finalize payout to mark this month as paid.';
+  } else if (!status.exported || !status.receipt) {
+    action = 'close_package';
+    copy = 'Next: generate the month-end package (CSV + ops snapshot + receipt PDF).';
+  }
+
+  state.nextStepAction = action;
+  if (elements.nextStepCopy) {
+    elements.nextStepCopy.textContent = copy;
+  }
+
+  if (elements.runNextStep) {
+    elements.runNextStep.disabled = action === 'none';
+    const labels = {
+      select_latest_report: 'Open latest report',
+      unlock_month: 'Unlock month',
+      load_rows: 'Load rows for review',
+      export_csv: 'Export CSV',
+      finalize_payout: 'Finalize payout now',
+      close_package: 'Generate month-end package',
+      export_pdf: 'Open receipt PDF',
+      none: 'All done',
+    };
+    elements.runNextStep.textContent = labels[action] || 'Run next step';
+  }
 }
 
 function renderCodesTable() {
-  const items = state.codes || [];
+  const query = normalizeSearchValue(state.filters.codeQuery);
+  const statusFilter = normalizeSearchValue(state.filters.codeStatus);
+  const allItems = state.codes || [];
+  const items = allItems.filter((item) => {
+    const status = normalizeSearchValue(item.status);
+    if (statusFilter && status !== statusFilter) {
+      return false;
+    }
+
+    if (!query) return true;
+    const haystack = [
+      item.code,
+      item.affiliateId,
+      item.displayName,
+      item.status,
+    ].map((value) => normalizeSearchValue(value)).join(' ');
+    return haystack.includes(query);
+  });
 
   elements.codeTableBody.innerHTML = items
     .map((item) => {
@@ -379,11 +1535,35 @@ function renderCodesTable() {
     })
     .join('');
 
-  elements.codesEmpty.hidden = items.length > 0;
+  if (elements.codesEmpty) {
+    if (!items.length && allItems.length) {
+      elements.codesEmpty.textContent = 'No codes match your current filters.';
+    } else if (!allItems.length) {
+      elements.codesEmpty.textContent = 'No referral codes yet. Create your first partner code to start tracking signups and monthly payouts.';
+    }
+    elements.codesEmpty.hidden = items.length > 0;
+  }
 }
 
 function renderReportsTable() {
-  const items = state.reports || [];
+  const query = normalizeSearchValue(state.filters.reportQuery);
+  const statusFilter = normalizeSearchValue(state.filters.reportStatus);
+  const allItems = state.reports || [];
+  const items = allItems.filter((item) => {
+    const status = normalizeSearchValue(item.status);
+    if (statusFilter && status !== statusFilter) {
+      return false;
+    }
+
+    if (!query) return true;
+    const haystack = [
+      item.periodMonth,
+      item.reportId,
+      item.status,
+      item.source,
+    ].map((value) => normalizeSearchValue(value)).join(' ');
+    return haystack.includes(query);
+  });
 
   elements.reportsTableBody.innerHTML = items
     .map((item) => {
@@ -404,7 +1584,67 @@ function renderReportsTable() {
     })
     .join('');
 
-  elements.reportsEmpty.hidden = items.length > 0;
+  if (elements.reportsEmpty) {
+    if (!items.length && allItems.length) {
+      elements.reportsEmpty.textContent = 'No payout reports match your current filters.';
+    } else if (!allItems.length) {
+      elements.reportsEmpty.textContent = 'No payout reports yet. Generate a monthly report to prepare partner payout reconciliation.';
+    }
+    elements.reportsEmpty.hidden = items.length > 0;
+  }
+}
+
+function renderDiscrepancies(detail) {
+  if (!elements.discrepancyList) return;
+
+  if (!detail || detail.rowsIncluded !== true) {
+    elements.discrepancyList.innerHTML = '<p class="admin-empty admin-empty--inline">Load rows to run discrepancy checks.</p>';
+    return;
+  }
+
+  const rows = Array.isArray(detail.rows) ? detail.rows : [];
+  const affiliates = Array.isArray(detail.affiliates) ? detail.affiliates : [];
+  const affiliateCurrencies = new Map();
+  affiliates.forEach((item) => {
+    affiliateCurrencies.set(String(item.affiliateId || ''), Array.isArray(item.currencies) ? item.currencies : []);
+  });
+
+  const findings = [];
+  rows.forEach((row) => {
+    const rowId = row.ledgerId || 'unknown-ledger';
+    const amount = Number(row.commissionAmountMinor);
+    const currency = String(row.currency || '').trim().toUpperCase();
+    const affiliateId = String(row.affiliateId || '').trim();
+
+    if (Number.isFinite(amount) && amount < 0) {
+      findings.push(`Negative commission detected on ${rowId}.`);
+    }
+
+    if (!affiliateId && !String(row.affiliateDisplayName || '').trim()) {
+      findings.push(`Missing affiliate mapping on ${rowId}.`);
+    }
+
+    if (!currency) {
+      findings.push(`Missing currency on ${rowId}.`);
+    } else if (affiliateId) {
+      const expected = affiliateCurrencies.get(affiliateId) || [];
+      if (expected.length && !expected.includes(currency)) {
+        findings.push(`Currency mismatch on ${rowId} (${currency} not in ${expected.join('/')}).`);
+      }
+    }
+  });
+
+  if (!findings.length) {
+    elements.discrepancyList.innerHTML = '<p class="admin-empty admin-empty--inline">No payout discrepancies detected.</p>';
+    return;
+  }
+
+  elements.discrepancyList.innerHTML = findings
+    .slice(0, 30)
+    .map((message) => {
+      return `<div class="admin-mini-item admin-mini-item--warn"><span class="admin-mini-item__title">${escapeHtml(message)}</span></div>`;
+    })
+    .join('');
 }
 
 function renderReportStats(report) {
@@ -505,14 +1745,32 @@ function clearSelectedReport() {
   elements.reportDetailEmpty.hidden = false;
   elements.reportDetailContent.hidden = true;
   elements.markPaidButton.disabled = true;
-  elements.markPaidButton.textContent = 'Mark report as paid';
+  elements.markPaidButton.textContent = 'Mark as paid';
+  if (elements.exportCsvButton) elements.exportCsvButton.disabled = true;
+  if (elements.exportPdfButton) elements.exportPdfButton.disabled = true;
+  if (elements.finalizePayoutButton) {
+    elements.finalizePayoutButton.disabled = true;
+    elements.finalizePayoutButton.textContent = 'Finalize payout now';
+  }
+  if (elements.closePackageButton) {
+    elements.closePackageButton.disabled = true;
+    elements.closePackageButton.textContent = 'Generate month-end package';
+  }
+  if (elements.copyReportDeepLink) elements.copyReportDeepLink.disabled = true;
   syncReportActionFields(null);
+  renderDiscrepancies(null);
+  renderNextStep();
 }
 
 function renderSelectedReport() {
   const detail = state.selectedReport;
 
   elements.loadReportRows.disabled = !state.selectedReportId;
+  if (elements.exportCsvButton) elements.exportCsvButton.disabled = !state.selectedReportId;
+  if (elements.exportPdfButton) elements.exportPdfButton.disabled = !state.selectedReportId;
+  if (elements.finalizePayoutButton) elements.finalizePayoutButton.disabled = !state.selectedReportId;
+  if (elements.closePackageButton) elements.closePackageButton.disabled = !state.selectedReportId;
+  if (elements.copyReportDeepLink) elements.copyReportDeepLink.disabled = !state.selectedReportId;
 
   if (!detail || !detail.report) {
     clearSelectedReport();
@@ -520,6 +1778,7 @@ function renderSelectedReport() {
   }
 
   const report = detail.report;
+  const monthLocked = isMonthLocked(report.periodMonth || elements.reportMonth.value);
   elements.reportDetailTitle.textContent = `Report ${report.periodMonth}`;
   elements.reportDetailEmpty.hidden = true;
   elements.reportDetailContent.hidden = false;
@@ -528,15 +1787,35 @@ function renderSelectedReport() {
   renderReportMeta(report);
   renderReportAffiliates(detail.affiliates || []);
   renderReportRows(detail.rows || [], detail.rowsIncluded === true);
+  renderDiscrepancies(detail);
   syncReportActionFields(report);
 
   if (report.status === 'paid') {
     elements.markPaidButton.disabled = true;
     elements.markPaidButton.textContent = 'Already paid';
+    if (elements.finalizePayoutButton) {
+      elements.finalizePayoutButton.disabled = true;
+      elements.finalizePayoutButton.textContent = 'Already paid';
+    }
+    if (elements.closePackageButton) {
+      elements.closePackageButton.disabled = false;
+      elements.closePackageButton.textContent = 'Generate month-end package';
+    }
   } else {
-    elements.markPaidButton.disabled = false;
-    elements.markPaidButton.textContent = 'Mark report as paid';
+    elements.markPaidButton.disabled = monthLocked;
+    elements.markPaidButton.textContent = monthLocked ? 'Month locked' : 'Mark as paid';
+    if (elements.finalizePayoutButton) {
+      elements.finalizePayoutButton.disabled = monthLocked;
+      elements.finalizePayoutButton.textContent = monthLocked ? 'Month locked' : 'Finalize payout now';
+    }
+    if (elements.closePackageButton) {
+      elements.closePackageButton.disabled = monthLocked;
+      elements.closePackageButton.textContent = monthLocked ? 'Month locked' : 'Generate month-end package';
+    }
   }
+
+  renderChecklist();
+  renderNextStep();
 }
 
 async function loadBootstrap() {
@@ -561,6 +1840,86 @@ async function loadReports() {
   });
 
   state.reports = Array.isArray(data.items) ? data.items : [];
+}
+
+async function loadBackendAuditLogs() {
+  try {
+    state.backendAuditLogs = await listAffiliateAdminAuditLogs(60);
+    state.backendAuditUnavailableReason = '';
+  } catch (error) {
+    state.backendAuditLogs = [];
+    state.backendAuditUnavailableReason = getActionableErrorMessage(
+      error,
+      'Could not load backend audit log.'
+    );
+  }
+}
+
+function renderRecipientList() {
+  if (!elements.recipientList) return;
+
+  const recipientDisabled = Boolean(state.recipientSettingsUnavailableReason);
+  if (elements.recipientEmail) {
+    elements.recipientEmail.disabled = recipientDisabled;
+  }
+  if (elements.addRecipientButton) {
+    elements.addRecipientButton.disabled = recipientDisabled;
+  }
+
+  if (state.recipientSettingsUnavailableReason) {
+    elements.recipientList.innerHTML = `<p class="admin-empty admin-empty--inline">${escapeHtml(state.recipientSettingsUnavailableReason)}</p>`;
+    return;
+  }
+
+  const recipients = Array.isArray(state.reportRecipients) ? state.reportRecipients : [];
+  if (!recipients.length) {
+    elements.recipientList.innerHTML = '<p class="admin-empty admin-empty--inline">No scheduled recipients added yet.</p>';
+    return;
+  }
+
+  elements.recipientList.innerHTML = recipients
+    .map((email) => {
+      return `
+        <div class="admin-mini-item">
+          <span class="admin-mini-item__title">${escapeHtml(email)}</span>
+          <button type="button" class="btn btn--outline" data-remove-recipient="${escapeHtml(email)}">Remove</button>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+async function loadAdminSettings() {
+  try {
+    const data = await getAffiliateAdminSettings();
+    const recipients = Array.isArray(data.monthlyReportRecipients)
+      ? data.monthlyReportRecipients.map((email) => normalizeEmail(email)).filter(Boolean)
+      : [];
+    state.reportRecipients = Array.from(new Set(recipients));
+    state.recipientSettingsUnavailableReason = '';
+  } catch (error) {
+    state.reportRecipients = [];
+    state.recipientSettingsUnavailableReason = getActionableErrorMessage(
+      error,
+      'Could not load scheduled recipient settings.'
+    );
+  }
+}
+
+async function saveRecipients() {
+  try {
+    await saveAffiliateAdminSettings({
+      monthlyReportRecipients: state.reportRecipients,
+    });
+    state.recipientSettingsUnavailableReason = '';
+  } catch (error) {
+    state.recipientSettingsUnavailableReason = getActionableErrorMessage(
+      error,
+      'Could not save scheduled recipient settings.'
+    );
+    renderRecipientList();
+    throw error;
+  }
 }
 
 function setUnauthorizedMessage(error) {
@@ -633,7 +1992,13 @@ async function loadDashboard(options) {
   clearBanner();
 
   try {
-    await Promise.all([loadBootstrap(), loadCodes(), loadReports()]);
+    await Promise.all([
+      loadBootstrap(),
+      loadCodes(),
+      loadReports(),
+      loadBackendAuditLogs(),
+      loadAdminSettings(),
+    ]);
     renderOverview();
     renderCodesTable();
     renderReportsTable();
@@ -688,10 +2053,13 @@ async function loadReportDetail(reportId, includeRows) {
       rows: Array.isArray(data.rows) ? data.rows : [],
       rowsIncluded: data.rowsIncluded === true,
     };
+    if (data.rowsIncluded === true) {
+      setChecklistStep('verified', true, data.report?.periodMonth || elements.reportMonth.value);
+    }
     renderSelectedReport();
   } catch (error) {
     clearSelectedReport();
-    showBanner(getErrorParts(error).message, 'error');
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
   }
 }
 
@@ -703,6 +2071,7 @@ async function handleGoogleSignIn() {
 
   try {
     await signInWithGoogle();
+    await playLoginSuccessSound();
   } catch (error) {
     const parts = getErrorParts(error);
     elements.authError.hidden = false;
@@ -727,6 +2096,7 @@ async function handleEmailSignIn(event) {
 
   try {
     await signInWithEmailPassword(email, password);
+    await playLoginSuccessSound();
   } catch (error) {
     const parts = getErrorParts(error);
     elements.authError.hidden = false;
@@ -734,6 +2104,255 @@ async function handleEmailSignIn(event) {
   } finally {
     setButtonBusy(submitButton, false);
   }
+}
+
+async function handleSendPasswordReset() {
+  const email = String(elements.emailSignInForm?.querySelector('[name="email"]')?.value || '').trim();
+  if (!email) {
+    elements.authError.hidden = false;
+    elements.authError.textContent = 'Enter your admin email first, then click password reset.';
+    return;
+  }
+
+  elements.authError.hidden = true;
+  elements.authError.textContent = '';
+  setButtonBusy(elements.sendPasswordResetButton, true, 'Sending');
+
+  try {
+    await sendPasswordReset(email);
+    showBanner('Password reset email sent. Check your inbox and spam folder.', 'success');
+  } catch (error) {
+    const message = getActionableErrorMessage(error, getErrorParts(error).message);
+    elements.authError.hidden = false;
+    elements.authError.textContent = message;
+  } finally {
+    setButtonBusy(elements.sendPasswordResetButton, false);
+  }
+}
+
+function handleExportOpsSnapshotJson() {
+  const snapshot = getOpsSnapshot();
+  createAndDownloadFile(
+    `nuria-affiliate-ops-snapshot-${snapshot.selectedMonth || 'unknown'}.json`,
+    JSON.stringify(snapshot, null, 2),
+    'application/json;charset=utf-8'
+  );
+  addActivityLog(`Exported ops snapshot JSON for ${snapshot.selectedMonth || 'current month'}.`, 'success');
+  showBanner('Ops snapshot JSON exported.', 'success');
+}
+
+function handleExportOpsSnapshotCsv() {
+  const snapshot = getOpsSnapshot();
+  createAndDownloadFile(
+    `nuria-affiliate-ops-snapshot-${snapshot.selectedMonth || 'unknown'}.csv`,
+    buildOpsSnapshotCsv(snapshot),
+    'text/csv;charset=utf-8'
+  );
+  addActivityLog(`Exported ops snapshot CSV for ${snapshot.selectedMonth || 'current month'}.`, 'success');
+  showBanner('Ops snapshot CSV exported.', 'success');
+}
+
+async function handleRefreshBackendAudit() {
+  await loadBackendAuditLogs();
+  renderBackendAuditLog();
+  if (state.backendAuditUnavailableReason) {
+    showBanner(state.backendAuditUnavailableReason, 'error');
+    return;
+  }
+  try {
+    showBanner('Backend audit log refreshed.', 'success');
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, 'Could not refresh backend audit log.'), 'error');
+  }
+}
+
+async function handleRecipientAdd(event) {
+  event.preventDefault();
+  const email = normalizeEmail(elements.recipientEmail?.value || '');
+
+  if (!isValidEmail(email)) {
+    showBanner('Enter a valid email address before adding recipient.', 'info');
+    return;
+  }
+
+  if (state.reportRecipients.includes(email)) {
+    showBanner('This recipient is already in the schedule list.', 'info');
+    return;
+  }
+
+  const next = state.reportRecipients.concat(email).sort();
+  try {
+    state.reportRecipients = next;
+    await saveRecipients();
+    renderRecipientList();
+    if (elements.recipientEmail) elements.recipientEmail.value = '';
+    showBanner(`Added scheduled recipient ${email}.`, 'success');
+    addActivityLog(`Added scheduled report recipient ${email}.`, 'success');
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, 'Could not save recipient list to backend.'), 'error');
+  }
+}
+
+async function handleRecipientRemove(email) {
+  const targetEmail = normalizeEmail(email);
+  const next = state.reportRecipients.filter((item) => item !== targetEmail);
+  try {
+    state.reportRecipients = next;
+    await saveRecipients();
+    renderRecipientList();
+    showBanner(`Removed scheduled recipient ${targetEmail}.`, 'success');
+    addActivityLog(`Removed scheduled report recipient ${targetEmail}.`, 'info');
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, 'Could not update recipient list on backend.'), 'error');
+  }
+}
+
+async function handleRunNextStep() {
+  switch (state.nextStepAction) {
+    case 'select_latest_report': {
+      const latest = (state.reports || [])[0];
+      if (!latest?.reportId) {
+        showBanner('No report available yet. Generate a report first.', 'info');
+        return;
+      }
+      elements.includeRowsToggle.checked = false;
+      await loadReportDetail(latest.reportId, false);
+      addActivityLog(`Action center selected latest report ${latest.reportId}.`, 'info');
+      return;
+    }
+    case 'unlock_month':
+      handleToggleMonthLock();
+      return;
+    case 'load_rows':
+      elements.includeRowsToggle.checked = true;
+      await loadReportDetail(state.selectedReportId, true);
+      return;
+    case 'export_csv':
+      await handleExportCsv();
+      return;
+    case 'finalize_payout':
+      await handleFinalizePayout();
+      return;
+    case 'close_package':
+      await handleClosePackage();
+      return;
+    case 'export_pdf':
+      await handleExportPdf();
+      return;
+    default:
+      showBanner('Nothing pending in action center.', 'info');
+  }
+}
+
+async function copyPlainText(text) {
+  if (typeof site.copyText === 'function') {
+    await site.copyText(text);
+    return;
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  throw new Error('copy_failed');
+}
+
+async function handleCopyReportDeepLink() {
+  if (!state.selectedReportId) {
+    showBanner('Select a report before copying a deep link.', 'info');
+    return;
+  }
+
+  const deepLink = `${window.location.origin}${window.location.pathname}?report=${encodeURIComponent(state.selectedReportId)}`;
+
+  try {
+    await copyPlainText(deepLink);
+    addActivityLog(`Copied report deep link for ${state.selectedReportId}.`, 'success');
+    showBanner('Report deep link copied.', 'success');
+  } catch (_error) {
+    showBanner('Could not copy report deep link on this browser.', 'error');
+  }
+}
+
+function handleOpenPartnerJoin() {
+  const firstCode = (state.codes || []).find((item) => item.status === 'active')?.code
+    || (state.recentCodes || []).find((item) => item.code)?.code
+    || '';
+
+  if (!firstCode) {
+    showBanner('No active referral code found yet. Create one first.', 'info');
+    return;
+  }
+
+  const joinUrl = `${window.location.origin}/join?ref=${encodeURIComponent(firstCode)}`;
+  window.open(joinUrl, '_blank', 'noopener,noreferrer');
+  addActivityLog(`Opened partner join page for ${firstCode}.`, 'info');
+  showBanner(`Opened join page for ${firstCode}.`, 'success');
+}
+
+function handleToggleCompactMode() {
+  state.compactMode = !state.compactMode;
+  persistCompactMode();
+  applyCompactMode();
+  addActivityLog(
+    state.compactMode ? 'Enabled compact mode.' : 'Switched to standard mode.',
+    'info'
+  );
+}
+
+function handleOpenOnboarding() {
+  setOnboardingOpen(true);
+}
+
+function handleCloseOnboarding() {
+  setOnboardingOpen(false);
+}
+
+function handleDismissOnboarding() {
+  state.onboardingDismissed = true;
+  persistOnboardingDismissed(true);
+  setOnboardingOpen(false);
+  addActivityLog('Disabled quick tour auto-open for this browser.', 'info');
+}
+
+function handleToggleMonthLock() {
+  const monthKey = getChecklistMonthKey();
+  const nextLocked = !isMonthLocked(monthKey);
+  let reason = '';
+
+  if (nextLocked) {
+    const inputReason = window.prompt(
+      `Lock month ${monthKey}. Add a short reason (optional but recommended):`,
+      'Finance reconciliation completed'
+    );
+
+    if (inputReason == null) {
+      return;
+    }
+
+    reason = String(inputReason || '').trim();
+  }
+
+  setMonthLocked(monthKey, nextLocked, reason);
+
+  addActivityLog(
+    nextLocked
+      ? `Locked payout month ${monthKey}${reason ? ` (${reason})` : ''}.`
+      : `Unlocked payout month ${monthKey}.`,
+    nextLocked ? 'info' : 'success'
+  );
+  showBanner(
+    nextLocked
+      ? `Month ${monthKey} is now locked.${reason ? ` Reason: ${reason}` : ''}`
+      : `Month ${monthKey} is now unlocked.`,
+    'info'
+  );
+
+  if (state.selectedReport?.report) {
+    renderSelectedReport();
+  }
+  renderNextStep();
 }
 
 async function handleSignOut() {
@@ -754,7 +2373,13 @@ async function handleSignOut() {
 
 async function handleCodeSave(event) {
   event.preventDefault();
+
+  if (state.saveCodeInFlight) {
+    return;
+  }
+
   clearBanner();
+  setCodeFormError('');
 
   const editing = elements.editingExistingCode.value === 'true';
   const payload = {
@@ -770,7 +2395,15 @@ async function handleCodeSave(event) {
       : null,
     currency: elements.currency.value.trim().toUpperCase() || null,
   };
+  const validationError = validateCodePayload(payload);
 
+  if (validationError) {
+    setCodeFormError(validationError);
+    showBanner('Fix the highlighted code form issue and submit again.', 'info');
+    return;
+  }
+
+  state.saveCodeInFlight = true;
   setButtonBusy(elements.saveCodeButton, true, 'Saving');
 
   try {
@@ -793,16 +2426,35 @@ async function handleCodeSave(event) {
         : `Created code ${saved.code || payload.code}.`,
       'success'
     );
+    addActivityLog(
+      editing
+        ? `Updated referral code ${saved.code || payload.code}.`
+        : `Created referral code ${saved.code || payload.code}.`,
+      'success'
+    );
   } catch (error) {
-    showBanner(getErrorParts(error).message, 'error');
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setCodeFormError(actionable);
+    showBanner(actionable, 'error');
   } finally {
+    state.saveCodeInFlight = false;
     setButtonBusy(elements.saveCodeButton, false);
   }
 }
 
 async function handleGenerateReport(event) {
   event.preventDefault();
+
+  if (state.generateReportInFlight) {
+    return;
+  }
+
+  if (!guardMonthUnlocked('generate a report', elements.reportMonth.value)) {
+    return;
+  }
+
   clearBanner();
+  state.generateReportInFlight = true;
   setButtonBusy(elements.generateReportButton, true, 'Generating');
 
   try {
@@ -824,13 +2476,16 @@ async function handleGenerateReport(event) {
       `Generated payout report ${data.reportId || elements.reportMonth.value}.`,
       'success'
     );
+    addActivityLog(`Generated payout report ${data.reportId || elements.reportMonth.value}.`, 'success');
+    setChecklistStep('generated', true, data.month || elements.reportMonth.value);
 
     if (data.reportId) {
       await loadReportDetail(data.reportId, elements.includeRowsToggle.checked);
     }
   } catch (error) {
-    showBanner(getErrorParts(error).message, 'error');
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
   } finally {
+    state.generateReportInFlight = false;
     setButtonBusy(elements.generateReportButton, false);
   }
 }
@@ -838,9 +2493,18 @@ async function handleGenerateReport(event) {
 async function handleMarkPaid(event) {
   event.preventDefault();
 
+  if (state.markPaidInFlight) {
+    return;
+  }
+
   const reportId = state.selectedReport?.report?.reportId || '';
+  const reportMonth = state.selectedReport?.report?.periodMonth || elements.reportMonth.value;
   if (!reportId) {
     showBanner('Load a payout report before marking it as paid.', 'info');
+    return;
+  }
+
+  if (!guardMonthUnlocked('mark this report as paid', reportMonth)) {
     return;
   }
 
@@ -849,14 +2513,11 @@ async function handleMarkPaid(event) {
   }
 
   clearBanner();
+  state.markPaidInFlight = true;
   setButtonBusy(elements.markPaidButton, true, 'Marking paid');
 
   try {
-    const data = await callFirebaseFunction('markAffiliatePayoutReportPaidAdmin', {
-      reportId,
-      paymentReference: elements.paymentReference.value.trim() || null,
-      note: elements.paymentNote.value.trim() || null,
-    });
+    const data = await markReportPaid(reportId);
 
     track('affiliate_admin_report_marked_paid', {
       report_id: reportId,
@@ -873,11 +2534,303 @@ async function handleMarkPaid(event) {
         : `Marked report ${reportId} as paid.`,
       'success'
     );
+    addActivityLog(
+      data.alreadyPaid === true
+        ? `Report ${reportId} was already paid.`
+        : `Marked report ${reportId} as paid.`,
+      'success'
+    );
+    setChecklistStep('paid', true, state.selectedReport?.report?.periodMonth || elements.reportMonth.value);
     await loadReportDetail(reportId, elements.includeRowsToggle.checked);
   } catch (error) {
-    showBanner(getErrorParts(error).message, 'error');
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
   } finally {
+    state.markPaidInFlight = false;
     setButtonBusy(elements.markPaidButton, false);
+  }
+}
+
+async function markReportPaid(reportId) {
+  return callFirebaseFunction('markAffiliatePayoutReportPaidAdmin', {
+    reportId,
+    paymentReference: elements.paymentReference.value.trim() || null,
+    note: elements.paymentNote.value.trim() || null,
+  });
+}
+
+async function withExportLock(callback) {
+  if (state.exportInFlight) {
+    return;
+  }
+
+  state.exportInFlight = true;
+  setButtonBusy(elements.exportCsvButton, true, 'Exporting');
+  setButtonBusy(elements.exportPdfButton, true, 'Exporting');
+  setButtonBusy(elements.exportTestButton, true, 'Exporting');
+  setButtonBusy(elements.closePackageButton, true, 'Exporting');
+  clearBanner();
+
+  try {
+    await callback();
+  } finally {
+    state.exportInFlight = false;
+    setButtonBusy(elements.exportCsvButton, false);
+    setButtonBusy(elements.exportPdfButton, false);
+    setButtonBusy(elements.exportTestButton, false);
+    setButtonBusy(elements.closePackageButton, false);
+  }
+}
+
+async function handleExportCsv() {
+  const reportId = state.selectedReport?.report?.reportId || state.selectedReportId;
+  if (!reportId) {
+    showBanner('Select a payout report before exporting.', 'info');
+    return;
+  }
+
+  await withExportLock(async () => {
+    try {
+      const detail = await loadReportDetailForExport(reportId);
+      const csv = buildCsvExport(detail);
+      createAndDownloadFile(
+        buildExportFilename(detail.report, 'csv'),
+        csv,
+        'text/csv;charset=utf-8'
+      );
+      showBanner('CSV export downloaded.', 'success');
+      addActivityLog(`Exported CSV for ${detail.report?.periodMonth || reportId}.`, 'success');
+      setChecklistStep('exported', true, detail.report?.periodMonth || elements.reportMonth.value);
+    } catch (error) {
+      showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+    }
+  });
+}
+
+async function handleExportPdf() {
+  const reportId = state.selectedReport?.report?.reportId || state.selectedReportId;
+  if (!reportId) {
+    showBanner('Select a payout report before exporting.', 'info');
+    return;
+  }
+
+  await withExportLock(async () => {
+    try {
+      const detail = await loadReportDetailForExport(reportId);
+      const html = buildPrintableHtml(detail);
+      const opened = openPrintableExport(html);
+      if (!opened) {
+        showBanner('Popup blocked. Allow popups to open the PDF export view.', 'error');
+        return;
+      }
+      showBanner('PDF export view opened. Use "Save as PDF" in the print dialog.', 'success');
+      addActivityLog(`Opened PDF export for ${detail.report?.periodMonth || reportId}.`, 'success');
+      setChecklistStep('exported', true, detail.report?.periodMonth || elements.reportMonth.value);
+    } catch (error) {
+      showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+    }
+  });
+}
+
+async function handleExportTestSample() {
+  if (state.exportInFlight || state.finalizeInFlight) {
+    return;
+  }
+
+  await withExportLock(async () => {
+    const sampleDetail = createSampleExportDetail();
+    const csv = buildCsvExport(sampleDetail);
+    createAndDownloadFile(
+      'nuria-affiliate-report-sample.csv',
+      csv,
+      'text/csv;charset=utf-8'
+    );
+    const html = buildPrintableHtml(sampleDetail, {
+      title: 'Nuria Affiliate Report Sample Export',
+      subtitle: 'Sample data preview for formatting and branding checks',
+      footerNote: 'This document uses example data only.',
+      includeRows: true,
+    });
+    const opened = openPrintableExport(html);
+    if (!opened) {
+      showBanner('Sample CSV downloaded. Allow popups to open the sample PDF view.', 'info');
+      addActivityLog('Exported sample CSV (PDF blocked by popup settings).', 'info');
+      return;
+    }
+
+    showBanner('Sample export created (CSV + PDF view).', 'success');
+    addActivityLog('Exported sample CSV and sample PDF view.', 'success');
+  });
+}
+
+async function handleFinalizePayout() {
+  if (state.finalizeInFlight || state.exportInFlight || state.markPaidInFlight) {
+    return;
+  }
+
+  const reportId = state.selectedReport?.report?.reportId || state.selectedReportId;
+  const reportMonth = state.selectedReport?.report?.periodMonth || elements.reportMonth.value;
+  if (!reportId) {
+    showBanner('Select a payout report before finalizing payout.', 'info');
+    return;
+  }
+
+  if (!guardMonthUnlocked('finalize payout', reportMonth)) {
+    return;
+  }
+
+  if (!window.confirm(`Finalize payout for report ${reportId}? This exports data and marks the report as paid.`)) {
+    return;
+  }
+
+  clearBanner();
+  state.finalizeInFlight = true;
+  state.exportInFlight = true;
+  state.markPaidInFlight = true;
+  setButtonBusy(elements.finalizePayoutButton, true, 'Finalizing');
+  setButtonBusy(elements.exportCsvButton, true, 'Finalizing');
+  setButtonBusy(elements.exportPdfButton, true, 'Finalizing');
+  setButtonBusy(elements.exportTestButton, true, 'Finalizing');
+  setButtonBusy(elements.closePackageButton, true, 'Finalizing');
+  setButtonBusy(elements.markPaidButton, true, 'Finalizing');
+
+  try {
+    const detailForExport = await loadReportDetailForExport(reportId);
+    const csv = buildCsvExport(detailForExport);
+    createAndDownloadFile(
+      buildExportFilename(detailForExport.report, 'csv'),
+      csv,
+      'text/csv;charset=utf-8'
+    );
+
+    const paidResult = await markReportPaid(reportId);
+    await Promise.all([loadBootstrap(), loadReports()]);
+    renderOverview();
+    renderReportsTable();
+    await loadReportDetail(reportId, true);
+    const updatedDetail = await loadReportDetailForExport(reportId);
+    const receiptHtml = buildPayoutReceiptHtml(
+      updatedDetail,
+      elements.paymentReference.value.trim(),
+      elements.paymentNote.value.trim()
+    );
+    const opened = openPrintableExport(receiptHtml);
+
+    track('affiliate_admin_payout_finalized', {
+      report_id: reportId,
+      already_paid: paidResult.alreadyPaid === true,
+      marked_rows: paidResult.markedLedgerRows || 0,
+    });
+
+    if (!opened) {
+      showBanner('Payout finalized and CSV exported. Allow popups to open the receipt PDF view.', 'success');
+      addActivityLog(`Finalized payout for ${reportId} and exported CSV.`, 'success');
+      markChecklistSteps(['exported', 'paid'], true, updatedDetail.report?.periodMonth || elements.reportMonth.value);
+      return;
+    }
+
+    showBanner('Payout finalized, CSV exported, and receipt PDF view opened.', 'success');
+    addActivityLog(`Finalized payout for ${reportId} with receipt PDF export.`, 'success');
+    markChecklistSteps(
+      ['exported', 'paid', 'receipt', 'verified'],
+      true,
+      updatedDetail.report?.periodMonth || elements.reportMonth.value
+    );
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+  } finally {
+    state.finalizeInFlight = false;
+    state.exportInFlight = false;
+    state.markPaidInFlight = false;
+    setButtonBusy(elements.finalizePayoutButton, false);
+    setButtonBusy(elements.exportCsvButton, false);
+    setButtonBusy(elements.exportPdfButton, false);
+    setButtonBusy(elements.exportTestButton, false);
+    setButtonBusy(elements.closePackageButton, false);
+    setButtonBusy(elements.markPaidButton, false);
+  }
+}
+
+async function handleClosePackage() {
+  if (state.closePackageInFlight || state.exportInFlight || state.finalizeInFlight || state.markPaidInFlight) {
+    return;
+  }
+
+  const reportId = state.selectedReport?.report?.reportId || state.selectedReportId;
+  const reportMonth = state.selectedReport?.report?.periodMonth || elements.reportMonth.value;
+  if (!reportId) {
+    showBanner('Select a payout report before generating a month-end package.', 'info');
+    return;
+  }
+
+  if (!guardMonthUnlocked('generate close package', reportMonth)) {
+    return;
+  }
+
+  clearBanner();
+  state.closePackageInFlight = true;
+  setButtonBusy(elements.closePackageButton, true, 'Packaging');
+  setButtonBusy(elements.exportCsvButton, true, 'Packaging');
+  setButtonBusy(elements.exportPdfButton, true, 'Packaging');
+  setButtonBusy(elements.exportOpsSnapshotJson, true, 'Packaging');
+  setButtonBusy(elements.exportOpsSnapshotCsv, true, 'Packaging');
+
+  try {
+    const detail = await loadReportDetailForExport(reportId);
+    const snapshot = getOpsSnapshot();
+    const payoutCsv = buildCsvExport(detail);
+    const snapshotJson = JSON.stringify(snapshot, null, 2);
+    createAndDownloadFile(
+      buildExportFilename(detail.report, 'csv'),
+      payoutCsv,
+      'text/csv;charset=utf-8'
+    );
+    createAndDownloadFile(
+      `nuria-affiliate-ops-snapshot-${detail.report?.periodMonth || reportMonth || 'unknown'}.json`,
+      snapshotJson,
+      'application/json;charset=utf-8'
+    );
+
+    const receiptHtml = buildPayoutReceiptHtml(
+      detail,
+      elements.paymentReference.value.trim(),
+      elements.paymentNote.value.trim()
+    );
+    const opened = openPrintableExport(receiptHtml);
+
+    track('affiliate_admin_close_package_exported', {
+      report_id: reportId,
+      month: detail.report?.periodMonth || reportMonth,
+      opened_pdf: opened === true,
+    });
+
+    markChecklistSteps(
+      opened ? ['exported', 'receipt'] : ['exported'],
+      true,
+      detail.report?.periodMonth || reportMonth
+    );
+
+    addActivityLog(
+      opened
+        ? `Generated month-end package for ${detail.report?.periodMonth || reportMonth} (CSV + ops JSON + receipt PDF).`
+        : `Generated month-end package for ${detail.report?.periodMonth || reportMonth} (CSV + ops JSON, PDF blocked).`,
+      'success'
+    );
+
+    showBanner(
+      opened
+        ? 'Close package generated: payout CSV + ops JSON + receipt PDF view.'
+        : 'Close package generated: payout CSV + ops JSON. Allow popups to open receipt PDF view.',
+      'success'
+    );
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+  } finally {
+    state.closePackageInFlight = false;
+    setButtonBusy(elements.closePackageButton, false);
+    setButtonBusy(elements.exportCsvButton, false);
+    setButtonBusy(elements.exportPdfButton, false);
+    setButtonBusy(elements.exportOpsSnapshotJson, false);
+    setButtonBusy(elements.exportOpsSnapshotCsv, false);
   }
 }
 
@@ -911,10 +2864,67 @@ function bindMiniListActions() {
 function bindEvents() {
   elements.googleSignIn?.addEventListener('click', handleGoogleSignIn);
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
+  elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
   elements.signOutTop?.addEventListener('click', handleSignOut);
   elements.signOutUnauthorized?.addEventListener('click', handleSignOut);
   elements.retryLoad?.addEventListener('click', () => loadDashboard());
   elements.refreshOverview?.addEventListener('click', () => loadDashboard());
+  elements.copyReportDeepLink?.addEventListener('click', handleCopyReportDeepLink);
+  elements.openPartnerJoin?.addEventListener('click', handleOpenPartnerJoin);
+  elements.openOnboarding?.addEventListener('click', handleOpenOnboarding);
+  elements.toggleCompactMode?.addEventListener('click', handleToggleCompactMode);
+  elements.exportOpsSnapshotJson?.addEventListener('click', handleExportOpsSnapshotJson);
+  elements.exportOpsSnapshotCsv?.addEventListener('click', handleExportOpsSnapshotCsv);
+  elements.refreshBackendAudit?.addEventListener('click', handleRefreshBackendAudit);
+  elements.runNextStep?.addEventListener('click', handleRunNextStep);
+  elements.clearOpsLog?.addEventListener('click', () => {
+    clearActivityLog();
+    showBanner('Activity log cleared for this browser.', 'info');
+  });
+  elements.onboardingClose?.addEventListener('click', handleCloseOnboarding);
+  elements.onboardingStart?.addEventListener('click', handleCloseOnboarding);
+  elements.onboardingPrev?.addEventListener('click', () => {
+    setOnboardingStep(state.onboardingStep - 1);
+  });
+  elements.onboardingNext?.addEventListener('click', () => {
+    setOnboardingStep(state.onboardingStep + 1);
+  });
+  elements.onboardingDots?.addEventListener('click', (event) => {
+    const dot = event.target.closest('[data-onboarding-dot]');
+    if (!dot) return;
+    setOnboardingStep(Number(dot.dataset.onboardingDot));
+  });
+  elements.onboardingDontShow?.addEventListener('click', handleDismissOnboarding);
+  elements.onboardingModal?.addEventListener('click', (event) => {
+    if (event.target.matches('[data-modal-close]')) {
+      handleCloseOnboarding();
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && elements.onboardingModal && elements.onboardingModal.hidden === false) {
+      handleCloseOnboarding();
+    }
+  });
+  elements.toggleMonthLock?.addEventListener('click', handleToggleMonthLock);
+  elements.checklistContainer?.addEventListener('change', (event) => {
+    const input = event.target.closest('[data-checklist-item]');
+    if (!input) return;
+    if (!guardMonthUnlocked('edit checklist items')) {
+      input.checked = !input.checked;
+      return;
+    }
+    setChecklistStep(input.dataset.checklistItem, input.checked);
+  });
+  elements.checklistMarkAll?.addEventListener('click', () => {
+    markChecklistSteps(CHECKLIST_STEPS, true);
+    addActivityLog(`Marked monthly checklist complete for ${getChecklistMonthKey()}.`, 'success');
+    showBanner('Checklist marked complete.', 'success');
+  });
+  elements.checklistReset?.addEventListener('click', () => {
+    markChecklistSteps(CHECKLIST_STEPS, false);
+    addActivityLog(`Reset monthly checklist for ${getChecklistMonthKey()}.`, 'info');
+    showBanner('Checklist reset for this month.', 'info');
+  });
   elements.refreshCodes?.addEventListener('click', async () => {
     clearBanner();
     try {
@@ -923,6 +2933,14 @@ function bindEvents() {
     } catch (error) {
       showBanner(getErrorParts(error).message, 'error');
     }
+  });
+  elements.codeSearchInput?.addEventListener('input', () => {
+    state.filters.codeQuery = elements.codeSearchInput.value;
+    renderCodesTable();
+  });
+  elements.codeStatusFilter?.addEventListener('change', () => {
+    state.filters.codeStatus = elements.codeStatusFilter.value;
+    renderCodesTable();
   });
   elements.includeInactiveCodes?.addEventListener('change', async () => {
     clearBanner();
@@ -945,19 +2963,60 @@ function bindEvents() {
       showBanner(getErrorParts(error).message, 'error');
     }
   });
+  elements.reportSearchInput?.addEventListener('input', () => {
+    state.filters.reportQuery = elements.reportSearchInput.value;
+    renderReportsTable();
+  });
+  elements.reportStatusFilter?.addEventListener('change', () => {
+    state.filters.reportStatus = elements.reportStatusFilter.value;
+    renderReportsTable();
+  });
   elements.generateReportForm?.addEventListener('submit', handleGenerateReport);
+  elements.reportMonth?.addEventListener('change', () => renderChecklist());
   elements.loadReportRows?.addEventListener('click', () => {
     loadReportDetail(state.selectedReportId, elements.includeRowsToggle.checked);
   });
+  elements.exportCsvButton?.addEventListener('click', handleExportCsv);
+  elements.exportPdfButton?.addEventListener('click', handleExportPdf);
+  elements.exportTestButton?.addEventListener('click', handleExportTestSample);
+  elements.finalizePayoutButton?.addEventListener('click', handleFinalizePayout);
+  elements.closePackageButton?.addEventListener('click', handleClosePackage);
   elements.markPaidForm?.addEventListener('submit', handleMarkPaid);
+  elements.recipientForm?.addEventListener('submit', handleRecipientAdd);
+  elements.recipientList?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-recipient]');
+    if (!button) return;
+    handleRecipientRemove(button.dataset.removeRecipient);
+  });
   bindMiniListActions();
 }
 
 function initializeFormDefaults() {
   elements.reportMonth.value = getPreviousUtcMonth();
   elements.includeRowsToggle.checked = false;
+  state.filters.codeQuery = elements.codeSearchInput?.value || '';
+  state.filters.codeStatus = elements.codeStatusFilter?.value || '';
+  state.filters.reportQuery = elements.reportSearchInput?.value || '';
+  state.filters.reportStatus = elements.reportStatusFilter?.value || '';
+  state.activityLog = readActivityLog();
+  state.checklistByMonth = readChecklistState();
+  state.monthLocks = readMonthLocks();
+  state.compactMode = readCompactMode();
+  state.onboardingDismissed = readOnboardingDismissed();
+  applyCompactMode();
+  setOnboardingStep(0);
+  setOnboardingOpen(false);
+  renderActivityLog();
+  renderChecklist();
+  renderNextStep();
   resetCodeForm(null);
   clearSelectedReport();
+
+  if (!state.onboardingDismissed) {
+    window.setTimeout(() => {
+      setOnboardingOpen(true);
+    }, 280);
+  }
 }
 
 function handleAuthState(user) {

@@ -2,6 +2,37 @@
 
 (function () {
   const config = window.NURIA_SITE_CONFIG || {};
+  const routing = window.NuriaReferralRouting || {};
+  const normalizeWithFallback = routing.normalizeReferralCode || function (value) {
+    return String(value || '')
+      .trim()
+      .toUpperCase()
+      .replace(/\s+/g, '');
+  };
+  const getCodeFromLocationWithFallback = routing.getReferralCodeFromLocation || function (locationLike) {
+    const locationRef = locationLike || window.location;
+    const params = new URLSearchParams(locationRef.search || '');
+    const queryCode = normalizeWithFallback(params.get('ref') || '');
+
+    if (queryCode) {
+      return queryCode;
+    }
+
+    const path = locationRef.pathname || '';
+    const match = path.match(/^\/r\/([^/?#]+)/i) || path.match(/^\/join\/([^/?#]+)/i);
+    return match ? normalizeWithFallback(safeDecodeURIComponent(match[1])) : '';
+  };
+  const getSourceRouteWithFallback = routing.getSourceRouteFromLocation || function (locationLike) {
+    const locationRef = locationLike || window.location;
+    const params = new URLSearchParams(locationRef.search || '');
+
+    if (params.get('route') === 'r') {
+      return '/r/:code';
+    }
+
+    const path = String(locationRef.pathname || '').toLowerCase();
+    return path.startsWith('/r/') ? '/r/:code' : '/join';
+  };
 
   function safeDecodeURIComponent(value) {
     try {
@@ -12,25 +43,15 @@
   }
 
   function normalizeReferralCode(value) {
-    return String(value || '')
-      .trim()
-      .toUpperCase()
-      .replace(/\s+/g, '');
+    return normalizeWithFallback(value);
   }
 
   function getReferralCodeFromLocation(locationLike) {
-    const locationRef = locationLike || window.location;
-    const params = new URLSearchParams(locationRef.search || '');
-    const queryCode = normalizeReferralCode(params.get('ref') || '');
+    return getCodeFromLocationWithFallback(locationLike || window.location);
+  }
 
-    if (queryCode) {
-      return queryCode;
-    }
-
-    const path = locationRef.pathname || '';
-    const match = path.match(/^\/r\/([^/?#]+)/i);
-
-    return match ? normalizeReferralCode(safeDecodeURIComponent(match[1])) : '';
+  function getSourceRouteFromLocation(locationLike) {
+    return getSourceRouteWithFallback(locationLike || window.location);
   }
 
   function updateStoreLinks(root) {
@@ -110,16 +131,62 @@
 
   async function lookupAffiliateCode(code) {
     const normalizedCode = normalizeReferralCode(code);
+    if (!normalizedCode) {
+      return {
+        ok: false,
+        valid: false,
+        error: 'missing_code',
+      };
+    }
+
     const url = new URL(config.affiliateLookupUrl);
     url.searchParams.set('code', normalizedCode);
+    const timeoutMs = Number(config.affiliateLookupTimeoutMs) > 0
+      ? Number(config.affiliateLookupTimeoutMs)
+      : 8000;
+    const canAbort = typeof AbortController !== 'undefined';
+    const controller = canAbort ? new AbortController() : null;
+    let timeoutId = null;
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-      cache: 'no-store',
-    });
+    if (controller) {
+      timeoutId = window.setTimeout(() => {
+        controller.abort();
+      }, timeoutMs);
+    }
+
+    let response;
+    try {
+      response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+        cache: 'no-store',
+        signal: controller ? controller.signal : undefined,
+      });
+    } catch (error) {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+
+      if (error?.name === 'AbortError') {
+        return {
+          ok: false,
+          valid: false,
+          error: 'lookup_timeout',
+        };
+      }
+
+      return {
+        ok: false,
+        valid: false,
+        error: 'network_error',
+      };
+    }
+
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
 
     let payload = {};
 
@@ -133,13 +200,30 @@
       payload.error = 'lookup_failed';
     }
 
-    return payload;
+    if (!response.ok) {
+      return Object.assign(
+        {
+          ok: false,
+          valid: false,
+        },
+        payload
+      );
+    }
+
+    return Object.assign(
+      {
+        ok: true,
+        valid: payload.valid === true,
+      },
+      payload
+    );
   }
 
   window.NuriaSite = Object.assign({}, window.NuriaSite, {
     config,
     normalizeReferralCode,
     getReferralCodeFromLocation,
+    getSourceRouteFromLocation,
     updateStoreLinks,
     getReferralJoinUrl,
     getReferralSchemeUrl,

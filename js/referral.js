@@ -2,6 +2,7 @@
 
 (function () {
   const site = window.NuriaSite;
+  const referralFlow = window.NuriaReferralFlow || {};
   const page = document.querySelector('[data-referral-page]');
 
   if (!site || !page) {
@@ -10,13 +11,13 @@
 
   const form = document.getElementById('referralLookupForm');
   const input = document.getElementById('referralCodeInput');
-  const copyButton = document.getElementById('referralCopyButton');
+  const copyButtons = Array.from(document.querySelectorAll('[data-referral-copy]'));
   const copyStatus = document.getElementById('referralCopyStatus');
-  const openInAppButton = document.getElementById('referralOpenInAppButton');
-  const openInAppFallbackButton = document.getElementById('referralOpenInAppFallback');
+  const openInAppLinks = Array.from(document.querySelectorAll('[data-referral-open-link], #referralOpenInAppButton, #referralOpenInAppFallback')).filter(Boolean);
   const invalidTitle = document.getElementById('referralInvalidTitle');
   const invalidBody = document.getElementById('referralInvalidBody');
   const loadingCode = document.getElementById('referralLoadingCode');
+  const retryLookupButton = document.getElementById('referralRetryLookupButton');
   const referralViews = Array.from(document.querySelectorAll('[data-referral-view]'));
   const affiliateNameTargets = Array.from(document.querySelectorAll('[data-affiliate-name]'));
   const referralCodeTargets = Array.from(document.querySelectorAll('[data-referral-code]'));
@@ -28,22 +29,25 @@
     displayName: '',
     sourceRoute: getSourceRoute(),
   };
+  let lastLookupCode = '';
+  let lookupRequestId = 0;
 
   function getSourceRoute() {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get('route') === 'r') {
-      return '/r/:code';
-    }
-
-    if ((window.location.pathname || '').toLowerCase().startsWith('/r/')) {
-      return '/r/:code';
+    if (typeof site.getSourceRouteFromLocation === 'function') {
+      return site.getSourceRouteFromLocation(window.location);
     }
 
     return '/join';
   }
 
   function setView(viewName) {
+    if (typeof referralFlow.canTransitionReferralState === 'function') {
+      const currentState = page.dataset.referralState || 'missing';
+      if (!referralFlow.canTransitionReferralState(currentState, viewName)) {
+        return;
+      }
+    }
+
     referralViews.forEach(view => {
       view.hidden = view.dataset.referralView !== viewName;
     });
@@ -59,23 +63,23 @@
       input.value = code;
     }
 
-    if (openInAppButton) {
-      openInAppButton.href = code ? site.getReferralJoinUrl(code) : `${site.config.siteOrigin}/join`;
-    }
-
-    if (openInAppFallbackButton) {
-      openInAppFallbackButton.href = code ? site.getReferralSchemeUrl(code) : `${site.config.appScheme}://join`;
-    }
+    openInAppLinks.forEach(link => {
+      const target = String(link.dataset.referralOpen || '');
+      const isScheme = target.includes('scheme');
+      link.href = code
+        ? (isScheme ? site.getReferralSchemeUrl(code) : site.getReferralJoinUrl(code))
+        : (isScheme ? `${site.config.appScheme}://join` : `${site.config.siteOrigin}/join`);
+    });
 
     referralCodeTargets.forEach(target => {
       target.textContent = code || 'No code';
     });
 
-    if (copyButton) {
-      copyButton.dataset.code = code;
-      copyButton.disabled = !code;
-      copyButton.textContent = 'Copy code';
-    }
+    copyButtons.forEach(button => {
+      button.dataset.code = code;
+      button.disabled = !code;
+      button.textContent = 'Copy code';
+    });
 
     if (copyStatus) {
       copyStatus.textContent = '';
@@ -156,11 +160,22 @@
     setView('valid');
   }
 
+  function isRetryableLookupReason(reason) {
+    return reason === 'network_error' || reason === 'lookup_timeout' || reason === 'lookup_failed';
+  }
+
   function getInvalidCopy(reason, code) {
-    if (reason === 'lookup_failed') {
+    if (reason === 'lookup_timeout') {
+      return {
+        title: 'Referral check timed out',
+        body: 'The verification request took too long. Please try again. Your copy and app links are still available below.',
+      };
+    }
+
+    if (reason === 'network_error' || reason === 'lookup_failed') {
       return {
         title: 'We could not verify this code right now',
-        body: 'The referral lookup is temporarily unavailable. Please try again in a moment, or continue from the main Nuria site.',
+        body: 'The referral lookup service is temporarily unavailable. Check your connection, then retry in a few seconds.',
       };
     }
 
@@ -198,11 +213,26 @@
       invalidBody.textContent = copy.body;
     }
 
+    if (retryLookupButton) {
+      retryLookupButton.hidden = !isRetryableLookupReason(reason);
+    }
+
     setView('invalid');
   }
 
   async function validateCode(rawCode) {
     const normalizedCode = site.normalizeReferralCode(rawCode);
+    if (typeof referralFlow.shouldStartLookup === 'function'
+      && !referralFlow.shouldStartLookup(page.dataset.referralState || 'missing', normalizedCode)) {
+      if (!normalizedCode) {
+        cleanJoinUrl('');
+        setMissingState();
+      }
+      return;
+    }
+
+    const requestId = ++lookupRequestId;
+    lastLookupCode = normalizedCode;
 
     cleanJoinUrl(normalizedCode);
 
@@ -215,6 +245,9 @@
 
     try {
       const payload = await site.lookupAffiliateCode(normalizedCode);
+      if (requestId !== lookupRequestId) {
+        return;
+      }
 
       site.trackEvent('referral_code_validated', getEventPayload({
         valid: Boolean(payload && payload.valid),
@@ -228,12 +261,16 @@
 
       setInvalidState(normalizedCode, (payload && payload.error) || 'invalid');
     } catch (error) {
+      if (requestId !== lookupRequestId) {
+        return;
+      }
+
       site.trackEvent('referral_code_validated', getEventPayload({
         valid: false,
-        error: 'lookup_failed',
+        error: 'network_error',
       }));
 
-      setInvalidState(normalizedCode, 'lookup_failed');
+      setInvalidState(normalizedCode, 'network_error');
     }
   }
 
@@ -244,7 +281,7 @@
     });
   }
 
-  if (copyButton) {
+  copyButtons.forEach(copyButton => {
     copyButton.addEventListener('click', async () => {
       const code = copyButton.dataset.code || referralContext.code;
 
@@ -267,6 +304,17 @@
         }
       }
     });
+  });
+
+  if (retryLookupButton) {
+    retryLookupButton.addEventListener('click', () => {
+      const retryCode = lastLookupCode || referralContext.code || (input ? input.value : '');
+      if (!retryCode) {
+        setMissingState();
+        return;
+      }
+      validateCode(retryCode);
+    });
   }
 
   storeLinks.forEach(link => {
@@ -279,7 +327,7 @@
     });
   });
 
-  [openInAppButton, openInAppFallbackButton].filter(Boolean).forEach(link => {
+  openInAppLinks.forEach(link => {
     link.addEventListener('click', () => {
       site.trackEvent('referral_open_in_app_clicked', getEventPayload({
         open_target: link.dataset.referralOpen || 'unknown',
