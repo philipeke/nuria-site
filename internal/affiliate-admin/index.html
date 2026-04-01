@@ -32,8 +32,17 @@
             <strong class="admin-topbar__title">Affiliate Admin</strong>
           </div>
         </a>
+        <button
+          type="button"
+          class="btn btn--outline admin-mobile-nav-toggle"
+          id="adminMobileNavToggle"
+          aria-expanded="false"
+          aria-controls="adminTopbarMobileRegion"
+        >
+          Menu
+        </button>
 
-        <div class="admin-topbar__actions">
+        <div class="admin-topbar__actions" id="adminTopbarMobileRegion">
           <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
           <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
             Summon spirit ✨

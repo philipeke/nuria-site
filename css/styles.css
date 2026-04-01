@@ -3147,6 +3147,10 @@ address.legal-address strong { color: var(--color-text); }
   margin-bottom: 0.7rem;
 }
 
+.admin-mobile-nav-toggle {
+  display: none;
+}
+
 .admin-topbar__brand {
   display: inline-flex;
   align-items: center;
@@ -4366,12 +4370,14 @@ code {
 
   .admin-topbar {
     top: 0.5rem;
-    gap: 0.7rem;
+    padding: 0.75rem;
+    gap: 0.45rem;
   }
 
   .admin-topbar__row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0;
   }
 
   .admin-topbar__logo {
@@ -4379,13 +4385,44 @@ code {
     height: 56px;
   }
 
+  .admin-mobile-nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
+    min-width: 92px;
+    justify-content: center;
+  }
+
+  .admin-topbar__actions,
   .admin-section-nav {
+    display: none;
+  }
+
+  .admin-topbar.admin-topbar--mobile-open .admin-topbar__actions {
+    display: flex;
+    width: 100%;
+    padding-top: 0.55rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-topbar.admin-topbar--mobile-open .admin-section-nav {
+    display: flex;
+    width: 100%;
     padding-top: 0.6rem;
+  }
+
+  .admin-section-nav {
+    border-top: 0;
   }
 
   .admin-section-nav__links,
   .admin-section-nav__menu {
     width: 100%;
+  }
+
+  .admin-section-nav__links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
   }
 
   .admin-section-nav__toggle {
@@ -4411,6 +4448,11 @@ code {
 
   .admin-auth-form .btn {
     width: 100%;
+  }
+
+  .admin-topbar__identity {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.75rem;
   }
 
   .admin-stat-grid,

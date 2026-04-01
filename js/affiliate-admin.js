@@ -42,6 +42,8 @@ if (!page) {
 
 const elements = {
   shell: page,
+  topbar: document.querySelector('.admin-topbar'),
+  mobileNavToggle: document.getElementById('adminMobileNavToggle'),
   views: Array.from(document.querySelectorAll('[data-admin-view]')),
   authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
   hero: document.querySelector('.admin-hero'),
@@ -270,6 +272,22 @@ function setChecklistPopoverOpen(open) {
   elements.checklistNavToggle.setAttribute('aria-expanded', String(isOpen));
 }
 
+function setMobileNavOpen(open) {
+  if (!elements.topbar || !elements.mobileNavToggle) return;
+  const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
+  if (!isMobileViewport) {
+    elements.topbar.classList.remove('admin-topbar--mobile-open');
+    elements.mobileNavToggle.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  const shouldOpen = Boolean(open);
+  elements.topbar.classList.toggle('admin-topbar--mobile-open', shouldOpen);
+  elements.mobileNavToggle.setAttribute('aria-expanded', String(shouldOpen));
+  if (!shouldOpen) {
+    setChecklistPopoverOpen(false);
+  }
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -297,6 +315,9 @@ function setView(name) {
   });
   if (elements.sectionNav) {
     elements.sectionNav.hidden = showLoginOnly || name !== 'ready';
+  }
+  if (showLoginOnly) {
+    setMobileNavOpen(false);
   }
   if (elements.checklistNavPopover && elements.checklistNavToggle && elements.sectionNav?.hidden) {
     setChecklistPopoverOpen(false);
@@ -346,6 +367,7 @@ function setAdminPage(pageKey, options) {
   const next = available.has(normalized) ? normalized : 'landing';
   state.currentPage = next;
   setChecklistPopoverOpen(false);
+  setMobileNavOpen(false);
 
   elements.pageSections.forEach((section) => {
     const active = section.dataset.adminPage === next;
@@ -4071,7 +4093,12 @@ function bindEvents() {
       if (!pageKey) return;
       event.preventDefault();
       setAdminPage(pageKey, { updateUrl: true });
+      setMobileNavOpen(false);
     });
+  });
+  elements.mobileNavToggle?.addEventListener('click', () => {
+    const isOpen = elements.topbar?.classList.contains('admin-topbar--mobile-open');
+    setMobileNavOpen(!isOpen);
   });
   elements.checklistNavToggle?.addEventListener('click', () => {
     if (!elements.checklistNavPopover) return;
@@ -4085,6 +4112,9 @@ function bindEvents() {
     const withinToggle = event.target.closest('#adminChecklistNavToggle');
     if (withinPopover || withinToggle) return;
     setChecklistPopoverOpen(false);
+  });
+  window.addEventListener('resize', () => {
+    setMobileNavOpen(false);
   });
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
@@ -4302,6 +4332,7 @@ function initializeFormDefaults() {
   if (elements.checklistNavPopover) {
     setChecklistPopoverOpen(false);
   }
+  setMobileNavOpen(false);
   setAdminPage(getAdminPageFromUrl(), { updateUrl: true });
   elements.reportMonth.value = getPreviousUtcMonth();
   state.checklistMonthOverride = elements.reportMonth.value;
