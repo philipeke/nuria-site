@@ -68,7 +68,7 @@
 
   function getReferralJoinUrl(code) {
     const normalizedCode = normalizeReferralCode(code);
-    return `${config.siteOrigin}/join?ref=${encodeURIComponent(normalizedCode)}`;
+    return `${config.siteOrigin}/join/${encodeURIComponent(normalizedCode)}`;
   }
 
   function getReferralSchemeUrl(code) {

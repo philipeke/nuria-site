@@ -7,7 +7,6 @@ import {
   saveAffiliateAdminSettings,
   sendPasswordReset,
   signInWithEmailPassword,
-  signInWithGoogle,
   signOutUser,
   subscribeToAuthState,
 } from './firebase-client.js';
@@ -28,11 +27,12 @@ if (!page) {
 }
 
 const elements = {
+  shell: page,
   views: Array.from(document.querySelectorAll('[data-admin-view]')),
+  authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
   globalNotice: document.getElementById('adminGlobalNotice'),
   authSummary: document.getElementById('adminAuthSummary'),
   signOutTop: document.getElementById('adminSignOutTop'),
-  googleSignIn: document.getElementById('adminGoogleSignIn'),
   emailSignInForm: document.getElementById('adminEmailSignInForm'),
   authError: document.getElementById('adminAuthError'),
   sendPasswordResetButton: document.getElementById('adminSendPasswordResetButton'),
@@ -80,6 +80,12 @@ const elements = {
   onboardingProgress: document.getElementById('adminOnboardingProgress'),
   onboardingDots: document.getElementById('adminOnboardingDots'),
   onboardingSteps: Array.from(document.querySelectorAll('[data-onboarding-step]')),
+  checklistNavMonth: document.getElementById('adminChecklistNavMonth'),
+  checklistNavItems: Array.from(document.querySelectorAll('[data-checklist-nav-item]')),
+  checklistNavMonthStatus: document.getElementById('adminChecklistNavMonthStatus'),
+  checklistNavMarkAll: document.getElementById('adminChecklistNavMarkAll'),
+  checklistNavReset: document.getElementById('adminChecklistNavReset'),
+  checklistNavLockToggle: document.getElementById('adminChecklistNavLockToggle'),
   includeInactiveCodes: document.getElementById('adminIncludeInactiveCodes'),
   codeSearchInput: document.getElementById('adminCodeSearchInput'),
   codeStatusFilter: document.getElementById('adminCodeStatusFilter'),
@@ -128,6 +134,9 @@ const elements = {
   reportRowsBody: document.getElementById('adminReportRowsBody'),
   reportRowsEmpty: document.getElementById('adminReportRowsEmpty'),
   discrepancyList: document.getElementById('adminDiscrepancyList'),
+  approvalStatusBanner: document.getElementById('adminApprovalStatusBanner'),
+  approveMarkPaidButton: document.getElementById('adminApproveMarkPaidButton'),
+  approvalLogList: document.getElementById('adminApprovalLogList'),
   markPaidForm: document.getElementById('adminMarkPaidForm'),
   paymentReference: document.getElementById('adminPaymentReference'),
   paymentNote: document.getElementById('adminPaymentNote'),
@@ -138,6 +147,24 @@ const elements = {
   recipientEmail: document.getElementById('adminRecipientEmail'),
   addRecipientButton: document.getElementById('adminAddRecipientButton'),
   recipientList: document.getElementById('adminRecipientList'),
+  refreshHealth: document.getElementById('adminRefreshHealth'),
+  alertsOpenCount: document.getElementById('adminAlertsOpenCount'),
+  discrepancyAlertCount: document.getElementById('adminDiscrepancyAlertCount'),
+  missingAffiliateCount: document.getElementById('adminMissingAffiliateCount'),
+  recipientBounceCount: document.getElementById('adminRecipientBounceCount'),
+  healthStatus: document.getElementById('adminHealthStatus'),
+  backendErrorRate: document.getElementById('adminBackendErrorRate'),
+  alertList: document.getElementById('adminAlertList'),
+  healthChecksList: document.getElementById('adminHealthChecksList'),
+  settingsForm: document.getElementById('adminSettingsForm'),
+  settingsDefaultFlow: document.getElementById('adminSettingsDefaultFlow'),
+  settingsExportFormat: document.getElementById('adminSettingsExportFormat'),
+  settingsRequireApproval: document.getElementById('adminSettingsRequireApproval'),
+  settingsNotifyOnErrors: document.getElementById('adminSettingsNotifyOnErrors'),
+  settingsRecipients: document.getElementById('adminSettingsRecipients'),
+  settingsBouncedRecipients: document.getElementById('adminSettingsBouncedRecipients'),
+  saveSettingsButton: document.getElementById('adminSaveSettingsButton'),
+  settingsError: document.getElementById('adminSettingsError'),
 };
 
 const state = {
@@ -159,6 +186,17 @@ const state = {
   compactMode: false,
   onboardingDismissed: false,
   onboardingStep: 0,
+  pendingOnboardingAfterLogin: false,
+  checklistMonthOverride: '',
+  healthChecks: {},
+  adminSettings: {
+    defaultFlow: 'balanced',
+    exportFormat: 'csv_pdf',
+    requireApproval: true,
+    notifyOnErrors: true,
+    bouncedRecipients: [],
+  },
+  approvalRequests: {},
   filters: {
     codeQuery: '',
     codeStatus: '',
@@ -173,8 +211,10 @@ const state = {
   exportInFlight: false,
   finalizeInFlight: false,
   closePackageInFlight: false,
+  saveSettingsInFlight: false,
 };
 let loginSuccessSound = null;
+let previousAuthUid = null;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -194,6 +234,11 @@ function track(name, params) {
 function setView(name) {
   elements.views.forEach((view) => {
     view.hidden = view.dataset.adminView !== name;
+  });
+  const showLoginOnly = name === 'signed-out' || name === 'loading-auth';
+  elements.shell?.classList.toggle('admin-shell--login', showLoginOnly);
+  elements.authOnlyBlocks.forEach((block) => {
+    block.hidden = showLoginOnly;
   });
 
   if (!state.initializedViewEvent) {
@@ -295,7 +340,7 @@ function getActionableErrorMessage(error, fallbackMessage) {
 }
 
 function humanizeAccessSource(source) {
-  if (source === 'email_domain') return 'Verified @oakdev.app';
+  if (source === 'email_domain') return 'Legacy domain match';
   if (source === 'allowlist_doc') return 'Firestore allowlist';
   return source || '-';
 }
@@ -353,6 +398,26 @@ function normalizeSearchValue(value) {
 
 function normalizeEmail(value) {
   return String(value || '').trim().toLowerCase();
+}
+
+function normalizeEmailList(rawValue) {
+  if (Array.isArray(rawValue)) {
+    return Array.from(new Set(rawValue.map((item) => normalizeEmail(item)).filter(isValidEmail)));
+  }
+  return Array.from(
+    new Set(
+      String(rawValue || '')
+        .split(/\r?\n|,|;/)
+        .map((item) => normalizeEmail(item))
+        .filter(isValidEmail)
+    )
+  );
+}
+
+function formatPercent(value) {
+  const safe = Number(value);
+  if (!Number.isFinite(safe) || safe < 0) return '0%';
+  return `${(safe * 100).toFixed(1)}%`;
 }
 
 function isValidEmail(value) {
@@ -719,7 +784,10 @@ function persistChecklistState() {
 }
 
 function getChecklistMonthKey() {
-  return state.selectedReport?.report?.periodMonth || elements.reportMonth?.value || getPreviousUtcMonth();
+  return state.checklistMonthOverride
+    || state.selectedReport?.report?.periodMonth
+    || elements.reportMonth?.value
+    || getPreviousUtcMonth();
 }
 
 function getChecklistForMonth(monthKey) {
@@ -812,6 +880,67 @@ function renderChecklist() {
 
   if (typeof renderNextStep === 'function') {
     renderNextStep();
+  }
+  renderChecklistNavControls(monthKey, status, locked);
+}
+
+function getChecklistMonthOptions(selectedMonth) {
+  const months = new Set();
+  months.add(String(selectedMonth || '').trim());
+  months.add(String(elements.reportMonth?.value || '').trim());
+  (state.reports || []).forEach((item) => {
+    const month = String(item.periodMonth || '').trim();
+    if (month) months.add(month);
+  });
+  const values = Array.from(months).filter(Boolean).sort((a, b) => b.localeCompare(a));
+  return values.length ? values : [getPreviousUtcMonth()];
+}
+
+function getChecklistCompletedCount(monthKey) {
+  const status = getChecklistForMonth(monthKey);
+  return CHECKLIST_STEPS.filter((step) => Boolean(status[step])).length;
+}
+
+function getChecklistIndicatorTone(completedCount) {
+  if (completedCount >= CHECKLIST_STEPS.length) return 'done';
+  if (completedCount >= 2) return 'mid';
+  return 'low';
+}
+
+function renderChecklistNavControls(monthKey, status, locked) {
+  if (elements.checklistNavMonth) {
+    const options = getChecklistMonthOptions(monthKey);
+    elements.checklistNavMonth.innerHTML = options
+      .map((month) => {
+        const completed = getChecklistCompletedCount(month);
+        const tone = getChecklistIndicatorTone(completed);
+        const marker = tone === 'done' ? '🟢' : tone === 'mid' ? '🟡' : '🔴';
+        return `<option value="${escapeHtml(month)}">${marker} ${escapeHtml(month)} (${completed}/${CHECKLIST_STEPS.length})</option>`;
+      })
+      .join('');
+    elements.checklistNavMonth.value = options.includes(monthKey) ? monthKey : options[0];
+  }
+
+  elements.checklistNavItems.forEach((input) => {
+    const step = input.dataset.checklistNavItem;
+    input.checked = Boolean(status?.[step]);
+    input.disabled = locked;
+  });
+
+  const completed = CHECKLIST_STEPS.filter((step) => Boolean(status?.[step])).length;
+  const tone = getChecklistIndicatorTone(completed);
+  if (elements.checklistNavMonthStatus) {
+    elements.checklistNavMonthStatus.textContent = `${completed} / ${CHECKLIST_STEPS.length} complete`;
+    elements.checklistNavMonthStatus.className = `admin-section-nav__month-pill admin-section-nav__month-pill--${tone}`;
+  }
+  if (elements.checklistNavMarkAll) {
+    elements.checklistNavMarkAll.disabled = locked;
+  }
+  if (elements.checklistNavReset) {
+    elements.checklistNavReset.disabled = locked;
+  }
+  if (elements.checklistNavLockToggle) {
+    elements.checklistNavLockToggle.textContent = locked ? 'Unlock month' : 'Lock month';
   }
 }
 
@@ -1359,7 +1488,7 @@ function getGeneratedReferralLink(code) {
   }
 
   const origin = site?.config?.siteOrigin || window.location.origin;
-  return `${origin}/join?ref=${encodeURIComponent(normalizedCode)}`;
+  return `${origin}/join/${encodeURIComponent(normalizedCode)}`;
 }
 
 function updateCodeReferralLink(rawCode) {
@@ -1499,6 +1628,10 @@ function renderOverview() {
   renderActivityLog();
   renderBackendAuditLog();
   renderRecipientList();
+  renderAlertCenter();
+  renderHealthDashboard();
+  renderSettingsForm();
+  renderApprovalFlow(state.selectedReport?.report || null);
   renderNextStep();
 }
 
@@ -1650,14 +1783,10 @@ function renderReportsTable() {
   }
 }
 
-function renderDiscrepancies(detail) {
-  if (!elements.discrepancyList) return;
-
+function collectDiscrepancyFindings(detail) {
   if (!detail || detail.rowsIncluded !== true) {
-    elements.discrepancyList.innerHTML = '<p class="admin-empty admin-empty--inline">Load rows to run discrepancy checks.</p>';
-    return;
+    return [];
   }
-
   const rows = Array.isArray(detail.rows) ? detail.rows : [];
   const affiliates = Array.isArray(detail.affiliates) ? detail.affiliates : [];
   const affiliateCurrencies = new Map();
@@ -1689,6 +1818,16 @@ function renderDiscrepancies(detail) {
       }
     }
   });
+  return findings;
+}
+
+function renderDiscrepancies(detail) {
+  if (!elements.discrepancyList) return;
+  const findings = collectDiscrepancyFindings(detail);
+  if (!detail || detail.rowsIncluded !== true) {
+    elements.discrepancyList.innerHTML = '<p class="admin-empty admin-empty--inline">Load rows to run discrepancy checks.</p>';
+    return;
+  }
 
   if (!findings.length) {
     elements.discrepancyList.innerHTML = '<p class="admin-empty admin-empty--inline">No payout discrepancies detected.</p>';
@@ -1701,6 +1840,160 @@ function renderDiscrepancies(detail) {
       return `<div class="admin-mini-item admin-mini-item--warn"><span class="admin-mini-item__title">${escapeHtml(message)}</span></div>`;
     })
     .join('');
+}
+
+function getApprovalEntry(reportId) {
+  return state.approvalRequests?.[reportId] || null;
+}
+
+function renderApprovalFlow(report) {
+  const reportId = report?.reportId || state.selectedReportId || '';
+  const approval = reportId ? getApprovalEntry(reportId) : null;
+  const requireApproval = state.adminSettings?.requireApproval !== false;
+
+  if (elements.approvalStatusBanner) {
+    if (!reportId) {
+      elements.approvalStatusBanner.textContent = 'Select a report to prepare payout approval.';
+    } else if (!requireApproval) {
+      elements.approvalStatusBanner.textContent = 'Two-step approval is disabled in admin settings.';
+    } else if (!approval) {
+      elements.approvalStatusBanner.textContent = 'No approval request yet. Submit "Mark as paid" to create one.';
+    } else if (approval.approvedAt) {
+      elements.approvalStatusBanner.textContent =
+        `Approved by ${approval.approvedBy || 'admin'} at ${formatTimestamp({ iso: approval.approvedAt })}.`;
+    } else {
+      elements.approvalStatusBanner.textContent =
+        `Pending approval requested by ${approval.requestedBy || 'admin'} at ${formatTimestamp({ iso: approval.requestedAt })}.`;
+    }
+  }
+
+  if (elements.approveMarkPaidButton) {
+    const actor = normalizeEmail(getActivityActor());
+    const requestedBy = normalizeEmail(approval?.requestedBy || '');
+    elements.approveMarkPaidButton.disabled =
+      !reportId
+      || !requireApproval
+      || !approval
+      || Boolean(approval.approvedAt)
+      || (requestedBy && actor && requestedBy === actor);
+  }
+
+  if (elements.approvalLogList) {
+    if (!approval) {
+      elements.approvalLogList.innerHTML = '<p class="admin-empty admin-empty--inline">No approval activity for this report.</p>';
+    } else {
+      const lines = [
+        `Request created by ${approval.requestedBy || 'admin'} &middot; ${formatTimestamp({ iso: approval.requestedAt })}`,
+      ];
+      if (approval.approvedAt) {
+        lines.push(`Approved by ${approval.approvedBy || 'admin'} &middot; ${formatTimestamp({ iso: approval.approvedAt })}`);
+      }
+      elements.approvalLogList.innerHTML = lines
+        .map((line) => `<div class="admin-mini-item"><span class="admin-mini-item__title">${line}</span></div>`)
+        .join('');
+    }
+  }
+}
+
+function getAlertSummary() {
+  const detail = state.selectedReport;
+  const discrepancyFindings = collectDiscrepancyFindings(detail);
+  const rows = Array.isArray(detail?.rows) ? detail.rows : [];
+  const missingAffiliateRows = rows.filter((row) => {
+    return !String(row.affiliateId || '').trim() && !String(row.affiliateDisplayName || '').trim();
+  }).length;
+  const bouncedRecipients = normalizeEmailList(state.adminSettings?.bouncedRecipients || []);
+  const alerts = [];
+
+  if (discrepancyFindings.length) {
+    alerts.push({
+      tone: 'warn',
+      title: `${discrepancyFindings.length} payout discrepancy alert(s)`,
+      meta: 'Open report rows to validate payout consistency.',
+    });
+  }
+  if (missingAffiliateRows > 0) {
+    alerts.push({
+      tone: 'warn',
+      title: `${missingAffiliateRows} rows missing affiliate mapping`,
+      meta: 'Update ledger mappings before payout finalization.',
+    });
+  }
+  if (bouncedRecipients.length > 0) {
+    alerts.push({
+      tone: 'warn',
+      title: `${bouncedRecipients.length} bounced recipient(s) configured`,
+      meta: bouncedRecipients.slice(0, 3).join(', '),
+    });
+  }
+
+  return {
+    alerts,
+    discrepancyCount: discrepancyFindings.length,
+    missingAffiliateCount: missingAffiliateRows,
+    bouncedRecipientCount: bouncedRecipients.length,
+  };
+}
+
+function renderAlertCenter() {
+  const summary = getAlertSummary();
+  if (elements.alertsOpenCount) elements.alertsOpenCount.textContent = String(summary.alerts.length);
+  if (elements.discrepancyAlertCount) elements.discrepancyAlertCount.textContent = String(summary.discrepancyCount);
+  if (elements.missingAffiliateCount) elements.missingAffiliateCount.textContent = String(summary.missingAffiliateCount);
+  if (elements.recipientBounceCount) elements.recipientBounceCount.textContent = String(summary.bouncedRecipientCount);
+
+  if (!elements.alertList) return;
+  if (!summary.alerts.length) {
+    elements.alertList.innerHTML = '<p class="admin-empty admin-empty--inline">No active alerts right now.</p>';
+    return;
+  }
+  elements.alertList.innerHTML = summary.alerts
+    .map((item) => {
+      const cls = item.tone === 'warn' ? 'admin-mini-item admin-mini-item--warn' : 'admin-mini-item';
+      return `<div class="${cls}"><span class="admin-mini-item__title">${escapeHtml(item.title)}</span><span class="admin-mini-item__meta">${escapeHtml(item.meta || '')}</span></div>`;
+    })
+    .join('');
+}
+
+function renderHealthDashboard() {
+  const health = state.healthChecks || {};
+  const checks = Object.entries(health);
+  const failing = checks.filter(([, value]) => value?.ok === false).length;
+  const status = checks.length ? (failing ? 'Degraded' : 'Healthy') : 'Unknown';
+  if (elements.healthStatus) elements.healthStatus.textContent = status;
+
+  const backendItems = Array.isArray(state.backendAuditLogs) ? state.backendAuditLogs.slice(0, 50) : [];
+  const errorCount = backendItems.filter((item) => normalizeSearchValue(item.kind).includes('error')).length;
+  const errorRatio = backendItems.length ? (errorCount / backendItems.length) : 0;
+  if (elements.backendErrorRate) elements.backendErrorRate.textContent = formatPercent(errorRatio);
+
+  if (!elements.healthChecksList) return;
+  if (!checks.length) {
+    elements.healthChecksList.innerHTML = '<p class="admin-empty admin-empty--inline">No health checks run yet.</p>';
+    return;
+  }
+  elements.healthChecksList.innerHTML = checks
+    .map(([name, value]) => {
+      const title = `${name}: ${value.ok ? 'ok' : 'failed'}`;
+      const meta = value.ok
+        ? `Last success ${formatTimestamp({ iso: value.lastSuccessAt || '' })} (${value.durationMs || 0} ms)`
+        : `${value.errorMessage || 'Unknown error'} (${value.durationMs || 0} ms)`;
+      return `<div class="${value.ok ? 'admin-mini-item' : 'admin-mini-item admin-mini-item--warn'}"><span class="admin-mini-item__title">${escapeHtml(title)}</span><span class="admin-mini-item__meta">${escapeHtml(meta)}</span></div>`;
+    })
+    .join('');
+}
+
+function renderSettingsForm() {
+  if (!elements.settingsForm) return;
+  const settings = state.adminSettings || {};
+  if (elements.settingsDefaultFlow) elements.settingsDefaultFlow.value = settings.defaultFlow || 'balanced';
+  if (elements.settingsExportFormat) elements.settingsExportFormat.value = settings.exportFormat || 'csv_pdf';
+  if (elements.settingsRequireApproval) elements.settingsRequireApproval.checked = settings.requireApproval !== false;
+  if (elements.settingsNotifyOnErrors) elements.settingsNotifyOnErrors.checked = settings.notifyOnErrors !== false;
+  if (elements.settingsRecipients) elements.settingsRecipients.value = (state.reportRecipients || []).join('\n');
+  if (elements.settingsBouncedRecipients) {
+    elements.settingsBouncedRecipients.value = normalizeEmailList(settings.bouncedRecipients || []).join('\n');
+  }
 }
 
 function renderReportStats(report) {
@@ -1796,6 +2089,7 @@ function renderReportRows(rows, visible) {
 function clearSelectedReport() {
   state.selectedReportId = '';
   state.selectedReport = null;
+  state.checklistMonthOverride = String(elements.reportMonth?.value || getPreviousUtcMonth());
   updateReportUrl('');
   elements.reportDetailTitle.textContent = 'Select a payout report';
   elements.reportDetailEmpty.hidden = false;
@@ -1815,6 +2109,8 @@ function clearSelectedReport() {
   if (elements.copyReportDeepLink) elements.copyReportDeepLink.disabled = true;
   syncReportActionFields(null);
   renderDiscrepancies(null);
+  renderApprovalFlow(null);
+  renderAlertCenter();
   renderNextStep();
 }
 
@@ -1844,6 +2140,8 @@ function renderSelectedReport() {
   renderReportAffiliates(detail.affiliates || []);
   renderReportRows(detail.rows || [], detail.rowsIncluded === true);
   renderDiscrepancies(detail);
+  renderApprovalFlow(report);
+  renderAlertCenter();
   syncReportActionFields(report);
 
   if (report.status === 'paid') {
@@ -1879,6 +2177,27 @@ async function loadBootstrap() {
   state.admin = data.admin || null;
   state.recentReports = Array.isArray(data.recentReports) ? data.recentReports : [];
   state.recentCodes = Array.isArray(data.recentCodes) ? data.recentCodes : [];
+}
+
+async function runHealthCheck(name, runner) {
+  const startedAt = Date.now();
+  try {
+    await runner();
+    state.healthChecks[name] = {
+      ok: true,
+      durationMs: Date.now() - startedAt,
+      lastSuccessAt: new Date().toISOString(),
+      errorMessage: '',
+    };
+  } catch (error) {
+    state.healthChecks[name] = {
+      ok: false,
+      durationMs: Date.now() - startedAt,
+      lastSuccessAt: state.healthChecks[name]?.lastSuccessAt || '',
+      errorMessage: getActionableErrorMessage(error, getErrorParts(error).message),
+    };
+    throw error;
+  }
 }
 
 async function loadCodes() {
@@ -1952,14 +2271,34 @@ async function loadAdminSettings() {
       ? data.monthlyReportRecipients.map((email) => normalizeEmail(email)).filter(Boolean)
       : [];
     state.reportRecipients = Array.from(new Set(recipients));
+    state.adminSettings = {
+      defaultFlow: ['strict', 'balanced', 'fast'].includes(data.defaultFlow) ? data.defaultFlow : 'balanced',
+      exportFormat: ['csv_pdf', 'csv_only', 'csv_json_pdf'].includes(data.exportFormat)
+        ? data.exportFormat
+        : 'csv_pdf',
+      requireApproval: data.requireApproval !== false,
+      notifyOnErrors: data.notifyOnErrors !== false,
+      bouncedRecipients: normalizeEmailList(data.bouncedRecipients || []),
+    };
     state.recipientSettingsUnavailableReason = '';
   } catch (error) {
     state.reportRecipients = [];
+    state.adminSettings = {
+      defaultFlow: 'balanced',
+      exportFormat: 'csv_pdf',
+      requireApproval: true,
+      notifyOnErrors: true,
+      bouncedRecipients: [],
+    };
     state.recipientSettingsUnavailableReason = getActionableErrorMessage(
       error,
       'Could not load scheduled recipient settings.'
     );
   }
+}
+
+async function saveAdminSettingsPatch(patch) {
+  await saveAffiliateAdminSettings(patch || {});
 }
 
 async function saveRecipients() {
@@ -1995,7 +2334,7 @@ function setUnauthorizedMessage(error) {
 
   if (message.includes('admin_role_required')) {
     elements.unauthorizedCopy.textContent =
-      'Your account is signed in, but it does not include the affiliate_admin role.';
+      'Your account is signed in, but it is not allowlisted for affiliate admin access.';
     return;
   }
 
@@ -2015,7 +2354,6 @@ function handleLoadError(error) {
   if (parts.code === 'unauthenticated') {
     clearSelectedReport();
     setView('signed-out');
-    showBanner('Sign in to access the affiliate admin dashboard.', 'info');
     return;
   }
 
@@ -2049,17 +2387,22 @@ async function loadDashboard(options) {
 
   try {
     await Promise.all([
-      loadBootstrap(),
-      loadCodes(),
-      loadReports(),
-      loadBackendAuditLogs(),
-      loadAdminSettings(),
+      runHealthCheck('bootstrap', loadBootstrap),
+      runHealthCheck('codes', loadCodes),
+      runHealthCheck('reports', loadReports),
+      runHealthCheck('audit_log', loadBackendAuditLogs),
+      runHealthCheck('admin_settings', loadAdminSettings),
     ]);
     renderOverview();
     renderCodesTable();
     renderReportsTable();
     updateIdentity();
     setView('ready');
+    if (state.pendingOnboardingAfterLogin && !state.onboardingDismissed) {
+      state.pendingOnboardingAfterLogin = false;
+      setOnboardingStep(0);
+      setOnboardingOpen(true);
+    }
 
     if (!settings.preserveSelectedReport) {
       clearSelectedReport();
@@ -2109,6 +2452,10 @@ async function loadReportDetail(reportId, includeRows) {
       rows: Array.isArray(data.rows) ? data.rows : [],
       rowsIncluded: data.rowsIncluded === true,
     };
+    state.checklistMonthOverride = String(data.report?.periodMonth || elements.reportMonth?.value || '');
+    if (elements.reportMonth && data.report?.periodMonth) {
+      elements.reportMonth.value = data.report.periodMonth;
+    }
     if (data.rowsIncluded === true) {
       setChecklistStep('verified', true, data.report?.periodMonth || elements.reportMonth.value);
     }
@@ -2116,24 +2463,6 @@ async function loadReportDetail(reportId, includeRows) {
   } catch (error) {
     clearSelectedReport();
     showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
-  }
-}
-
-async function handleGoogleSignIn() {
-  clearBanner();
-  elements.authError.hidden = true;
-  elements.authError.textContent = '';
-  setButtonBusy(elements.googleSignIn, true, 'Signing in');
-
-  try {
-    await signInWithGoogle();
-    await playLoginSuccessSound();
-  } catch (error) {
-    const parts = getErrorParts(error);
-    elements.authError.hidden = false;
-    elements.authError.textContent = parts.message;
-  } finally {
-    setButtonBusy(elements.googleSignIn, false);
   }
 }
 
@@ -2152,6 +2481,7 @@ async function handleEmailSignIn(event) {
 
   try {
     await signInWithEmailPassword(email, password);
+    state.pendingOnboardingAfterLogin = true;
     await playLoginSuccessSound();
   } catch (error) {
     const parts = getErrorParts(error);
@@ -2226,6 +2556,7 @@ function handleExportOpsSnapshotCsv() {
 async function handleRefreshBackendAudit() {
   await loadBackendAuditLogs();
   renderBackendAuditLog();
+  renderHealthDashboard();
   if (state.backendAuditUnavailableReason) {
     showBanner(state.backendAuditUnavailableReason, 'error');
     return;
@@ -2234,6 +2565,24 @@ async function handleRefreshBackendAudit() {
     showBanner('Backend audit log refreshed.', 'success');
   } catch (error) {
     showBanner(getActionableErrorMessage(error, 'Could not refresh backend audit log.'), 'error');
+  }
+}
+
+async function handleRefreshHealth() {
+  clearBanner();
+  try {
+    await Promise.all([
+      runHealthCheck('bootstrap', loadBootstrap),
+      runHealthCheck('reports', loadReports),
+      runHealthCheck('audit_log', loadBackendAuditLogs),
+      runHealthCheck('admin_settings', loadAdminSettings),
+    ]);
+    renderOverview();
+    renderReportsTable();
+    showBanner('Health checks refreshed.', 'success');
+  } catch (error) {
+    renderHealthDashboard();
+    showBanner(getActionableErrorMessage(error, 'One or more health checks failed.'), 'error');
   }
 }
 
@@ -2256,11 +2605,63 @@ async function handleRecipientAdd(event) {
     state.reportRecipients = next;
     await saveRecipients();
     renderRecipientList();
+    renderSettingsForm();
+    renderAlertCenter();
     if (elements.recipientEmail) elements.recipientEmail.value = '';
     showBanner(`Added scheduled recipient ${email}.`, 'success');
     addActivityLog(`Added scheduled report recipient ${email}.`, 'success');
   } catch (error) {
     showBanner(getActionableErrorMessage(error, 'Could not save recipient list to backend.'), 'error');
+  }
+}
+
+async function handleSaveSettings(event) {
+  event.preventDefault();
+  if (state.saveSettingsInFlight) return;
+  if (!elements.settingsForm) return;
+  clearBanner();
+  if (elements.settingsError) {
+    elements.settingsError.hidden = true;
+    elements.settingsError.textContent = '';
+  }
+
+  const nextRecipients = normalizeEmailList(elements.settingsRecipients?.value || '');
+  const bouncedRecipients = normalizeEmailList(elements.settingsBouncedRecipients?.value || '');
+  const payload = {
+    defaultFlow: elements.settingsDefaultFlow?.value || 'balanced',
+    exportFormat: elements.settingsExportFormat?.value || 'csv_pdf',
+    requireApproval: elements.settingsRequireApproval?.checked !== false,
+    notifyOnErrors: elements.settingsNotifyOnErrors?.checked !== false,
+    monthlyReportRecipients: nextRecipients,
+    bouncedRecipients,
+  };
+
+  state.saveSettingsInFlight = true;
+  setButtonBusy(elements.saveSettingsButton, true, 'Saving');
+  try {
+    await saveAdminSettingsPatch(payload);
+    state.reportRecipients = nextRecipients;
+    state.adminSettings = {
+      defaultFlow: payload.defaultFlow,
+      exportFormat: payload.exportFormat,
+      requireApproval: payload.requireApproval,
+      notifyOnErrors: payload.notifyOnErrors,
+      bouncedRecipients: payload.bouncedRecipients,
+    };
+    renderOverview();
+    renderApprovalFlow(state.selectedReport?.report || null);
+    showBanner('Admin settings saved.', 'success');
+    addActivityLog('Saved admin settings profile.', 'success');
+  } catch (error) {
+    const message = getActionableErrorMessage(error, 'Could not save admin settings.');
+    if (elements.settingsError) {
+      elements.settingsError.hidden = false;
+      elements.settingsError.textContent = message;
+    }
+    showBanner(message, 'error');
+  } finally {
+    state.saveSettingsInFlight = false;
+    setButtonBusy(elements.saveSettingsButton, false);
   }
 }
 
@@ -2271,6 +2672,8 @@ async function handleRecipientRemove(email) {
     state.reportRecipients = next;
     await saveRecipients();
     renderRecipientList();
+    renderSettingsForm();
+    renderAlertCenter();
     showBanner(`Removed scheduled recipient ${targetEmail}.`, 'success');
     addActivityLog(`Removed scheduled report recipient ${targetEmail}.`, 'info');
   } catch (error) {
@@ -2356,7 +2759,7 @@ function handleOpenPartnerJoin() {
     return;
   }
 
-  const joinUrl = `${window.location.origin}/join?ref=${encodeURIComponent(firstCode)}`;
+  const joinUrl = `${window.location.origin}/join/${encodeURIComponent(firstCode)}`;
   window.open(joinUrl, '_blank', 'noopener,noreferrer');
   addActivityLog(`Opened partner join page for ${firstCode}.`, 'info');
   showBanner(`Opened join page for ${firstCode}.`, 'success');
@@ -2432,6 +2835,7 @@ async function handleSignOut() {
 
   try {
     await signOutUser();
+    state.pendingOnboardingAfterLogin = false;
     state.admin = null;
     resetCodeForm(null);
     clearSelectedReport();
@@ -2562,6 +2966,66 @@ async function handleGenerateReport(event) {
   }
 }
 
+function ensurePayoutApproval(reportId, actionLabel) {
+  if (state.adminSettings?.requireApproval === false) {
+    return true;
+  }
+
+  const actor = normalizeEmail(getActivityActor());
+  const currentRef = String(elements.paymentReference?.value || '').trim();
+  const currentNote = String(elements.paymentNote?.value || '').trim();
+  const existing = getApprovalEntry(reportId);
+  if (!existing) {
+    state.approvalRequests[reportId] = {
+      requestedBy: actor || 'admin',
+      requestedAt: new Date().toISOString(),
+      paymentReference: currentRef || null,
+      note: currentNote || null,
+      approvedBy: '',
+      approvedAt: '',
+    };
+    renderApprovalFlow(state.selectedReport?.report || null);
+    showBanner(`Approval request created for ${actionLabel}. A second admin must approve before continuing.`, 'info');
+    addActivityLog(`Created payout approval request for report ${reportId}.`, 'info');
+    return false;
+  }
+
+  if (!existing.approvedAt) {
+    showBanner(`Approval is pending for report ${reportId}. Use "Approve pending payout request".`, 'info');
+    renderApprovalFlow(state.selectedReport?.report || null);
+    return false;
+  }
+  return true;
+}
+
+function clearPayoutApproval(reportId) {
+  if (!reportId) return;
+  delete state.approvalRequests[reportId];
+}
+
+function handleApproveMarkPaid() {
+  const reportId = state.selectedReport?.report?.reportId || state.selectedReportId;
+  if (!reportId) {
+    showBanner('Select a report before approving payout.', 'info');
+    return;
+  }
+  const approval = getApprovalEntry(reportId);
+  if (!approval) {
+    showBanner('No pending approval request for this report yet.', 'info');
+    return;
+  }
+  const actor = normalizeEmail(getActivityActor());
+  if (normalizeEmail(approval.requestedBy || '') === actor) {
+    showBanner('Approval requires a second admin account. Sign in with another allowlisted account.', 'error');
+    return;
+  }
+  approval.approvedBy = actor || 'admin';
+  approval.approvedAt = new Date().toISOString();
+  renderApprovalFlow(state.selectedReport?.report || null);
+  showBanner(`Approval recorded for report ${reportId}. You can now complete payout actions.`, 'success');
+  addActivityLog(`Approved payout request for report ${reportId}.`, 'success');
+}
+
 async function handleMarkPaid(event) {
   event.preventDefault();
 
@@ -2577,6 +3041,10 @@ async function handleMarkPaid(event) {
   }
 
   if (!guardMonthUnlocked('mark this report as paid', reportMonth)) {
+    return;
+  }
+
+  if (!ensurePayoutApproval(reportId, 'marking report as paid')) {
     return;
   }
 
@@ -2613,6 +3081,7 @@ async function handleMarkPaid(event) {
       'success'
     );
     setChecklistStep('paid', true, state.selectedReport?.report?.periodMonth || elements.reportMonth.value);
+    clearPayoutApproval(reportId);
     await loadReportDetail(reportId, elements.includeRowsToggle.checked);
   } catch (error) {
     showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
@@ -2716,21 +3185,42 @@ async function handleExportTestSample() {
       csv,
       'text/csv;charset=utf-8'
     );
-    const html = buildPrintableHtml(sampleDetail, {
+    const reportPdfTemplateHtml = buildPrintableHtml(sampleDetail, {
       title: 'Nuria Affiliate Report Sample Export',
       subtitle: 'Sample data preview for formatting and branding checks',
       footerNote: 'This document uses example data only.',
       includeRows: true,
     });
-    const opened = openPrintableExport(html);
-    if (!opened) {
-      showBanner('Sample CSV downloaded. Allow popups to open the sample PDF view.', 'info');
-      addActivityLog('Exported sample CSV (PDF blocked by popup settings).', 'info');
+    const receiptPdfTemplateHtml = buildPayoutReceiptHtml(
+      sampleDetail,
+      'SAMPLE-PAYMENT-REF-2026',
+      'Sample payout receipt preview for structure validation.'
+    );
+
+    createAndDownloadFile(
+      'nuria-affiliate-report-sample-pdf-template.html',
+      reportPdfTemplateHtml,
+      'text/html;charset=utf-8'
+    );
+    createAndDownloadFile(
+      'nuria-affiliate-receipt-sample-pdf-template.html',
+      receiptPdfTemplateHtml,
+      'text/html;charset=utf-8'
+    );
+
+    const reportOpened = openPrintableExport(reportPdfTemplateHtml);
+    const receiptOpened = openPrintableExport(receiptPdfTemplateHtml);
+    if (!reportOpened || !receiptOpened) {
+      showBanner(
+        'Sample CSV + PDF template files downloaded. Allow popups to open both sample PDF preview windows.',
+        'info'
+      );
+      addActivityLog('Exported sample CSV + PDF templates (preview popup blocked).', 'info');
       return;
     }
 
-    showBanner('Sample export created (CSV + PDF view).', 'success');
-    addActivityLog('Exported sample CSV and sample PDF view.', 'success');
+    showBanner('Sample export created (CSV + PDF template files + two PDF preview windows).', 'success');
+    addActivityLog('Exported sample CSV + PDF template files and opened sample PDF previews.', 'success');
   });
 }
 
@@ -2747,6 +3237,10 @@ async function handleFinalizePayout() {
   }
 
   if (!guardMonthUnlocked('finalize payout', reportMonth)) {
+    return;
+  }
+
+  if (!ensurePayoutApproval(reportId, 'finalizing payout')) {
     return;
   }
 
@@ -2802,6 +3296,7 @@ async function handleFinalizePayout() {
 
     showBanner('Payout finalized, CSV exported, and receipt PDF view opened.', 'success');
     addActivityLog(`Finalized payout for ${reportId} with receipt PDF export.`, 'success');
+    clearPayoutApproval(reportId);
     markChecklistSteps(
       ['exported', 'paid', 'receipt', 'verified'],
       true,
@@ -2934,7 +3429,6 @@ function bindMiniListActions() {
 }
 
 function bindEvents() {
-  elements.googleSignIn?.addEventListener('click', handleGoogleSignIn);
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
   elements.signOutTop?.addEventListener('click', handleSignOut);
@@ -2948,6 +3442,7 @@ function bindEvents() {
   elements.exportOpsSnapshotJson?.addEventListener('click', handleExportOpsSnapshotJson);
   elements.exportOpsSnapshotCsv?.addEventListener('click', handleExportOpsSnapshotCsv);
   elements.refreshBackendAudit?.addEventListener('click', handleRefreshBackendAudit);
+  elements.refreshHealth?.addEventListener('click', handleRefreshHealth);
   elements.runNextStep?.addEventListener('click', handleRunNextStep);
   elements.clearOpsLog?.addEventListener('click', () => {
     clearActivityLog();
@@ -2986,6 +3481,77 @@ function bindEvents() {
       return;
     }
     setChecklistStep(input.dataset.checklistItem, input.checked);
+  });
+  elements.checklistNavMonth?.addEventListener('change', () => {
+    const nextMonth = String(elements.checklistNavMonth.value || '').trim();
+    if (!nextMonth) return;
+    state.checklistMonthOverride = nextMonth;
+    if (elements.reportMonth) {
+      elements.reportMonth.value = nextMonth;
+    }
+    renderChecklist();
+  });
+  elements.checklistNavItems.forEach((input) => {
+    input.addEventListener('change', () => {
+      const monthKey = String(elements.checklistNavMonth?.value || getChecklistMonthKey()).trim();
+      if (!guardMonthUnlocked('edit checklist items', monthKey)) {
+        input.checked = !input.checked;
+        return;
+      }
+      setChecklistStep(input.dataset.checklistNavItem, input.checked, monthKey);
+    });
+  });
+  elements.checklistNavMarkAll?.addEventListener('click', () => {
+    const monthKey = String(elements.checklistNavMonth?.value || getChecklistMonthKey()).trim();
+    if (!guardMonthUnlocked('mark all checklist steps', monthKey)) return;
+    state.checklistMonthOverride = monthKey;
+    if (elements.reportMonth) {
+      elements.reportMonth.value = monthKey;
+    }
+    markChecklistSteps(CHECKLIST_STEPS, true, monthKey);
+    addActivityLog(`Marked monthly checklist complete for ${monthKey}.`, 'success');
+    showBanner(`Checklist marked complete for ${monthKey}.`, 'success');
+  });
+  elements.checklistNavReset?.addEventListener('click', () => {
+    const monthKey = String(elements.checklistNavMonth?.value || getChecklistMonthKey()).trim();
+    if (!guardMonthUnlocked('reset checklist', monthKey)) return;
+    state.checklistMonthOverride = monthKey;
+    if (elements.reportMonth) {
+      elements.reportMonth.value = monthKey;
+    }
+    markChecklistSteps(CHECKLIST_STEPS, false, monthKey);
+    addActivityLog(`Reset monthly checklist for ${monthKey}.`, 'info');
+    showBanner(`Checklist reset for ${monthKey}.`, 'info');
+  });
+  elements.checklistNavLockToggle?.addEventListener('click', () => {
+    const monthKey = String(elements.checklistNavMonth?.value || getChecklistMonthKey()).trim();
+    const nextLocked = !isMonthLocked(monthKey);
+    let reason = '';
+    if (nextLocked) {
+      const inputReason = window.prompt(
+        `Lock month ${monthKey}. Add a short reason (optional but recommended):`,
+        'Finance reconciliation completed'
+      );
+      if (inputReason == null) return;
+      reason = String(inputReason || '').trim();
+    }
+    setMonthLocked(monthKey, nextLocked, reason);
+    state.checklistMonthOverride = monthKey;
+    if (elements.reportMonth) {
+      elements.reportMonth.value = monthKey;
+    }
+    addActivityLog(
+      nextLocked
+        ? `Locked payout month ${monthKey}${reason ? ` (${reason})` : ''}.`
+        : `Unlocked payout month ${monthKey}.`,
+      nextLocked ? 'info' : 'success'
+    );
+    showBanner(
+      nextLocked
+        ? `Month ${monthKey} is now locked.${reason ? ` Reason: ${reason}` : ''}`
+        : `Month ${monthKey} is now unlocked.`,
+      'info'
+    );
   });
   elements.checklistMarkAll?.addEventListener('click', () => {
     markChecklistSteps(CHECKLIST_STEPS, true);
@@ -3048,7 +3614,10 @@ function bindEvents() {
     renderReportsTable();
   });
   elements.generateReportForm?.addEventListener('submit', handleGenerateReport);
-  elements.reportMonth?.addEventListener('change', () => renderChecklist());
+  elements.reportMonth?.addEventListener('change', () => {
+    state.checklistMonthOverride = String(elements.reportMonth.value || '').trim();
+    renderChecklist();
+  });
   elements.loadReportRows?.addEventListener('click', () => {
     loadReportDetail(state.selectedReportId, elements.includeRowsToggle.checked);
   });
@@ -3057,8 +3626,10 @@ function bindEvents() {
   elements.exportTestButton?.addEventListener('click', handleExportTestSample);
   elements.finalizePayoutButton?.addEventListener('click', handleFinalizePayout);
   elements.closePackageButton?.addEventListener('click', handleClosePackage);
+  elements.approveMarkPaidButton?.addEventListener('click', handleApproveMarkPaid);
   elements.markPaidForm?.addEventListener('submit', handleMarkPaid);
   elements.recipientForm?.addEventListener('submit', handleRecipientAdd);
+  elements.settingsForm?.addEventListener('submit', handleSaveSettings);
   elements.recipientList?.addEventListener('click', (event) => {
     const button = event.target.closest('[data-remove-recipient]');
     if (!button) return;
@@ -3069,6 +3640,7 @@ function bindEvents() {
 
 function initializeFormDefaults() {
   elements.reportMonth.value = getPreviousUtcMonth();
+  state.checklistMonthOverride = elements.reportMonth.value;
   elements.includeRowsToggle.checked = false;
   state.filters.codeQuery = elements.codeSearchInput?.value || '';
   state.filters.codeStatus = elements.codeStatusFilter?.value || '';
@@ -3087,18 +3659,11 @@ function initializeFormDefaults() {
   renderNextStep();
   resetCodeForm(null);
   clearSelectedReport();
-
-  if (!state.onboardingDismissed) {
-    const closedThisSession = readOnboardingClosedThisSession();
-    if (!closedThisSession) {
-      window.setTimeout(() => {
-        setOnboardingOpen(true);
-      }, 280);
-    }
-  }
 }
 
 function handleAuthState(user) {
+  const wasLoggedOut = !previousAuthUid;
+  previousAuthUid = user?.uid || null;
   state.user = user;
   state.admin = null;
   elements.authError.hidden = true;
@@ -3111,6 +3676,9 @@ function handleAuthState(user) {
     return;
   }
 
+  if (wasLoggedOut) {
+    state.pendingOnboardingAfterLogin = true;
+  }
   loadDashboard();
 }
 
@@ -3118,7 +3686,11 @@ bindEvents();
 initializeFormDefaults();
 
 if (getCurrentUser()) {
+  previousAuthUid = getCurrentUser()?.uid || null;
   setView('loading-dashboard');
+} else {
+  previousAuthUid = null;
+  setView('signed-out');
 }
 
 subscribeToAuthState(handleAuthState);

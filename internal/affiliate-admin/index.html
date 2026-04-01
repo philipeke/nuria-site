@@ -23,9 +23,9 @@
   <div class="hero__geo-bg" aria-hidden="true"></div>
 
   <div class="admin-shell" data-affiliate-admin-page>
-    <header class="admin-topbar">
+    <header class="admin-topbar" data-admin-auth-only hidden>
       <a href="/" class="admin-topbar__brand" aria-label="Nuria home">
-        <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-topbar__logo" />
+        <img src="../../assets/logo.png" alt="Nuria" class="admin-topbar__logo" />
         <div>
           <p class="admin-topbar__eyebrow">Internal</p>
           <strong class="admin-topbar__title">Affiliate Admin</strong>
@@ -41,16 +41,19 @@
     </header>
 
     <main class="admin-main">
-      <section class="admin-hero">
+      <section class="admin-hero" data-admin-auth-only hidden>
         <p class="admin-hero__eyebrow">Private route</p>
-        <h1 class="admin-hero__title">Affiliate operations for Nuria</h1>
+        <div class="admin-hero__head">
+          <h1 class="admin-hero__title">Affiliate operations for Nuria</h1>
+          <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-hero__logo" />
+        </div>
         <p class="admin-hero__copy">
           This page is intentionally unlisted. Sign in with an authorized Firebase Auth
           account to review affiliate codes, payout reports, and payout actions.
         </p>
       </section>
 
-      <div class="admin-banner" id="adminGlobalNotice" hidden></div>
+      <div class="admin-banner" id="adminGlobalNotice" data-admin-auth-only hidden></div>
 
       <section class="admin-state-card" data-admin-view="loading-auth">
         <div class="referral-loading">
@@ -68,16 +71,9 @@
         <p class="admin-state-card__eyebrow">Sign in required</p>
         <h2 class="admin-state-card__title">Use your Nuria admin account</h2>
         <p class="admin-state-card__copy">
-          Verified <code>@oakdev.app</code> users are allowed automatically. Other
-          accounts must be active in <code>admin_users/{uid}</code> with the
-          <code>affiliate_admin</code> role.
+          Only accounts that are explicitly allowlisted in Firebase admin access
+          can sign in to this admin center.
         </p>
-
-        <div class="admin-auth-actions">
-          <button type="button" class="btn btn--gold" id="adminGoogleSignIn">
-            Sign in with Google
-          </button>
-        </div>
 
         <form class="admin-auth-form" id="adminEmailSignInForm">
           <div class="form-group">
@@ -154,8 +150,51 @@
       </section>
 
       <section class="admin-dashboard" data-admin-view="ready" hidden>
+        <nav class="admin-section-nav" aria-label="Admin areas">
+          <a href="#adminSectionOverview" class="admin-section-nav__link">Overview & generation</a>
+          <a href="#adminSectionOperations" class="admin-section-nav__link">Operations & checklist</a>
+          <a href="#adminSectionChecklist" class="admin-section-nav__link">Monthly close checklist</a>
+          <a href="#adminSectionAlertsHealth" class="admin-section-nav__link">Alerts & health</a>
+          <a href="#adminSectionCodes" class="admin-section-nav__link">Affiliate codes</a>
+          <a href="#adminSectionReports" class="admin-section-nav__link">Payout reports</a>
+          <a href="#adminSectionReportDetail" class="admin-section-nav__link">Report detail</a>
+          <a href="#adminSectionSettings" class="admin-section-nav__link">Settings</a>
+          <div class="admin-section-nav__checklist">
+            <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
+            <select class="form-input form-select" id="adminChecklistNavMonth"></select>
+            <div class="admin-section-nav__month-meta">
+              <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
+              <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
+              <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
+              <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
+            </div>
+            <div class="admin-section-nav__steps">
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="generated" />
+                <span>Generated</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="verified" />
+                <span>Verified</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="exported" />
+                <span>Exported</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="paid" />
+                <span>Paid</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="receipt" />
+                <span>Receipt</span>
+              </label>
+            </div>
+          </div>
+        </nav>
+
         <div class="admin-grid admin-grid--overview">
-          <article class="admin-panel">
+          <article class="admin-panel" id="adminSectionOverview">
             <div class="admin-panel__header">
               <div>
                 <p class="admin-panel__eyebrow">Overview</p>
@@ -268,7 +307,7 @@
           </article>
         </div>
 
-        <article class="admin-panel">
+        <article class="admin-panel" id="adminSectionOperations">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Operations</p>
@@ -350,7 +389,59 @@
           </div>
         </article>
 
-        <article class="admin-panel">
+        <article class="admin-panel" id="adminSectionAlertsHealth">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Monitoring</p>
+              <h2 class="admin-panel__title">Alert center and health dashboard</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshHealth">
+                Refresh health
+              </button>
+            </div>
+          </div>
+
+          <div class="admin-stat-grid">
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Open alerts</span>
+              <strong class="admin-stat-card__value" id="adminAlertsOpenCount">0</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Discrepancy alerts</span>
+              <strong class="admin-stat-card__value" id="adminDiscrepancyAlertCount">0</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Missing affiliate rows</span>
+              <strong class="admin-stat-card__value" id="adminMissingAffiliateCount">0</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Recipient bounces</span>
+              <strong class="admin-stat-card__value" id="adminRecipientBounceCount">0</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Health status</span>
+              <strong class="admin-stat-card__value" id="adminHealthStatus">Unknown</strong>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Backend error ratio</span>
+              <strong class="admin-stat-card__value" id="adminBackendErrorRate">0%</strong>
+            </div>
+          </div>
+
+          <div class="admin-split admin-split--stack">
+            <div>
+              <h3 class="admin-section-title">Active alerts</h3>
+              <div class="admin-mini-list" id="adminAlertList"></div>
+            </div>
+            <div>
+              <h3 class="admin-section-title">Callable health checks</h3>
+              <div class="admin-mini-list" id="adminHealthChecksList"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-panel" id="adminSectionChecklist">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Monthly close</p>
@@ -400,7 +491,7 @@
           <p class="admin-empty admin-empty--inline" id="adminChecklistProgress">0 / 5 complete</p>
         </article>
 
-        <article class="admin-panel">
+        <article class="admin-panel" id="adminSectionCodes">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Affiliate codes</p>
@@ -586,7 +677,7 @@
           </div>
         </article>
 
-        <article class="admin-panel">
+        <article class="admin-panel" id="adminSectionReports">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Payout reports</p>
@@ -631,7 +722,7 @@
           </div>
         </article>
 
-        <article class="admin-panel">
+        <article class="admin-panel" id="adminSectionReportDetail">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Report detail</p>
@@ -658,7 +749,7 @@
               </button>
               <button type="button" class="btn btn--outline btn--safe" id="adminExportTestButton">
                 <span class="admin-btn-icon">TEST</span>
-                Export sample file
+                Export sample files
               </button>
             </div>
           </div>
@@ -732,6 +823,15 @@
 
             <div class="admin-detail-section">
               <h3 class="admin-section-title">Mark report as paid</h3>
+              <div class="admin-banner admin-banner--info" id="adminApprovalStatusBanner">
+                Two-step approval is active. Submit a payout request, then a second admin must approve.
+              </div>
+              <div class="admin-panel__actions" style="margin: 0.85rem 0;">
+                <button type="button" class="btn btn--outline" id="adminApproveMarkPaidButton" disabled>
+                  Approve pending payout request
+                </button>
+              </div>
+              <div class="admin-mini-list" id="adminApprovalLogList"></div>
               <form class="admin-form admin-form--compact" id="adminMarkPaidForm">
                 <div class="form-group">
                   <label class="form-label" for="adminPaymentReference">Payment reference</label>
@@ -773,6 +873,74 @@
             </div>
           </div>
         </article>
+
+        <article class="admin-panel" id="adminSectionSettings">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Configuration</p>
+              <h2 class="admin-panel__title">Admin settings</h2>
+            </div>
+          </div>
+          <p class="admin-panel__helper">
+            Manage recipients, default workflow, export behavior, approval requirements, and notifications in one place.
+          </p>
+          <form class="admin-form" id="adminSettingsForm">
+            <div class="admin-form__grid">
+              <div class="form-group">
+                <label class="form-label" for="adminSettingsDefaultFlow">Default month workflow</label>
+                <select class="form-input form-select" id="adminSettingsDefaultFlow" name="defaultFlow">
+                  <option value="strict">strict</option>
+                  <option value="balanced">balanced</option>
+                  <option value="fast">fast</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="adminSettingsExportFormat">Export format</label>
+                <select class="form-input form-select" id="adminSettingsExportFormat" name="exportFormat">
+                  <option value="csv_pdf">csv_pdf</option>
+                  <option value="csv_only">csv_only</option>
+                  <option value="csv_json_pdf">csv_json_pdf</option>
+                </select>
+              </div>
+            </div>
+
+            <label class="admin-checkbox">
+              <input type="checkbox" id="adminSettingsRequireApproval" name="requireApproval" />
+              <span>Require two-step approval before marking report as paid</span>
+            </label>
+            <label class="admin-checkbox">
+              <input type="checkbox" id="adminSettingsNotifyOnErrors" name="notifyOnErrors" />
+              <span>Enable notifications when alert center detects errors</span>
+            </label>
+
+            <div class="form-group">
+              <label class="form-label" for="adminSettingsRecipients">Monthly report recipients (one email per line)</label>
+              <textarea
+                class="form-input form-textarea"
+                id="adminSettingsRecipients"
+                name="recipients"
+                placeholder="finance@example.com"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="adminSettingsBouncedRecipients">Known bounced recipients (one email per line)</label>
+              <textarea
+                class="form-input form-textarea"
+                id="adminSettingsBouncedRecipients"
+                name="bouncedRecipients"
+                placeholder="old-finance@example.com"
+              ></textarea>
+            </div>
+
+            <div class="admin-form__actions">
+              <button type="submit" class="btn btn--gold" id="adminSaveSettingsButton">
+                Save admin settings
+              </button>
+            </div>
+            <p class="admin-form-error" id="adminSettingsError" hidden></p>
+          </form>
+        </article>
       </section>
     </main>
   </div>
@@ -793,7 +961,7 @@
         This admin center helps you run the full affiliate payout cycle with clear audit records.
       </p>
 
-      <p class="admin-onboarding-progress" id="adminOnboardingProgress">Step 1 of 4</p>
+      <p class="admin-onboarding-progress" id="adminOnboardingProgress">Step 1 of 6</p>
       <div class="admin-onboarding-track">
         <div class="admin-onboarding-step" data-onboarding-step="0">
           <h3>Generate and open report</h3>
@@ -804,12 +972,20 @@
           <p>Load rows and confirm affiliates, totals, and payout-ready entries before payout.</p>
         </div>
         <div class="admin-onboarding-step" data-onboarding-step="2" hidden>
-          <h3>Export records</h3>
-          <p>Export CSV/PDF or use the month-end package for a complete archive.</p>
+          <h3>Approval flow</h3>
+          <p>Create a payout request and have a second admin approve before report payment actions.</p>
         </div>
         <div class="admin-onboarding-step" data-onboarding-step="3" hidden>
-          <h3>Complete and lock</h3>
-          <p>Mark as paid, save the receipt, and lock the month with a reason after finance approval.</p>
+          <h3>Alert center</h3>
+          <p>Review discrepancy alerts, missing affiliate mappings, and recipient bounce issues.</p>
+        </div>
+        <div class="admin-onboarding-step" data-onboarding-step="4" hidden>
+          <h3>Health dashboard</h3>
+          <p>Track callable health, latest successful checks, and backend error ratio.</p>
+        </div>
+        <div class="admin-onboarding-step" data-onboarding-step="5" hidden>
+          <h3>Settings and close</h3>
+          <p>Manage recipients and defaults centrally, then finalize payout and lock month.</p>
         </div>
       </div>
       <div class="admin-onboarding-dots" id="adminOnboardingDots">
@@ -817,6 +993,8 @@
         <button type="button" class="admin-onboarding-dot" data-onboarding-dot="1" aria-label="Go to step 2"></button>
         <button type="button" class="admin-onboarding-dot" data-onboarding-dot="2" aria-label="Go to step 3"></button>
         <button type="button" class="admin-onboarding-dot" data-onboarding-dot="3" aria-label="Go to step 4"></button>
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="4" aria-label="Go to step 5"></button>
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="5" aria-label="Go to step 6"></button>
       </div>
 
       <div class="admin-modal__actions">

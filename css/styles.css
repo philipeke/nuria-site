@@ -3139,7 +3139,7 @@ address.legal-address strong { color: var(--color-text); }
 }
 
 .admin-topbar__logo {
-  width: 52px;
+  width: 112px;
   height: 52px;
   border-radius: 16px;
   object-fit: contain;
@@ -3188,6 +3188,104 @@ address.legal-address strong { color: var(--color-text); }
   gap: 1.5rem;
 }
 
+.admin-section-nav {
+  position: sticky;
+  top: 6.25rem;
+  z-index: 16;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding: 0.75rem;
+  border-radius: 18px;
+  border: 1px solid rgba(201, 168, 76, 0.14);
+  background: rgba(5, 12, 8, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.admin-section-nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.78rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(234, 246, 240, 0.9);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.admin-section-nav__link:hover,
+.admin-section-nav__link:focus-visible {
+  border-color: rgba(201, 168, 76, 0.45);
+  background: rgba(201, 168, 76, 0.14);
+  color: #ffffff;
+}
+
+.admin-section-nav__checklist {
+  margin-left: auto;
+  min-width: min(100%, 520px);
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.55rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.admin-section-nav__checklist .form-label {
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.admin-section-nav__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
+}
+
+.admin-section-nav__month-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.admin-section-nav__month-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.24rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #f8fff9;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-section-nav__month-pill--low {
+  border-color: rgba(252, 165, 165, 0.4);
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.admin-section-nav__month-pill--mid {
+  border-color: rgba(250, 204, 21, 0.45);
+  background: rgba(250, 204, 21, 0.15);
+}
+
+.admin-section-nav__month-pill--done {
+  border-color: rgba(45, 190, 108, 0.42);
+  background: rgba(45, 190, 108, 0.18);
+}
+
+.admin-section-nav__month-meta .btn {
+  padding: 0.35rem 0.62rem;
+  font-size: 0.76rem;
+}
+
 .admin-hero,
 .admin-panel,
 .admin-state-card {
@@ -3225,6 +3323,13 @@ address.legal-address strong { color: var(--color-text); }
   padding: 1.5rem;
 }
 
+.admin-hero__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .admin-hero__title {
   margin-top: 0.7rem;
   font-family: var(--font-heading);
@@ -3232,6 +3337,13 @@ address.legal-address strong { color: var(--color-text); }
   line-height: 1.08;
   color: #f7fbf8;
   letter-spacing: -0.02em;
+}
+
+.admin-hero__logo {
+  width: clamp(120px, 18vw, 210px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.25));
 }
 
 .admin-hero__copy,
@@ -3276,6 +3388,14 @@ address.legal-address strong { color: var(--color-text); }
 .admin-dashboard {
   display: grid;
   gap: 1.5rem;
+}
+
+#adminSectionChecklist {
+  order: 3;
+}
+
+#adminSectionAlertsHealth {
+  order: 4;
 }
 
 .admin-grid {
@@ -3946,6 +4066,19 @@ address.legal-address strong { color: var(--color-text); }
   padding: 0.72rem;
 }
 
+.admin-shell.admin-shell--login {
+  width: min(560px, calc(100% - 2rem));
+  padding-top: 8vh;
+}
+
+.admin-shell.admin-shell--login .admin-main {
+  gap: 0;
+}
+
+.admin-shell.admin-shell--login .admin-state-card {
+  padding: 1.7rem;
+}
+
 .admin-detail-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4014,6 +4147,20 @@ code {
     align-items: stretch;
   }
 
+  .admin-topbar__logo {
+    width: 92px;
+    height: 46px;
+  }
+
+  .admin-section-nav {
+    top: 0.5rem;
+  }
+
+  .admin-section-nav__checklist {
+    margin-left: 0;
+    width: 100%;
+  }
+
   .admin-topbar__actions,
   .admin-panel__header,
   .admin-panel__actions,
@@ -4038,6 +4185,14 @@ code {
   .admin-state-card {
     padding: 1.1rem;
     border-radius: 22px;
+  }
+
+  .admin-hero__head {
+    align-items: center;
+  }
+
+  .admin-hero__logo {
+    width: 120px;
   }
 
   .admin-table th,
