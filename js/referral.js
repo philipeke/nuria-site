@@ -20,6 +20,7 @@
   const retryLookupButton = document.getElementById('referralRetryLookupButton');
   const referralViews = Array.from(document.querySelectorAll('[data-referral-view]'));
   const affiliateNameTargets = Array.from(document.querySelectorAll('[data-affiliate-name]'));
+  const supportOrgTargets = Array.from(document.querySelectorAll('[data-referral-support-org]'));
   const referralCodeTargets = Array.from(document.querySelectorAll('[data-referral-code]'));
   const storeLinks = Array.from(document.querySelectorAll('[data-referral-store]'));
 
@@ -31,6 +32,50 @@
   };
   let lastLookupCode = '';
   let lookupRequestId = 0;
+  let supportOrgObservers = [];
+
+  function captureSupportOrgTemplate(target) {
+    if (!target) return;
+    const text = String(target.textContent || '');
+    if (text.includes('{org}')) {
+      target.dataset.template = text;
+    }
+  }
+
+  function renderSupportOrgHeading(name) {
+    const orgName = name || 'your community';
+    supportOrgTargets.forEach(target => {
+      const template = target.dataset.template || String(target.textContent || '');
+      if (!template.includes('{org}')) {
+        return;
+      }
+
+      const rendered = template.replace(/\{org\}/g, orgName);
+      if (target.textContent !== rendered) {
+        target.textContent = rendered;
+      }
+    });
+  }
+
+  function initSupportOrgObservers() {
+    supportOrgObservers.forEach(observer => observer.disconnect());
+    supportOrgObservers = [];
+
+    supportOrgTargets.forEach(target => {
+      captureSupportOrgTemplate(target);
+
+      const observer = new MutationObserver(() => {
+        captureSupportOrgTemplate(target);
+        renderSupportOrgHeading(referralContext.displayName || '');
+      });
+      observer.observe(target, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+      supportOrgObservers.push(observer);
+    });
+  }
 
   function getSourceRoute() {
     if (typeof site.getSourceRouteFromLocation === 'function') {
@@ -92,6 +137,8 @@
     affiliateNameTargets.forEach(target => {
       target.textContent = name || 'your community';
     });
+
+    renderSupportOrgHeading(name || '');
   }
 
   function setDocumentTitle(title) {
@@ -358,6 +405,7 @@
   });
 
   const initialCode = site.getReferralCodeFromLocation(window.location);
+  initSupportOrgObservers();
 
   if (initialCode) {
     referralContext.code = initialCode;
