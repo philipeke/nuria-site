@@ -42,7 +42,7 @@ if (!page) {
 
 const elements = {
   shell: page,
-  topbar: document.querySelector('.admin-topbar'),
+  topbar: document.querySelector('.admin-topbar-card'),
   mobileNavToggle: document.getElementById('adminMobileNavToggle'),
   mobileNavPanel: document.getElementById('adminMobileNavPanel'),
   mobileNavBackdrop: document.getElementById('adminMobileNavBackdrop'),
@@ -279,7 +279,7 @@ function setMobileNavOpen(open) {
   if (!elements.topbar || !elements.mobileNavToggle) return;
   const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
   if (!isMobileViewport) {
-    elements.topbar.classList.remove('admin-topbar--mobile-open');
+    elements.topbar.classList.remove('admin-topbar-card--mobile-open');
     elements.mobileNavToggle.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('admin-mobile-nav-open');
     if (elements.mobileNavPanel) {
@@ -289,7 +289,7 @@ function setMobileNavOpen(open) {
     return;
   }
   const shouldOpen = Boolean(open);
-  elements.topbar.classList.toggle('admin-topbar--mobile-open', shouldOpen);
+  elements.topbar.classList.toggle('admin-topbar-card--mobile-open', shouldOpen);
   elements.mobileNavToggle.setAttribute('aria-expanded', String(shouldOpen));
   document.body.classList.toggle('admin-mobile-nav-open', shouldOpen);
   if (elements.mobileNavPanel) {
@@ -4109,6 +4109,22 @@ function bindMiniListActions() {
   });
 }
 
+function bindAdminTopbarScrollCollapse() {
+  const card = elements.topbar;
+  if (!card) return;
+  const mq = window.matchMedia('(min-width: 769px)');
+  const update = () => {
+    if (!mq.matches) {
+      card.classList.remove('admin-topbar-card--scrolled');
+      return;
+    }
+    card.classList.toggle('admin-topbar-card--scrolled', window.scrollY > 72);
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  mq.addEventListener('change', update);
+  update();
+}
+
 function bindEvents() {
   elements.pageLinks.forEach((link) => {
     link.addEventListener('click', (event) => {
@@ -4120,14 +4136,14 @@ function bindEvents() {
     });
   });
   elements.mobileNavToggle?.addEventListener('click', () => {
-    const isOpen = elements.topbar?.classList.contains('admin-topbar--mobile-open');
+    const isOpen = elements.topbar?.classList.contains('admin-topbar-card--mobile-open');
     setMobileNavOpen(!isOpen);
   });
   elements.mobileNavBackdrop?.addEventListener('click', () => setMobileNavOpen(false));
   elements.mobileNavClose?.addEventListener('click', () => setMobileNavOpen(false));
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
-    if (!elements.topbar?.classList.contains('admin-topbar--mobile-open')) return;
+    if (!elements.topbar?.classList.contains('admin-topbar-card--mobile-open')) return;
     setMobileNavOpen(false);
   });
   elements.checklistNavToggle?.addEventListener('click', () => {
@@ -4410,6 +4426,7 @@ function handleAuthState(user) {
 
 bindEvents();
 setMobileNavOpen(false);
+bindAdminTopbarScrollCollapse();
 initializeFormDefaults();
 setView('loading-auth');
 waitForAuthPersistenceReady()

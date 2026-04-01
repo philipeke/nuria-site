@@ -3111,6 +3111,7 @@ address.legal-address strong { color: var(--color-text); }
 [data-admin-auth-only][hidden],
 [data-admin-page][hidden],
 .admin-section-nav[hidden],
+.admin-topbar-card[hidden],
 .admin-topbar[hidden],
 .admin-hero[hidden] {
   display: none !important;
@@ -3123,19 +3124,37 @@ address.legal-address strong { color: var(--color-text); }
   padding: 1rem 0 3rem;
 }
 
-.admin-topbar {
-  position: sticky;
-  top: 1rem;
+.admin-topbar-card {
+  position: relative;
   z-index: 20;
-  display: block;
   padding: 0.95rem 1rem;
   margin-bottom: 1.5rem;
   background: rgba(5, 12, 8, 0.82);
   border: 1px solid rgba(201, 168, 76, 0.14);
   border-radius: 22px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+  isolation: isolate;
+  transition: padding 0.3s ease;
+}
+
+.admin-topbar-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+}
+
+.admin-topbar {
+  display: block;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .admin-topbar__row {
@@ -3177,10 +3196,10 @@ address.legal-address strong { color: var(--color-text); }
 
 .admin-topbar__logo {
   display: block;
-  width: 152px;
-  height: 70px;
+  width: 128px;
+  height: 60px;
   border-radius: 16px;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   background: rgba(255, 255, 255, 0.04);
   padding: 0.1rem;
@@ -4296,7 +4315,7 @@ address.legal-address strong { color: var(--color-text); }
   padding: 2.2rem 0;
 }
 
-.admin-shell.admin-shell--login .admin-topbar,
+.admin-shell.admin-shell--login .admin-topbar-card,
 .admin-shell.admin-shell--login .admin-section-nav,
 .admin-shell.admin-shell--login .admin-hero {
   display: none !important;
@@ -4413,8 +4432,12 @@ code {
     display: contents;
   }
 
-  /* Flex is more reliable than grid here when drawer uses display:contents (flattened children). */
   .admin-topbar {
+    display: contents;
+  }
+
+  /* Flattened: row, actions, nav are flex children of the card */
+  .admin-topbar-card {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -4426,18 +4449,47 @@ code {
     flex: 0 1 auto;
     min-width: 0;
     margin-bottom: 0;
+    max-height: 7rem;
+    opacity: 1;
+    transition: max-height 0.35s ease, opacity 0.28s ease, margin 0.28s ease;
+    overflow: hidden;
   }
 
   .admin-topbar__actions {
     flex: 0 0 auto;
     margin-left: auto;
     align-self: center;
+    max-height: 12rem;
+    opacity: 1;
+    transition: max-height 0.35s ease, opacity 0.28s ease;
+    overflow: hidden;
+  }
+
+  .admin-topbar-card--scrolled {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .admin-topbar-card--scrolled .admin-topbar__row,
+  .admin-topbar-card--scrolled .admin-topbar__actions {
+    max-height: 0;
+    opacity: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none;
   }
 
   .admin-section-nav {
     flex: 1 1 100%;
     width: 100%;
     margin-top: 0.45rem;
+    position: sticky;
+    top: 0.35rem;
+    z-index: 26;
+  }
+
+  .admin-topbar-card--scrolled .admin-section-nav {
+    margin-top: 0;
   }
 }
 
@@ -4447,10 +4499,8 @@ code {
     padding-top: 0.5rem;
   }
 
-  .admin-topbar {
-    top: 0.5rem;
+  .admin-topbar-card {
     padding: 0.75rem;
-    gap: 0.45rem;
   }
 
   .admin-topbar__row {
@@ -4468,8 +4518,8 @@ code {
   }
 
   .admin-topbar__logo {
-    width: 68px;
-    height: 34px;
+    width: 86px;
+    height: 42px;
     flex-shrink: 0;
     object-fit: contain;
     object-position: center;
@@ -4505,7 +4555,7 @@ code {
     pointer-events: none;
   }
 
-  .admin-topbar--mobile-open .admin-mobile-drawer {
+  .admin-topbar-card--mobile-open .admin-mobile-drawer {
     pointer-events: auto;
   }
 
@@ -4527,7 +4577,7 @@ code {
     cursor: pointer;
   }
 
-  .admin-topbar--mobile-open .admin-mobile-drawer__backdrop {
+  .admin-topbar-card--mobile-open .admin-mobile-drawer__backdrop {
     opacity: 1;
     visibility: visible;
   }
@@ -4549,7 +4599,7 @@ code {
     overflow: hidden;
   }
 
-  .admin-topbar--mobile-open .admin-mobile-drawer__panel {
+  .admin-topbar-card--mobile-open .admin-mobile-drawer__panel {
     transform: translateX(0);
   }
 

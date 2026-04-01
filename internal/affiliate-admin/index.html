@@ -23,27 +23,29 @@
   <div class="hero__geo-bg" aria-hidden="true"></div>
 
   <div class="admin-shell" data-affiliate-admin-page>
-    <header class="admin-topbar" data-admin-auth-only hidden>
-      <div class="admin-topbar__row">
-        <div class="admin-topbar__brand">
-          <a href="/" class="admin-topbar__logo-link" aria-label="Nuria home">
-            <img src="../../assets/logo.png" alt="Nuria" class="admin-topbar__logo" />
-          </a>
-          <div class="admin-topbar__titles">
-            <p class="admin-topbar__eyebrow">Internal</p>
-            <strong class="admin-topbar__title">Affiliate Admin</strong>
+    <div class="admin-topbar-card" data-admin-auth-only hidden>
+      <header class="admin-topbar">
+        <div class="admin-topbar__row">
+          <div class="admin-topbar__brand">
+            <a href="/" class="admin-topbar__logo-link" aria-label="Nuria home">
+              <img src="../../assets/logo.png" alt="Nuria" class="admin-topbar__logo" />
+            </a>
+            <div class="admin-topbar__titles">
+              <p class="admin-topbar__eyebrow">Internal</p>
+              <strong class="admin-topbar__title">Affiliate Admin</strong>
+            </div>
           </div>
+          <button
+            type="button"
+            class="btn btn--outline admin-mobile-nav-toggle"
+            id="adminMobileNavToggle"
+            aria-expanded="false"
+            aria-controls="adminMobileNavPanel"
+          >
+            Menu
+          </button>
         </div>
-        <button
-          type="button"
-          class="btn btn--outline admin-mobile-nav-toggle"
-          id="adminMobileNavToggle"
-          aria-expanded="false"
-          aria-controls="adminMobileNavPanel"
-        >
-          Menu
-        </button>
-      </div>
+      </header>
 
       <div class="admin-mobile-drawer" id="adminMobileNavDrawer" data-admin-mobile-drawer>
         <button
@@ -81,7 +83,7 @@
                 Sign out
               </button>
             </div>
-            <nav class="admin-section-nav" aria-label="Admin areas" data-admin-auth-only hidden>
+            <nav class="admin-section-nav" aria-label="Admin areas" hidden>
               <div class="admin-section-nav__links">
                 <a href="/internal/affiliate-admin/" class="admin-section-nav__link" data-admin-page-link="landing">Landing</a>
                 <a href="/internal/affiliate-admin/operations/" class="admin-section-nav__link" data-admin-page-link="operations">Operations</a>
@@ -134,7 +136,7 @@
           </div>
         </div>
       </div>
-    </header>
+    </div>
 
     <main class="admin-main">
       <section class="admin-hero" data-admin-auth-only hidden>
