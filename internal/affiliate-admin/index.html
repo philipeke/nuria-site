@@ -240,7 +240,7 @@
           </div>
         </article>
 
-        <div class="admin-grid admin-grid--overview" data-admin-page="overview" hidden>
+        <div class="admin-grid admin-grid--overview" data-admin-page="landing" hidden>
           <article class="admin-panel" id="adminSectionOverview">
             <div class="admin-panel__header">
               <div>
@@ -668,10 +668,17 @@
                   autocomplete="email"
                   placeholder="partner@nuria.app"
                 />
+                <p class="admin-panel__helper" id="adminPartnerLinkStatus">
+                  No linked Nuria account yet. Add partner email and save to verify account mapping.
+                </p>
               </div>
 
-              <div class="admin-detail-section">
-                <h3 class="admin-section-title">Partner profile (billing/contact)</h3>
+              <details class="admin-collapsible admin-detail-section" id="adminPartnerProfileDetails">
+                <summary class="admin-collapsible__summary">
+                  <span class="admin-section-title">Partner profile (billing/contact)</span>
+                  <span class="admin-collapsible__meta">Optional advanced details</span>
+                </summary>
+                <div class="admin-collapsible__content">
                 <div class="admin-form__grid">
                   <div class="form-group">
                     <label class="form-label" for="adminPartnerType">Partner type</label>
@@ -806,7 +813,8 @@
                     />
                   </div>
                 </div>
-              </div>
+                </div>
+              </details>
 
               <div class="admin-form__grid">
                 <div class="form-group">

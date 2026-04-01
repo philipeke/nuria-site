@@ -3127,8 +3127,7 @@ address.legal-address strong { color: var(--color-text); }
   position: sticky;
   top: 1rem;
   z-index: 20;
-  display: grid;
-  gap: 0.85rem;
+  display: block;
   padding: 0.95rem 1rem;
   margin-bottom: 1.5rem;
   background: rgba(5, 12, 8, 0.82);
@@ -3145,6 +3144,7 @@ address.legal-address strong { color: var(--color-text); }
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 0.7rem;
 }
 
 .admin-topbar__brand {
@@ -3233,6 +3233,7 @@ address.legal-address strong { color: var(--color-text); }
   align-items: center;
   justify-content: space-between;
   gap: 0.7rem;
+  width: 100%;
   padding: 0.7rem 0.2rem 0 0.2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -3241,6 +3242,7 @@ address.legal-address strong { color: var(--color-text); }
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+  flex: 1 1 auto;
 }
 
 .admin-section-nav__menu {
@@ -3301,10 +3303,15 @@ address.legal-address strong { color: var(--color-text); }
   background: rgba(4, 16, 11, 0.95);
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
   z-index: 40;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .admin-section-nav__checklist[hidden] {
   display: none !important;
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
 .admin-section-nav__checklist .form-label {
@@ -3601,6 +3608,26 @@ address.legal-address strong { color: var(--color-text); }
   margin-top: 0.85rem;
 }
 
+#adminOverviewCodes {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+}
+
+#adminOverviewCodes::-webkit-scrollbar {
+  width: 8px;
+}
+
+#adminOverviewCodes::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.35);
+  border-radius: 999px;
+}
+
+#adminOverviewCodes::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+
 .admin-mini-item {
   width: 100%;
   padding: 0.9rem 1rem;
@@ -3644,6 +3671,60 @@ address.legal-address strong { color: var(--color-text); }
 .admin-form--compact {
   display: grid;
   gap: 0.85rem;
+}
+
+#adminSectionCodes .admin-split {
+  align-items: flex-start;
+}
+
+#adminCodeForm {
+  position: sticky;
+  top: 7.6rem;
+  max-height: calc(100vh - 9rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+#adminCodeForm::-webkit-scrollbar {
+  width: 8px;
+}
+
+#adminCodeForm::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.32);
+  border-radius: 999px;
+}
+
+.admin-collapsible {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+  padding: 0.2rem 0.75rem 0.7rem;
+}
+
+.admin-collapsible__summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.55rem 0;
+  list-style: none;
+}
+
+.admin-collapsible__summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-collapsible__meta {
+  color: var(--color-text-dim);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.admin-collapsible__content {
+  display: grid;
+  gap: 0.65rem;
+  padding-top: 0.25rem;
 }
 
 .admin-form__header {
@@ -4335,6 +4416,14 @@ code {
   .admin-detail-meta,
   .admin-form__grid {
     grid-template-columns: 1fr;
+  }
+
+  #adminCodeForm {
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
   }
 
   .admin-hero,

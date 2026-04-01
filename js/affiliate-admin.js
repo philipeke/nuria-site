@@ -126,6 +126,8 @@ const elements = {
   affiliateId: document.getElementById('adminAffiliateId'),
   displayName: document.getElementById('adminDisplayName'),
   partnerNuriaEmail: document.getElementById('adminPartnerNuriaEmail'),
+  partnerLinkStatus: document.getElementById('adminPartnerLinkStatus'),
+  partnerProfileDetails: document.getElementById('adminPartnerProfileDetails'),
   partnerType: document.getElementById('adminPartnerType'),
   partnerMobile: document.getElementById('adminPartnerMobile'),
   partnerAddress1: document.getElementById('adminPartnerAddress1'),
@@ -217,6 +219,7 @@ const state = {
   reportRecipients: [],
   partnerEmailsByCode: {},
   partnerRegistryByCode: {},
+  partnerUidsByCode: {},
   partnerProfilesByCode: {},
   selectedReportId: getReportIdFromUrl(),
   selectedReport: null,
@@ -260,6 +263,13 @@ let spiritToastTimeoutId = null;
 let checklistRemoteSyncTimeoutId = null;
 let previousAuthUid = null;
 
+function setChecklistPopoverOpen(open) {
+  if (!elements.checklistNavPopover || !elements.checklistNavToggle) return;
+  const isOpen = Boolean(open);
+  elements.checklistNavPopover.hidden = !isOpen;
+  elements.checklistNavToggle.setAttribute('aria-expanded', String(isOpen));
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -289,8 +299,7 @@ function setView(name) {
     elements.sectionNav.hidden = showLoginOnly || name !== 'ready';
   }
   if (elements.checklistNavPopover && elements.checklistNavToggle && elements.sectionNav?.hidden) {
-    elements.checklistNavPopover.hidden = true;
-    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+    setChecklistPopoverOpen(false);
   }
 
   if (!state.initializedViewEvent) {
@@ -327,10 +336,7 @@ function setAdminPage(pageKey, options) {
   const available = new Set(elements.pageSections.map((section) => section.dataset.adminPage));
   const next = available.has(pageKey) ? pageKey : 'landing';
   state.currentPage = next;
-  if (elements.checklistNavPopover && elements.checklistNavToggle) {
-    elements.checklistNavPopover.hidden = true;
-    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
-  }
+  setChecklistPopoverOpen(false);
 
   elements.pageSections.forEach((section) => {
     const active = section.dataset.adminPage === next;
@@ -604,10 +610,42 @@ function normalizePartnerProfile(rawProfile) {
   return hasAnyValue ? profile : null;
 }
 
+function hasPartnerProfileData(profile) {
+  if (!profile || typeof profile !== 'object') return false;
+  return Object.keys(profile).some((key) => key !== 'partnerType' && Boolean(profile[key]));
+}
+
 function getPartnerProfileForCode(item) {
   const code = String(item?.code || '').trim().toUpperCase();
   if (!code) return null;
   return state.partnerProfilesByCode?.[code] || null;
+}
+
+function renderPartnerLinkStatus(item) {
+  if (!elements.partnerLinkStatus) return;
+  const registry = getPartnerRegistryEntryForCode(item || {});
+  if (!registry) {
+    elements.partnerLinkStatus.textContent =
+      'No linked Nuria account yet. Add partner email and save to verify account mapping.';
+    return;
+  }
+
+  if (registry.status === 'verified') {
+    const display = registry.partnerDisplayName || registry.displayName || registry.email || 'Partner';
+    const uid = registry.partnerUid || state.partnerUidsByCode?.[String(item?.code || '').toUpperCase()] || '-';
+    elements.partnerLinkStatus.textContent =
+      `Linked to ${display} (${registry.email || '-'}) · UID ${uid}`;
+    return;
+  }
+
+  if (registry.status === 'lookup_error') {
+    elements.partnerLinkStatus.textContent =
+      `Lookup error: ${registry.statusReason || 'Could not verify right now.'}`;
+    return;
+  }
+
+  elements.partnerLinkStatus.textContent =
+    `Email saved but not verified yet (${registry.statusReason || 'not_found'}).`;
 }
 
 function getPartnerEmailForCode(item) {
@@ -1875,6 +1913,10 @@ function resetCodeForm(item) {
     elements.fixedPayoutMinor.value = '';
     elements.currency.value = '';
     updateCodeReferralLink('');
+    renderPartnerLinkStatus(null);
+    if (elements.partnerProfileDetails) {
+      elements.partnerProfileDetails.open = false;
+    }
     syncPartnerTypeFields();
     return;
   }
@@ -1904,6 +1946,10 @@ function resetCodeForm(item) {
     value.fixedPayoutMinor == null ? '' : String(value.fixedPayoutMinor);
   elements.currency.value = value.currency || '';
   updateCodeReferralLink(value.code || '');
+  renderPartnerLinkStatus(value);
+  if (elements.partnerProfileDetails) {
+    elements.partnerProfileDetails.open = hasPartnerProfileData(profile);
+  }
   syncPartnerTypeFields();
 }
 
@@ -2699,6 +2745,9 @@ async function loadAdminSettings() {
     state.partnerRegistryByCode = data.nuriaPartnersByCode && typeof data.nuriaPartnersByCode === 'object'
       ? data.nuriaPartnersByCode
       : {};
+    state.partnerUidsByCode = data.partnerUidsByCode && typeof data.partnerUidsByCode === 'object'
+      ? data.partnerUidsByCode
+      : {};
     state.partnerProfilesByCode = normalizePartnerProfilesMap(data.partnerProfilesByCode || {});
     state.checklistByMonth = Object.assign(
       {},
@@ -2724,6 +2773,7 @@ async function loadAdminSettings() {
     state.reportRecipients = [];
     state.partnerEmailsByCode = {};
     state.partnerRegistryByCode = {};
+    state.partnerUidsByCode = {};
     state.partnerProfilesByCode = {};
     state.adminSettings = {
       defaultFlow: 'balanced',
@@ -2747,6 +2797,7 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
 
   const nextMap = Object.assign({}, state.partnerEmailsByCode || {});
   const nextRegistry = Object.assign({}, state.partnerRegistryByCode || {});
+  const nextUids = Object.assign({}, state.partnerUidsByCode || {});
   const nextProfiles = Object.assign({}, state.partnerProfilesByCode || {});
   const normalizedEmail = normalizeEmail(partnerEmail || '');
   const normalizedProfile = normalizePartnerProfile(profileInput || {});
@@ -2780,9 +2831,15 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
       status,
       statusReason,
     };
+    if (lookup?.uid) {
+      nextUids[normalizedCode] = lookup.uid;
+    } else {
+      delete nextUids[normalizedCode];
+    }
   } else {
     delete nextMap[normalizedCode];
     delete nextRegistry[normalizedCode];
+    delete nextUids[normalizedCode];
   }
 
   if (normalizedProfile) {
@@ -2794,10 +2851,12 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
   await saveAffiliateAdminSettings({
     affiliatePartnerEmails: nextMap,
     nuriaPartnersByCode: nextRegistry,
+    partnerUidsByCode: nextUids,
     partnerProfilesByCode: nextProfiles,
   });
   state.partnerEmailsByCode = nextMap;
   state.partnerRegistryByCode = nextRegistry;
+  state.partnerUidsByCode = nextUids;
   state.partnerProfilesByCode = nextProfiles;
 }
 
@@ -4008,8 +4067,7 @@ function bindEvents() {
   elements.checklistNavToggle?.addEventListener('click', () => {
     if (!elements.checklistNavPopover) return;
     const isOpen = elements.checklistNavPopover.hidden === false;
-    elements.checklistNavPopover.hidden = isOpen;
-    elements.checklistNavToggle.setAttribute('aria-expanded', String(!isOpen));
+    setChecklistPopoverOpen(!isOpen);
   });
   document.addEventListener('click', (event) => {
     if (!elements.checklistNavPopover || !elements.checklistNavToggle) return;
@@ -4017,8 +4075,7 @@ function bindEvents() {
     const withinPopover = event.target.closest('#adminChecklistNavPopover');
     const withinToggle = event.target.closest('#adminChecklistNavToggle');
     if (withinPopover || withinToggle) return;
-    elements.checklistNavPopover.hidden = true;
-    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+    setChecklistPopoverOpen(false);
   });
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
@@ -4234,10 +4291,7 @@ function bindEvents() {
 
 function initializeFormDefaults() {
   if (elements.checklistNavPopover) {
-    elements.checklistNavPopover.hidden = true;
-  }
-  if (elements.checklistNavToggle) {
-    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+    setChecklistPopoverOpen(false);
   }
   setAdminPage(getAdminPageFromUrl(), { updateUrl: true });
   elements.reportMonth.value = getPreviousUtcMonth();
