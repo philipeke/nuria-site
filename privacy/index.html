@@ -81,7 +81,7 @@
     <div class="container">
       <div class="page-content__card">
 
-        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 31 March 2026</p>
+        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 1 April 2026</p>
 
         <p>This Privacy Policy describes how <strong>OakDev &amp; AI AB</strong> ("we", "us", or "our") collects, uses, stores, and protects your personal data when you use the Nuria mobile application ("the App") and this website. We are established in Sweden and are subject to the General Data Protection Regulation (EU) 2016/679 ("GDPR") and the Swedish Data Protection Act (<em>Lag (2018:218) med kompletterande bestämmelser till EU:s dataskyddsförordning</em>).</p>
 
@@ -185,15 +185,31 @@
           <li><strong>What we do not do:</strong> We do not use the content of your questions to build advertising profiles, do not sell them, and do not share them with third parties for any commercial purpose outside of what is described in this policy.</li>
         </ul>
 
-        <h3>2.11 Partner / Affiliate Referral Data</h3>
+        <h3 id="priv-2-11">2.11 Partner Programme, Nuria Partner Accounts, and Operational Partner Profiles</h3>
         <p>Nuria operates a <strong>Partner Programme</strong> through which Islamic organisations, mosques, community groups, and other partners may receive a unique referral code to share with their communities. When a new user installs the App via a partner referral link or enters a referral code:</p>
         <ul>
-          <li><strong>What is collected:</strong> The referral code used, the date of first activation, and whether the referred user completes account registration. We do not collect personal details of the referred user beyond what is already collected under Section 2.1.</li>
-          <li><strong>Partner-level data:</strong> If you are a registered partner (community or organisation), we collect the contact details you provided when joining the programme (name, organisation name, email address) and aggregate statistics about activations attributed to your referral code (number of activations, dates). We do not share the personal data of individual referred users with partners.</li>
-          <li><strong>Purpose:</strong> The referral data is used to attribute registrations to the correct partner, to manage the partner relationship, to send programme-related communications to partners, and to report aggregate (non-personal) programme statistics to partners.</li>
-          <li><strong>Legal basis:</strong> Performance of a contract (Art. 6(1)(b)) for partners who have signed up to the programme; legitimate interests (Art. 6(1)(f)) for tracking referral attribution in aggregate.</li>
-          <li><strong>Retention:</strong> Partner contact details are retained for the duration of the partner relationship and for 3 years thereafter. Aggregate referral statistics are retained indefinitely as they contain no personal data.</li>
+          <li><strong>What is collected (referral attribution):</strong> The referral code used, the date of first activation, and whether the referred user completes account registration. We do not collect additional personal details of the referred user beyond what is already collected under Section 2.1.</li>
+          <li><strong>Partner-level contact and statistics:</strong> If you are a registered partner (community or organisation), we collect the contact details you provided when joining the programme (name, organisation name, email address) and aggregate statistics about activations attributed to your referral code (number of activations, dates). We do not share the personal data of individual referred users with partners.</li>
+          <li><strong>Purpose (referrals):</strong> The referral data is used to attribute registrations to the correct partner, to manage the partner relationship, to send programme-related communications to partners, and to report aggregate (non-personal) programme statistics to partners.</li>
+          <li><strong>Legal basis (referrals):</strong> Performance of a contract (Art. 6(1)(b)) for partners who have signed up to the programme; legitimate interests (Art. 6(1)(f)) for tracking referral attribution in aggregate.</li>
+          <li><strong>Retention (general partner contact):</strong> Partner contact details are retained for the duration of the partner relationship and for 3 years thereafter, except where a longer period is required for accounting, tax, or anti-fraud purposes as described below.</li>
         </ul>
+
+        <h4>Nuria Partner user accounts and Firebase <abbr title="Unique identifier">UID</abbr> linkage</h4>
+        <p>A <strong>Nuria Partner</strong> in the operational sense is a person or organisation representative who maintains a <strong>Nuria user account</strong> (the same account system as end users of the App) registered with a specific email address. For programme administration, we may record which referral code is associated with which partner email address and, where technically available, the corresponding <strong>Firebase Authentication user ID (UID)</strong> for that email address.</p>
+        <p>We do not assign arbitrary UIDs to partners. The UID we store is <strong>the identifier returned by our authentication backend</strong> when we verify that the partner email address corresponds to an existing Nuria account. If the email cannot be matched to an account, the referral code may remain linked to the email address in an <em>unverified</em> state until the partner registers or the mapping is corrected. Partners are responsible for ensuring that the email address they provide is accurate, belongs to them or their authorised representative, and matches the Nuria account they intend to use.</p>
+
+        <h4>Operational partner profile (payout, tax, and banking details)</h4>
+        <p>Where we offer or agree to provide <strong>revenue share, fees, reimbursements, or other payments</strong> to a partner under a separate commercial arrangement (or where we otherwise need legal and payment details to operate the programme), we may collect and store additional <strong>financial and identity-related</strong> information about the partner. This may include, without limitation: contact telephone number; postal address; country; company registration or VAT identification number where applicable; and bank account details such as account holder name, bank name, domestic account number, and <abbr title="International Bank Account Number">IBAN</abbr>. This data is processed solely for <strong>legitimate programme administration</strong>, including:</p>
+        <ul>
+          <li>Verifying the identity of the payee and the correctness of payment instructions;</li>
+          <li>Executing payments, reconciling ledgers, and preparing payout reports;</li>
+          <li>Complying with applicable accounting, tax, anti–money laundering, sanctions, and regulatory reporting obligations.</li>
+        </ul>
+        <p>Such operational partner profile data is stored on our secure backend infrastructure (including <strong>Google Cloud Firestore</strong> as part of our Firebase environment) in <strong>restricted administrative configuration records</strong>, keyed by referral code and cross-referenced to the partner email and verified UID where available. It is <strong>not</strong> displayed on public marketing pages and is not accessible to other Nuria users. Access is limited to authorised personnel and automated systems under strict access controls and audit logging.</p>
+        <p><strong>Special categories:</strong> This operational profile does not typically include sensitive categories under Article 9 GDPR in isolation; however, if you voluntarily include information in free-text fields that reveals religious belief, health, or other special categories, we will treat that content in line with Section 3 and only process it where permitted by law.</p>
+        <p><strong>Legal basis (operational profile):</strong> Performance of a contract (Art. 6(1)(b)) where we have a contractual or partner relationship requiring payment; compliance with legal obligations (Art. 6(1)(c)) for accounting and tax records; and legitimate interests (Art. 6(1)(f)) in preventing fraud, abuse, and duplicate payments in the Partner Programme.</p>
+        <p><strong>Retention (financial and operational records):</strong> Banking, payout, and reconciliation records may be retained for up to <strong>7 years</strong> from the end of the financial year to which they relate, in line with Swedish accounting and tax requirements, or longer where required by law or to resolve disputes. Aggregate referral statistics are retained indefinitely where they contain no personal data.</p>
 
         <h3>2.12 What We Do Not Collect</h3>
         <p>We do <strong>not</strong> collect contacts from your address book, camera data, microphone data, or any biometric data. We do <strong>not</strong> transmit or store your GPS location on our servers (Section 2.9). We do <strong>not</strong> build advertising profiles, participate in real-time bidding networks, or sell your personal data to any third party, ever, under any circumstances.</p>
@@ -271,6 +287,10 @@
               <td>Performance of a contract (Art. 6(1)(b)); Legitimate interests (Art. 6(1)(f))</td>
             </tr>
             <tr>
+              <td>Nuria Partner operational profiles (identity, payout, tax, and banking details) and UID verification for programme administration</td>
+              <td>Performance of a contract (Art. 6(1)(b)); Legal obligation (Art. 6(1)(c)); Legitimate interests (Art. 6(1)(f))</td>
+            </tr>
+            <tr>
               <td>Anonymised usage analytics and product improvement</td>
               <td>Legitimate interests (Art. 6(1)(f))</td>
             </tr>
@@ -306,7 +326,7 @@
           <li>Display the Qibla direction toward the Kaaba in Mecca using your device's compass and GPS coordinates, processed entirely on-device.</li>
           <li>Deliver daily content (daily Quranic verse, role model of the day, daily reflection, Islamic calendar events, and similar curated content) to your App home screen.</li>
           <li>Send push notifications, including prayer-time Adhan reminders (if you have enabled this) and transactional notifications (for example, when a purchase is confirmed).</li>
-          <li>Manage the Partner Programme, including attributing new registrations to the correct partner referral code and communicating aggregate programme statistics to registered partners.</li>
+          <li>Manage the Partner Programme, including attributing new registrations to the correct partner referral code; communicating aggregate programme statistics to registered partners; verifying partner email addresses against Nuria user accounts; storing Firebase UIDs for matched accounts where available; and processing operational partner profile data (including payout and banking details) solely for programme administration, reconciliation, and legal compliance.</li>
           <li>Respond to your support enquiries and process account deletion requests.</li>
           <li>Improve the App through analysis of anonymised, aggregated usage data.</li>
           <li>Detect, investigate, and prevent fraud, abuse, and security incidents.</li>
@@ -333,7 +353,7 @@
         <strong>Services used:</strong></p>
         <ul>
           <li><strong>Firebase Authentication:</strong> Manages secure user account creation and sign-in using your email address.</li>
-          <li><strong>Cloud Firestore / Firebase Realtime Database:</strong> Stores your account data, credit balance, reflection history, and subscription state on Google Cloud infrastructure.</li>
+          <li><strong>Cloud Firestore / Firebase Realtime Database:</strong> Stores your account data, credit balance, reflection history, and subscription state on Google Cloud infrastructure. It also stores <strong>restricted administrative configuration</strong> for the Partner Programme (for example referral-code mappings, partner email and UID cross-references, and operational partner payout profiles) that are not exposed to other end users.</li>
           <li><strong>Firebase Cloud Messaging (FCM):</strong> Routes push notification delivery to Android devices using your FCM device token.</li>
           <li><strong>Firebase Crashlytics:</strong> Collects anonymised crash reports and diagnostic data to help us identify and resolve bugs.</li>
           <li><strong>Firebase Remote Config / Analytics (anonymised):</strong> Used for anonymous feature-flag management and aggregate usage analytics where applicable.</li>
@@ -377,7 +397,8 @@
           <li><strong>Credit balance and transaction log:</strong> Retained for the lifetime of your account. Removed within <strong>30 days</strong> of account deletion, subject to the accounting retention rule below.</li>
           <li><strong>Purchase receipt metadata (transaction IDs, product IDs, dates, amounts):</strong> Retained for <strong>7 years</strong> from the date of each transaction, in compliance with Swedish accounting law (<em>Bokföringslagen</em> 1999:1078), even after account deletion. Only the minimum data required for accounting records is retained; your email address is retained in association with these records for the same 7-year period for the purpose of linking them to the relevant accounting entries if required.</li>
           <li><strong>Push notification tokens:</strong> Retained while your account is active and notifications are enabled. Deleted within <strong>30 days</strong> of account deletion, or immediately upon revocation of notification permission if you explicitly disable all notifications.</li>
-          <li><strong>Partner programme contact data:</strong> Retained for the duration of the partner relationship and for <strong>3 years</strong> thereafter to handle any disputes or follow-up relating to the programme.</li>
+          <li><strong>Partner programme contact data (general):</strong> Retained for the duration of the partner relationship and for <strong>3 years</strong> thereafter to handle disputes or follow-up relating to the programme, unless a longer period applies under the rule below.</li>
+          <li><strong>Partner payout, banking, tax, and reconciliation records:</strong> May be retained for up to <strong>7 years</strong> from the end of the financial year to which they relate (or longer where required by law), in line with Section 2.11.</li>
           <li><strong>Support communications:</strong> Retained for up to <strong>3 years</strong> after the last communication in the thread, unless you request earlier deletion and no overriding legal basis prevents us from complying.</li>
           <li><strong>Crash reports:</strong> Retained for up to <strong>12 months</strong> from the date of the crash event.</li>
           <li><strong>Anonymised aggregate usage data:</strong> May be retained indefinitely, as it contains no personal identifiers and cannot be used to identify any individual.</li>

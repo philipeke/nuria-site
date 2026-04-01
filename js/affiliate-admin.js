@@ -44,6 +44,9 @@ const elements = {
   shell: page,
   topbar: document.querySelector('.admin-topbar'),
   mobileNavToggle: document.getElementById('adminMobileNavToggle'),
+  mobileNavPanel: document.getElementById('adminMobileNavPanel'),
+  mobileNavBackdrop: document.getElementById('adminMobileNavBackdrop'),
+  mobileNavClose: document.getElementById('adminMobileNavClose'),
   views: Array.from(document.querySelectorAll('[data-admin-view]')),
   authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
   hero: document.querySelector('.admin-hero'),
@@ -278,11 +281,23 @@ function setMobileNavOpen(open) {
   if (!isMobileViewport) {
     elements.topbar.classList.remove('admin-topbar--mobile-open');
     elements.mobileNavToggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('admin-mobile-nav-open');
+    if (elements.mobileNavPanel) {
+      elements.mobileNavPanel.setAttribute('aria-hidden', 'false');
+      if ('inert' in elements.mobileNavPanel) elements.mobileNavPanel.inert = false;
+    }
     return;
   }
   const shouldOpen = Boolean(open);
   elements.topbar.classList.toggle('admin-topbar--mobile-open', shouldOpen);
   elements.mobileNavToggle.setAttribute('aria-expanded', String(shouldOpen));
+  document.body.classList.toggle('admin-mobile-nav-open', shouldOpen);
+  if (elements.mobileNavPanel) {
+    elements.mobileNavPanel.setAttribute('aria-hidden', String(!shouldOpen));
+    if ('inert' in elements.mobileNavPanel) {
+      elements.mobileNavPanel.inert = !shouldOpen;
+    }
+  }
   if (!shouldOpen) {
     setChecklistPopoverOpen(false);
   }
@@ -2867,15 +2882,15 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
     } else {
       delete nextUids[normalizedCode];
     }
+    if (normalizedProfile) {
+      nextProfiles[normalizedCode] = normalizedProfile;
+    } else {
+      delete nextProfiles[normalizedCode];
+    }
   } else {
     delete nextMap[normalizedCode];
     delete nextRegistry[normalizedCode];
     delete nextUids[normalizedCode];
-  }
-
-  if (normalizedProfile) {
-    nextProfiles[normalizedCode] = normalizedProfile;
-  } else {
     delete nextProfiles[normalizedCode];
   }
 
@@ -4100,6 +4115,13 @@ function bindEvents() {
     const isOpen = elements.topbar?.classList.contains('admin-topbar--mobile-open');
     setMobileNavOpen(!isOpen);
   });
+  elements.mobileNavBackdrop?.addEventListener('click', () => setMobileNavOpen(false));
+  elements.mobileNavClose?.addEventListener('click', () => setMobileNavOpen(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!elements.topbar?.classList.contains('admin-topbar--mobile-open')) return;
+    setMobileNavOpen(false);
+  });
   elements.checklistNavToggle?.addEventListener('click', () => {
     if (!elements.checklistNavPopover) return;
     const isOpen = elements.checklistNavPopover.hidden === false;
@@ -4379,6 +4401,7 @@ function handleAuthState(user) {
 }
 
 bindEvents();
+setMobileNavOpen(false);
 initializeFormDefaults();
 setView('loading-auth');
 waitForAuthPersistenceReady()

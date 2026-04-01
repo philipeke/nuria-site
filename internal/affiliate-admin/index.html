@@ -39,72 +39,101 @@
           class="btn btn--outline admin-mobile-nav-toggle"
           id="adminMobileNavToggle"
           aria-expanded="false"
-          aria-controls="adminTopbarMobileRegion"
+          aria-controls="adminMobileNavPanel"
         >
           Menu
         </button>
-
-        <div class="admin-topbar__actions" id="adminTopbarMobileRegion">
-          <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
-          <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
-            Summon spirit ✨
-          </button>
-          <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
-            Sign out
-          </button>
-        </div>
       </div>
 
-      <nav class="admin-section-nav" aria-label="Admin areas" data-admin-auth-only hidden>
-        <div class="admin-section-nav__links">
-          <a href="/internal/affiliate-admin/" class="admin-section-nav__link" data-admin-page-link="landing">Landing</a>
-          <a href="/internal/affiliate-admin/operations/" class="admin-section-nav__link" data-admin-page-link="operations">Operations</a>
-          <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
-          <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
-          <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
-          <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
-          <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
-          <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
-        </div>
+      <div class="admin-mobile-drawer" id="adminMobileNavDrawer" data-admin-mobile-drawer>
+        <button
+          type="button"
+          class="admin-mobile-drawer__backdrop"
+          id="adminMobileNavBackdrop"
+          tabindex="-1"
+          aria-hidden="true"
+        ></button>
+        <div
+          class="admin-mobile-drawer__panel"
+          id="adminMobileNavPanel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="adminMobileNavTitle"
+        >
+          <div class="admin-mobile-drawer__header">
+            <span class="admin-mobile-drawer__title" id="adminMobileNavTitle">Navigation</span>
+            <button
+              type="button"
+              class="btn btn--outline admin-mobile-drawer__close"
+              id="adminMobileNavClose"
+              aria-label="Close menu"
+            >
+              Close
+            </button>
+          </div>
+          <div class="admin-mobile-drawer__body">
+            <div class="admin-topbar__actions" id="adminTopbarMobileRegion">
+              <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
+              <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
+                Summon spirit ✨
+              </button>
+              <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
+                Sign out
+              </button>
+            </div>
+            <nav class="admin-section-nav" aria-label="Admin areas" data-admin-auth-only hidden>
+              <div class="admin-section-nav__links">
+                <a href="/internal/affiliate-admin/" class="admin-section-nav__link" data-admin-page-link="landing">Landing</a>
+                <a href="/internal/affiliate-admin/operations/" class="admin-section-nav__link" data-admin-page-link="operations">Operations</a>
+                <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
+                <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
+                <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
+                <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
+                <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
+                <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
+              </div>
 
-        <div class="admin-section-nav__menu">
-          <button type="button" class="btn btn--outline admin-section-nav__toggle" id="adminChecklistNavToggle" aria-expanded="false">
-            Checklist month
-          </button>
-          <div class="admin-section-nav__checklist" id="adminChecklistNavPopover" hidden>
-            <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
-            <select class="form-input form-select" id="adminChecklistNavMonth"></select>
-            <div class="admin-section-nav__month-meta">
-              <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
-              <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
-              <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
-              <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
-            </div>
-            <div class="admin-section-nav__steps">
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="generated" />
-                <span>Generated</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="verified" />
-                <span>Verified</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="exported" />
-                <span>Exported</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="paid" />
-                <span>Paid</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="receipt" />
-                <span>Receipt</span>
-              </label>
-            </div>
+              <div class="admin-section-nav__menu">
+                <button type="button" class="btn btn--outline admin-section-nav__toggle" id="adminChecklistNavToggle" aria-expanded="false">
+                  Checklist month
+                </button>
+                <div class="admin-section-nav__checklist" id="adminChecklistNavPopover" hidden>
+                  <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
+                  <select class="form-input form-select" id="adminChecklistNavMonth"></select>
+                  <div class="admin-section-nav__month-meta">
+                    <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
+                    <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
+                    <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
+                    <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
+                  </div>
+                  <div class="admin-section-nav__steps">
+                    <label class="admin-checkbox">
+                      <input type="checkbox" data-checklist-nav-item="generated" />
+                      <span>Generated</span>
+                    </label>
+                    <label class="admin-checkbox">
+                      <input type="checkbox" data-checklist-nav-item="verified" />
+                      <span>Verified</span>
+                    </label>
+                    <label class="admin-checkbox">
+                      <input type="checkbox" data-checklist-nav-item="exported" />
+                      <span>Exported</span>
+                    </label>
+                    <label class="admin-checkbox">
+                      <input type="checkbox" data-checklist-nav-item="paid" />
+                      <span>Paid</span>
+                    </label>
+                    <label class="admin-checkbox">
+                      <input type="checkbox" data-checklist-nav-item="receipt" />
+                      <span>Receipt</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </nav>
           </div>
         </div>
-      </nav>
+      </div>
     </header>
 
     <main class="admin-main">
