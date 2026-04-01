@@ -4436,23 +4436,22 @@ code {
     display: contents;
   }
 
-  /* Flattened: row, actions, nav are flex children of the card */
+  /* Flattened: row, actions, nav are flex children of the card. Sticky på hela kortet så logga + menyval följer med (sticky på nav bröts av display:contents längre upp i trädet). */
   .admin-topbar-card {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-start;
     gap: 0;
+    position: sticky;
+    top: 0.75rem;
+    z-index: 25;
   }
 
   .admin-topbar__row {
     flex: 0 1 auto;
     min-width: 0;
     margin-bottom: 0;
-    max-height: 7rem;
-    opacity: 1;
-    transition: max-height 0.35s ease, opacity 0.28s ease, margin 0.28s ease;
-    overflow: hidden;
   }
 
   .admin-topbar__actions {
@@ -4461,35 +4460,33 @@ code {
     align-self: center;
     max-height: 12rem;
     opacity: 1;
-    transition: max-height 0.35s ease, opacity 0.28s ease;
+    transition: max-height 0.35s ease, opacity 0.28s ease, margin 0.28s ease;
     overflow: hidden;
   }
 
   .admin-topbar-card--scrolled {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
   }
 
-  .admin-topbar-card--scrolled .admin-topbar__row,
+  /* Endast spirit / sign out döljs — logga + titel + menyval finns kvar */
   .admin-topbar-card--scrolled .admin-topbar__actions {
     max-height: 0;
     opacity: 0;
     margin: 0 !important;
     padding: 0 !important;
     pointer-events: none;
+    border: none;
   }
 
   .admin-section-nav {
     flex: 1 1 100%;
     width: 100%;
     margin-top: 0.45rem;
-    position: sticky;
-    top: 0.35rem;
-    z-index: 26;
   }
 
   .admin-topbar-card--scrolled .admin-section-nav {
-    margin-top: 0;
+    margin-top: 0.35rem;
   }
 }
 
@@ -4555,7 +4552,8 @@ code {
     pointer-events: none;
   }
 
-  .admin-topbar-card--mobile-open .admin-mobile-drawer {
+  /* Öppen-stil på själva drawern — måste fungera när drawern flyttats till document.body (mobil). */
+  .admin-mobile-drawer--open {
     pointer-events: auto;
   }
 
@@ -4577,7 +4575,7 @@ code {
     cursor: pointer;
   }
 
-  .admin-topbar-card--mobile-open .admin-mobile-drawer__backdrop {
+  .admin-mobile-drawer--open .admin-mobile-drawer__backdrop {
     opacity: 1;
     visibility: visible;
   }
@@ -4599,7 +4597,7 @@ code {
     overflow: hidden;
   }
 
-  .admin-topbar-card--mobile-open .admin-mobile-drawer__panel {
+  .admin-mobile-drawer--open .admin-mobile-drawer__panel {
     transform: translateX(0);
   }
 

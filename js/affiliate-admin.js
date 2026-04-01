@@ -43,6 +43,7 @@ if (!page) {
 const elements = {
   shell: page,
   topbar: document.querySelector('.admin-topbar-card'),
+  mobileNavDrawer: document.getElementById('adminMobileNavDrawer'),
   mobileNavToggle: document.getElementById('adminMobileNavToggle'),
   mobileNavPanel: document.getElementById('adminMobileNavPanel'),
   mobileNavBackdrop: document.getElementById('adminMobileNavBackdrop'),
@@ -275,11 +276,27 @@ function setChecklistPopoverOpen(open) {
   elements.checklistNavToggle.setAttribute('aria-expanded', String(isOpen));
 }
 
+function placeMobileDrawer() {
+  const drawer = elements.mobileNavDrawer;
+  const card = elements.topbar;
+  if (!drawer || !card) return;
+  const mq = window.matchMedia('(max-width: 768px)');
+  const cardHidden = card.hasAttribute('hidden');
+  if (mq.matches && !cardHidden) {
+    if (drawer.parentElement !== document.body) {
+      document.body.appendChild(drawer);
+    }
+  } else if (drawer.parentElement !== card) {
+    card.appendChild(drawer);
+  }
+}
+
 function setMobileNavOpen(open) {
   if (!elements.topbar || !elements.mobileNavToggle) return;
   const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
   if (!isMobileViewport) {
     elements.topbar.classList.remove('admin-topbar-card--mobile-open');
+    elements.mobileNavDrawer?.classList.remove('admin-mobile-drawer--open');
     elements.mobileNavToggle.setAttribute('aria-expanded', 'false');
     document.body.classList.remove('admin-mobile-nav-open');
     if (elements.mobileNavPanel) {
@@ -288,8 +305,10 @@ function setMobileNavOpen(open) {
     }
     return;
   }
+  placeMobileDrawer();
   const shouldOpen = Boolean(open);
   elements.topbar.classList.toggle('admin-topbar-card--mobile-open', shouldOpen);
+  elements.mobileNavDrawer?.classList.toggle('admin-mobile-drawer--open', shouldOpen);
   elements.mobileNavToggle.setAttribute('aria-expanded', String(shouldOpen));
   document.body.classList.toggle('admin-mobile-nav-open', shouldOpen);
   if (elements.mobileNavPanel) {
@@ -328,6 +347,7 @@ function setView(name) {
   elements.authOnlyBlocks.forEach((block) => {
     block.hidden = showLoginOnly;
   });
+  placeMobileDrawer();
   if (elements.globalNotice) {
     if (showLoginOnly) {
       elements.globalNotice.hidden = true;
@@ -4160,6 +4180,7 @@ function bindEvents() {
     setChecklistPopoverOpen(false);
   });
   window.addEventListener('resize', () => {
+    placeMobileDrawer();
     setMobileNavOpen(false);
   });
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
@@ -4425,6 +4446,7 @@ function handleAuthState(user) {
 }
 
 bindEvents();
+placeMobileDrawer();
 setMobileNavOpen(false);
 bindAdminTopbarScrollCollapse();
 initializeFormDefaults();
