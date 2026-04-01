@@ -36,6 +36,17 @@ const ADMIN_PAGE_PATHS = {
   settings: '/internal/affiliate-admin/settings/',
 };
 
+/** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
+const EXPORT_PUBLISHER = {
+  legalName: 'OakDev & AI AB',
+  orgNumber: '559431-6787',
+  vatId: 'SE559431678701',
+  addressLine1: 'Kristevik 633',
+  postalCity: '451 96 Uddevalla, Sweden',
+  email: 'hello@oakdev.app',
+  phone: '+46 70 810 57 66',
+};
+
 if (!page) {
   throw new Error('affiliate_admin_page_missing');
 }
@@ -1575,17 +1586,206 @@ function renderPdfTableRows(rows, mapper) {
     .join('');
 }
 
+function fetchAssetAsDataUrl(url) {
+  return fetch(url, { credentials: 'same-origin' })
+    .then((res) => {
+      if (!res.ok) throw new Error('asset_fetch_failed');
+      return res.blob();
+    })
+    .then(
+      (blob) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('asset_read_failed'));
+          reader.readAsDataURL(blob);
+        })
+    );
+}
+
+async function loadExportBrandingDataUrls() {
+  const base = window.location.origin;
+  const [nuriaDataUrl, oakdevDataUrl] = await Promise.all([
+    fetchAssetAsDataUrl(`${base}/assets/nuria-admin.png`),
+    fetchAssetAsDataUrl(`${base}/assets/oakdev-logo.png`),
+  ]);
+  return { nuriaDataUrl, oakdevDataUrl };
+}
+
+async function downloadStyledExcelForDetail(detail) {
+  let branding = null;
+  try {
+    branding = await loadExportBrandingDataUrls();
+  } catch (_error) {
+    branding = null;
+  }
+  const html = buildStyledExcelHtml(detail, { branding });
+  createAndDownloadFile(
+    buildExportFilename(detail.report, 'xls'),
+    html,
+    'application/vnd.ms-excel;charset=utf-8'
+  );
+}
+
+function buildStyledExcelHtml(detail, options) {
+  const report = detail.report || {};
+  const affiliates = detail.affiliates || [];
+  const rows = detail.rows || [];
+  const branding = options?.branding || null;
+  const generatedAt = new Date().toISOString();
+  const pub = EXPORT_PUBLISHER;
+  const headerBg = '#0f4d2e';
+  const headerFg = '#ffffff';
+  const stripe = '#f4faf6';
+  const border = '#cfe0d4';
+  const titleColor = '#0c2818';
+
+  const nuriaHeader = branding?.nuriaDataUrl
+    ? `<img src="${branding.nuriaDataUrl}" alt="Nuria" style="height:48px;width:auto;vertical-align:middle;" />`
+    : `<span style="font-size:16pt;font-weight:700;color:${titleColor};font-family:Segoe UI,sans-serif;">Nuria</span>`;
+
+  const oakFooter = branding?.oakdevDataUrl
+    ? `<img src="${branding.oakdevDataUrl}" alt="OakDev" style="height:24px;width:auto;" />`
+    : `<span style="font-size:10pt;font-weight:600;color:${titleColor};">OakDev</span>`;
+
+  const affiliateRows = affiliates
+    .map(
+      (item, idx) => `
+    <tr style="background:${idx % 2 === 0 ? '#ffffff' : stripe};">
+      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(formatList(item.referralCodes))}</td>
+      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;mso-number-format:'\\@';">${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
+    </tr>`
+    )
+    .join('');
+
+  const ledgerRows = rows
+    .map(
+      (item, idx) => `
+    <tr style="background:${idx % 2 === 0 ? '#ffffff' : stripe};">
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;mso-number-format:'\\@';">${escapeHtml(item.ledgerId || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.eventType || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.payoutStatus || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;mso-number-format:'\\@';">${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.currency || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
+    </tr>`
+    )
+    .join('');
+
+  const affiliateTableInner = `
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      <tr>
+        <td colspan="5" style="font-size:11pt;font-weight:700;color:${titleColor};padding:10px 0 6px 0;border-bottom:1px solid ${border};">Affiliate summaries</td>
+      </tr>
+      <tr>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Affiliate</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Codes</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Known total (minor)</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Payout-ready</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Reconciliation</th>
+      </tr>
+      ${affiliateRows || `<tr><td colspan="5" style="border:1px solid ${border};padding:10px;text-align:center;color:#6b7c72;">No rows</td></tr>`}
+    </table>`;
+
+  const ledgerTableInner = `
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      <tr>
+        <td colspan="7" style="font-size:11pt;font-weight:700;color:${titleColor};padding:10px 0 6px 0;border-bottom:1px solid ${border};">Ledger rows</td>
+      </tr>
+      <tr>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Ledger ID</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Event</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Payout status</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Commission (minor)</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">CCY</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Affiliate</th>
+        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Earned at</th>
+      </tr>
+      ${ledgerRows || `<tr><td colspan="7" style="border:1px solid ${border};padding:10px;text-align:center;color:#6b7c72;">No rows</td></tr>`}
+    </table>`;
+
+  return `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8" />
+  <meta name="ExcelCreatedBy" content="Nuria Affiliate Admin" />
+  <!--[if gte mso 9]><xml>
+    <x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+      <x:Name>Payout report</x:Name>
+      <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+    </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>
+  </xml><![endif]-->
+  <style>table { mso-displayed-decimal-separator: "."; mso-displayed-thousand-separator: " "; }</style>
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;font-family:Segoe UI,system-ui,sans-serif;">
+  <tr>
+    <td style="padding:0 0 16px 0;border-bottom:3px solid #c9a84c;">
+      <table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td valign="middle" style="padding:4px 0;">${nuriaHeader}</td>
+        <td valign="middle" align="right" style="font-size:11pt;font-weight:600;color:${titleColor};">Affiliate payout report</td>
+      </tr></table>
+    </td>
+  </tr>
+  <tr><td style="height:10px"></td></tr>
+  <tr>
+    <td style="font-size:10pt;color:#3d5247;line-height:1.55;padding-bottom:14px;">
+      <strong>Report</strong> ${escapeHtml(report.reportId || '—')} &nbsp;|&nbsp;
+      <strong>Period</strong> ${escapeHtml(report.periodMonth || '—')} &nbsp;|&nbsp;
+      <strong>Status</strong> ${escapeHtml(report.status || '—')}<br />
+      <strong>Source</strong> ${escapeHtml(report.source || '—')} &nbsp;|&nbsp;
+      <strong>Generated (UTC)</strong> ${escapeHtml(generatedAt)}
+    </td>
+  </tr>
+  <tr><td style="height:8px"></td></tr>
+  <tr><td>${affiliateTableInner}</td></tr>
+  <tr><td style="height:16px"></td></tr>
+  <tr><td>${ledgerTableInner}</td></tr>
+  <tr><td style="height:16px"></td></tr>
+  <tr>
+    <td style="border-top:2px solid #c9a84c;padding-top:14px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td valign="top" style="width:140px;padding-right:8px;">${oakFooter}</td>
+          <td valign="top" style="font-size:9pt;color:#3d5247;line-height:1.5;">
+            <strong>${escapeHtml(pub.legalName)}</strong><br />
+            Org.nr. ${escapeHtml(pub.orgNumber)} · VAT ${escapeHtml(pub.vatId)}<br />
+            ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)}<br />
+            ${escapeHtml(pub.email)} · ${escapeHtml(pub.phone)}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+}
+
 function buildPrintableHtml(detail, options) {
   const report = detail.report || {};
   const affiliates = detail.affiliates || [];
   const rows = detail.rows || [];
   const generatedAt = new Date().toISOString();
-  const settings = Object.assign({
-    title: 'Nuria Affiliate Payout Report',
-    subtitle: 'Generated by OakDev & AI AB internal admin',
-    footerNote: '',
-    includeRows: true,
-  }, options || {});
+  const pub = EXPORT_PUBLISHER;
+  const origin = window.location.origin;
+  const settings = Object.assign(
+    {
+      title: 'Nuria Affiliate Payout Report',
+      subtitle: 'Internal finance export · confidential',
+      footerNote: '',
+      includeRows: true,
+    },
+    options || {}
+  );
+
+  const footerNoteBlock = settings.footerNote
+    ? `<div class="doc-note">${escapeHtml(settings.footerNote)}</div>`
+    : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1594,86 +1794,258 @@ function buildPrintableHtml(detail, options) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nuria Affiliate Report ${escapeHtml(report.periodMonth || '')}</title>
   <style>
-    body { font-family: Arial, sans-serif; color: #10231b; margin: 24px; }
-    .top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
-    .top img.nuria { width: 52px; height: 52px; border-radius: 12px; }
-    .top img.oakdev { height: 28px; width: auto; }
-    .meta { margin: 10px 0 18px; font-size: 12px; }
-    h1 { margin: 0; font-size: 22px; }
-    h2 { margin: 22px 0 8px; font-size: 16px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; }
-    th, td { border: 1px solid #d4dfd8; padding: 6px; vertical-align: top; text-align: left; }
-    th { background: #f4f8f5; }
-    .muted { color: #4a6357; }
+    :root {
+      --ink: #0c1f14;
+      --muted: #4a6357;
+      --line: #d4e0d8;
+      --surface: #f6faf7;
+      --header: #0f4d2e;
+      --accent: #c9a84c;
+      --stripe: #f0f7f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0 0 112px;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--ink);
+      background: #fff;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .doc {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 32px 0;
+    }
+    .doc-header {
+      border-bottom: 3px solid var(--accent);
+      padding-bottom: 20px;
+      margin-bottom: 22px;
+    }
+    .doc-header__brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .doc-header__logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: contain;
+      box-shadow: 0 4px 14px rgba(12, 40, 24, 0.12);
+    }
+    .doc-header__titles {
+      flex: 1;
+      min-width: 200px;
+      text-align: right;
+    }
+    .doc-header__titles h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--header);
+    }
+    .doc-header__titles .sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .doc-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px 20px;
+      margin-bottom: 22px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+    .doc-meta__item {
+      font-size: 11px;
+    }
+    .doc-meta__item strong {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 2px;
+    }
+    .doc-note {
+      margin: 0 0 18px;
+      padding: 10px 14px;
+      background: #fffbeb;
+      border: 1px solid rgba(201, 168, 76, 0.45);
+      border-radius: 8px;
+      font-size: 11px;
+      color: #5c4a1e;
+    }
+    h2.section-title {
+      margin: 26px 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--header);
+    }
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+      font-size: 10.5px;
+    }
+    table.data th,
+    table.data td {
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      vertical-align: top;
+      text-align: left;
+    }
+    table.data thead th {
+      background: var(--header);
+      color: #fff;
+      font-weight: 600;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    table.data tbody tr:nth-child(even) {
+      background: var(--stripe);
+    }
+    .print-footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 32px 16px;
+      border-top: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, #fff 35%);
+      font-size: 12px;
+    }
+    .print-footer__inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .print-footer__oakdev {
+      height: 26px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .print-footer__legal {
+      font-size: 10px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 420px;
+    }
+    .print-footer__legal strong {
+      color: var(--ink);
+      font-size: 11px;
+    }
+    @page { size: A4; margin: 14mm; }
+    @media print {
+      body { padding-bottom: 96px; }
+      .doc { padding-top: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="top">
-    <img class="nuria" src="${window.location.origin}/assets/nuria-admin.png" alt="Nuria Admin" />
-    <img class="oakdev" src="${window.location.origin}/assets/oakdev-logo.png" alt="OakDev & AI AB" />
-    <div>
-      <h1>${escapeHtml(settings.title)}</h1>
-      <div class="muted">${escapeHtml(settings.subtitle)}</div>
+  <div class="doc">
+    <header class="doc-header">
+      <div class="doc-header__brand">
+        <img class="doc-header__logo" src="${origin}/assets/nuria-admin.png" alt="Nuria" />
+        <div class="doc-header__titles">
+          <h1>${escapeHtml(settings.title)}</h1>
+          <div class="sub">${escapeHtml(settings.subtitle)}</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="doc-meta">
+      <div class="doc-meta__item"><strong>Report ID</strong>${escapeHtml(report.reportId || '—')}</div>
+      <div class="doc-meta__item"><strong>Period</strong>${escapeHtml(report.periodMonth || '—')}</div>
+      <div class="doc-meta__item"><strong>Status</strong>${escapeHtml(report.status || '—')}</div>
+      <div class="doc-meta__item"><strong>Generated (UTC)</strong>${escapeHtml(generatedAt)}</div>
     </div>
+
+    ${footerNoteBlock}
+
+    <h2 class="section-title">Affiliate summaries</h2>
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Affiliate</th>
+          <th>Codes</th>
+          <th>Known total</th>
+          <th>Payout-ready</th>
+          <th>Reconciliation</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${renderPdfTableRows(affiliates, (item) => `
+          <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+          <td>${escapeHtml(formatList(item.referralCodes))}</td>
+          <td>${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
+          <td>${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
+          <td>${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
+        `)}
+      </tbody>
+    </table>
+
+    ${settings.includeRows ? '<h2 class="section-title">Ledger rows</h2>' : ''}
+    ${settings.includeRows
+      ? `
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Ledger ID</th>
+          <th>Event</th>
+          <th>Payout status</th>
+          <th>Commission (minor)</th>
+          <th>CCY</th>
+          <th>Affiliate</th>
+          <th>Earned at</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${renderPdfTableRows(rows, (item) => `
+          <td>${escapeHtml(item.ledgerId || '-')}</td>
+          <td>${escapeHtml(item.eventType || '-')}</td>
+          <td>${escapeHtml(item.payoutStatus || '-')}</td>
+          <td>${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
+          <td>${escapeHtml(item.currency || '-')}</td>
+          <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+          <td>${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
+        `)}
+      </tbody>
+    </table>`
+      : ''}
   </div>
 
-  <div class="meta">
-    <strong>Report ID:</strong> ${escapeHtml(report.reportId || '-')}<br />
-    <strong>Period:</strong> ${escapeHtml(report.periodMonth || '-')}<br />
-    <strong>Status:</strong> ${escapeHtml(report.status || '-')}<br />
-    <strong>Generated At (UTC):</strong> ${escapeHtml(generatedAt)}
-  </div>
-
-  <h2>Affiliate Summaries</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Affiliate</th>
-        <th>Codes</th>
-        <th>Known Total</th>
-        <th>Payout-ready</th>
-        <th>Reconciliation</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${renderPdfTableRows(affiliates, (item) => `
-        <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
-        <td>${escapeHtml(formatList(item.referralCodes))}</td>
-        <td>${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
-        <td>${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
-        <td>${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
-      `)}
-    </tbody>
-  </table>
-
-  ${settings.includeRows ? '<h2>Ledger Rows</h2>' : ''}
-  ${settings.includeRows ? `
-  <table>
-    <thead>
-      <tr>
-        <th>Ledger ID</th>
-        <th>Event</th>
-        <th>Payout status</th>
-        <th>Commission minor</th>
-        <th>Currency</th>
-        <th>Affiliate</th>
-        <th>Earned at</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${renderPdfTableRows(rows, (item) => `
-        <td>${escapeHtml(item.ledgerId || '-')}</td>
-        <td>${escapeHtml(item.eventType || '-')}</td>
-        <td>${escapeHtml(item.payoutStatus || '-')}</td>
-        <td>${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
-        <td>${escapeHtml(item.currency || '-')}</td>
-        <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
-        <td>${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
-      `)}
-    </tbody>
-  </table>
-  ` : ''}
-  ${settings.footerNote ? `<p class="muted">${escapeHtml(settings.footerNote)}</p>` : ''}
+  <footer class="print-footer">
+    <div class="print-footer__inner">
+      <div>
+        <img class="print-footer__oakdev" src="${origin}/assets/oakdev-logo.png" alt="${escapeHtml(pub.legalName)}" />
+      </div>
+      <div class="print-footer__legal">
+        <strong>${escapeHtml(pub.legalName)}</strong><br />
+        Org.nr. ${escapeHtml(pub.orgNumber)} · VAT ${escapeHtml(pub.vatId)}<br />
+        ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)}<br />
+        ${escapeHtml(pub.email)} · ${escapeHtml(pub.phone)}
+      </div>
+    </div>
+  </footer>
 </body>
 </html>`;
 }
@@ -2148,7 +2520,7 @@ function renderNextStep() {
     copy = 'Next: finalize payout to mark this month as paid.';
   } else if (!status.exported || !status.receipt) {
     action = 'close_package';
-    copy = 'Next: generate the month-end package (CSV + ops snapshot + receipt PDF).';
+    copy = 'Next: generate the month-end package (CSV + Excel + ops snapshot + receipt PDF).';
   }
 
   state.nextStepAction = action;
@@ -2162,7 +2534,7 @@ function renderNextStep() {
       select_latest_report: 'Open latest report',
       unlock_month: 'Unlock month',
       load_rows: 'Load rows for review',
-      export_csv: 'Export CSV',
+      export_csv: 'Export CSV & Excel',
       finalize_payout: 'Finalize payout now',
       close_package: 'Generate month-end package',
       export_pdf: 'Open receipt PDF',
@@ -3841,11 +4213,12 @@ async function handleExportCsv() {
       const csv = buildCsvExport(detail);
       createAndDownloadFile(
         buildExportFilename(detail.report, 'csv'),
-        csv,
+        `\uFEFF${csv}`,
         'text/csv;charset=utf-8'
       );
-      showBanner('CSV export downloaded.', 'success');
-      addActivityLog(`Exported CSV for ${detail.report?.periodMonth || reportId}.`, 'success');
+      await downloadStyledExcelForDetail(detail);
+      showBanner('CSV and Excel workbook exported.', 'success');
+      addActivityLog(`Exported CSV and Excel for ${detail.report?.periodMonth || reportId}.`, 'success');
       setChecklistStep('exported', true, detail.report?.periodMonth || elements.reportMonth.value);
     } catch (error) {
       showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
@@ -3888,9 +4261,10 @@ async function handleExportTestSample() {
     const csv = buildCsvExport(sampleDetail);
     createAndDownloadFile(
       'nuria-affiliate-report-sample.csv',
-      csv,
+      `\uFEFF${csv}`,
       'text/csv;charset=utf-8'
     );
+    await downloadStyledExcelForDetail(sampleDetail);
     const reportPdfTemplateHtml = buildPrintableHtml(sampleDetail, {
       title: 'Nuria Affiliate Report Sample Export',
       subtitle: 'Sample data preview for formatting and branding checks',
@@ -3918,15 +4292,15 @@ async function handleExportTestSample() {
     const receiptOpened = openPrintableExport(receiptPdfTemplateHtml);
     if (!reportOpened || !receiptOpened) {
       showBanner(
-        'Sample CSV + PDF template files downloaded. Allow popups to open both sample PDF preview windows.',
+        'Sample CSV, Excel, and HTML templates downloaded. Allow popups to open both PDF preview windows.',
         'info'
       );
-      addActivityLog('Exported sample CSV + PDF templates (preview popup blocked).', 'info');
+      addActivityLog('Exported sample files (preview popup blocked).', 'info');
       return;
     }
 
-    showBanner('Sample export created (CSV + PDF template files + two PDF preview windows).', 'success');
-    addActivityLog('Exported sample CSV + PDF template files and opened sample PDF previews.', 'success');
+    showBanner('Sample export: CSV, Excel, HTML templates, and two PDF preview windows.', 'success');
+    addActivityLog('Exported sample CSV, Excel, templates, and opened PDF previews.', 'success');
   });
 }
 
@@ -3970,9 +4344,10 @@ async function handleFinalizePayout() {
     const csv = buildCsvExport(detailForExport);
     createAndDownloadFile(
       buildExportFilename(detailForExport.report, 'csv'),
-      csv,
+      `\uFEFF${csv}`,
       'text/csv;charset=utf-8'
     );
+    await downloadStyledExcelForDetail(detailForExport);
 
     const paidResult = await markReportPaid(reportId);
     await Promise.all([loadBootstrap(), loadReports()]);
@@ -3994,14 +4369,14 @@ async function handleFinalizePayout() {
     });
 
     if (!opened) {
-      showBanner('Payout finalized and CSV exported. Allow popups to open the receipt PDF view.', 'success');
-      addActivityLog(`Finalized payout for ${reportId} and exported CSV.`, 'success');
+      showBanner('Payout finalized; CSV and Excel exported. Allow popups to open the receipt PDF view.', 'success');
+      addActivityLog(`Finalized payout for ${reportId}; exported CSV and Excel.`, 'success');
       markChecklistSteps(['exported', 'paid'], true, updatedDetail.report?.periodMonth || elements.reportMonth.value);
       return;
     }
 
-    showBanner('Payout finalized, CSV exported, and receipt PDF view opened.', 'success');
-    addActivityLog(`Finalized payout for ${reportId} with receipt PDF export.`, 'success');
+    showBanner('Payout finalized; CSV and Excel exported; receipt PDF view opened.', 'success');
+    addActivityLog(`Finalized payout for ${reportId} with CSV, Excel, and receipt PDF.`, 'success');
     clearPayoutApproval(reportId);
     markChecklistSteps(
       ['exported', 'paid', 'receipt', 'verified'],
@@ -4054,9 +4429,10 @@ async function handleClosePackage() {
     const snapshotJson = JSON.stringify(snapshot, null, 2);
     createAndDownloadFile(
       buildExportFilename(detail.report, 'csv'),
-      payoutCsv,
+      `\uFEFF${payoutCsv}`,
       'text/csv;charset=utf-8'
     );
+    await downloadStyledExcelForDetail(detail);
     createAndDownloadFile(
       `nuria-affiliate-ops-snapshot-${detail.report?.periodMonth || reportMonth || 'unknown'}.json`,
       snapshotJson,
@@ -4084,15 +4460,15 @@ async function handleClosePackage() {
 
     addActivityLog(
       opened
-        ? `Generated month-end package for ${detail.report?.periodMonth || reportMonth} (CSV + ops JSON + receipt PDF).`
-        : `Generated month-end package for ${detail.report?.periodMonth || reportMonth} (CSV + ops JSON, PDF blocked).`,
+        ? `Generated month-end package for ${detail.report?.periodMonth || reportMonth} (CSV + Excel + ops JSON + receipt PDF).`
+        : `Generated month-end package for ${detail.report?.periodMonth || reportMonth} (CSV + Excel + ops JSON, PDF blocked).`,
       'success'
     );
 
     showBanner(
       opened
-        ? 'Close package generated: payout CSV + ops JSON + receipt PDF view.'
-        : 'Close package generated: payout CSV + ops JSON. Allow popups to open receipt PDF view.',
+        ? 'Close package: payout CSV + Excel + ops JSON + receipt PDF view.'
+        : 'Close package: payout CSV + Excel + ops JSON. Allow popups to open receipt PDF view.',
       'success'
     );
   } catch (error) {

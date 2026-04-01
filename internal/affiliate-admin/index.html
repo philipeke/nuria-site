@@ -585,7 +585,7 @@
             </label>
             <label class="admin-checklist__item">
               <input type="checkbox" data-checklist-item="exported" />
-              <span>Export CSV/PDF and archive files</span>
+              <span>Export CSV, Excel, PDF, and archive files</span>
             </label>
             <label class="admin-checklist__item">
               <input type="checkbox" data-checklist-item="paid" />
@@ -1009,7 +1009,7 @@
               </button>
               <button type="button" class="btn btn--outline btn--safe" id="adminExportCsvButton" disabled>
                 <span class="admin-btn-icon">CSV</span>
-                Export CSV
+                Export CSV &amp; Excel
               </button>
               <button type="button" class="btn btn--outline btn--safe" id="adminExportPdfButton" disabled>
                 <span class="admin-btn-icon">PDF</span>
@@ -1028,13 +1028,24 @@
 
           <div class="admin-report-detail" id="adminReportDetailContent" hidden>
             <div class="admin-export-branding">
-              <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-export-branding__logo" />
-              <span class="admin-export-branding__divider" aria-hidden="true"></span>
-              <img src="../../assets/oakdev-logo.png" alt="OakDev &amp; AI AB" class="admin-export-branding__oakdev" />
+              <div class="admin-export-branding__header">
+                <img src="../../assets/nuria-admin.png" alt="Nuria" class="admin-export-branding__logo" />
+                <div class="admin-export-branding__header-text">
+                  <span class="admin-export-branding__kicker">Exports</span>
+                  <span class="admin-export-branding__headline">Payout reports</span>
+                </div>
+              </div>
+              <p class="admin-panel__helper admin-export-branding__copy">
+                Download machine-readable CSV plus a styled Excel workbook, or open print-ready PDFs — all with consistent Nuria presentation and OakDev legal footer.
+              </p>
+              <div class="admin-export-branding__footer">
+                <img src="../../assets/oakdev-logo.png" alt="OakDev &amp; AI AB" class="admin-export-branding__oakdev" />
+                <div class="admin-export-branding__legal">
+                  <strong>OakDev &amp; AI AB</strong>
+                  <span>Org.nr. 559431-6787 · VAT SE559431678701 · Kristevik 633, 451 96 Uddevalla · hello@oakdev.app</span>
+                </div>
+              </div>
             </div>
-            <p class="admin-panel__helper admin-export-branding__copy">
-              Export payout reports with Nuria and OakDev branding for finance reconciliation and partner records.
-            </p>
 
             <div class="admin-stat-grid" id="adminReportStats"></div>
 
@@ -1232,8 +1243,13 @@
         ×
       </button>
       <div class="admin-modal__hero">
-        <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-modal__logo" />
+        <img src="../../assets/nuria-admin.png" alt="Nuria" class="admin-modal__logo" />
+      </div>
+      <div class="admin-modal__publisher" aria-label="Publisher">
         <img src="../../assets/oakdev-logo.png" alt="OakDev &amp; AI AB" class="admin-modal__oakdev" />
+        <p class="admin-modal__publisher-meta">
+          OakDev &amp; AI AB · Org.nr. 559431-6787 · VAT SE559431678701 · Uddevalla, Sweden
+        </p>
       </div>
       <p class="admin-panel__eyebrow">Welcome</p>
       <h2 class="admin-panel__title" id="adminOnboardingTitle">Quick tour: monthly payout workflow</h2>
