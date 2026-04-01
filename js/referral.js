@@ -146,42 +146,15 @@
   }
 
   function cleanJoinUrl(code) {
-    const currentPath = String(window.location.pathname || '');
-    const prettyPathMatch = currentPath.match(/^\/(join|r)\/([^/?#]+)\/?$/i);
-    if (prettyPathMatch) {
-      const routeType = prettyPathMatch[1].toLowerCase();
-      const pathCode = site.normalizeReferralCode(prettyPathMatch[2] || '');
-      const normalizedCode = site.normalizeReferralCode(code || '');
-
-      // Keep pretty URLs as the visible URL when they already carry the same code.
-      if (normalizedCode && pathCode === normalizedCode) {
-        if (routeType === 'r') {
-          const params = new URLSearchParams(window.location.search || '');
-          if (params.get('route') === 'r') {
-            params.delete('route');
-            const search = params.toString();
-            const nextUrl = search ? `${currentPath}?${search}` : currentPath;
-            window.history.replaceState({}, '', nextUrl);
-          }
-        }
-        return;
-      }
-    }
-
-    const params = new URLSearchParams(window.location.search);
-
-    if (code) {
-      params.set('ref', code);
-    } else {
-      params.delete('ref');
-    }
-
+    const normalizedCode = site.normalizeReferralCode(code || '');
+    const params = new URLSearchParams(window.location.search || '');
+    params.delete('ref');
     params.delete('route');
-
-    const nextSearch = params.toString();
-    const nextUrl = nextSearch ? `/join?${nextSearch}` : '/join';
-
-    if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
+    const query = params.toString();
+    const basePath = normalizedCode ? `/join/${encodeURIComponent(normalizedCode)}` : '/join';
+    const nextUrl = query ? `${basePath}?${query}` : basePath;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== nextUrl) {
       window.history.replaceState({}, '', nextUrl);
     }
   }

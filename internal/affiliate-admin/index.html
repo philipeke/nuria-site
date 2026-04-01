@@ -24,73 +24,78 @@
 
   <div class="admin-shell" data-affiliate-admin-page>
     <header class="admin-topbar" data-admin-auth-only hidden>
-      <a href="/" class="admin-topbar__brand" aria-label="Nuria home">
-        <img src="../../assets/logo.png" alt="Nuria" class="admin-topbar__logo" />
-        <div>
-          <p class="admin-topbar__eyebrow">Internal</p>
-          <strong class="admin-topbar__title">Affiliate Admin</strong>
-        </div>
-      </a>
+      <div class="admin-topbar__row">
+        <a href="/" class="admin-topbar__brand" aria-label="Nuria home">
+          <img src="../../assets/logo.png" alt="Nuria" class="admin-topbar__logo" />
+          <div>
+            <p class="admin-topbar__eyebrow">Internal</p>
+            <strong class="admin-topbar__title">Affiliate Admin</strong>
+          </div>
+        </a>
 
-      <div class="admin-topbar__actions">
-        <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
-        <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
-          Summon spirit ✨
-        </button>
-        <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
-          Sign out
-        </button>
+        <div class="admin-topbar__actions">
+          <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
+          <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
+            Summon spirit ✨
+          </button>
+          <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
+            Sign out
+          </button>
+        </div>
       </div>
+
+      <nav class="admin-section-nav" aria-label="Admin areas" data-admin-auth-only hidden>
+        <div class="admin-section-nav__links">
+          <a href="/internal/affiliate-admin/" class="admin-section-nav__link" data-admin-page-link="landing">Landing</a>
+          <a href="/internal/affiliate-admin/overview/" class="admin-section-nav__link" data-admin-page-link="overview">Overview</a>
+          <a href="/internal/affiliate-admin/operations/" class="admin-section-nav__link" data-admin-page-link="operations">Operations</a>
+          <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
+          <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
+          <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
+          <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
+          <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
+          <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
+        </div>
+
+        <div class="admin-section-nav__menu">
+          <button type="button" class="btn btn--outline admin-section-nav__toggle" id="adminChecklistNavToggle" aria-expanded="false">
+            Checklist month
+          </button>
+          <div class="admin-section-nav__checklist" id="adminChecklistNavPopover" hidden>
+            <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
+            <select class="form-input form-select" id="adminChecklistNavMonth"></select>
+            <div class="admin-section-nav__month-meta">
+              <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
+              <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
+              <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
+              <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
+            </div>
+            <div class="admin-section-nav__steps">
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="generated" />
+                <span>Generated</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="verified" />
+                <span>Verified</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="exported" />
+                <span>Exported</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="paid" />
+                <span>Paid</span>
+              </label>
+              <label class="admin-checkbox">
+                <input type="checkbox" data-checklist-nav-item="receipt" />
+                <span>Receipt</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </nav>
     </header>
-    <div class="admin-spirit-toast" id="adminSpiritToast" data-admin-auth-only hidden>
-      Nuria spirit run
-    </div>
-    <nav class="admin-section-nav" aria-label="Admin areas" data-admin-auth-only hidden>
-      <a href="/internal/affiliate-admin/" class="admin-section-nav__link" data-admin-page-link="landing">Landing</a>
-      <a href="/internal/affiliate-admin/overview/" class="admin-section-nav__link" data-admin-page-link="overview">Overview</a>
-      <a href="/internal/affiliate-admin/operations/" class="admin-section-nav__link" data-admin-page-link="operations">Operations</a>
-      <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
-      <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
-      <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
-      <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
-      <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
-      <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
-      <button type="button" class="btn btn--outline admin-section-nav__toggle" id="adminChecklistNavToggle">
-        Checklist month
-      </button>
-      <div class="admin-section-nav__checklist" id="adminChecklistNavPopover" hidden>
-        <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
-        <select class="form-input form-select" id="adminChecklistNavMonth"></select>
-        <div class="admin-section-nav__month-meta">
-          <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
-          <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
-          <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
-          <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
-        </div>
-        <div class="admin-section-nav__steps">
-          <label class="admin-checkbox">
-            <input type="checkbox" data-checklist-nav-item="generated" />
-            <span>Generated</span>
-          </label>
-          <label class="admin-checkbox">
-            <input type="checkbox" data-checklist-nav-item="verified" />
-            <span>Verified</span>
-          </label>
-          <label class="admin-checkbox">
-            <input type="checkbox" data-checklist-nav-item="exported" />
-            <span>Exported</span>
-          </label>
-          <label class="admin-checkbox">
-            <input type="checkbox" data-checklist-nav-item="paid" />
-            <span>Paid</span>
-          </label>
-          <label class="admin-checkbox">
-            <input type="checkbox" data-checklist-nav-item="receipt" />
-            <span>Receipt</span>
-          </label>
-        </div>
-      </div>
-    </nav>
 
     <main class="admin-main">
       <section class="admin-hero" data-admin-auth-only hidden>
@@ -235,7 +240,7 @@
           </div>
         </article>
 
-        <div class="admin-grid admin-grid--overview" data-admin-page="overview">
+        <div class="admin-grid admin-grid--overview" data-admin-page="overview" hidden>
           <article class="admin-panel" id="adminSectionOverview">
             <div class="admin-panel__header">
               <div>
@@ -349,7 +354,7 @@
           </article>
         </div>
 
-        <article class="admin-panel" id="adminSectionOperations" data-admin-page="operations">
+        <article class="admin-panel" id="adminSectionOperations" data-admin-page="operations" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Operations</p>
@@ -431,7 +436,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionAlertsHealth" data-admin-page="alerts-health">
+        <article class="admin-panel" id="adminSectionAlertsHealth" data-admin-page="alerts-health" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Monitoring</p>
@@ -483,7 +488,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionChecklist" data-admin-page="checklist">
+        <article class="admin-panel" id="adminSectionChecklist" data-admin-page="checklist" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Monthly close</p>
@@ -533,7 +538,7 @@
           <p class="admin-empty admin-empty--inline" id="adminChecklistProgress">0 / 5 complete</p>
         </article>
 
-        <article class="admin-panel" id="adminSectionCodes" data-admin-page="codes">
+        <article class="admin-panel" id="adminSectionCodes" data-admin-page="codes" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Affiliate codes</p>
@@ -573,6 +578,7 @@
                   <tr>
                     <th>Code</th>
                     <th>Affiliate</th>
+                    <th>Partner Nuria email</th>
                     <th>Status</th>
                     <th>Revenue share</th>
                     <th>Fixed payout</th>
@@ -652,6 +658,156 @@
                 />
               </div>
 
+              <div class="form-group">
+                <label class="form-label" for="adminPartnerNuriaEmail">Partner Nuria email</label>
+                <input
+                  class="form-input"
+                  id="adminPartnerNuriaEmail"
+                  name="partnerNuriaEmail"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="partner@nuria.app"
+                />
+              </div>
+
+              <div class="admin-detail-section">
+                <h3 class="admin-section-title">Partner profile (billing/contact)</h3>
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerType">Partner type</label>
+                    <select class="form-input form-select" id="adminPartnerType" name="partnerType">
+                      <option value="private">private</option>
+                      <option value="company">company</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerMobile">Mobile number</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerMobile"
+                      name="partnerMobile"
+                      type="text"
+                      placeholder="+46 70 123 45 67"
+                    />
+                  </div>
+                </div>
+
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerAddress1">Address line 1</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerAddress1"
+                      name="partnerAddress1"
+                      type="text"
+                      placeholder="Street and number"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerAddress2">Address line 2</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerAddress2"
+                      name="partnerAddress2"
+                      type="text"
+                      placeholder="Apartment, suite, etc (optional)"
+                    />
+                  </div>
+                </div>
+
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerPostalCode">Postal code</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerPostalCode"
+                      name="partnerPostalCode"
+                      type="text"
+                      placeholder="11122"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerCity">City</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerCity"
+                      name="partnerCity"
+                      type="text"
+                      placeholder="Stockholm"
+                    />
+                  </div>
+                </div>
+
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerCountry">Country</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerCountry"
+                      name="partnerCountry"
+                      type="text"
+                      placeholder="SE"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerVat">VAT (company only)</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerVat"
+                      name="partnerVat"
+                      type="text"
+                      placeholder="SE556677-8899"
+                    />
+                  </div>
+                </div>
+
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerAccountHolder">Account holder</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerAccountHolder"
+                      name="partnerAccountHolder"
+                      type="text"
+                      placeholder="Partner legal/account name"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerBankName">Bank name</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerBankName"
+                      name="partnerBankName"
+                      type="text"
+                      placeholder="SEB"
+                    />
+                  </div>
+                </div>
+
+                <div class="admin-form__grid">
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerAccountNumber">Account number</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerAccountNumber"
+                      name="partnerAccountNumber"
+                      type="text"
+                      placeholder="1234 56 789 01"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="adminPartnerIban">IBAN</label>
+                    <input
+                      class="form-input"
+                      id="adminPartnerIban"
+                      name="partnerIban"
+                      type="text"
+                      placeholder="SE3550000000054910000003"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div class="admin-form__grid">
                 <div class="form-group">
                   <label class="form-label" for="adminCodeStatus">Status</label>
@@ -719,7 +875,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionReports" data-admin-page="reports">
+        <article class="admin-panel" id="adminSectionReports" data-admin-page="reports" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Payout reports</p>
@@ -764,7 +920,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionReportDetail" data-admin-page="report-detail">
+        <article class="admin-panel" id="adminSectionReportDetail" data-admin-page="report-detail" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Report detail</p>
@@ -916,7 +1072,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings">
+        <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Configuration</p>
@@ -926,6 +1082,18 @@
           <p class="admin-panel__helper">
             Manage recipients, default workflow, export behavior, approval requirements, and notifications in one place.
           </p>
+          <div class="admin-detail-section" style="margin-bottom:1rem;">
+            <div class="admin-panel__actions" style="margin-bottom:0.45rem;">
+              <h3 class="admin-section-title">Nuria partners registry</h3>
+              <button type="button" class="btn btn--outline" id="adminReverifyPartnerRegistry">
+                Re-verify linked partners
+              </button>
+            </div>
+            <p class="admin-panel__helper">
+              Linked partner emails from referral codes are mirrored here for quick account overview.
+            </p>
+            <div class="admin-mini-list" id="adminPartnerRegistryList"></div>
+          </div>
           <form class="admin-form" id="adminSettingsForm">
             <div class="admin-form__grid">
               <div class="form-group">

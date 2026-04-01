@@ -4,11 +4,13 @@ import {
   getAffiliateAdminSettings,
   getCurrentUser,
   listAffiliateAdminAuditLogs,
+  lookupNuriaPartnerByEmail,
   saveAffiliateAdminSettings,
   sendPasswordReset,
   signInWithEmailPassword,
   signOutUser,
   subscribeToAuthState,
+  waitForAuthPersistenceReady,
 } from './firebase-client.js';
 
 const site = window.NuriaSite || {};
@@ -42,6 +44,7 @@ const elements = {
   shell: page,
   views: Array.from(document.querySelectorAll('[data-admin-view]')),
   authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
+  hero: document.querySelector('.admin-hero'),
   sectionNav: document.querySelector('.admin-section-nav'),
   pageSections: Array.from(document.querySelectorAll('[data-admin-page]')),
   pageLinks: Array.from(document.querySelectorAll('[data-admin-page-link]')),
@@ -122,6 +125,19 @@ const elements = {
   copyReferralLinkButton: document.getElementById('adminCopyReferralLinkButton'),
   affiliateId: document.getElementById('adminAffiliateId'),
   displayName: document.getElementById('adminDisplayName'),
+  partnerNuriaEmail: document.getElementById('adminPartnerNuriaEmail'),
+  partnerType: document.getElementById('adminPartnerType'),
+  partnerMobile: document.getElementById('adminPartnerMobile'),
+  partnerAddress1: document.getElementById('adminPartnerAddress1'),
+  partnerAddress2: document.getElementById('adminPartnerAddress2'),
+  partnerPostalCode: document.getElementById('adminPartnerPostalCode'),
+  partnerCity: document.getElementById('adminPartnerCity'),
+  partnerCountry: document.getElementById('adminPartnerCountry'),
+  partnerVat: document.getElementById('adminPartnerVat'),
+  partnerAccountHolder: document.getElementById('adminPartnerAccountHolder'),
+  partnerBankName: document.getElementById('adminPartnerBankName'),
+  partnerAccountNumber: document.getElementById('adminPartnerAccountNumber'),
+  partnerIban: document.getElementById('adminPartnerIban'),
   codeStatus: document.getElementById('adminCodeStatus'),
   revenueShareBps: document.getElementById('adminRevenueShareBps'),
   fixedPayoutMinor: document.getElementById('adminFixedPayoutMinor'),
@@ -183,6 +199,8 @@ const elements = {
   settingsNotifyOnErrors: document.getElementById('adminSettingsNotifyOnErrors'),
   settingsRecipients: document.getElementById('adminSettingsRecipients'),
   settingsBouncedRecipients: document.getElementById('adminSettingsBouncedRecipients'),
+  reverifyPartnerRegistry: document.getElementById('adminReverifyPartnerRegistry'),
+  partnerRegistryList: document.getElementById('adminPartnerRegistryList'),
   saveSettingsButton: document.getElementById('adminSaveSettingsButton'),
   settingsError: document.getElementById('adminSettingsError'),
 };
@@ -197,6 +215,9 @@ const state = {
   reports: [],
   backendAuditLogs: [],
   reportRecipients: [],
+  partnerEmailsByCode: {},
+  partnerRegistryByCode: {},
+  partnerProfilesByCode: {},
   selectedReportId: getReportIdFromUrl(),
   selectedReport: null,
   activityLog: [],
@@ -236,6 +257,7 @@ const state = {
 };
 let loginSuccessSound = null;
 let spiritToastTimeoutId = null;
+let checklistRemoteSyncTimeoutId = null;
 let previousAuthUid = null;
 
 function escapeHtml(value) {
@@ -305,10 +327,22 @@ function setAdminPage(pageKey, options) {
   const available = new Set(elements.pageSections.map((section) => section.dataset.adminPage));
   const next = available.has(pageKey) ? pageKey : 'landing';
   state.currentPage = next;
+  if (elements.checklistNavPopover && elements.checklistNavToggle) {
+    elements.checklistNavPopover.hidden = true;
+    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+  }
 
   elements.pageSections.forEach((section) => {
-    section.hidden = section.dataset.adminPage !== next;
+    const active = section.dataset.adminPage === next;
+    section.hidden = !active;
+    section.style.display = active ? '' : 'none';
   });
+
+  if (elements.hero) {
+    const showHero = next === 'landing';
+    elements.hero.hidden = !showHero;
+    elements.hero.style.display = showHero ? '' : 'none';
+  }
 
   elements.pageLinks.forEach((link) => {
     const active = link.dataset.adminPageLink === next;
@@ -516,6 +550,79 @@ function normalizeEmailList(rawValue) {
         .filter(isValidEmail)
     )
   );
+}
+
+function normalizePartnerEmailMap(rawValue) {
+  if (!rawValue || typeof rawValue !== 'object') return {};
+  const result = {};
+  Object.keys(rawValue).forEach((codeKey) => {
+    const normalizedCode = typeof site.normalizeReferralCode === 'function'
+      ? site.normalizeReferralCode(codeKey)
+      : String(codeKey || '').trim().toUpperCase().replace(/\s+/g, '');
+    const normalizedEmail = normalizeEmail(rawValue[codeKey]);
+    if (normalizedCode && isValidEmail(normalizedEmail)) {
+      result[normalizedCode] = normalizedEmail;
+    }
+  });
+  return result;
+}
+
+function normalizePartnerProfilesMap(rawValue) {
+  if (!rawValue || typeof rawValue !== 'object') return {};
+  const result = {};
+  Object.keys(rawValue).forEach((codeKey) => {
+    const normalizedCode = typeof site.normalizeReferralCode === 'function'
+      ? site.normalizeReferralCode(codeKey)
+      : String(codeKey || '').trim().toUpperCase().replace(/\s+/g, '');
+    if (!normalizedCode) return;
+    const normalized = normalizePartnerProfile(rawValue[codeKey] || {});
+    if (normalized) {
+      result[normalizedCode] = normalized;
+    }
+  });
+  return result;
+}
+
+function normalizePartnerProfile(rawProfile) {
+  if (!rawProfile || typeof rawProfile !== 'object') return null;
+  const partnerType = rawProfile.partnerType === 'company' ? 'company' : 'private';
+  const profile = {
+    partnerType,
+    mobile: String(rawProfile.mobile || '').trim(),
+    address1: String(rawProfile.address1 || '').trim(),
+    address2: String(rawProfile.address2 || '').trim(),
+    postalCode: String(rawProfile.postalCode || '').trim(),
+    city: String(rawProfile.city || '').trim(),
+    country: String(rawProfile.country || '').trim().toUpperCase(),
+    vat: String(rawProfile.vat || '').trim().toUpperCase(),
+    accountHolder: String(rawProfile.accountHolder || '').trim(),
+    bankName: String(rawProfile.bankName || '').trim(),
+    accountNumber: String(rawProfile.accountNumber || '').trim(),
+    iban: String(rawProfile.iban || '').trim().toUpperCase(),
+  };
+  const hasAnyValue = Object.entries(profile).some(([key, value]) => key === 'partnerType' ? false : Boolean(value));
+  return hasAnyValue ? profile : null;
+}
+
+function getPartnerProfileForCode(item) {
+  const code = String(item?.code || '').trim().toUpperCase();
+  if (!code) return null;
+  return state.partnerProfilesByCode?.[code] || null;
+}
+
+function getPartnerEmailForCode(item) {
+  const code = String(item?.code || '').trim().toUpperCase();
+  if (!code) return '';
+  const fromItem = normalizeEmail(item?.partnerNuriaEmail || item?.partnerEmail || '');
+  if (isValidEmail(fromItem)) return fromItem;
+  const fromMap = normalizeEmail(state.partnerEmailsByCode?.[code] || '');
+  return isValidEmail(fromMap) ? fromMap : '';
+}
+
+function getPartnerRegistryEntryForCode(item) {
+  const code = String(item?.code || '').trim().toUpperCase();
+  if (!code) return null;
+  return state.partnerRegistryByCode?.[code] || null;
 }
 
 function formatPercent(value) {
@@ -915,6 +1022,22 @@ function readChecklistState() {
   }
 }
 
+function normalizeChecklistStateMap(rawValue) {
+  if (!rawValue || typeof rawValue !== 'object') return {};
+  const normalized = {};
+  Object.keys(rawValue).forEach((key) => {
+    const monthKey = String(key || '').trim();
+    if (!monthKey) return;
+    const row = rawValue[key] && typeof rawValue[key] === 'object' ? rawValue[key] : {};
+    const next = {};
+    CHECKLIST_STEPS.forEach((step) => {
+      next[step] = Boolean(row[step]);
+    });
+    normalized[monthKey] = next;
+  });
+  return normalized;
+}
+
 function persistChecklistState() {
   try {
     window.localStorage.setItem(CHECKLIST_STATE_KEY, JSON.stringify(state.checklistByMonth || {}));
@@ -955,6 +1078,7 @@ function setChecklistStep(step, value, monthKey) {
   next[step] = Boolean(value);
   state.checklistByMonth[key] = next;
   persistChecklistState();
+  scheduleChecklistRemoteSync();
   renderChecklist();
 }
 
@@ -968,6 +1092,7 @@ function markChecklistSteps(steps, value, monthKey) {
   });
   state.checklistByMonth[key] = next;
   persistChecklistState();
+  scheduleChecklistRemoteSync();
   renderChecklist();
 }
 
@@ -1028,6 +1153,14 @@ function getChecklistMonthOptions(selectedMonth) {
   const months = new Set();
   months.add(String(selectedMonth || '').trim());
   months.add(String(elements.reportMonth?.value || '').trim());
+  Object.keys(state.checklistByMonth || {}).forEach((monthKey) => {
+    const month = String(monthKey || '').trim();
+    if (month) months.add(month);
+  });
+  Object.keys(state.monthLocks || {}).forEach((monthKey) => {
+    const month = String(monthKey || '').trim();
+    if (month) months.add(month);
+  });
   (state.reports || []).forEach((item) => {
     const month = String(item.periodMonth || '').trim();
     if (month) months.add(month);
@@ -1094,31 +1227,37 @@ function readMonthLocks() {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return {};
 
-    const normalized = {};
-    Object.keys(parsed).forEach((key) => {
-      const value = parsed[key];
-      if (typeof value === 'boolean') {
-        normalized[key] = {
-          locked: value,
-          reason: '',
-          updatedAt: '',
-          updatedBy: '',
-        };
-        return;
-      }
-
-      normalized[key] = {
-        locked: Boolean(value?.locked),
-        reason: String(value?.reason || '').trim(),
-        updatedAt: String(value?.updatedAt || ''),
-        updatedBy: String(value?.updatedBy || ''),
-      };
-    });
-
-    return normalized;
+    return normalizeMonthLocksMap(parsed);
   } catch (_error) {
     return {};
   }
+}
+
+function normalizeMonthLocksMap(rawValue) {
+  if (!rawValue || typeof rawValue !== 'object') return {};
+  const normalized = {};
+  Object.keys(rawValue).forEach((key) => {
+    const monthKey = String(key || '').trim();
+    if (!monthKey) return;
+    const value = rawValue[key];
+    if (typeof value === 'boolean') {
+      normalized[monthKey] = {
+        locked: value,
+        reason: '',
+        updatedAt: '',
+        updatedBy: '',
+      };
+      return;
+    }
+
+    normalized[monthKey] = {
+      locked: Boolean(value?.locked),
+      reason: String(value?.reason || '').trim(),
+      updatedAt: String(value?.updatedAt || ''),
+      updatedBy: String(value?.updatedBy || ''),
+    };
+  });
+  return normalized;
 }
 
 function persistMonthLocks() {
@@ -1127,6 +1266,22 @@ function persistMonthLocks() {
   } catch (_error) {
     // ignore storage issues
   }
+}
+
+function scheduleChecklistRemoteSync() {
+  if (checklistRemoteSyncTimeoutId) {
+    window.clearTimeout(checklistRemoteSyncTimeoutId);
+  }
+  checklistRemoteSyncTimeoutId = window.setTimeout(async () => {
+    try {
+      await saveAffiliateAdminSettings({
+        affiliateChecklistByMonth: state.checklistByMonth || {},
+        affiliateMonthLocks: state.monthLocks || {},
+      });
+    } catch (_error) {
+      // Keep local persistence even if remote sync fails.
+    }
+  }, 550);
 }
 
 function isMonthLocked(monthKey) {
@@ -1148,6 +1303,7 @@ function setMonthLocked(monthKey, locked, reason) {
     updatedBy: getActivityActor(),
   };
   persistMonthLocks();
+  scheduleChecklistRemoteSync();
   renderChecklist();
 }
 
@@ -1662,6 +1818,32 @@ function updateCodeReferralLink(rawCode) {
   elements.copyReferralLinkButton.disabled = false;
 }
 
+function readPartnerProfileFromForm() {
+  return {
+    partnerType: elements.partnerType?.value === 'company' ? 'company' : 'private',
+    mobile: String(elements.partnerMobile?.value || '').trim(),
+    address1: String(elements.partnerAddress1?.value || '').trim(),
+    address2: String(elements.partnerAddress2?.value || '').trim(),
+    postalCode: String(elements.partnerPostalCode?.value || '').trim(),
+    city: String(elements.partnerCity?.value || '').trim(),
+    country: String(elements.partnerCountry?.value || '').trim().toUpperCase(),
+    vat: String(elements.partnerVat?.value || '').trim().toUpperCase(),
+    accountHolder: String(elements.partnerAccountHolder?.value || '').trim(),
+    bankName: String(elements.partnerBankName?.value || '').trim(),
+    accountNumber: String(elements.partnerAccountNumber?.value || '').trim(),
+    iban: String(elements.partnerIban?.value || '').trim().toUpperCase(),
+  };
+}
+
+function syncPartnerTypeFields() {
+  if (!elements.partnerVat) return;
+  const isCompany = elements.partnerType?.value === 'company';
+  elements.partnerVat.disabled = !isCompany;
+  if (!isCompany) {
+    elements.partnerVat.value = '';
+  }
+}
+
 function resetCodeForm(item) {
   const value = item || null;
 
@@ -1675,21 +1857,54 @@ function resetCodeForm(item) {
     elements.codeValue.value = '';
     elements.affiliateId.value = '';
     elements.displayName.value = '';
+    if (elements.partnerNuriaEmail) {
+      elements.partnerNuriaEmail.value = '';
+    }
+    if (elements.partnerType) elements.partnerType.value = 'private';
+    if (elements.partnerMobile) elements.partnerMobile.value = '';
+    if (elements.partnerAddress1) elements.partnerAddress1.value = '';
+    if (elements.partnerAddress2) elements.partnerAddress2.value = '';
+    if (elements.partnerPostalCode) elements.partnerPostalCode.value = '';
+    if (elements.partnerCity) elements.partnerCity.value = '';
+    if (elements.partnerCountry) elements.partnerCountry.value = '';
+    if (elements.partnerVat) elements.partnerVat.value = '';
+    if (elements.partnerAccountHolder) elements.partnerAccountHolder.value = '';
+    if (elements.partnerBankName) elements.partnerBankName.value = '';
+    if (elements.partnerAccountNumber) elements.partnerAccountNumber.value = '';
+    if (elements.partnerIban) elements.partnerIban.value = '';
     elements.fixedPayoutMinor.value = '';
     elements.currency.value = '';
     updateCodeReferralLink('');
+    syncPartnerTypeFields();
     return;
   }
 
   elements.codeValue.value = value.code || '';
   elements.affiliateId.value = value.affiliateId || '';
   elements.displayName.value = value.displayName || '';
+  if (elements.partnerNuriaEmail) {
+    elements.partnerNuriaEmail.value = getPartnerEmailForCode(value) || '';
+  }
+  const profile = getPartnerProfileForCode(value) || null;
+  if (elements.partnerType) elements.partnerType.value = profile?.partnerType === 'company' ? 'company' : 'private';
+  if (elements.partnerMobile) elements.partnerMobile.value = profile?.mobile || '';
+  if (elements.partnerAddress1) elements.partnerAddress1.value = profile?.address1 || '';
+  if (elements.partnerAddress2) elements.partnerAddress2.value = profile?.address2 || '';
+  if (elements.partnerPostalCode) elements.partnerPostalCode.value = profile?.postalCode || '';
+  if (elements.partnerCity) elements.partnerCity.value = profile?.city || '';
+  if (elements.partnerCountry) elements.partnerCountry.value = profile?.country || '';
+  if (elements.partnerVat) elements.partnerVat.value = profile?.vat || '';
+  if (elements.partnerAccountHolder) elements.partnerAccountHolder.value = profile?.accountHolder || '';
+  if (elements.partnerBankName) elements.partnerBankName.value = profile?.bankName || '';
+  if (elements.partnerAccountNumber) elements.partnerAccountNumber.value = profile?.accountNumber || '';
+  if (elements.partnerIban) elements.partnerIban.value = profile?.iban || '';
   elements.codeStatus.value = value.status || 'active';
   elements.revenueShareBps.value = String(value.revenueShareBps ?? 5000);
   elements.fixedPayoutMinor.value =
     value.fixedPayoutMinor == null ? '' : String(value.fixedPayoutMinor);
   elements.currency.value = value.currency || '';
   updateCodeReferralLink(value.code || '');
+  syncPartnerTypeFields();
 }
 
 function syncReportActionFields(report) {
@@ -1780,6 +1995,7 @@ function renderOverview() {
   renderAlertCenter();
   renderHealthDashboard();
   renderSettingsForm();
+  renderPartnerRegistry();
   renderApprovalFlow(state.selectedReport?.report || null);
   renderNextStep();
 }
@@ -1846,6 +2062,7 @@ function renderCodesTable() {
       item.code,
       item.affiliateId,
       item.displayName,
+      getPartnerEmailForCode(item),
       item.status,
     ].map((value) => normalizeSearchValue(value)).join(' ');
     return haystack.includes(query);
@@ -1861,6 +2078,7 @@ function renderCodesTable() {
             </button>
           </td>
           <td>${escapeHtml(item.displayName || item.affiliateId || '-')}</td>
+          <td>${escapeHtml(getPartnerEmailForCode(item) || '-')}</td>
           <td><span class="admin-status admin-status--${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
           <td>${escapeHtml(formatBps(item.revenueShareBps))}</td>
           <td>${escapeHtml(
@@ -2145,6 +2363,63 @@ function renderSettingsForm() {
   }
 }
 
+function renderPartnerRegistry() {
+  if (!elements.partnerRegistryList) return;
+  const codes = Array.isArray(state.codes) ? state.codes : [];
+  const items = codes
+    .map((item) => {
+      const email = getPartnerEmailForCode(item);
+      if (!email) return null;
+      const code = String(item.code || '').trim().toUpperCase();
+      const registry = getPartnerRegistryEntryForCode(item);
+      const profile = getPartnerProfileForCode(item);
+      return {
+        code,
+        affiliateId: item.affiliateId || '-',
+        displayName: item.displayName || '-',
+        email,
+        partnerUid: registry?.partnerUid || '',
+        partnerDisplayName: registry?.partnerDisplayName || '',
+        linkedAt: registry?.linkedAt || '',
+        linkedBy: registry?.linkedBy || '',
+        status: registry?.status || 'mapped_unverified',
+        statusReason: registry?.statusReason || '',
+        partnerType: profile?.partnerType || 'private',
+        mobile: profile?.mobile || '',
+        country: profile?.country || '',
+        vat: profile?.vat || '',
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.code.localeCompare(b.code));
+
+  if (!items.length) {
+    elements.partnerRegistryList.innerHTML = '<p class="admin-empty admin-empty--inline">No partner emails linked yet.</p>';
+    return;
+  }
+
+  elements.partnerRegistryList.innerHTML = items
+    .map((item) => {
+      const linkedAt = item.linkedAt ? formatTimestamp({ iso: item.linkedAt }) : 'Not recorded';
+      const metaDisplayName = item.partnerDisplayName || item.displayName;
+      const statusLabel = item.status === 'verified'
+        ? 'verified'
+        : item.status === 'lookup_error'
+          ? 'lookup_error'
+          : 'mapped_unverified';
+      return `
+        <div class="admin-mini-item">
+          <span class="admin-mini-item__title">${escapeHtml(metaDisplayName)} (${escapeHtml(item.code)})</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.email)} &middot; ${escapeHtml(item.affiliateId)} &middot; ${escapeHtml(statusLabel)}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.partnerType)}${item.mobile ? ` &middot; ${escapeHtml(item.mobile)}` : ''}${item.country ? ` &middot; ${escapeHtml(item.country)}` : ''}${item.vat ? ` &middot; VAT ${escapeHtml(item.vat)}` : ''}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.partnerUid || '-')} &middot; ${escapeHtml(item.statusReason || '-')}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.linkedBy || 'admin')} &middot; ${escapeHtml(linkedAt)}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
 function renderReportStats(report) {
   const stats = [
     ['Status', report.status || '-'],
@@ -2420,6 +2695,21 @@ async function loadAdminSettings() {
       ? data.monthlyReportRecipients.map((email) => normalizeEmail(email)).filter(Boolean)
       : [];
     state.reportRecipients = Array.from(new Set(recipients));
+    state.partnerEmailsByCode = normalizePartnerEmailMap(data.affiliatePartnerEmails || {});
+    state.partnerRegistryByCode = data.nuriaPartnersByCode && typeof data.nuriaPartnersByCode === 'object'
+      ? data.nuriaPartnersByCode
+      : {};
+    state.partnerProfilesByCode = normalizePartnerProfilesMap(data.partnerProfilesByCode || {});
+    state.checklistByMonth = Object.assign(
+      {},
+      state.checklistByMonth || {},
+      normalizeChecklistStateMap(data.affiliateChecklistByMonth || {})
+    );
+    state.monthLocks = Object.assign(
+      {},
+      state.monthLocks || {},
+      normalizeMonthLocksMap(data.affiliateMonthLocks || {})
+    );
     state.adminSettings = {
       defaultFlow: ['strict', 'balanced', 'fast'].includes(data.defaultFlow) ? data.defaultFlow : 'balanced',
       exportFormat: ['csv_pdf', 'csv_only', 'csv_json_pdf'].includes(data.exportFormat)
@@ -2432,6 +2722,9 @@ async function loadAdminSettings() {
     state.recipientSettingsUnavailableReason = '';
   } catch (error) {
     state.reportRecipients = [];
+    state.partnerEmailsByCode = {};
+    state.partnerRegistryByCode = {};
+    state.partnerProfilesByCode = {};
     state.adminSettings = {
       defaultFlow: 'balanced',
       exportFormat: 'csv_pdf',
@@ -2444,6 +2737,68 @@ async function loadAdminSettings() {
       'Could not load scheduled recipient settings.'
     );
   }
+}
+
+async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInput) {
+  const normalizedCode = typeof site.normalizeReferralCode === 'function'
+    ? site.normalizeReferralCode(code)
+    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
+  if (!normalizedCode) return;
+
+  const nextMap = Object.assign({}, state.partnerEmailsByCode || {});
+  const nextRegistry = Object.assign({}, state.partnerRegistryByCode || {});
+  const nextProfiles = Object.assign({}, state.partnerProfilesByCode || {});
+  const normalizedEmail = normalizeEmail(partnerEmail || '');
+  const normalizedProfile = normalizePartnerProfile(profileInput || {});
+  if (normalizedEmail && isValidEmail(normalizedEmail)) {
+    let lookup = null;
+    let status = 'mapped_unverified';
+    let statusReason = 'not_found';
+    try {
+      lookup = await lookupNuriaPartnerByEmail(normalizedEmail);
+      if (lookup?.found === true) {
+        status = 'verified';
+        statusReason = lookup.source || 'lookup';
+      } else {
+        status = 'mapped_unverified';
+        statusReason = lookup?.source || 'not_found';
+      }
+    } catch (lookupError) {
+      status = 'lookup_error';
+      statusReason = getActionableErrorMessage(lookupError, getErrorParts(lookupError).message);
+    }
+
+    nextMap[normalizedCode] = normalizedEmail;
+    nextRegistry[normalizedCode] = {
+      email: lookup?.email || normalizedEmail,
+      affiliateId: String(metadata?.affiliateId || '').trim(),
+      displayName: String(metadata?.displayName || '').trim(),
+      partnerUid: lookup?.uid || '',
+      partnerDisplayName: lookup?.displayName || '',
+      linkedAt: new Date().toISOString(),
+      linkedBy: getActivityActor(),
+      status,
+      statusReason,
+    };
+  } else {
+    delete nextMap[normalizedCode];
+    delete nextRegistry[normalizedCode];
+  }
+
+  if (normalizedProfile) {
+    nextProfiles[normalizedCode] = normalizedProfile;
+  } else {
+    delete nextProfiles[normalizedCode];
+  }
+
+  await saveAffiliateAdminSettings({
+    affiliatePartnerEmails: nextMap,
+    nuriaPartnersByCode: nextRegistry,
+    partnerProfilesByCode: nextProfiles,
+  });
+  state.partnerEmailsByCode = nextMap;
+  state.partnerRegistryByCode = nextRegistry;
+  state.partnerProfilesByCode = nextProfiles;
 }
 
 async function saveAdminSettingsPatch(patch) {
@@ -2630,6 +2985,7 @@ async function handleEmailSignIn(event) {
   setButtonBusy(submitButton, true, 'Signing in');
 
   try {
+    await waitForAuthPersistenceReady();
     await signInWithEmailPassword(email, password);
     state.pendingOnboardingAfterLogin = true;
     await playLoginSuccessSound();
@@ -2741,6 +3097,34 @@ async function handleRefreshHealth() {
   } catch (error) {
     renderHealthDashboard();
     showBanner(getActionableErrorMessage(error, 'One or more health checks failed.'), 'error');
+  }
+}
+
+async function handleReverifyPartnerRegistry() {
+  const map = Object.assign({}, state.partnerEmailsByCode || {});
+  const codes = Object.keys(map);
+  if (!codes.length) {
+    showBanner('No linked partner emails found to verify yet.', 'info');
+    return;
+  }
+
+  setButtonBusy(elements.reverifyPartnerRegistry, true, 'Verifying');
+  clearBanner();
+  try {
+    for (const code of codes) {
+      const codeItem = (state.codes || []).find((item) => String(item.code || '').toUpperCase() === code);
+      await savePartnerEmailMapping(code, map[code], {
+        affiliateId: codeItem?.affiliateId || '',
+        displayName: codeItem?.displayName || '',
+      }, state.partnerProfilesByCode?.[code] || null);
+    }
+    renderPartnerRegistry();
+    showBanner('Partner registry re-verification completed.', 'success');
+    addActivityLog('Re-verified Nuria partners registry.', 'success');
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, 'Could not re-verify some partner mappings.'), 'error');
+  } finally {
+    setButtonBusy(elements.reverifyPartnerRegistry, false);
   }
 }
 
@@ -3029,6 +3413,18 @@ async function handleCodeSave(event) {
       : null,
     currency: elements.currency.value.trim().toUpperCase() || null,
   };
+  const partnerNuriaEmail = normalizeEmail(elements.partnerNuriaEmail?.value || '');
+  const partnerProfile = readPartnerProfileFromForm();
+  if (partnerNuriaEmail && !isValidEmail(partnerNuriaEmail)) {
+    setCodeFormError('Partner Nuria email is invalid.');
+    showBanner('Fix the partner email format before saving.', 'info');
+    return;
+  }
+  if (partnerProfile.partnerType === 'company' && partnerProfile.vat && partnerProfile.vat.length < 4) {
+    setCodeFormError('VAT looks too short. Enter a valid VAT value or leave it empty.');
+    showBanner('Fix the company VAT value before saving.', 'info');
+    return;
+  }
   const validationError = validateCodePayload(payload);
 
   if (validationError) {
@@ -3051,6 +3447,20 @@ async function handleCodeSave(event) {
     });
 
     await Promise.all([loadBootstrap(), loadCodes()]);
+    try {
+      await savePartnerEmailMapping(saved.code || payload.code, partnerNuriaEmail, {
+        affiliateId: saved.affiliateId || payload.affiliateId,
+        displayName: saved.displayName || payload.displayName || '',
+      }, partnerProfile);
+    } catch (emailError) {
+      showBanner(
+        getActionableErrorMessage(
+          emailError,
+          'Code saved, but partner email mapping could not be saved. Try again.'
+        ),
+        'error'
+      );
+    }
     renderOverview();
     renderCodesTable();
     resetCodeForm(saved);
@@ -3625,6 +4035,7 @@ function bindEvents() {
   elements.exportOpsSnapshotCsv?.addEventListener('click', handleExportOpsSnapshotCsv);
   elements.refreshBackendAudit?.addEventListener('click', handleRefreshBackendAudit);
   elements.refreshHealth?.addEventListener('click', handleRefreshHealth);
+  elements.reverifyPartnerRegistry?.addEventListener('click', handleReverifyPartnerRegistry);
   elements.runNextStep?.addEventListener('click', handleRunNextStep);
   elements.clearOpsLog?.addEventListener('click', () => {
     clearActivityLog();
@@ -3812,6 +4223,7 @@ function bindEvents() {
   elements.markPaidForm?.addEventListener('submit', handleMarkPaid);
   elements.recipientForm?.addEventListener('submit', handleRecipientAdd);
   elements.settingsForm?.addEventListener('submit', handleSaveSettings);
+  elements.partnerType?.addEventListener('change', syncPartnerTypeFields);
   elements.recipientList?.addEventListener('click', (event) => {
     const button = event.target.closest('[data-remove-recipient]');
     if (!button) return;
@@ -3821,6 +4233,12 @@ function bindEvents() {
 }
 
 function initializeFormDefaults() {
+  if (elements.checklistNavPopover) {
+    elements.checklistNavPopover.hidden = true;
+  }
+  if (elements.checklistNavToggle) {
+    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+  }
   setAdminPage(getAdminPageFromUrl(), { updateUrl: true });
   elements.reportMonth.value = getPreviousUtcMonth();
   state.checklistMonthOverride = elements.reportMonth.value;
@@ -3841,6 +4259,7 @@ function initializeFormDefaults() {
   renderChecklist();
   renderNextStep();
   resetCodeForm(null);
+  syncPartnerTypeFields();
   clearSelectedReport();
 }
 
@@ -3867,13 +4286,10 @@ function handleAuthState(user) {
 
 bindEvents();
 initializeFormDefaults();
-
-if (getCurrentUser()) {
-  previousAuthUid = getCurrentUser()?.uid || null;
-  setView('loading-dashboard');
-} else {
-  previousAuthUid = null;
-  setView('signed-out');
-}
-
-subscribeToAuthState(handleAuthState);
+setView('loading-auth');
+waitForAuthPersistenceReady()
+  .catch(() => {})
+  .finally(() => {
+    previousAuthUid = getCurrentUser()?.uid || null;
+    subscribeToAuthState(handleAuthState);
+  });

@@ -30,6 +30,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  where,
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 const config = window.NURIA_SITE_CONFIG || {};
@@ -49,7 +50,7 @@ googleProvider.setCustomParameters({
   prompt: 'select_account',
 });
 
-setPersistence(auth, browserLocalPersistence).catch(() => {});
+const authPersistenceReady = setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 export function subscribeToAuthState(callback) {
   return onAuthStateChanged(auth, callback);
@@ -73,6 +74,10 @@ export async function sendPasswordReset(email) {
 
 export function getCurrentUser() {
   return auth.currentUser;
+}
+
+export async function waitForAuthPersistenceReady() {
+  await authPersistenceReady;
 }
 
 export async function callFirebaseFunction(name, data) {
@@ -229,6 +234,63 @@ export async function saveAffiliateAdminSettings(patch) {
     }),
     { merge: true }
   );
+}
+
+async function lookupPartnerInCollection(collectionName, email) {
+  const snapshot = await getDocs(
+    query(
+      collection(db, collectionName),
+      where('email', '==', email),
+      limit(1)
+    )
+  );
+  if (!snapshot.empty) {
+    const row = snapshot.docs[0];
+    const data = row.data() || {};
+    return {
+      found: true,
+      uid: data.uid || row.id,
+      email: data.email || email,
+      displayName: data.displayName || data.name || '',
+      source: `firestore:${collectionName}`,
+    };
+  }
+  return null;
+}
+
+export async function lookupNuriaPartnerByEmail(email) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!normalizedEmail) {
+    return { found: false, source: 'invalid_email' };
+  }
+
+  try {
+    const data = await callWithCompat(
+      ['lookupNuriaPartnerByEmailAdmin', 'findNuriaPartnerByEmailAdmin'],
+      { email: normalizedEmail }
+    );
+    return Object.assign({ found: false, source: 'callable' }, data || {});
+  } catch (error) {
+    if (callableOnlyMode) {
+      throw makeComplianceError('lookupNuriaPartnerByEmailAdmin', error);
+    }
+  }
+
+  const collectionsToProbe = ['users', 'profiles', 'accounts'];
+  for (const collectionName of collectionsToProbe) {
+    try {
+      const result = await lookupPartnerInCollection(collectionName, normalizedEmail);
+      if (result) return result;
+    } catch (_error) {
+      // ignore fallback probe errors; continue next candidate
+    }
+  }
+
+  return {
+    found: false,
+    email: normalizedEmail,
+    source: 'firestore:fallback',
+  };
 }
 
 export { auth, db, functions, firebaseApp };

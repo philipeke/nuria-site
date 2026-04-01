@@ -20,8 +20,13 @@ In this mode, the frontend expects backend callables for:
 - `listAffiliateAdminAuditLogs`
 - `getAffiliateAdminSettings`
 - `setAffiliateAdminSettings` (or legacy `setAffiliateReportRecipientsAdmin`)
+- `lookupNuriaPartnerByEmailAdmin` (or legacy `findNuriaPartnerByEmailAdmin`)
 
 If missing, UI shows actionable compliance warnings.
+
+Partner lookup callable contract is defined in:
+
+- `docs/affiliate-admin-partner-verification-callable-spec.md`
 
 ## Firestore Paths Impacted
 
