@@ -274,6 +274,11 @@ function setChecklistPopoverOpen(open) {
   const isOpen = Boolean(open);
   elements.checklistNavPopover.hidden = !isOpen;
   elements.checklistNavToggle.setAttribute('aria-expanded', String(isOpen));
+  if (isOpen && window.matchMedia('(max-width: 768px)').matches) {
+    requestAnimationFrame(() => {
+      elements.checklistNavPopover.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }
 }
 
 function placeMobileDrawer() {
