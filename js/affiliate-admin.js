@@ -32,6 +32,8 @@ const elements = {
   authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
   globalNotice: document.getElementById('adminGlobalNotice'),
   authSummary: document.getElementById('adminAuthSummary'),
+  playSpiritSound: document.getElementById('adminPlaySpiritSound'),
+  spiritToast: document.getElementById('adminSpiritToast'),
   signOutTop: document.getElementById('adminSignOutTop'),
   emailSignInForm: document.getElementById('adminEmailSignInForm'),
   authError: document.getElementById('adminAuthError'),
@@ -214,6 +216,7 @@ const state = {
   saveSettingsInFlight: false,
 };
 let loginSuccessSound = null;
+let spiritToastTimeoutId = null;
 let previousAuthUid = null;
 
 function escapeHtml(value) {
@@ -521,6 +524,19 @@ async function playLoginSuccessSound() {
   } catch (_error) {
     // Browser autoplay policies can block audio; ignore silently.
   }
+}
+
+function showSpiritToast() {
+  if (!elements.spiritToast) return;
+  elements.spiritToast.hidden = false;
+  if (spiritToastTimeoutId) {
+    window.clearTimeout(spiritToastTimeoutId);
+  }
+  spiritToastTimeoutId = window.setTimeout(() => {
+    if (elements.spiritToast) {
+      elements.spiritToast.hidden = true;
+    }
+  }, 2600);
 }
 
 function setOnboardingStep(nextIndex) {
@@ -2516,6 +2532,13 @@ async function handleSendPasswordReset() {
   }
 }
 
+async function handlePlaySpiritSound() {
+  setButtonBusy(elements.playSpiritSound, true, 'Playing');
+  await playLoginSuccessSound();
+  showSpiritToast();
+  setButtonBusy(elements.playSpiritSound, false);
+}
+
 async function handleCopyReferralLink() {
   const link = String(elements.codeReferralLink?.dataset?.value || '').trim();
   if (!link) {
@@ -3431,6 +3454,7 @@ function bindMiniListActions() {
 function bindEvents() {
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
+  elements.playSpiritSound?.addEventListener('click', handlePlaySpiritSound);
   elements.signOutTop?.addEventListener('click', handleSignOut);
   elements.signOutUnauthorized?.addEventListener('click', handleSignOut);
   elements.retryLoad?.addEventListener('click', () => loadDashboard());

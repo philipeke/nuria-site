@@ -34,11 +34,17 @@
 
       <div class="admin-topbar__actions">
         <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
+        <button type="button" class="btn btn--outline" id="adminPlaySpiritSound">
+          Play spirit sound
+        </button>
         <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
           Sign out
         </button>
       </div>
     </header>
+    <div class="admin-spirit-toast" id="adminSpiritToast" data-admin-auth-only hidden>
+      Nuria spirit run
+    </div>
 
     <main class="admin-main">
       <section class="admin-hero" data-admin-auth-only hidden>
