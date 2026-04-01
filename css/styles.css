@@ -3048,6 +3048,8 @@ address.legal-address strong { color: var(--color-text); }
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.65rem;
+  flex-wrap: wrap;
 }
 
 .cookie-consent__btn {
@@ -3068,6 +3070,7 @@ address.legal-address strong { color: var(--color-text); }
     font-size: 1.2rem;
   }
   .cookie-consent__actions {
+    flex-direction: column;
     justify-content: stretch;
   }
   .cookie-consent__btn {
@@ -3518,6 +3521,31 @@ address.legal-address strong { color: var(--color-text); }
   min-width: 170px;
 }
 
+.admin-referral-link-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.admin-referral-link {
+  display: block;
+  padding: 0.72rem 0.78rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-gold-bright);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-referral-link[aria-disabled="true"] {
+  color: var(--color-text-dim);
+  cursor: default;
+}
+
 .admin-checkbox {
   display: inline-flex;
   align-items: center;
@@ -3710,6 +3738,10 @@ address.legal-address strong { color: var(--color-text); }
   align-items: center;
   justify-content: center;
   padding: 1rem;
+}
+
+.admin-modal[hidden] {
+  display: none !important;
 }
 
 .admin-modal__backdrop {

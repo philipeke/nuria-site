@@ -91,6 +91,8 @@ const elements = {
   codeFormHelper: document.getElementById('adminCodeFormHelper'),
   editingExistingCode: document.getElementById('adminEditingExistingCode'),
   codeValue: document.getElementById('adminCodeValue'),
+  codeReferralLink: document.getElementById('adminCodeReferralLink'),
+  copyReferralLinkButton: document.getElementById('adminCopyReferralLinkButton'),
   affiliateId: document.getElementById('adminAffiliateId'),
   displayName: document.getElementById('adminDisplayName'),
   codeStatus: document.getElementById('adminCodeStatus'),
@@ -1330,6 +1332,41 @@ function setCodeFormMode(mode) {
     : 'Create a new affiliate code and assign its payout settings.';
 }
 
+function getGeneratedReferralLink(code) {
+  const normalizedCode = typeof site.normalizeReferralCode === 'function'
+    ? site.normalizeReferralCode(code)
+    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
+
+  if (!normalizedCode) {
+    return '';
+  }
+
+  const origin = site?.config?.siteOrigin || window.location.origin;
+  return `${origin}/join?ref=${encodeURIComponent(normalizedCode)}`;
+}
+
+function updateCodeReferralLink(rawCode) {
+  if (!elements.codeReferralLink || !elements.copyReferralLinkButton) {
+    return;
+  }
+
+  const link = getGeneratedReferralLink(rawCode);
+  elements.codeReferralLink.dataset.value = link;
+
+  if (!link) {
+    elements.codeReferralLink.textContent = 'Enter a code to generate a shareable link';
+    elements.codeReferralLink.href = '#';
+    elements.codeReferralLink.setAttribute('aria-disabled', 'true');
+    elements.copyReferralLinkButton.disabled = true;
+    return;
+  }
+
+  elements.codeReferralLink.textContent = link;
+  elements.codeReferralLink.href = link;
+  elements.codeReferralLink.setAttribute('aria-disabled', 'false');
+  elements.copyReferralLinkButton.disabled = false;
+}
+
 function resetCodeForm(item) {
   const value = item || null;
 
@@ -1345,6 +1382,7 @@ function resetCodeForm(item) {
     elements.displayName.value = '';
     elements.fixedPayoutMinor.value = '';
     elements.currency.value = '';
+    updateCodeReferralLink('');
     return;
   }
 
@@ -1356,6 +1394,7 @@ function resetCodeForm(item) {
   elements.fixedPayoutMinor.value =
     value.fixedPayoutMinor == null ? '' : String(value.fixedPayoutMinor);
   elements.currency.value = value.currency || '';
+  updateCodeReferralLink(value.code || '');
 }
 
 function syncReportActionFields(report) {
@@ -2127,6 +2166,21 @@ async function handleSendPasswordReset() {
     elements.authError.textContent = message;
   } finally {
     setButtonBusy(elements.sendPasswordResetButton, false);
+  }
+}
+
+async function handleCopyReferralLink() {
+  const link = String(elements.codeReferralLink?.dataset?.value || '').trim();
+  if (!link) {
+    showBanner('Enter a referral code first to generate a link.', 'info');
+    return;
+  }
+
+  try {
+    await copyPlainText(link);
+    showBanner('Referral link copied.', 'success');
+  } catch (_error) {
+    showBanner('Could not copy link on this browser.', 'error');
   }
 }
 
@@ -2954,6 +3008,10 @@ function bindEvents() {
   elements.newCode?.addEventListener('click', () => resetCodeForm(null));
   elements.resetCodeForm?.addEventListener('click', () => resetCodeForm(null));
   elements.codeForm?.addEventListener('submit', handleCodeSave);
+  elements.codeValue?.addEventListener('input', () => {
+    updateCodeReferralLink(elements.codeValue.value);
+  });
+  elements.copyReferralLinkButton?.addEventListener('click', handleCopyReferralLink);
   elements.refreshReports?.addEventListener('click', async () => {
     clearBanner();
     try {

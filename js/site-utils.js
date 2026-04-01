@@ -76,7 +76,28 @@
     return `${config.appScheme}://join?ref=${encodeURIComponent(normalizedCode)}`;
   }
 
+  const COOKIE_CONSENT_KEY = 'nuria_cookie_consent_v1';
+
+  function getCookieConsentStatus() {
+    if (window.NuriaConsent && typeof window.NuriaConsent.getStatus === 'function') {
+      return window.NuriaConsent.getStatus();
+    }
+    try {
+      return window.localStorage.getItem(COOKIE_CONSENT_KEY) || '';
+    } catch (error) {
+      return '';
+    }
+  }
+
+  function isAnalyticsAllowed() {
+    return getCookieConsentStatus() === 'accepted';
+  }
+
   function trackEvent(name, params) {
+    if (!isAnalyticsAllowed()) {
+      return;
+    }
+
     const detail = {
       name,
       params: params || {},

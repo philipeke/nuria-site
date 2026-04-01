@@ -99,6 +99,28 @@
   }
 
   function cleanJoinUrl(code) {
+    const currentPath = String(window.location.pathname || '');
+    const prettyPathMatch = currentPath.match(/^\/(join|r)\/([^/?#]+)\/?$/i);
+    if (prettyPathMatch) {
+      const routeType = prettyPathMatch[1].toLowerCase();
+      const pathCode = site.normalizeReferralCode(prettyPathMatch[2] || '');
+      const normalizedCode = site.normalizeReferralCode(code || '');
+
+      // Keep pretty URLs as the visible URL when they already carry the same code.
+      if (normalizedCode && pathCode === normalizedCode) {
+        if (routeType === 'r') {
+          const params = new URLSearchParams(window.location.search || '');
+          if (params.get('route') === 'r') {
+            params.delete('route');
+            const search = params.toString();
+            const nextUrl = search ? `${currentPath}?${search}` : currentPath;
+            window.history.replaceState({}, '', nextUrl);
+          }
+        }
+        return;
+      }
+    }
+
     const params = new URLSearchParams(window.location.search);
 
     if (code) {

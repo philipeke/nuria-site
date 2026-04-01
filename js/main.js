@@ -595,22 +595,73 @@
 /* ===== COOKIE CONSENT ===== */
 (function () {
   const STORAGE_KEY = 'nuria_cookie_consent_v1';
+  const CONSENT_DECLINED = 'declined';
   const CONSENT_ACCEPTED = 'accepted';
 
-  function hasAcceptedCookies() {
+  function currentLang() {
+    return document.documentElement.lang || 'en';
+  }
+
+  function t(path) {
+    if (typeof getVal === 'function') {
+      const value = getVal(currentLang(), path);
+      if (value) return value;
+      const english = getVal('en', path);
+      if (english) return english;
+    }
+    return '';
+  }
+
+  function getConsentStatus() {
     try {
-      return window.localStorage.getItem(STORAGE_KEY) === CONSENT_ACCEPTED;
+      return window.localStorage.getItem(STORAGE_KEY) || '';
     } catch (error) {
-      return false;
+      return '';
     }
   }
 
-  function setAcceptedCookies() {
+  function persistConsent(status) {
     try {
-      window.localStorage.setItem(STORAGE_KEY, CONSENT_ACCEPTED);
+      window.localStorage.setItem(STORAGE_KEY, status);
     } catch (error) {
       // Ignore storage errors and keep UX flow.
     }
+  }
+
+  function applyAnalyticsConsent(status) {
+    const cfg = window.NURIA_SITE_CONFIG || {};
+    const measurementId = String((cfg.firebase && cfg.firebase.measurementId) || '').trim();
+    if (measurementId) {
+      window[`ga-disable-${measurementId}`] = status !== CONSENT_ACCEPTED;
+    }
+  }
+
+  function applyConsentAndNotify(status) {
+    applyAnalyticsConsent(status);
+    window.NuriaConsent = window.NuriaConsent || {};
+    window.NuriaConsent.getStatus = getConsentStatus;
+    window.NuriaConsent.isAccepted = function () {
+      return getConsentStatus() === CONSENT_ACCEPTED;
+    };
+    window.NuriaConsent.isDeclined = function () {
+      return getConsentStatus() === CONSENT_DECLINED;
+    };
+    window.dispatchEvent(new CustomEvent('nuria:cookie-consent-changed', {
+      detail: { status },
+    }));
+  }
+
+  function setConsentStatus(status) {
+    persistConsent(status);
+    applyConsentAndNotify(status);
+  }
+
+  function closeBanner(banner) {
+    if (!banner) return;
+    banner.classList.remove('is-visible');
+    window.setTimeout(function () {
+      banner.remove();
+    }, 260);
   }
 
   function buildBanner() {
@@ -619,19 +670,19 @@
     wrapper.id = 'cookieConsent';
     wrapper.setAttribute('role', 'dialog');
     wrapper.setAttribute('aria-live', 'polite');
-    wrapper.setAttribute('aria-label', 'Cookie consent');
+    wrapper.setAttribute('aria-label', t('cookie.aria_label'));
 
     wrapper.innerHTML = [
       '<div class="cookie-consent__icon" aria-hidden="true">🍪</div>',
       '<div class="cookie-consent__content">',
-      '  <p class="cookie-consent__title">We use cookies to improve your visit</p>',
+      `  <p class="cookie-consent__title">${t('cookie.title')}</p>`,
       '  <p class="cookie-consent__text">',
-      '    We use essential and analytics cookies to keep Nuria secure and continuously better.',
-      '    Read our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Service</a>.',
+      `    ${t('cookie.message_html')}`,
       '  </p>',
       '</div>',
       '<div class="cookie-consent__actions">',
-      '  <button type="button" class="btn btn--gold cookie-consent__btn" id="cookieConsentAccept">Accept cookies</button>',
+      `  <button type="button" class="btn btn--outline cookie-consent__btn cookie-consent__btn--decline" id="cookieConsentDecline">${t('cookie.decline')}</button>`,
+      `  <button type="button" class="btn btn--gold cookie-consent__btn" id="cookieConsentAccept">${t('cookie.accept')}</button>`,
       '</div>',
     ].join('');
 
@@ -647,18 +698,25 @@
     });
 
     const acceptButton = banner.querySelector('#cookieConsentAccept');
+    const declineButton = banner.querySelector('#cookieConsentDecline');
     if (acceptButton) {
       acceptButton.addEventListener('click', function () {
-        setAcceptedCookies();
-        banner.classList.remove('is-visible');
-        window.setTimeout(function () {
-          banner.remove();
-        }, 260);
+        setConsentStatus(CONSENT_ACCEPTED);
+        closeBanner(banner);
+      });
+    }
+    if (declineButton) {
+      declineButton.addEventListener('click', function () {
+        setConsentStatus(CONSENT_DECLINED);
+        closeBanner(banner);
       });
     }
   }
 
-  if (!hasAcceptedCookies()) {
+  const currentStatus = getConsentStatus();
+  applyConsentAndNotify(currentStatus);
+
+  if (currentStatus !== CONSENT_ACCEPTED && currentStatus !== CONSENT_DECLINED) {
     showBanner();
   }
 }());
