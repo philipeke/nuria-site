@@ -328,6 +328,14 @@ function setView(name) {
   elements.authOnlyBlocks.forEach((block) => {
     block.hidden = showLoginOnly;
   });
+  if (elements.globalNotice) {
+    if (showLoginOnly) {
+      elements.globalNotice.hidden = true;
+    } else {
+      const hasMessage = Boolean(String(elements.globalNotice.textContent || '').trim());
+      elements.globalNotice.hidden = !hasMessage;
+    }
+  }
   if (elements.sectionNav) {
     elements.sectionNav.hidden = showLoginOnly || name !== 'ready';
   }

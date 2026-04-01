@@ -4382,6 +4382,11 @@ code {
 }
 
 @media (min-width: 769px) {
+  /* Hamburger only on small screens — keep hidden on desktop even if other .btn rules load later */
+  .admin-mobile-nav-toggle {
+    display: none !important;
+  }
+
   .admin-mobile-drawer {
     display: contents;
   }
@@ -4408,29 +4413,30 @@ code {
     display: contents;
   }
 
+  /* Flex is more reliable than grid here when drawer uses display:contents (flattened children). */
   .admin-topbar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-start;
+    gap: 0;
   }
 
   .admin-topbar__row {
-    grid-column: 1;
-    grid-row: 1;
+    flex: 0 1 auto;
+    min-width: 0;
     margin-bottom: 0;
   }
 
   .admin-topbar__actions {
-    grid-column: 2;
-    grid-row: 1;
+    flex: 0 0 auto;
+    margin-left: auto;
     align-self: center;
-    justify-self: end;
   }
 
   .admin-section-nav {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    flex: 1 1 100%;
+    width: 100%;
     margin-top: 0.45rem;
   }
 }
