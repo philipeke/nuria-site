@@ -4179,12 +4179,27 @@ address.legal-address strong { color: var(--color-text); }
   padding-top: 8vh;
 }
 
+.admin-shell.admin-shell--login .admin-topbar,
+.admin-shell.admin-shell--login .admin-section-nav,
+.admin-shell.admin-shell--login .admin-hero,
+.admin-shell.admin-shell--login .admin-spirit-toast {
+  display: none !important;
+}
+
 .admin-shell.admin-shell--login .admin-main {
   gap: 0;
 }
 
 .admin-shell.admin-shell--login .admin-state-card {
   padding: 1.7rem;
+}
+
+.admin-shell.admin-shell--login .admin-auth-form {
+  margin-bottom: 0.85rem;
+}
+
+.admin-shell.admin-shell--login #adminSendPasswordResetButton {
+  margin-top: 0.35rem;
 }
 
 .admin-is-logged-out .admin-dashboard {
