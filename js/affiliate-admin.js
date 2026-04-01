@@ -20,7 +20,19 @@ const COMPACT_MODE_KEY = 'nuria_affiliate_admin_compact_mode_v1';
 const ONBOARDING_DISMISSED_KEY = 'nuria_affiliate_admin_onboarding_dismissed_v1';
 const ONBOARDING_SESSION_CLOSED_KEY = 'nuria_affiliate_admin_onboarding_closed_session_v1';
 const LOGIN_SUCCESS_SOUND_URL = '/assets/nuria%20site.wav';
+const SPIRIT_BUTTON_DEFAULT_LABEL = 'Summon spirit ✨';
 const CHECKLIST_STEPS = ['generated', 'verified', 'exported', 'paid', 'receipt'];
+const ADMIN_PAGE_PATHS = {
+  landing: '/internal/affiliate-admin/',
+  overview: '/internal/affiliate-admin/overview/',
+  operations: '/internal/affiliate-admin/operations/',
+  checklist: '/internal/affiliate-admin/checklist/',
+  'alerts-health': '/internal/affiliate-admin/alerts-health/',
+  codes: '/internal/affiliate-admin/codes/',
+  reports: '/internal/affiliate-admin/reports/',
+  'report-detail': '/internal/affiliate-admin/report-detail/',
+  settings: '/internal/affiliate-admin/settings/',
+};
 
 if (!page) {
   throw new Error('affiliate_admin_page_missing');
@@ -30,6 +42,11 @@ const elements = {
   shell: page,
   views: Array.from(document.querySelectorAll('[data-admin-view]')),
   authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
+  sectionNav: document.querySelector('.admin-section-nav'),
+  pageSections: Array.from(document.querySelectorAll('[data-admin-page]')),
+  pageLinks: Array.from(document.querySelectorAll('[data-admin-page-link]')),
+  checklistNavToggle: document.getElementById('adminChecklistNavToggle'),
+  checklistNavPopover: document.getElementById('adminChecklistNavPopover'),
   globalNotice: document.getElementById('adminGlobalNotice'),
   authSummary: document.getElementById('adminAuthSummary'),
   playSpiritSound: document.getElementById('adminPlaySpiritSound'),
@@ -55,6 +72,7 @@ const elements = {
   overviewReports: document.getElementById('adminOverviewReports'),
   overviewCodes: document.getElementById('adminOverviewCodes'),
   opsLogList: document.getElementById('adminOpsLogList'),
+  landingActivityList: document.getElementById('adminLandingActivityList'),
   clearOpsLog: document.getElementById('adminClearOpsLog'),
   copyReportDeepLink: document.getElementById('adminCopyReportDeepLink'),
   openPartnerJoin: document.getElementById('adminOpenPartnerJoin'),
@@ -190,6 +208,7 @@ const state = {
   onboardingStep: 0,
   pendingOnboardingAfterLogin: false,
   checklistMonthOverride: '',
+  currentPage: 'landing',
   healthChecks: {},
   adminSettings: {
     defaultFlow: 'balanced',
@@ -240,15 +259,69 @@ function setView(name) {
   });
   const showLoginOnly = name === 'signed-out' || name === 'loading-auth';
   elements.shell?.classList.toggle('admin-shell--login', showLoginOnly);
+  document.body.classList.toggle('admin-is-logged-out', showLoginOnly);
   elements.authOnlyBlocks.forEach((block) => {
     block.hidden = showLoginOnly;
   });
+  if (elements.sectionNav) {
+    elements.sectionNav.hidden = showLoginOnly || name !== 'ready';
+  }
+  if (elements.checklistNavPopover && elements.checklistNavToggle && elements.sectionNav?.hidden) {
+    elements.checklistNavPopover.hidden = true;
+    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+  }
 
   if (!state.initializedViewEvent) {
     track('affiliate_admin_page_viewed', {
       initial_view: name,
     });
     state.initializedViewEvent = true;
+  }
+}
+
+function getAdminPageFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const queryPage = String(params.get('page') || '').trim().toLowerCase();
+  if (queryPage) return queryPage;
+  const path = String(window.location.pathname || '').toLowerCase();
+  const normalizedBase = '/internal/affiliate-admin/';
+  if (!path.startsWith(normalizedBase)) return '';
+  const tail = path.slice(normalizedBase.length).replace(/^\/+|\/+$/g, '');
+  return tail || 'landing';
+}
+
+function updateAdminPageUrl(pageKey) {
+  const params = new URLSearchParams(window.location.search);
+  params.delete('page');
+  const path = ADMIN_PAGE_PATHS[pageKey] || ADMIN_PAGE_PATHS.landing;
+  const nextUrl = params.toString()
+    ? `${path}?${params.toString()}`
+    : path;
+  window.history.replaceState({}, '', nextUrl);
+}
+
+function setAdminPage(pageKey, options) {
+  const settings = Object.assign({ updateUrl: true }, options || {});
+  const available = new Set(elements.pageSections.map((section) => section.dataset.adminPage));
+  const next = available.has(pageKey) ? pageKey : 'landing';
+  state.currentPage = next;
+
+  elements.pageSections.forEach((section) => {
+    section.hidden = section.dataset.adminPage !== next;
+  });
+
+  elements.pageLinks.forEach((link) => {
+    const active = link.dataset.adminPageLink === next;
+    link.classList.toggle('is-active', active);
+    if (active) {
+      link.setAttribute('aria-current', 'page');
+    } else {
+      link.removeAttribute('aria-current');
+    }
+  });
+
+  if (settings.updateUrl) {
+    updateAdminPageUrl(next);
   }
 }
 
@@ -292,7 +365,19 @@ function getActionableErrorMessage(error, fallbackMessage) {
   }
 
   if (code === 'permission-denied') {
-    return 'This account is signed in but is not allowed to perform this admin action.';
+    if (message.includes('admin_access_required') || message.includes('admin_role_required')) {
+      return 'Signed in, but this account is not allowlisted for affiliate admin access.';
+    }
+    if (message.includes('admin_access_disabled')) {
+      return 'This admin account exists but is disabled in backend allowlist.';
+    }
+    if (message.includes('admin_email_mismatch')) {
+      return 'Signed-in email does not match the allowlisted admin email.';
+    }
+    const callableHint = error?.adminCallable
+      ? ` (callable: ${error.adminCallable})`
+      : '';
+    return `Permission denied for this action${callableHint}. If this account should have full access, verify backend callable roles and allowlist.`;
   }
 
   if (code === 'wrong-password') {
@@ -362,6 +447,22 @@ function formatTimestamp(timestamp) {
   } catch (error) {
     return timestamp.iso;
   }
+}
+
+function formatRelativeTime(isoValue) {
+  const iso = String(isoValue || '').trim();
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const diffMs = Date.now() - date.getTime();
+  const absMs = Math.abs(diffMs);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  if (absMs < minute) return 'just now';
+  if (absMs < hour) return `${Math.round(absMs / minute)} min ago`;
+  if (absMs < day) return `${Math.round(absMs / hour)} h ago`;
+  return `${Math.round(absMs / day)} d ago`;
 }
 
 function formatMoneyFromMinor(amountMinor, currency) {
@@ -539,6 +640,23 @@ function showSpiritToast() {
   }, 2600);
 }
 
+function setSpiritButtonFunLabel() {
+  if (!elements.playSpiritSound) return;
+  const labels = [
+    'Spirit launched 🚀',
+    'Barakah mode on ✨',
+    'Nuria vibes unlocked 😄',
+    'Soul boost activated 🌙',
+  ];
+  const next = labels[Math.floor(Math.random() * labels.length)];
+  elements.playSpiritSound.textContent = next;
+  window.setTimeout(() => {
+    if (elements.playSpiritSound) {
+      elements.playSpiritSound.textContent = SPIRIT_BUTTON_DEFAULT_LABEL;
+    }
+  }, 1800);
+}
+
 function setOnboardingStep(nextIndex) {
   const max = elements.onboardingSteps.length - 1;
   const clamped = Math.max(0, Math.min(Number(nextIndex) || 0, max));
@@ -630,26 +748,32 @@ function addActivityLog(message, kind) {
 }
 
 function renderActivityLog() {
-  if (!elements.opsLogList) return;
-
   const items = Array.isArray(state.activityLog) ? state.activityLog : [];
-  if (!items.length) {
-    elements.opsLogList.innerHTML = '<p class="admin-empty admin-empty--inline">No activity yet in this browser session.</p>';
-    return;
-  }
+  const renderInto = (container, emptyCopy, limitCount) => {
+    if (!container) return;
+    if (!items.length) {
+      container.innerHTML = `<p class="admin-empty admin-empty--inline">${emptyCopy}</p>`;
+      return;
+    }
+    container.innerHTML = items
+      .slice(0, limitCount)
+      .map((item) => {
+        const when = formatTimestamp({ iso: item.at });
+        const relative = formatRelativeTime(item.at);
+        const kind = String(item.kind || 'info').toLowerCase();
+        return `
+          <div class="admin-ops-log__item">
+            <span class="admin-tag admin-tag--${escapeHtml(kind)}">${escapeHtml(kind)}</span>
+            ${escapeHtml(item.message)}
+            <span class="admin-ops-log__meta">${escapeHtml(item.actor || 'admin')} &middot; ${escapeHtml(relative || when)} &middot; ${escapeHtml(when)}</span>
+          </div>
+        `;
+      })
+      .join('');
+  };
 
-  elements.opsLogList.innerHTML = items
-    .slice(0, 12)
-    .map((item) => {
-      const when = formatTimestamp({ iso: item.at });
-      return `
-        <div class="admin-ops-log__item">
-          ${escapeHtml(item.message)}
-          <span class="admin-ops-log__meta">${escapeHtml(item.actor || 'admin')} &middot; ${escapeHtml(when)}</span>
-        </div>
-      `;
-    })
-    .join('');
+  renderInto(elements.opsLogList, 'No activity yet in this browser session.', 12);
+  renderInto(elements.landingActivityList, 'No recent activity yet.', 8);
 }
 
 function clearActivityLog() {
@@ -957,6 +1081,9 @@ function renderChecklistNavControls(monthKey, status, locked) {
   }
   if (elements.checklistNavLockToggle) {
     elements.checklistNavLockToggle.textContent = locked ? 'Unlock month' : 'Lock month';
+  }
+  if (elements.checklistNavToggle) {
+    elements.checklistNavToggle.textContent = `Checklist ${monthKey} (${completed}/${CHECKLIST_STEPS.length})`;
   }
 }
 
@@ -1471,11 +1598,17 @@ function updateIdentity() {
     return;
   }
 
-  const summary = [user.email || 'Signed in'];
-
-  if (state.admin?.roles?.length) {
-    summary.push(state.admin.roles.join(', '));
-  }
+  const displayName = String(
+    state.admin?.displayName
+      || state.admin?.name
+      || user.displayName
+      || ''
+  ).trim();
+  const email = String(user.email || state.admin?.email || '').trim();
+  const summary = [];
+  if (displayName) summary.push(displayName);
+  if (email) summary.push(email);
+  if (!summary.length) summary.push('Signed in');
 
   elements.authSummary.hidden = false;
   elements.authSummary.textContent = summary.join(' | ');
@@ -2414,6 +2547,7 @@ async function loadDashboard(options) {
     renderReportsTable();
     updateIdentity();
     setView('ready');
+    setAdminPage(getAdminPageFromUrl(), { updateUrl: true });
     if (state.pendingOnboardingAfterLogin && !state.onboardingDismissed) {
       state.pendingOnboardingAfterLogin = false;
       setOnboardingStep(0);
@@ -2537,6 +2671,7 @@ async function handlePlaySpiritSound() {
   await playLoginSuccessSound();
   showSpiritToast();
   setButtonBusy(elements.playSpiritSound, false);
+  setSpiritButtonFunLabel();
 }
 
 async function handleCopyReferralLink() {
@@ -3452,6 +3587,29 @@ function bindMiniListActions() {
 }
 
 function bindEvents() {
+  elements.pageLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const pageKey = link.dataset.adminPageLink;
+      if (!pageKey) return;
+      event.preventDefault();
+      setAdminPage(pageKey, { updateUrl: true });
+    });
+  });
+  elements.checklistNavToggle?.addEventListener('click', () => {
+    if (!elements.checklistNavPopover) return;
+    const isOpen = elements.checklistNavPopover.hidden === false;
+    elements.checklistNavPopover.hidden = isOpen;
+    elements.checklistNavToggle.setAttribute('aria-expanded', String(!isOpen));
+  });
+  document.addEventListener('click', (event) => {
+    if (!elements.checklistNavPopover || !elements.checklistNavToggle) return;
+    if (elements.checklistNavPopover.hidden) return;
+    const withinPopover = event.target.closest('#adminChecklistNavPopover');
+    const withinToggle = event.target.closest('#adminChecklistNavToggle');
+    if (withinPopover || withinToggle) return;
+    elements.checklistNavPopover.hidden = true;
+    elements.checklistNavToggle.setAttribute('aria-expanded', 'false');
+  });
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
   elements.playSpiritSound?.addEventListener('click', handlePlaySpiritSound);
@@ -3663,6 +3821,7 @@ function bindEvents() {
 }
 
 function initializeFormDefaults() {
+  setAdminPage(getAdminPageFromUrl(), { updateUrl: true });
   elements.reportMonth.value = getPreviousUtcMonth();
   state.checklistMonthOverride = elements.reportMonth.value;
   elements.includeRowsToggle.checked = false;

@@ -77,8 +77,13 @@ export function getCurrentUser() {
 
 export async function callFirebaseFunction(name, data) {
   const callable = httpsCallable(functions, name);
-  const result = await callable(data || {});
-  return result.data;
+  try {
+    const result = await callable(data || {});
+    return result.data;
+  } catch (error) {
+    error.adminCallable = name;
+    throw error;
+  }
 }
 
 function makeComplianceError(feature, cause) {

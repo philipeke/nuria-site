@@ -34,8 +34,8 @@
 
       <div class="admin-topbar__actions">
         <div class="admin-topbar__identity" id="adminAuthSummary" hidden></div>
-        <button type="button" class="btn btn--outline" id="adminPlaySpiritSound">
-          Play spirit sound
+        <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
+          Summon spirit ✨
         </button>
         <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
           Sign out
@@ -45,18 +45,68 @@
     <div class="admin-spirit-toast" id="adminSpiritToast" data-admin-auth-only hidden>
       Nuria spirit run
     </div>
+    <nav class="admin-section-nav" aria-label="Admin areas" data-admin-auth-only hidden>
+      <a href="/internal/affiliate-admin/" class="admin-section-nav__link" data-admin-page-link="landing">Landing</a>
+      <a href="/internal/affiliate-admin/overview/" class="admin-section-nav__link" data-admin-page-link="overview">Overview</a>
+      <a href="/internal/affiliate-admin/operations/" class="admin-section-nav__link" data-admin-page-link="operations">Operations</a>
+      <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
+      <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
+      <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
+      <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
+      <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
+      <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
+      <button type="button" class="btn btn--outline admin-section-nav__toggle" id="adminChecklistNavToggle">
+        Checklist month
+      </button>
+      <div class="admin-section-nav__checklist" id="adminChecklistNavPopover" hidden>
+        <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
+        <select class="form-input form-select" id="adminChecklistNavMonth"></select>
+        <div class="admin-section-nav__month-meta">
+          <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
+          <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
+          <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
+          <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
+        </div>
+        <div class="admin-section-nav__steps">
+          <label class="admin-checkbox">
+            <input type="checkbox" data-checklist-nav-item="generated" />
+            <span>Generated</span>
+          </label>
+          <label class="admin-checkbox">
+            <input type="checkbox" data-checklist-nav-item="verified" />
+            <span>Verified</span>
+          </label>
+          <label class="admin-checkbox">
+            <input type="checkbox" data-checklist-nav-item="exported" />
+            <span>Exported</span>
+          </label>
+          <label class="admin-checkbox">
+            <input type="checkbox" data-checklist-nav-item="paid" />
+            <span>Paid</span>
+          </label>
+          <label class="admin-checkbox">
+            <input type="checkbox" data-checklist-nav-item="receipt" />
+            <span>Receipt</span>
+          </label>
+        </div>
+      </div>
+    </nav>
 
     <main class="admin-main">
       <section class="admin-hero" data-admin-auth-only hidden>
         <p class="admin-hero__eyebrow">Private route</p>
         <div class="admin-hero__head">
-          <h1 class="admin-hero__title">Affiliate operations for Nuria</h1>
-          <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-hero__logo" />
+          <div class="admin-hero__content">
+            <h1 class="admin-hero__title">Affiliate operations for Nuria</h1>
+            <p class="admin-hero__copy">
+              This page is intentionally unlisted. Sign in with an authorized Firebase Auth
+              account to review affiliate codes, payout reports, and payout actions.
+            </p>
+          </div>
+          <div class="admin-hero__logo-frame">
+            <img src="../../assets/nuria-admin.png" alt="Nuria Admin" class="admin-hero__logo" />
+          </div>
         </div>
-        <p class="admin-hero__copy">
-          This page is intentionally unlisted. Sign in with an authorized Firebase Auth
-          account to review affiliate codes, payout reports, and payout actions.
-        </p>
       </section>
 
       <div class="admin-banner" id="adminGlobalNotice" data-admin-auth-only hidden></div>
@@ -155,51 +205,37 @@
         </div>
       </section>
 
-      <section class="admin-dashboard" data-admin-view="ready" hidden>
-        <nav class="admin-section-nav" aria-label="Admin areas">
-          <a href="#adminSectionOverview" class="admin-section-nav__link">Overview & generation</a>
-          <a href="#adminSectionOperations" class="admin-section-nav__link">Operations & checklist</a>
-          <a href="#adminSectionChecklist" class="admin-section-nav__link">Monthly close checklist</a>
-          <a href="#adminSectionAlertsHealth" class="admin-section-nav__link">Alerts & health</a>
-          <a href="#adminSectionCodes" class="admin-section-nav__link">Affiliate codes</a>
-          <a href="#adminSectionReports" class="admin-section-nav__link">Payout reports</a>
-          <a href="#adminSectionReportDetail" class="admin-section-nav__link">Report detail</a>
-          <a href="#adminSectionSettings" class="admin-section-nav__link">Settings</a>
-          <div class="admin-section-nav__checklist">
-            <label class="form-label" for="adminChecklistNavMonth">Checklist month</label>
-            <select class="form-input form-select" id="adminChecklistNavMonth"></select>
-            <div class="admin-section-nav__month-meta">
-              <span class="admin-section-nav__month-pill" id="adminChecklistNavMonthStatus">0 / 5 complete</span>
-              <button type="button" class="btn btn--outline" id="adminChecklistNavMarkAll">Mark all</button>
-              <button type="button" class="btn btn--outline" id="adminChecklistNavReset">Reset</button>
-              <button type="button" class="btn btn--outline" id="adminChecklistNavLockToggle">Lock month</button>
-            </div>
-            <div class="admin-section-nav__steps">
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="generated" />
-                <span>Generated</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="verified" />
-                <span>Verified</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="exported" />
-                <span>Exported</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="paid" />
-                <span>Paid</span>
-              </label>
-              <label class="admin-checkbox">
-                <input type="checkbox" data-checklist-nav-item="receipt" />
-                <span>Receipt</span>
-              </label>
+      <section class="admin-dashboard" data-admin-view="ready" data-admin-auth-only hidden>
+        <article class="admin-panel" id="adminSectionLanding" data-admin-page="landing">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Admin home</p>
+              <h2 class="admin-panel__title">Welcome to Nuria Admin Center</h2>
             </div>
           </div>
-        </nav>
+          <p class="admin-panel__helper">
+            Choose a page below to jump directly into each admin area.
+          </p>
+          <div class="admin-stat-grid">
+            <a href="/internal/affiliate-admin/overview/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="overview">Overview &amp; generation</a>
+            <a href="/internal/affiliate-admin/operations/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="operations">Operations &amp; activity</a>
+            <a href="/internal/affiliate-admin/checklist/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="checklist">Monthly close checklist</a>
+            <a href="/internal/affiliate-admin/alerts-health/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="alerts-health">Alert center &amp; health</a>
+            <a href="/internal/affiliate-admin/codes/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="codes">Affiliate codes</a>
+            <a href="/internal/affiliate-admin/reports/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="reports">Payout reports</a>
+            <a href="/internal/affiliate-admin/report-detail/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="report-detail">Report detail actions</a>
+            <a href="/internal/affiliate-admin/settings/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="settings">Admin settings</a>
+          </div>
+          <div class="admin-detail-section" style="margin-top:1rem;">
+            <h3 class="admin-section-title">Recent activity flow</h3>
+            <div class="admin-ops-log__list" id="adminLandingActivityList"></div>
+            <div class="admin-panel__actions" style="margin-top:0.7rem;">
+              <a href="/internal/affiliate-admin/operations/" class="btn btn--outline" data-admin-page-link="operations">View all in Operations</a>
+            </div>
+          </div>
+        </article>
 
-        <div class="admin-grid admin-grid--overview">
+        <div class="admin-grid admin-grid--overview" data-admin-page="overview">
           <article class="admin-panel" id="adminSectionOverview">
             <div class="admin-panel__header">
               <div>
@@ -313,7 +349,7 @@
           </article>
         </div>
 
-        <article class="admin-panel" id="adminSectionOperations">
+        <article class="admin-panel" id="adminSectionOperations" data-admin-page="operations">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Operations</p>
@@ -395,7 +431,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionAlertsHealth">
+        <article class="admin-panel" id="adminSectionAlertsHealth" data-admin-page="alerts-health">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Monitoring</p>
@@ -447,7 +483,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionChecklist">
+        <article class="admin-panel" id="adminSectionChecklist" data-admin-page="checklist">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Monthly close</p>
@@ -497,7 +533,7 @@
           <p class="admin-empty admin-empty--inline" id="adminChecklistProgress">0 / 5 complete</p>
         </article>
 
-        <article class="admin-panel" id="adminSectionCodes">
+        <article class="admin-panel" id="adminSectionCodes" data-admin-page="codes">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Affiliate codes</p>
@@ -683,7 +719,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionReports">
+        <article class="admin-panel" id="adminSectionReports" data-admin-page="reports">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Payout reports</p>
@@ -728,7 +764,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionReportDetail">
+        <article class="admin-panel" id="adminSectionReportDetail" data-admin-page="report-detail">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Report detail</p>
@@ -880,7 +916,7 @@
           </div>
         </article>
 
-        <article class="admin-panel" id="adminSectionSettings">
+        <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings">
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">Configuration</p>
