@@ -44,7 +44,6 @@ const elements = {
   shell: page,
   topbar: document.querySelector('.admin-topbar'),
   mobileNavToggle: document.getElementById('adminMobileNavToggle'),
-  quickActionButtons: Array.from(document.querySelectorAll('[data-quick-page]')),
   views: Array.from(document.querySelectorAll('[data-admin-view]')),
   authOnlyBlocks: Array.from(document.querySelectorAll('[data-admin-auth-only]')),
   hero: document.querySelector('.admin-hero'),
@@ -390,11 +389,6 @@ function setAdminPage(pageKey, options) {
     } else {
       link.removeAttribute('aria-current');
     }
-  });
-
-  elements.quickActionButtons.forEach((button) => {
-    const active = button.dataset.quickPage === next;
-    button.classList.toggle('is-active', active);
   });
 
   if (settings.updateUrl) {
@@ -4098,14 +4092,6 @@ function bindEvents() {
       const pageKey = link.dataset.adminPageLink;
       if (!pageKey) return;
       event.preventDefault();
-      setAdminPage(pageKey, { updateUrl: true });
-      setMobileNavOpen(false);
-    });
-  });
-  elements.quickActionButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const pageKey = button.dataset.quickPage;
-      if (!pageKey) return;
       setAdminPage(pageKey, { updateUrl: true });
       setMobileNavOpen(false);
     });
