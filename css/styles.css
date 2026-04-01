@@ -4175,8 +4175,12 @@ address.legal-address strong { color: var(--color-text); }
 }
 
 .admin-shell.admin-shell--login {
-  width: min(560px, calc(100% - 2rem));
-  padding-top: 8vh;
+  width: min(540px, calc(100% - 2rem));
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.2rem 0;
 }
 
 .admin-shell.admin-shell--login .admin-topbar,
@@ -4187,19 +4191,22 @@ address.legal-address strong { color: var(--color-text); }
 }
 
 .admin-shell.admin-shell--login .admin-main {
+  width: 100%;
   gap: 0;
 }
 
 .admin-shell.admin-shell--login .admin-state-card {
-  padding: 1.7rem;
+  padding: 1.95rem;
+  border-radius: 24px;
 }
 
 .admin-shell.admin-shell--login .admin-auth-form {
-  margin-bottom: 0.85rem;
+  margin-top: 1.35rem;
+  margin-bottom: 1rem;
 }
 
 .admin-shell.admin-shell--login #adminSendPasswordResetButton {
-  margin-top: 0.35rem;
+  margin-top: 0.55rem;
 }
 
 .admin-is-logged-out .admin-dashboard {
