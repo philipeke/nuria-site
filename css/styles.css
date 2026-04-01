@@ -3154,12 +3154,13 @@ address.legal-address strong { color: var(--color-text); }
 }
 
 .admin-topbar__logo {
-  width: 112px;
-  height: 52px;
+  width: 138px;
+  height: 64px;
   border-radius: 16px;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background: rgba(255, 255, 255, 0.04);
-  padding: 0.2rem;
+  padding: 0.1rem;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
@@ -4374,8 +4375,8 @@ code {
   }
 
   .admin-topbar__logo {
-    width: 92px;
-    height: 46px;
+    width: 120px;
+    height: 56px;
   }
 
   .admin-section-nav {

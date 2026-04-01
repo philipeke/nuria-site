@@ -312,19 +312,27 @@ function setView(name) {
 
 function getAdminPageFromUrl() {
   const params = new URLSearchParams(window.location.search);
-  const queryPage = String(params.get('page') || '').trim().toLowerCase();
+  const queryPage = normalizeAdminPageKey(String(params.get('page') || '').trim().toLowerCase());
   if (queryPage) return queryPage;
   const path = String(window.location.pathname || '').toLowerCase();
   const normalizedBase = '/internal/affiliate-admin/';
   if (!path.startsWith(normalizedBase)) return '';
   const tail = path.slice(normalizedBase.length).replace(/^\/+|\/+$/g, '');
-  return tail || 'landing';
+  return normalizeAdminPageKey(tail || 'landing');
+}
+
+function normalizeAdminPageKey(pageKey) {
+  const raw = String(pageKey || '').trim().toLowerCase();
+  if (!raw) return '';
+  if (raw === 'overview') return 'landing';
+  return raw;
 }
 
 function updateAdminPageUrl(pageKey) {
   const params = new URLSearchParams(window.location.search);
   params.delete('page');
-  const path = ADMIN_PAGE_PATHS[pageKey] || ADMIN_PAGE_PATHS.landing;
+  const normalizedKey = normalizeAdminPageKey(pageKey) || 'landing';
+  const path = ADMIN_PAGE_PATHS[normalizedKey] || ADMIN_PAGE_PATHS.landing;
   const nextUrl = params.toString()
     ? `${path}?${params.toString()}`
     : path;
@@ -334,7 +342,8 @@ function updateAdminPageUrl(pageKey) {
 function setAdminPage(pageKey, options) {
   const settings = Object.assign({ updateUrl: true }, options || {});
   const available = new Set(elements.pageSections.map((section) => section.dataset.adminPage));
-  const next = available.has(pageKey) ? pageKey : 'landing';
+  const normalized = normalizeAdminPageKey(pageKey);
+  const next = available.has(normalized) ? normalized : 'landing';
   state.currentPage = next;
   setChecklistPopoverOpen(false);
 
