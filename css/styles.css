@@ -3107,6 +3107,15 @@ address.legal-address strong { color: var(--color-text); }
   min-height: 100vh;
 }
 
+/* Ensure hidden admin blocks stay hidden even when class rules set display */
+[data-admin-auth-only][hidden],
+.admin-section-nav[hidden],
+.admin-topbar[hidden],
+.admin-hero[hidden],
+.admin-spirit-toast[hidden] {
+  display: none !important;
+}
+
 .admin-shell {
   position: relative;
   width: min(1280px, calc(100% - 2rem));
