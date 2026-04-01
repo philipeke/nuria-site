@@ -19,6 +19,7 @@ const CHECKLIST_STATE_KEY = 'nuria_affiliate_admin_monthly_checklist_v1';
 const MONTH_LOCK_STATE_KEY = 'nuria_affiliate_admin_month_lock_v1';
 const COMPACT_MODE_KEY = 'nuria_affiliate_admin_compact_mode_v1';
 const ONBOARDING_DISMISSED_KEY = 'nuria_affiliate_admin_onboarding_dismissed_v1';
+const ONBOARDING_SESSION_CLOSED_KEY = 'nuria_affiliate_admin_onboarding_closed_session_v1';
 const LOGIN_SUCCESS_SOUND_URL = '/assets/nuria%20site.wav';
 const CHECKLIST_STEPS = ['generated', 'verified', 'exported', 'paid', 'receipt'];
 
@@ -397,6 +398,22 @@ function readOnboardingDismissed() {
     return window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) === '1';
   } catch (_error) {
     return false;
+  }
+}
+
+function readOnboardingClosedThisSession() {
+  try {
+    return window.sessionStorage.getItem(ONBOARDING_SESSION_CLOSED_KEY) === '1';
+  } catch (_error) {
+    return false;
+  }
+}
+
+function markOnboardingClosedThisSession() {
+  try {
+    window.sessionStorage.setItem(ONBOARDING_SESSION_CLOSED_KEY, '1');
+  } catch (_error) {
+    // ignore storage errors
   }
 }
 
@@ -2361,6 +2378,7 @@ function handleOpenOnboarding() {
 
 function handleCloseOnboarding() {
   setOnboardingOpen(false);
+  markOnboardingClosedThisSession();
 }
 
 function handleDismissOnboarding() {
@@ -3071,9 +3089,12 @@ function initializeFormDefaults() {
   clearSelectedReport();
 
   if (!state.onboardingDismissed) {
-    window.setTimeout(() => {
-      setOnboardingOpen(true);
-    }, 280);
+    const closedThisSession = readOnboardingClosedThisSession();
+    if (!closedThisSession) {
+      window.setTimeout(() => {
+        setOnboardingOpen(true);
+      }, 280);
+    }
   }
 }
 
