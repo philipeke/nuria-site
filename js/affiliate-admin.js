@@ -1793,49 +1793,55 @@ function buildPrintableHtml(detail, options) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nuria Affiliate Report ${escapeHtml(report.periodMonth || '')}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@0,600;0,700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #0c1f14;
-      --muted: #4a6357;
-      --line: #d4e0d8;
-      --surface: #f6faf7;
+      --muted: #3d5247;
+      --line: #c8d9ce;
+      --surface: #f3faf5;
       --header: #0f4d2e;
-      --accent: #c9a84c;
-      --stripe: #f0f7f2;
+      --accent: #b8923d;
+      --stripe: #eef6f0;
+      --font-sans: 'Lato', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 0 0 112px;
-      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 0 0 128px;
+      font-family: var(--font-sans);
       color: var(--ink);
       background: #fff;
-      font-size: 12px;
-      line-height: 1.45;
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
     .doc {
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
-      padding: 28px 32px 0;
+      padding: 32px 36px 0;
     }
     .doc-header {
       border-bottom: 3px solid var(--accent);
-      padding-bottom: 20px;
-      margin-bottom: 22px;
+      padding-bottom: 24px;
+      margin-bottom: 26px;
     }
     .doc-header__brand {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 20px;
       flex-wrap: wrap;
     }
     .doc-header__logo {
-      width: 56px;
-      height: 56px;
+      width: 76px;
+      height: 76px;
       border-radius: 14px;
       object-fit: contain;
-      box-shadow: 0 4px 14px rgba(12, 40, 24, 0.12);
+      box-shadow: 0 6px 20px rgba(12, 40, 24, 0.14);
     }
     .doc-header__titles {
       flex: 1;
@@ -1844,75 +1850,107 @@ function buildPrintableHtml(detail, options) {
     }
     .doc-header__titles h1 {
       margin: 0;
-      font-size: 22px;
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.125rem);
       font-weight: 700;
       letter-spacing: -0.02em;
+      line-height: 1.2;
       color: var(--header);
     }
     .doc-header__titles .sub {
-      margin-top: 6px;
-      font-size: 12px;
+      margin-top: 10px;
+      font-size: 1.0625rem;
       color: var(--muted);
-      font-weight: 500;
+      font-weight: 600;
+      line-height: 1.45;
     }
     .doc-meta {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px 20px;
-      margin-bottom: 22px;
+      gap: 14px 24px;
+      margin-bottom: 26px;
       padding: 14px 16px;
       background: var(--surface);
       border-radius: 10px;
       border: 1px solid var(--line);
     }
     .doc-meta__item {
-      font-size: 11px;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.45;
     }
     .doc-meta__item strong {
       display: block;
-      font-size: 10px;
+      font-size: 0.75rem;
+      font-family: var(--font-sans);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.1em;
       color: var(--muted);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      font-weight: 700;
     }
     .doc-note {
-      margin: 0 0 18px;
-      padding: 10px 14px;
+      margin: 0 0 22px;
+      padding: 14px 18px;
       background: #fffbeb;
       border: 1px solid rgba(201, 168, 76, 0.45);
-      border-radius: 8px;
-      font-size: 11px;
+      border-radius: 10px;
+      font-size: 1rem;
+      line-height: 1.5;
       color: #5c4a1e;
     }
     h2.section-title {
-      margin: 26px 0 10px;
-      font-size: 13px;
+      margin: 30px 0 14px;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.14em;
       color: var(--header);
     }
     table.data {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 8px;
-      font-size: 10.5px;
+      margin-bottom: 12px;
+      font-size: 0.9375rem;
     }
     table.data th,
     table.data td {
       border: 1px solid var(--line);
-      padding: 7px 8px;
+      padding: 12px 14px;
       vertical-align: top;
       text-align: left;
     }
     table.data thead th {
       background: var(--header);
       color: #fff;
-      font-weight: 600;
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.08em;
+      padding: 10px 14px;
+    }
+    table.data tbody td {
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+    table.data th,
+    table.data td {
+      hyphens: auto;
+      word-break: break-word;
+    }
+    table.data--ledger {
+      font-size: 0.875rem;
+    }
+    table.data--ledger thead th {
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
+      padding: 9px 10px;
+    }
+    table.data--ledger tbody td {
+      font-size: 0.875rem;
+      padding: 10px 10px;
     }
     table.data tbody tr:nth-child(even) {
       background: var(--stripe);
@@ -1922,13 +1960,13 @@ function buildPrintableHtml(detail, options) {
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 12px 32px 16px;
+      padding: 14px 36px 18px;
       border-top: 1px solid var(--line);
       background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, #fff 35%);
       font-size: 12px;
     }
     .print-footer__inner {
-      max-width: 900px;
+      max-width: 920px;
       margin: 0 auto;
       display: flex;
       align-items: flex-start;
@@ -1937,26 +1975,36 @@ function buildPrintableHtml(detail, options) {
       flex-wrap: wrap;
     }
     .print-footer__oakdev {
-      height: 26px;
+      height: 30px;
       width: auto;
       object-fit: contain;
       display: block;
       margin-bottom: 6px;
     }
     .print-footer__legal {
-      font-size: 10px;
-      line-height: 1.55;
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      line-height: 1.6;
       color: var(--muted);
-      max-width: 420px;
+      max-width: 440px;
     }
     .print-footer__legal strong {
       color: var(--ink);
-      font-size: 11px;
+      font-size: 0.9375rem;
+      font-weight: 700;
     }
-    @page { size: A4; margin: 14mm; }
+    @page { size: A4; margin: 16mm 16mm 22mm 16mm; }
     @media print {
-      body { padding-bottom: 96px; }
-      .doc { padding-top: 0; }
+      body { padding-bottom: 108px; }
+      .doc { padding-top: 0; padding-left: 0; padding-right: 0; }
+      table.data thead th {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      table.data tbody tr:nth-child(even) {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
     }
   </style>
 </head>
@@ -1982,7 +2030,7 @@ function buildPrintableHtml(detail, options) {
     ${footerNoteBlock}
 
     <h2 class="section-title">Affiliate summaries</h2>
-    <table class="data">
+    <table class="data data--affiliate">
       <thead>
         <tr>
           <th>Affiliate</th>
@@ -2006,7 +2054,7 @@ function buildPrintableHtml(detail, options) {
     ${settings.includeRows ? '<h2 class="section-title">Ledger rows</h2>' : ''}
     ${settings.includeRows
       ? `
-    <table class="data">
+    <table class="data data--ledger">
       <thead>
         <tr>
           <th>Ledger ID</th>
