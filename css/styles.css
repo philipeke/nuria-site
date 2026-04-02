@@ -3634,6 +3634,16 @@ address.legal-address strong { color: var(--color-text); }
   line-height: 1.45;
 }
 
+.admin-stat-grid--4col .admin-stat-card__value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-stat-card--highlight .admin-stat-card__value {
+  color: var(--color-gold-bright, #f5dfa0);
+}
+
 .admin-split {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
@@ -4882,4 +4892,116 @@ code {
     padding: 0.8rem 0.85rem;
   }
 
+  .admin-stat-grid--4col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+/* ── Subscriber insights ── */
+
+.admin-stat-grid--4col {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-stat-card--highlight {
+  border-color: rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+.admin-stat-card--active {
+  border-color: rgba(52, 211, 153, 0.35);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.admin-stat-card--active .admin-stat-card__value {
+  color: #6ee7b7;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.admin-stat-card--warn {
+  border-color: rgba(252, 165, 165, 0.30);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.admin-stat-card--warn .admin-stat-card__value {
+  color: #fca5a5;
+}
+
+.admin-subscriber-code {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+  background: rgba(201, 168, 76, 0.14);
+  color: var(--color-gold-bright, #f5dfa0);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.admin-subscriber-metric {
+  position: relative;
+}
+
+.admin-subscriber-metric--active .admin-subscriber-metric__value {
+  color: #6ee7b7;
+  font-weight: 700;
+}
+
+.admin-subscriber-bar {
+  display: block;
+  height: 3px;
+  margin-top: 4px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 var(--bar-pct, 0%), transparent var(--bar-pct, 0%));
+}
+
+.admin-subscriber-updated {
+  font-size: 0.82rem;
+  color: var(--color-text-dim, rgba(234, 246, 240, 0.5));
+}
+
+.admin-subscriber-refresh-info {
+  font-size: 0.82rem;
+  color: var(--color-text-dim, rgba(234, 246, 240, 0.5));
+  margin-bottom: 0.65rem;
+}
+
+.admin-table--subscribers th {
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .admin-stat-grid--4col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Admin nav grid (landing page) ── */
+
+.admin-nav-grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.admin-nav-group__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-dim, rgba(234, 246, 240, 0.5));
+  margin: 0 0 0.5rem 0.15rem;
+}
+
+.admin-nav-group__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.65rem;
+}
+
+.admin-nav-group .admin-mini-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }

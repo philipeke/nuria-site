@@ -111,6 +111,7 @@
                 <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
                 <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
                 <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
+                <a href="/internal/affiliate-admin/subscribers/" class="admin-section-nav__link" data-admin-page-link="subscribers">Subscribers</a>
                 <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
@@ -276,28 +277,71 @@
         <article class="admin-panel" id="adminSectionLanding" data-admin-page="landing">
           <div class="admin-panel__header">
             <div>
-              <p class="admin-panel__eyebrow">Admin home</p>
-              <h2 class="admin-panel__title">Welcome to Nuria Admin Center</h2>
+              <p class="admin-panel__eyebrow">Dashboard</p>
+              <h2 class="admin-panel__title">Nuria Admin Center</h2>
             </div>
           </div>
           <p class="admin-panel__helper">
-            Choose a page below to jump directly into each admin area.
+            Navigate between admin areas below. Each section handles a distinct part of the affiliate payout workflow.
           </p>
-          <div class="admin-stat-grid">
-            <a href="/internal/affiliate-admin/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="landing">Overview &amp; generation</a>
-            <a href="/internal/affiliate-admin/operations/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="operations">Operations &amp; activity</a>
-            <a href="/internal/affiliate-admin/checklist/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="checklist">Monthly close checklist</a>
-            <a href="/internal/affiliate-admin/alerts-health/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="alerts-health">Alert center &amp; health</a>
-            <a href="/internal/affiliate-admin/codes/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="codes">Affiliate codes</a>
-            <a href="/internal/affiliate-admin/reports/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="reports">Payout reports</a>
-            <a href="/internal/affiliate-admin/report-detail/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="report-detail">Report detail actions</a>
-            <a href="/internal/affiliate-admin/settings/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="settings">Admin settings</a>
+
+          <div class="admin-nav-grid">
+            <div class="admin-nav-group">
+              <h3 class="admin-nav-group__title">Data &amp; tracking</h3>
+              <div class="admin-nav-group__cards">
+                <a href="/internal/affiliate-admin/codes/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="codes">
+                  <span class="admin-mini-item__title">Affiliate codes</span>
+                  <span class="admin-mini-item__meta">Manage referral codes and partner profiles</span>
+                </a>
+                <a href="/internal/affiliate-admin/subscribers/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="subscribers">
+                  <span class="admin-mini-item__title">Subscriber insights</span>
+                  <span class="admin-mini-item__meta">Live subscriber counts per referral code</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="admin-nav-group">
+              <h3 class="admin-nav-group__title">Payouts &amp; finance</h3>
+              <div class="admin-nav-group__cards">
+                <a href="/internal/affiliate-admin/reports/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="reports">
+                  <span class="admin-mini-item__title">Payout reports</span>
+                  <span class="admin-mini-item__meta">Browse and manage monthly payout periods</span>
+                </a>
+                <a href="/internal/affiliate-admin/report-detail/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="report-detail">
+                  <span class="admin-mini-item__title">Report detail</span>
+                  <span class="admin-mini-item__meta">Export, finalize, and review report data</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="admin-nav-group">
+              <h3 class="admin-nav-group__title">Workflow &amp; ops</h3>
+              <div class="admin-nav-group__cards">
+                <a href="/internal/affiliate-admin/operations/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="operations">
+                  <span class="admin-mini-item__title">Operations</span>
+                  <span class="admin-mini-item__meta">Activity logs, next steps, and ops exports</span>
+                </a>
+                <a href="/internal/affiliate-admin/checklist/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="checklist">
+                  <span class="admin-mini-item__title">Monthly checklist</span>
+                  <span class="admin-mini-item__meta">Track month-close tasks and lock periods</span>
+                </a>
+                <a href="/internal/affiliate-admin/alerts-health/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="alerts-health">
+                  <span class="admin-mini-item__title">Alerts &amp; health</span>
+                  <span class="admin-mini-item__meta">Discrepancies, errors, and backend health</span>
+                </a>
+                <a href="/internal/affiliate-admin/settings/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="settings">
+                  <span class="admin-mini-item__title">Settings</span>
+                  <span class="admin-mini-item__meta">Recipients, workflow, export, and approvals</span>
+                </a>
+              </div>
+            </div>
           </div>
-          <div class="admin-detail-section" style="margin-top:1rem;">
-            <h3 class="admin-section-title">Recent activity flow</h3>
+
+          <div class="admin-detail-section" style="margin-top:1.2rem;">
+            <h3 class="admin-section-title">Recent activity</h3>
             <div class="admin-ops-log__list" id="adminLandingActivityList"></div>
             <div class="admin-panel__actions" style="margin-top:0.7rem;">
-              <a href="/internal/affiliate-admin/operations/" class="btn btn--outline" data-admin-page-link="operations">View all in Operations</a>
+              <a href="/internal/affiliate-admin/operations/" class="btn btn--outline" data-admin-page-link="operations">View full operations log</a>
             </div>
           </div>
         </article>
@@ -942,6 +986,89 @@
 
               <p class="admin-form-error" id="adminCodeFormError" hidden></p>
             </form>
+          </div>
+        </article>
+
+        <article class="admin-panel" id="adminSectionSubscribers" data-admin-page="subscribers" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Subscriber insights</p>
+              <h2 class="admin-panel__title">Referral code subscribers</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshSubscribers">
+                Refresh
+              </button>
+            </div>
+          </div>
+          <p class="admin-panel__helper">
+            Live subscriber data per referral code, fetched from Firestore. Use filters to isolate active, churned, or trial subscribers.
+          </p>
+
+          <div class="admin-stat-grid admin-stat-grid--4col" style="margin-bottom: 1.2rem;">
+            <div class="admin-stat-card admin-stat-card--highlight">
+              <span class="admin-stat-card__label">Tracked codes</span>
+              <span class="admin-stat-card__value" id="adminSubscriberTotalCodes">0</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--active">
+              <span class="admin-stat-card__label">Active subscribers</span>
+              <span class="admin-stat-card__value" id="adminSubscriberTotalActive">0</span>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Total historical</span>
+              <span class="admin-stat-card__value" id="adminSubscriberTotalHistorical">0</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--warn">
+              <span class="admin-stat-card__label">Churned</span>
+              <span class="admin-stat-card__value" id="adminSubscriberTotalChurned">0</span>
+            </div>
+          </div>
+
+          <div class="admin-panel__actions" style="margin-bottom: 0.8rem;">
+            <input
+              class="form-input admin-filter-input"
+              id="adminSubscriberSearchInput"
+              type="search"
+              placeholder="Search by code name"
+            />
+            <select class="form-input form-select admin-filter-select" id="adminSubscriberMetricFilter">
+              <option value="">All codes</option>
+              <option value="active-only">With active subscribers</option>
+              <option value="churned-only">With churned</option>
+              <option value="trial-only">With active trials</option>
+            </select>
+            <select class="form-input form-select admin-filter-select" id="adminSubscriberSortSelect">
+              <option value="active-desc">Active (high → low)</option>
+              <option value="active-asc">Active (low → high)</option>
+              <option value="historical-desc">Historical (high → low)</option>
+              <option value="churned-desc">Churned (high → low)</option>
+              <option value="code-asc">Code (A → Z)</option>
+              <option value="code-desc">Code (Z → A)</option>
+            </select>
+          </div>
+
+          <div class="admin-subscriber-refresh-info">
+            Last refreshed: <span id="adminSubscriberLastRefresh">Never</span>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table admin-table--subscribers">
+              <thead>
+                <tr>
+                  <th>Referral code</th>
+                  <th>Active now</th>
+                  <th>Total current</th>
+                  <th>Total historical</th>
+                  <th>Churned</th>
+                  <th>Trial active</th>
+                  <th>Last updated</th>
+                </tr>
+              </thead>
+              <tbody id="adminSubscriberTableBody"></tbody>
+            </table>
+            <p class="admin-empty" id="adminSubscriberEmpty" hidden>
+              No subscriber data available yet. Stats populate once referral codes have active subscribers.
+            </p>
           </div>
         </article>
 

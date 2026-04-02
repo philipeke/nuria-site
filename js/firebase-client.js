@@ -293,4 +293,39 @@ export async function lookupNuriaPartnerByEmail(email) {
   };
 }
 
+export async function getSubscriberStatsByCode() {
+  try {
+    const data = await callWithCompat(
+      ['getSubscriberStatsByCodeAdmin'],
+      {}
+    );
+    return Array.isArray(data?.codes) ? data.codes : [];
+  } catch (error) {
+    if (callableOnlyMode) {
+      throw makeComplianceError('getSubscriberStatsByCodeAdmin', error);
+    }
+  }
+
+  const snapshot = await getDocs(
+    query(
+      collection(db, 'referral_subscriber_stats'),
+      orderBy('code', 'asc'),
+      limit(500)
+    )
+  );
+
+  return snapshot.docs.map((row) => {
+    const data = row.data() || {};
+    return {
+      code: data.code || row.id,
+      activeNow: data.activeNow ?? 0,
+      totalCurrent: data.totalCurrent ?? 0,
+      totalHistorical: data.totalHistorical ?? 0,
+      churned: data.churned ?? 0,
+      trialActive: data.trialActive ?? 0,
+      lastUpdatedIso: toIsoTimestamp(data.lastUpdated) || data.lastUpdatedIso || null,
+    };
+  });
+}
+
 export { auth, db, functions, firebaseApp };

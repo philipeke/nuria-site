@@ -3,6 +3,7 @@ import {
   callFirebaseFunction,
   getAffiliateAdminSettings,
   getCurrentUser,
+  getSubscriberStatsByCode,
   listAffiliateAdminAuditLogs,
   lookupNuriaPartnerByEmail,
   saveAffiliateAdminSettings,
@@ -31,6 +32,7 @@ const ADMIN_PAGE_PATHS = {
   checklist: '/internal/affiliate-admin/checklist/',
   'alerts-health': '/internal/affiliate-admin/alerts-health/',
   codes: '/internal/affiliate-admin/codes/',
+  subscribers: '/internal/affiliate-admin/subscribers/',
   reports: '/internal/affiliate-admin/reports/',
   'report-detail': '/internal/affiliate-admin/report-detail/',
   settings: '/internal/affiliate-admin/settings/',
@@ -222,6 +224,17 @@ const elements = {
   partnerRegistryList: document.getElementById('adminPartnerRegistryList'),
   saveSettingsButton: document.getElementById('adminSaveSettingsButton'),
   settingsError: document.getElementById('adminSettingsError'),
+  refreshSubscribers: document.getElementById('adminRefreshSubscribers'),
+  subscriberSearchInput: document.getElementById('adminSubscriberSearchInput'),
+  subscriberMetricFilter: document.getElementById('adminSubscriberMetricFilter'),
+  subscriberSortSelect: document.getElementById('adminSubscriberSortSelect'),
+  subscriberTableBody: document.getElementById('adminSubscriberTableBody'),
+  subscriberEmpty: document.getElementById('adminSubscriberEmpty'),
+  subscriberTotalCodes: document.getElementById('adminSubscriberTotalCodes'),
+  subscriberTotalActive: document.getElementById('adminSubscriberTotalActive'),
+  subscriberTotalHistorical: document.getElementById('adminSubscriberTotalHistorical'),
+  subscriberTotalChurned: document.getElementById('adminSubscriberTotalChurned'),
+  subscriberLastRefresh: document.getElementById('adminSubscriberLastRefresh'),
 };
 
 const state = {
@@ -259,11 +272,16 @@ const state = {
     bouncedRecipients: [],
   },
   approvalRequests: {},
+  subscriberStats: [],
+  subscriberLastRefreshAt: '',
   filters: {
     codeQuery: '',
     codeStatus: '',
     reportQuery: '',
     reportStatus: '',
+    subscriberQuery: '',
+    subscriberMetric: '',
+    subscriberSort: 'active-desc',
   },
   backendAuditUnavailableReason: '',
   recipientSettingsUnavailableReason: '',
@@ -1048,6 +1066,13 @@ function renderBackendAuditLog() {
 function getOpsSnapshot() {
   const monthKey = getChecklistMonthKey();
   return {
+    _format: 'nuria-affiliate-ops-snapshot',
+    _version: '2.0',
+    publisher: {
+      name: EXPORT_PUBLISHER.legalName,
+      orgNumber: EXPORT_PUBLISHER.orgNumber,
+      vatId: EXPORT_PUBLISHER.vatId,
+    },
     generatedAt: new Date().toISOString(),
     actor: getActivityActor(),
     selectedReportId: state.selectedReportId || '',
@@ -1059,6 +1084,7 @@ function getOpsSnapshot() {
       updatedAt: '',
       updatedBy: '',
     },
+    subscriberStats: (state.subscriberStats || []).slice(0, 100),
     recentActivity: (state.activityLog || []).slice(0, 50),
     backendAuditLogs: (state.backendAuditLogs || []).slice(0, 50),
     scheduledRecipients: (state.reportRecipients || []).slice(),
@@ -1086,32 +1112,47 @@ function getOpsSnapshot() {
 }
 
 function buildOpsSnapshotCsv(snapshot) {
+  const pub = EXPORT_PUBLISHER;
   const lines = [];
-  lines.push('Nuria Affiliate Admin Ops Snapshot');
-  lines.push([csvCell('Generated At'), csvCell(snapshot.generatedAt), csvCell('Actor'), csvCell(snapshot.actor)].join(','));
-  lines.push([csvCell('Selected Month'), csvCell(snapshot.selectedMonth), csvCell('Selected Report'), csvCell(snapshot.selectedReportId)].join(','));
+  lines.push('# Nuria Affiliate Admin — Ops Snapshot');
+  lines.push(`# Generated: ${snapshot.generatedAt}`);
+  lines.push(`# Publisher: ${pub.legalName} (${pub.orgNumber})`);
   lines.push('');
 
-  lines.push('Selected Month Checklist');
-  lines.push([csvCell('Step'), csvCell('Done')].join(','));
+  lines.push([csvCell('Actor'), csvCell('Month'), csvCell('Report ID')].join(','));
+  lines.push([csvCell(snapshot.actor), csvCell(snapshot.selectedMonth), csvCell(snapshot.selectedReportId)].join(','));
+  lines.push('');
+
+  lines.push('# Checklist Status');
+  lines.push([csvCell('Step'), csvCell('Complete')].join(','));
   CHECKLIST_STEPS.forEach((step) => {
-    lines.push([csvCell(step), csvCell(Boolean(snapshot.selectedMonthChecklist?.[step]))].join(','));
+    lines.push([csvCell(step), csvCell(Boolean(snapshot.selectedMonthChecklist?.[step]) ? 'yes' : 'no')].join(','));
   });
   lines.push('');
 
-  lines.push('Month Lock');
-  lines.push([csvCell('Locked'), csvCell(Boolean(snapshot.selectedMonthLock?.locked)), csvCell('Reason'), csvCell(snapshot.selectedMonthLock?.reason || '')].join(','));
+  lines.push('# Month Lock');
+  lines.push([csvCell('Locked'), csvCell('Reason')].join(','));
+  lines.push([csvCell(Boolean(snapshot.selectedMonthLock?.locked) ? 'yes' : 'no'), csvCell(snapshot.selectedMonthLock?.reason || '')].join(','));
   lines.push('');
 
-  lines.push('Scheduled Recipients');
+  lines.push('# Scheduled Recipients');
   lines.push([csvCell('Email')].join(','));
   (snapshot.scheduledRecipients || []).forEach((email) => {
     lines.push([csvCell(email)].join(','));
   });
   lines.push('');
 
-  lines.push('Report Summaries');
-  lines.push([csvCell('Report ID'), csvCell('Month'), csvCell('Status'), csvCell('Source'), csvCell('Rows'), csvCell('Affiliates'), csvCell('Updated At')].join(','));
+  if (snapshot.subscriberStats?.length) {
+    lines.push('# Subscriber Stats by Code');
+    lines.push([csvCell('Code'), csvCell('Active Now'), csvCell('Total Current'), csvCell('Total Historical'), csvCell('Churned'), csvCell('Trial Active')].join(','));
+    snapshot.subscriberStats.forEach((s) => {
+      lines.push([csvCell(s.code), csvCell(s.activeNow ?? 0), csvCell(s.totalCurrent ?? 0), csvCell(s.totalHistorical ?? 0), csvCell(s.churned ?? 0), csvCell(s.trialActive ?? 0)].join(','));
+    });
+    lines.push('');
+  }
+
+  lines.push('# Report Summaries');
+  lines.push([csvCell('Report ID'), csvCell('Month'), csvCell('Status'), csvCell('Source'), csvCell('Rows'), csvCell('Affiliates'), csvCell('Updated')].join(','));
   (snapshot.reportSummaries || []).forEach((row) => {
     lines.push([
       csvCell(row.reportId),
@@ -1125,8 +1166,8 @@ function buildOpsSnapshotCsv(snapshot) {
   });
   lines.push('');
 
-  lines.push('Recent Activity');
-  lines.push([csvCell('When'), csvCell('Actor'), csvCell('Kind'), csvCell('Message')].join(','));
+  lines.push('# Recent Activity');
+  lines.push([csvCell('Timestamp'), csvCell('Actor'), csvCell('Kind'), csvCell('Message')].join(','));
   (snapshot.recentActivity || []).forEach((row) => {
     lines.push([
       csvCell(row.at || ''),
@@ -1135,6 +1176,11 @@ function buildOpsSnapshotCsv(snapshot) {
       csvCell(row.message || ''),
     ].join(','));
   });
+  lines.push('');
+
+  const totalCodes = snapshot.codeSummaries?.length || 0;
+  const totalReports = snapshot.reportSummaries?.length || 0;
+  lines.push(`# End of snapshot. ${totalCodes} codes, ${totalReports} reports.`);
 
   return lines.join('\n');
 }
@@ -1501,40 +1547,43 @@ function buildCsvExport(detail) {
   const report = detail.report || {};
   const affiliates = detail.affiliates || [];
   const rows = detail.rows || [];
+  const pub = EXPORT_PUBLISHER;
+  const generatedAt = new Date().toISOString();
   const lines = [];
 
-  lines.push('Nuria Affiliate Payout Report');
-  lines.push(
-    [
-      csvCell('Report ID'),
-      csvCell(report.reportId || ''),
-      csvCell('Period Month'),
-      csvCell(report.periodMonth || ''),
-      csvCell('Status'),
-      csvCell(report.status || ''),
-    ].join(',')
-  );
-  lines.push(
-    [
-      csvCell('Source'),
-      csvCell(report.source || ''),
-      csvCell('Created At'),
-      csvCell(toIsoDate(report.createdAt)),
-      csvCell('Updated At'),
-      csvCell(toIsoDate(report.updatedAt)),
-    ].join(',')
-  );
+  lines.push('# Nuria Affiliate Payout Report');
+  lines.push('#');
+  lines.push(`# Generated: ${generatedAt}`);
+  lines.push(`# Publisher: ${pub.legalName} (${pub.orgNumber})`);
   lines.push('');
 
-  lines.push('Affiliate Summaries');
+  lines.push([
+    csvCell('Report ID'),
+    csvCell('Period'),
+    csvCell('Status'),
+    csvCell('Source'),
+    csvCell('Created'),
+    csvCell('Updated'),
+  ].join(','));
+  lines.push([
+    csvCell(report.reportId || ''),
+    csvCell(report.periodMonth || ''),
+    csvCell(report.status || ''),
+    csvCell(report.source || ''),
+    csvCell(toIsoDate(report.createdAt)),
+    csvCell(toIsoDate(report.updatedAt)),
+  ].join(','));
+  lines.push('');
+
+  lines.push('# Affiliate Summaries');
   lines.push([
     csvCell('Affiliate ID'),
-    csvCell('Affiliate Name'),
+    csvCell('Display Name'),
     csvCell('Referral Codes'),
-    csvCell('Known Commission Total Minor'),
+    csvCell('Commission Total (minor)'),
     csvCell('Currencies'),
-    csvCell('Payout-ready Rows'),
-    csvCell('Reconciliation Rows'),
+    csvCell('Payout-ready'),
+    csvCell('Reconciliation'),
   ].join(','));
 
   affiliates.forEach((item) => {
@@ -1550,16 +1599,16 @@ function buildCsvExport(detail) {
   });
 
   lines.push('');
-  lines.push('Ledger Rows');
+  lines.push('# Ledger Rows');
   lines.push([
     csvCell('Ledger ID'),
-    csvCell('Event Type'),
-    csvCell('Payout Status'),
-    csvCell('Commission Amount Minor'),
+    csvCell('Event'),
+    csvCell('Status'),
+    csvCell('Amount (minor)'),
     csvCell('Currency'),
     csvCell('Affiliate ID'),
-    csvCell('Affiliate Name'),
-    csvCell('Referral Code'),
+    csvCell('Affiliate'),
+    csvCell('Code'),
     csvCell('Earned At'),
   ].join(','));
 
@@ -1576,6 +1625,9 @@ function buildCsvExport(detail) {
       csvCell(toIsoDate(item.earnedAt)),
     ].join(','));
   });
+
+  lines.push('');
+  lines.push(`# End of report. ${affiliates.length} affiliates, ${rows.length} ledger rows.`);
 
   return lines.join('\n');
 }
@@ -1634,29 +1686,37 @@ function buildStyledExcelHtml(detail, options) {
   const branding = options?.branding || null;
   const generatedAt = new Date().toISOString();
   const pub = EXPORT_PUBLISHER;
-  const headerBg = '#0f4d2e';
+  const headerBg = '#0a3d23';
   const headerFg = '#ffffff';
-  const stripe = '#f4faf6';
-  const border = '#cfe0d4';
+  const stripe = '#f0f9f3';
+  const border = '#d4e5da';
   const titleColor = '#0c2818';
+  const accentGold = '#b8923d';
+  const metaBg = '#f7faf8';
+  const summaryBg = '#edf5f0';
+  const fontStack = 'Segoe UI, Calibri, Arial, sans-serif';
 
   const nuriaHeader = branding?.nuriaDataUrl
-    ? `<img src="${branding.nuriaDataUrl}" alt="Nuria" style="height:48px;width:auto;vertical-align:middle;" />`
-    : `<span style="font-size:16pt;font-weight:700;color:${titleColor};font-family:Segoe UI,sans-serif;">Nuria</span>`;
+    ? `<img src="${branding.nuriaDataUrl}" alt="Nuria" style="height:56px;width:auto;vertical-align:middle;" />`
+    : `<span style="font-size:18pt;font-weight:700;color:${titleColor};font-family:${fontStack};letter-spacing:-0.02em;">Nuria</span>`;
 
   const oakFooter = branding?.oakdevDataUrl
-    ? `<img src="${branding.oakdevDataUrl}" alt="OakDev" style="height:24px;width:auto;" />`
-    : `<span style="font-size:10pt;font-weight:600;color:${titleColor};">OakDev</span>`;
+    ? `<img src="${branding.oakdevDataUrl}" alt="OakDev" style="height:28px;width:auto;" />`
+    : `<span style="font-size:10pt;font-weight:600;color:${titleColor};">OakDev &amp; AI AB</span>`;
+
+  const totalCommission = affiliates.reduce((sum, item) => sum + (item.knownCommissionTotalMinor || 0), 0);
+  const totalPayout = affiliates.reduce((sum, item) => sum + (item.payoutReadyRowCount || 0), 0);
+  const totalRecon = affiliates.reduce((sum, item) => sum + (item.reconciliationRowCount || 0), 0);
 
   const affiliateRows = affiliates
     .map(
       (item, idx) => `
     <tr style="background:${idx % 2 === 0 ? '#ffffff' : stripe};">
-      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
-      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(formatList(item.referralCodes))}</td>
-      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;mso-number-format:'\\@';">${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
-      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
-      <td style="border:1px solid ${border};padding:8px 10px;font-family:Segoe UI,sans-serif;font-size:10pt;">${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:9px 12px;font-family:${fontStack};font-size:10pt;font-weight:600;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+      <td style="border:1px solid ${border};padding:9px 12px;font-family:${fontStack};font-size:10pt;">${escapeHtml(formatList(item.referralCodes))}</td>
+      <td style="border:1px solid ${border};padding:9px 12px;font-family:${fontStack};font-size:10pt;text-align:right;mso-number-format:'\\@';">${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:9px 12px;font-family:${fontStack};font-size:10pt;text-align:center;">${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:9px 12px;font-family:${fontStack};font-size:10pt;text-align:center;">${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
     </tr>`
     )
     .join('');
@@ -1665,48 +1725,17 @@ function buildStyledExcelHtml(detail, options) {
     .map(
       (item, idx) => `
     <tr style="background:${idx % 2 === 0 ? '#ffffff' : stripe};">
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;mso-number-format:'\\@';">${escapeHtml(item.ledgerId || '-')}</td>
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.eventType || '-')}</td>
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.payoutStatus || '-')}</td>
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;mso-number-format:'\\@';">${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.currency || '-')}</td>
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
-      <td style="border:1px solid ${border};padding:7px 8px;font-family:Segoe UI,sans-serif;font-size:9pt;">${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;mso-number-format:'\\@';color:#4a6355;">${escapeHtml(item.ledgerId || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;">${escapeHtml(item.eventType || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;"><span style="background:${item.payoutStatus === 'ready' ? '#dcfce7' : '#fef3c7'};color:${item.payoutStatus === 'ready' ? '#166534' : '#92400e'};padding:2px 8px;border-radius:4px;font-size:8pt;font-weight:600;">${escapeHtml(item.payoutStatus || '-')}</span></td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;text-align:right;font-weight:600;mso-number-format:'\\@';">${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;text-align:center;">${escapeHtml(item.currency || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;color:#4a6355;">${escapeHtml(item.referralCode || '-')}</td>
+      <td style="border:1px solid ${border};padding:7px 10px;font-family:${fontStack};font-size:9pt;color:#6b7c72;">${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
     </tr>`
     )
     .join('');
-
-  const affiliateTableInner = `
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-      <tr>
-        <td colspan="5" style="font-size:11pt;font-weight:700;color:${titleColor};padding:10px 0 6px 0;border-bottom:1px solid ${border};">Affiliate summaries</td>
-      </tr>
-      <tr>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Affiliate</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Codes</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Known total (minor)</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Payout-ready</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px;text-align:left;font-size:10pt;">Reconciliation</th>
-      </tr>
-      ${affiliateRows || `<tr><td colspan="5" style="border:1px solid ${border};padding:10px;text-align:center;color:#6b7c72;">No rows</td></tr>`}
-    </table>`;
-
-  const ledgerTableInner = `
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-      <tr>
-        <td colspan="7" style="font-size:11pt;font-weight:700;color:${titleColor};padding:10px 0 6px 0;border-bottom:1px solid ${border};">Ledger rows</td>
-      </tr>
-      <tr>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Ledger ID</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Event</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Payout status</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Commission (minor)</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">CCY</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Affiliate</th>
-        <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 8px;text-align:left;font-size:9pt;">Earned at</th>
-      </tr>
-      ${ledgerRows || `<tr><td colspan="7" style="border:1px solid ${border};padding:10px;text-align:center;color:#6b7c72;">No rows</td></tr>`}
-    </table>`;
 
   return `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -1721,41 +1750,104 @@ function buildStyledExcelHtml(detail, options) {
   </xml><![endif]-->
   <style>table { mso-displayed-decimal-separator: "."; mso-displayed-thousand-separator: " "; }</style>
 </head>
-<body>
-<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;font-family:Segoe UI,system-ui,sans-serif;">
+<body style="margin:0;padding:0;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;font-family:${fontStack};">
   <tr>
-    <td style="padding:0 0 16px 0;border-bottom:3px solid #c9a84c;">
+    <td style="padding:20px 0 18px 0;border-bottom:3px solid ${accentGold};">
       <table width="100%" cellpadding="0" cellspacing="0"><tr>
         <td valign="middle" style="padding:4px 0;">${nuriaHeader}</td>
-        <td valign="middle" align="right" style="font-size:11pt;font-weight:600;color:${titleColor};">Affiliate payout report</td>
+        <td valign="middle" align="right">
+          <span style="font-size:13pt;font-weight:700;color:${titleColor};display:block;">Affiliate Payout Report</span>
+          <span style="font-size:9pt;color:#6b7c72;margin-top:3px;display:block;">Internal finance document · confidential</span>
+        </td>
       </tr></table>
     </td>
   </tr>
-  <tr><td style="height:10px"></td></tr>
+  <tr><td style="height:14px"></td></tr>
   <tr>
-    <td style="font-size:10pt;color:#3d5247;line-height:1.55;padding-bottom:14px;">
-      <strong>Report</strong> ${escapeHtml(report.reportId || '—')} &nbsp;|&nbsp;
-      <strong>Period</strong> ${escapeHtml(report.periodMonth || '—')} &nbsp;|&nbsp;
-      <strong>Status</strong> ${escapeHtml(report.status || '—')}<br />
-      <strong>Source</strong> ${escapeHtml(report.source || '—')} &nbsp;|&nbsp;
-      <strong>Generated (UTC)</strong> ${escapeHtml(generatedAt)}
+    <td>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:${metaBg};border:1px solid ${border};border-radius:6px;">
+        <tr>
+          <td style="padding:12px 16px;font-size:9pt;color:${titleColor};width:25%;">
+            <span style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7c72;display:block;margin-bottom:3px;">Report ID</span>
+            <span style="font-weight:600;">${escapeHtml(report.reportId || '—')}</span>
+          </td>
+          <td style="padding:12px 16px;font-size:9pt;color:${titleColor};width:25%;">
+            <span style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7c72;display:block;margin-bottom:3px;">Period</span>
+            <span style="font-weight:700;font-size:11pt;">${escapeHtml(report.periodMonth || '—')}</span>
+          </td>
+          <td style="padding:12px 16px;font-size:9pt;color:${titleColor};width:25%;">
+            <span style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7c72;display:block;margin-bottom:3px;">Status</span>
+            <span style="font-weight:600;color:${report.status === 'paid' ? '#166534' : '#92400e'};">${escapeHtml(report.status || '—')}</span>
+          </td>
+          <td style="padding:12px 16px;font-size:9pt;color:${titleColor};width:25%;">
+            <span style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#6b7c72;display:block;margin-bottom:3px;">Generated</span>
+            <span style="color:#6b7c72;">${escapeHtml(generatedAt)}</span>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
-  <tr><td style="height:8px"></td></tr>
-  <tr><td>${affiliateTableInner}</td></tr>
-  <tr><td style="height:16px"></td></tr>
-  <tr><td>${ledgerTableInner}</td></tr>
-  <tr><td style="height:16px"></td></tr>
+  <tr><td style="height:18px"></td></tr>
   <tr>
-    <td style="border-top:2px solid #c9a84c;padding-top:14px;">
+    <td>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          <td colspan="5" style="font-size:11pt;font-weight:700;color:${titleColor};padding:12px 0 8px 0;border-bottom:2px solid ${border};">Affiliate Summaries</td>
+        </tr>
+        <tr>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px 12px;text-align:left;font-size:9pt;font-weight:700;letter-spacing:0.04em;">Affiliate</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px 12px;text-align:left;font-size:9pt;font-weight:700;letter-spacing:0.04em;">Codes</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px 12px;text-align:right;font-size:9pt;font-weight:700;letter-spacing:0.04em;">Total (minor)</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px 12px;text-align:center;font-size:9pt;font-weight:700;letter-spacing:0.04em;">Payout-ready</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:10px 12px;text-align:center;font-size:9pt;font-weight:700;letter-spacing:0.04em;">Reconciliation</th>
+        </tr>
+        ${affiliateRows || `<tr><td colspan="5" style="border:1px solid ${border};padding:14px;text-align:center;color:#6b7c72;font-style:italic;">No affiliate data</td></tr>`}
+        <tr style="background:${summaryBg};font-weight:700;">
+          <td colspan="2" style="border:1px solid ${border};padding:10px 12px;font-family:${fontStack};font-size:10pt;color:${titleColor};">Totals</td>
+          <td style="border:1px solid ${border};padding:10px 12px;font-family:${fontStack};font-size:10pt;text-align:right;color:${titleColor};">${escapeHtml(String(totalCommission))}</td>
+          <td style="border:1px solid ${border};padding:10px 12px;font-family:${fontStack};font-size:10pt;text-align:center;color:${titleColor};">${escapeHtml(String(totalPayout))}</td>
+          <td style="border:1px solid ${border};padding:10px 12px;font-family:${fontStack};font-size:10pt;text-align:center;color:${titleColor};">${escapeHtml(String(totalRecon))}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr><td style="height:20px"></td></tr>
+  <tr>
+    <td>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          <td colspan="8" style="font-size:11pt;font-weight:700;color:${titleColor};padding:12px 0 8px 0;border-bottom:2px solid ${border};">Ledger Rows</td>
+        </tr>
+        <tr>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:left;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Ledger ID</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:left;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Event</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:left;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Status</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:right;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Amount</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:center;font-size:8pt;font-weight:700;letter-spacing:0.04em;">CCY</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:left;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Affiliate</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:left;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Code</th>
+          <th style="background:${headerBg};color:${headerFg};border:1px solid ${border};padding:9px 10px;text-align:left;font-size:8pt;font-weight:700;letter-spacing:0.04em;">Earned</th>
+        </tr>
+        ${ledgerRows || `<tr><td colspan="8" style="border:1px solid ${border};padding:14px;text-align:center;color:#6b7c72;font-style:italic;">No ledger rows</td></tr>`}
+      </table>
+    </td>
+  </tr>
+  <tr><td style="height:22px"></td></tr>
+  <tr>
+    <td style="border-top:3px solid ${accentGold};padding-top:16px;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td valign="top" style="width:140px;padding-right:8px;">${oakFooter}</td>
-          <td valign="top" style="font-size:9pt;color:#3d5247;line-height:1.5;">
-            <strong>${escapeHtml(pub.legalName)}</strong><br />
-            Org.nr. ${escapeHtml(pub.orgNumber)} · VAT ${escapeHtml(pub.vatId)}<br />
+          <td valign="top" style="width:150px;padding-right:12px;">${oakFooter}</td>
+          <td valign="top" style="font-size:8pt;color:#4a6355;line-height:1.6;">
+            <strong style="font-size:9pt;color:${titleColor};">${escapeHtml(pub.legalName)}</strong><br />
+            Org.nr. ${escapeHtml(pub.orgNumber)} &middot; VAT ${escapeHtml(pub.vatId)}<br />
             ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)}<br />
-            ${escapeHtml(pub.email)} · ${escapeHtml(pub.phone)}
+            ${escapeHtml(pub.email)} &middot; ${escapeHtml(pub.phone)}
+          </td>
+          <td valign="top" align="right" style="font-size:8pt;color:#9ca3af;">
+            ${escapeHtml(affiliates.length)} affiliates &middot; ${escapeHtml(String(rows.length))} rows<br />
+            Source: ${escapeHtml(report.source || '—')}
           </td>
         </tr>
       </table>
@@ -1783,9 +1875,16 @@ function buildPrintableHtml(detail, options) {
     options || {}
   );
 
+  const totalCommission = affiliates.reduce((sum, item) => sum + (item.knownCommissionTotalMinor || 0), 0);
+  const totalPayout = affiliates.reduce((sum, item) => sum + (item.payoutReadyRowCount || 0), 0);
+  const totalRecon = affiliates.reduce((sum, item) => sum + (item.reconciliationRowCount || 0), 0);
+
   const footerNoteBlock = settings.footerNote
     ? `<div class="doc-note">${escapeHtml(settings.footerNote)}</div>`
     : '';
+
+  const statusBadgeColor = report.status === 'paid' ? '#166534' : report.status === 'draft' ? '#92400e' : '#374151';
+  const statusBadgeBg = report.status === 'paid' ? '#dcfce7' : report.status === 'draft' ? '#fef3c7' : '#f3f4f6';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1795,53 +1894,57 @@ function buildPrintableHtml(detail, options) {
   <title>Nuria Affiliate Report ${escapeHtml(report.periodMonth || '')}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@0,600;0,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #0c1f14;
-      --muted: #3d5247;
-      --line: #c8d9ce;
-      --surface: #f3faf5;
-      --header: #0f4d2e;
+      --muted: #4a6355;
+      --subtle: #6b7c72;
+      --line: #d4e5da;
+      --surface: #f0f9f3;
+      --surface-warm: #fefdf8;
+      --header: #0a3d23;
       --accent: #b8923d;
-      --stripe: #eef6f0;
-      --font-sans: 'Lato', 'Segoe UI', system-ui, -apple-system, sans-serif;
-      --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --accent-light: rgba(184, 146, 61, 0.12);
+      --stripe: #f7faf8;
+      --success: #166534;
+      --success-bg: #dcfce7;
+      --warning-bg: #fef3c7;
+      --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --radius: 10px;
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; }
     body {
-      margin: 0;
-      padding: 0 0 128px;
+      padding: 0 0 120px;
       font-family: var(--font-sans);
       color: var(--ink);
       background: #fff;
-      font-size: 16px;
-      line-height: 1.55;
+      font-size: 15px;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
     .doc {
-      max-width: 920px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 32px 36px 0;
+      padding: 40px 40px 0;
     }
     .doc-header {
-      border-bottom: 3px solid var(--accent);
-      padding-bottom: 24px;
-      margin-bottom: 26px;
-    }
-    .doc-header__brand {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 24px;
       flex-wrap: wrap;
+      padding-bottom: 28px;
+      margin-bottom: 28px;
+      border-bottom: 3px solid var(--accent);
     }
     .doc-header__logo {
-      width: 76px;
-      height: 76px;
+      width: 68px;
+      height: 68px;
       border-radius: 14px;
       object-fit: contain;
-      box-shadow: 0 6px 20px rgba(12, 40, 24, 0.14);
+      box-shadow: 0 4px 16px rgba(12, 40, 24, 0.12);
     }
     .doc-header__titles {
       flex: 1;
@@ -1849,159 +1952,215 @@ function buildPrintableHtml(detail, options) {
       text-align: right;
     }
     .doc-header__titles h1 {
-      margin: 0;
       font-family: var(--font-display);
-      font-size: clamp(1.75rem, 4vw, 2.125rem);
+      font-size: 1.85rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
       color: var(--header);
     }
     .doc-header__titles .sub {
-      margin-top: 10px;
-      font-size: 1.0625rem;
+      margin-top: 8px;
+      font-size: 0.9rem;
       color: var(--muted);
-      font-weight: 600;
-      line-height: 1.45;
+      font-weight: 500;
     }
-    .doc-meta {
+
+    .doc-summary {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 14px 24px;
-      margin-bottom: 26px;
-      padding: 14px 16px;
-      background: var(--surface);
-      border-radius: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-bottom: 28px;
+      border-radius: var(--radius);
+      overflow: hidden;
       border: 1px solid var(--line);
     }
-    .doc-meta__item {
-      font-size: 1rem;
-      font-weight: 500;
-      line-height: 1.45;
+    .doc-summary__item {
+      padding: 16px 20px;
+      background: var(--surface);
+      border-right: 1px solid var(--line);
     }
-    .doc-meta__item strong {
+    .doc-summary__item:last-child { border-right: 0; }
+    .doc-summary__label {
       display: block;
-      font-size: 0.75rem;
-      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-bottom: 4px;
+      letter-spacing: 0.12em;
+      color: var(--subtle);
+      margin-bottom: 6px;
+    }
+    .doc-summary__value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .doc-summary__value--period {
+      font-size: 1.15rem;
       font-weight: 700;
     }
+
+    .doc-kpi {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .doc-kpi__card {
+      padding: 16px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--surface-warm);
+      text-align: center;
+    }
+    .doc-kpi__card--accent {
+      border-color: rgba(184, 146, 61, 0.3);
+      background: var(--accent-light);
+    }
+    .doc-kpi__number {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--header);
+      line-height: 1.2;
+    }
+    .doc-kpi__label {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--subtle);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
     .doc-note {
-      margin: 0 0 22px;
-      padding: 14px 18px;
+      margin: 0 0 24px;
+      padding: 14px 20px;
       background: #fffbeb;
-      border: 1px solid rgba(201, 168, 76, 0.45);
-      border-radius: 10px;
-      font-size: 1rem;
-      line-height: 1.5;
+      border: 1px solid rgba(184, 146, 61, 0.35);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      line-height: 1.55;
       color: #5c4a1e;
     }
+
     h2.section-title {
-      margin: 30px 0 14px;
-      font-family: var(--font-sans);
-      font-size: 0.8125rem;
+      margin: 32px 0 14px;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.14em;
       color: var(--header);
     }
+
     table.data {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 12px;
-      font-size: 0.9375rem;
+      margin-bottom: 8px;
+      font-size: 0.875rem;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
     }
     table.data th,
     table.data td {
       border: 1px solid var(--line);
-      padding: 12px 14px;
+      padding: 11px 14px;
       vertical-align: top;
       text-align: left;
     }
     table.data thead th {
       background: var(--header);
       color: #fff;
-      font-family: var(--font-sans);
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       padding: 10px 14px;
     }
-    table.data tbody td {
-      font-size: 1rem;
-      line-height: 1.45;
+    table.data tbody td { line-height: 1.5; }
+    table.data tbody tr:nth-child(even) { background: var(--stripe); }
+    table.data tfoot td {
+      background: var(--surface);
+      font-weight: 700;
+      border-top: 2px solid var(--line);
     }
-    table.data th,
-    table.data td {
-      hyphens: auto;
-      word-break: break-word;
-    }
-    table.data--ledger {
-      font-size: 0.875rem;
-    }
+
+    table.data--ledger { font-size: 0.8rem; }
     table.data--ledger thead th {
-      font-size: 0.6875rem;
-      letter-spacing: 0.06em;
+      font-size: 0.62rem;
       padding: 9px 10px;
     }
-    table.data--ledger tbody td {
-      font-size: 0.875rem;
-      padding: 10px 10px;
+    table.data--ledger tbody td { padding: 9px 10px; }
+
+    .payout-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      font-weight: 700;
     }
-    table.data tbody tr:nth-child(even) {
-      background: var(--stripe);
-    }
+    .payout-status--ready { background: var(--success-bg); color: var(--success); }
+    .payout-status--reconciliation { background: var(--warning-bg); color: #92400e; }
+
     .print-footer {
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: 14px 36px 18px;
-      border-top: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, #fff 35%);
-      font-size: 12px;
+      left: 0; right: 0; bottom: 0;
+      padding: 12px 40px 16px;
+      border-top: 2px solid var(--accent);
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, #fff 40%);
     }
     .print-footer__inner {
-      max-width: 920px;
+      max-width: 900px;
       margin: 0 auto;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
     }
     .print-footer__oakdev {
-      height: 30px;
+      height: 26px;
       width: auto;
       object-fit: contain;
-      display: block;
-      margin-bottom: 6px;
     }
     .print-footer__legal {
-      font-family: var(--font-sans);
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       line-height: 1.6;
-      color: var(--muted);
-      max-width: 440px;
+      color: var(--subtle);
+      max-width: 420px;
     }
     .print-footer__legal strong {
       color: var(--ink);
-      font-size: 0.9375rem;
       font-weight: 700;
     }
-    @page { size: A4; margin: 16mm 16mm 22mm 16mm; }
+    .print-footer__stats {
+      font-size: 0.7rem;
+      color: var(--subtle);
+      text-align: right;
+    }
+
+    @page { size: A4; margin: 14mm 14mm 20mm 14mm; }
     @media print {
-      body { padding-bottom: 108px; }
-      .doc { padding-top: 0; padding-left: 0; padding-right: 0; }
-      table.data thead th {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      table.data tbody tr:nth-child(even) {
+      body { padding-bottom: 100px; }
+      .doc { padding: 0; }
+      table.data thead th,
+      table.data tbody tr:nth-child(even),
+      table.data tfoot td,
+      .status-badge, .payout-status,
+      .doc-summary__item, .doc-kpi__card {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
@@ -2011,20 +2170,45 @@ function buildPrintableHtml(detail, options) {
 <body>
   <div class="doc">
     <header class="doc-header">
-      <div class="doc-header__brand">
-        <img class="doc-header__logo" src="${origin}/assets/nuria-admin.png" alt="Nuria" />
-        <div class="doc-header__titles">
-          <h1>${escapeHtml(settings.title)}</h1>
-          <div class="sub">${escapeHtml(settings.subtitle)}</div>
-        </div>
+      <img class="doc-header__logo" src="${origin}/assets/nuria-admin.png" alt="Nuria" />
+      <div class="doc-header__titles">
+        <h1>${escapeHtml(settings.title)}</h1>
+        <div class="sub">${escapeHtml(settings.subtitle)}</div>
       </div>
     </header>
 
-    <div class="doc-meta">
-      <div class="doc-meta__item"><strong>Report ID</strong>${escapeHtml(report.reportId || '—')}</div>
-      <div class="doc-meta__item"><strong>Period</strong>${escapeHtml(report.periodMonth || '—')}</div>
-      <div class="doc-meta__item"><strong>Status</strong>${escapeHtml(report.status || '—')}</div>
-      <div class="doc-meta__item"><strong>Generated (UTC)</strong>${escapeHtml(generatedAt)}</div>
+    <div class="doc-summary">
+      <div class="doc-summary__item">
+        <span class="doc-summary__label">Report ID</span>
+        <span class="doc-summary__value">${escapeHtml(report.reportId || '—')}</span>
+      </div>
+      <div class="doc-summary__item">
+        <span class="doc-summary__label">Period</span>
+        <span class="doc-summary__value doc-summary__value--period">${escapeHtml(report.periodMonth || '—')}</span>
+      </div>
+      <div class="doc-summary__item">
+        <span class="doc-summary__label">Status</span>
+        <span class="status-badge" style="background:${statusBadgeBg};color:${statusBadgeColor};">${escapeHtml(report.status || '—')}</span>
+      </div>
+      <div class="doc-summary__item">
+        <span class="doc-summary__label">Generated</span>
+        <span class="doc-summary__value" style="font-size:0.82rem;color:var(--subtle);">${escapeHtml(generatedAt)}</span>
+      </div>
+    </div>
+
+    <div class="doc-kpi">
+      <div class="doc-kpi__card doc-kpi__card--accent">
+        <span class="doc-kpi__number">${escapeHtml(String(totalCommission))}</span>
+        <span class="doc-kpi__label">Total commission (minor)</span>
+      </div>
+      <div class="doc-kpi__card">
+        <span class="doc-kpi__number">${escapeHtml(String(totalPayout))}</span>
+        <span class="doc-kpi__label">Payout-ready rows</span>
+      </div>
+      <div class="doc-kpi__card">
+        <span class="doc-kpi__number">${escapeHtml(String(affiliates.length))}</span>
+        <span class="doc-kpi__label">Affiliates</span>
+      </div>
     </div>
 
     ${footerNoteBlock}
@@ -2035,20 +2219,28 @@ function buildPrintableHtml(detail, options) {
         <tr>
           <th>Affiliate</th>
           <th>Codes</th>
-          <th>Known total</th>
-          <th>Payout-ready</th>
-          <th>Reconciliation</th>
+          <th style="text-align:right;">Commission (minor)</th>
+          <th style="text-align:center;">Payout-ready</th>
+          <th style="text-align:center;">Reconciliation</th>
         </tr>
       </thead>
       <tbody>
         ${renderPdfTableRows(affiliates, (item) => `
-          <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
+          <td style="font-weight:600;">${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
           <td>${escapeHtml(formatList(item.referralCodes))}</td>
-          <td>${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
-          <td>${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
-          <td>${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
+          <td style="text-align:right;font-weight:600;">${escapeHtml(String(item.knownCommissionTotalMinor ?? 0))}</td>
+          <td style="text-align:center;">${escapeHtml(String(item.payoutReadyRowCount ?? 0))}</td>
+          <td style="text-align:center;">${escapeHtml(String(item.reconciliationRowCount ?? 0))}</td>
         `)}
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Totals</td>
+          <td style="text-align:right;">${escapeHtml(String(totalCommission))}</td>
+          <td style="text-align:center;">${escapeHtml(String(totalPayout))}</td>
+          <td style="text-align:center;">${escapeHtml(String(totalRecon))}</td>
+        </tr>
+      </tfoot>
     </table>
 
     ${settings.includeRows ? '<h2 class="section-title">Ledger rows</h2>' : ''}
@@ -2059,23 +2251,28 @@ function buildPrintableHtml(detail, options) {
         <tr>
           <th>Ledger ID</th>
           <th>Event</th>
-          <th>Payout status</th>
-          <th>Commission (minor)</th>
+          <th>Status</th>
+          <th style="text-align:right;">Amount</th>
           <th>CCY</th>
           <th>Affiliate</th>
-          <th>Earned at</th>
+          <th>Code</th>
+          <th>Earned</th>
         </tr>
       </thead>
       <tbody>
-        ${renderPdfTableRows(rows, (item) => `
-          <td>${escapeHtml(item.ledgerId || '-')}</td>
+        ${renderPdfTableRows(rows, (item) => {
+          const statusClass = item.payoutStatus === 'ready' ? 'ready' : item.payoutStatus === 'reconciliation' ? 'reconciliation' : '';
+          return `
+          <td style="color:var(--subtle);">${escapeHtml(item.ledgerId || '-')}</td>
           <td>${escapeHtml(item.eventType || '-')}</td>
-          <td>${escapeHtml(item.payoutStatus || '-')}</td>
-          <td>${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
+          <td><span class="payout-status${statusClass ? ` payout-status--${statusClass}` : ''}">${escapeHtml(item.payoutStatus || '-')}</span></td>
+          <td style="text-align:right;font-weight:600;">${escapeHtml(String(item.commissionAmountMinor ?? 0))}</td>
           <td>${escapeHtml(item.currency || '-')}</td>
           <td>${escapeHtml(item.affiliateDisplayName || item.affiliateId || '-')}</td>
-          <td>${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
-        `)}
+          <td style="font-weight:600;color:var(--header);">${escapeHtml(item.referralCode || '-')}</td>
+          <td style="color:var(--subtle);">${escapeHtml(toIsoDate(item.earnedAt) || '-')}</td>
+        `;
+        })}
       </tbody>
     </table>`
       : ''}
@@ -2083,14 +2280,14 @@ function buildPrintableHtml(detail, options) {
 
   <footer class="print-footer">
     <div class="print-footer__inner">
-      <div>
-        <img class="print-footer__oakdev" src="${origin}/assets/oakdev-logo.png" alt="${escapeHtml(pub.legalName)}" />
-      </div>
+      <img class="print-footer__oakdev" src="${origin}/assets/oakdev-logo.png" alt="${escapeHtml(pub.legalName)}" />
       <div class="print-footer__legal">
-        <strong>${escapeHtml(pub.legalName)}</strong><br />
-        Org.nr. ${escapeHtml(pub.orgNumber)} · VAT ${escapeHtml(pub.vatId)}<br />
-        ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)}<br />
-        ${escapeHtml(pub.email)} · ${escapeHtml(pub.phone)}
+        <strong>${escapeHtml(pub.legalName)}</strong> · Org.nr. ${escapeHtml(pub.orgNumber)} · VAT ${escapeHtml(pub.vatId)}<br />
+        ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)} · ${escapeHtml(pub.email)}
+      </div>
+      <div class="print-footer__stats">
+        ${escapeHtml(String(affiliates.length))} affiliates · ${escapeHtml(String(rows.length))} rows<br />
+        Source: ${escapeHtml(report.source || '—')}
       </div>
     </div>
   </footer>
@@ -2119,8 +2316,8 @@ function createSampleExportDetail() {
       periodMonth: '2026-03',
       status: 'draft',
       source: 'sample_data',
-      createdAt: { iso: '2026-03-01T00:00:00.000Z' },
-      updatedAt: { iso: '2026-03-31T00:00:00.000Z' },
+      createdAt: { iso: '2026-03-01T08:00:00.000Z' },
+      updatedAt: { iso: '2026-03-31T16:45:00.000Z' },
       paymentReference: null,
       note: null,
     },
@@ -2128,25 +2325,34 @@ function createSampleExportDetail() {
       {
         affiliateId: 'masjid_stockholm',
         affiliateDisplayName: 'Masjid Stockholm',
-        referralCodes: ['MASJIDSTHLM'],
-        knownCommissionTotalMinor: 24900,
+        referralCodes: ['MASJIDSTHLM', 'SARAH'],
+        knownCommissionTotalMinor: 34700,
         currencies: ['SEK'],
-        payoutReadyRowCount: 18,
-        reconciliationRowCount: 2,
+        payoutReadyRowCount: 24,
+        reconciliationRowCount: 3,
       },
       {
         affiliateId: 'example_partner',
-        affiliateDisplayName: 'Example Partner',
-        referralCodes: ['EXAMPLE01'],
-        knownCommissionTotalMinor: 12900,
+        affiliateDisplayName: 'Nordic Dawah Foundation',
+        referralCodes: ['NORDICDAWAH'],
+        knownCommissionTotalMinor: 18600,
         currencies: ['SEK'],
-        payoutReadyRowCount: 9,
+        payoutReadyRowCount: 14,
         reconciliationRowCount: 1,
+      },
+      {
+        affiliateId: 'quran_academy',
+        affiliateDisplayName: 'Quran Academy Online',
+        referralCodes: ['QURANACAD'],
+        knownCommissionTotalMinor: 9800,
+        currencies: ['SEK'],
+        payoutReadyRowCount: 7,
+        reconciliationRowCount: 0,
       },
     ],
     rows: [
       {
-        ledgerId: 'ledger_1001',
+        ledgerId: 'ledger_2001',
         eventType: 'subscription_purchase',
         payoutStatus: 'ready',
         commissionAmountMinor: 4900,
@@ -2154,18 +2360,62 @@ function createSampleExportDetail() {
         affiliateId: 'masjid_stockholm',
         affiliateDisplayName: 'Masjid Stockholm',
         referralCode: 'MASJIDSTHLM',
-        earnedAt: { iso: '2026-03-12T10:30:00.000Z' },
+        earnedAt: { iso: '2026-03-03T09:12:00.000Z' },
       },
       {
-        ledgerId: 'ledger_1002',
+        ledgerId: 'ledger_2002',
+        eventType: 'subscription_purchase',
+        payoutStatus: 'ready',
+        commissionAmountMinor: 4900,
+        currency: 'SEK',
+        affiliateId: 'masjid_stockholm',
+        affiliateDisplayName: 'Masjid Stockholm',
+        referralCode: 'SARAH',
+        earnedAt: { iso: '2026-03-05T14:30:00.000Z' },
+      },
+      {
+        ledgerId: 'ledger_2003',
+        eventType: 'subscription_renewal',
+        payoutStatus: 'ready',
+        commissionAmountMinor: 4900,
+        currency: 'SEK',
+        affiliateId: 'masjid_stockholm',
+        affiliateDisplayName: 'Masjid Stockholm',
+        referralCode: 'SARAH',
+        earnedAt: { iso: '2026-03-12T11:45:00.000Z' },
+      },
+      {
+        ledgerId: 'ledger_2004',
         eventType: 'subscription_purchase',
         payoutStatus: 'ready',
         commissionAmountMinor: 3900,
         currency: 'SEK',
         affiliateId: 'example_partner',
-        affiliateDisplayName: 'Example Partner',
-        referralCode: 'EXAMPLE01',
-        earnedAt: { iso: '2026-03-13T11:15:00.000Z' },
+        affiliateDisplayName: 'Nordic Dawah Foundation',
+        referralCode: 'NORDICDAWAH',
+        earnedAt: { iso: '2026-03-08T16:20:00.000Z' },
+      },
+      {
+        ledgerId: 'ledger_2005',
+        eventType: 'subscription_purchase',
+        payoutStatus: 'ready',
+        commissionAmountMinor: 4900,
+        currency: 'SEK',
+        affiliateId: 'quran_academy',
+        affiliateDisplayName: 'Quran Academy Online',
+        referralCode: 'QURANACAD',
+        earnedAt: { iso: '2026-03-15T08:55:00.000Z' },
+      },
+      {
+        ledgerId: 'ledger_2006',
+        eventType: 'subscription_renewal',
+        payoutStatus: 'reconciliation',
+        commissionAmountMinor: 4900,
+        currency: 'SEK',
+        affiliateId: 'masjid_stockholm',
+        affiliateDisplayName: 'Masjid Stockholm',
+        referralCode: 'MASJIDSTHLM',
+        earnedAt: { iso: '2026-03-22T10:10:00.000Z' },
       },
     ],
     rowsIncluded: true,
@@ -2643,6 +2893,106 @@ function renderCodesTable() {
       elements.codesEmpty.textContent = 'No referral codes yet. Create your first partner code to start tracking signups and monthly payouts.';
     }
     elements.codesEmpty.hidden = items.length > 0;
+  }
+}
+
+async function loadSubscriberStats() {
+  const stats = await getSubscriberStatsByCode();
+  state.subscriberStats = Array.isArray(stats) ? stats : [];
+  state.subscriberLastRefreshAt = new Date().toISOString();
+}
+
+function renderSubscriberInsights() {
+  const search = normalizeSearchValue(state.filters.subscriberQuery);
+  const metric = state.filters.subscriberMetric;
+  const sortKey = state.filters.subscriberSort || 'active-desc';
+  const allItems = state.subscriberStats || [];
+
+  let items = allItems.filter((item) => {
+    if (metric === 'active-only' && (item.activeNow || 0) === 0) return false;
+    if (metric === 'churned-only' && (item.churned || 0) === 0) return false;
+    if (metric === 'trial-only' && (item.trialActive || 0) === 0) return false;
+    if (!search) return true;
+    return normalizeSearchValue(item.code).includes(search);
+  });
+
+  const sortParts = sortKey.split('-');
+  const field = sortParts[0];
+  const dir = sortParts[1] === 'asc' ? 1 : -1;
+  const fieldMap = {
+    active: 'activeNow',
+    total: 'totalCurrent',
+    historical: 'totalHistorical',
+    churned: 'churned',
+    code: 'code',
+  };
+  const sortField = fieldMap[field] || 'activeNow';
+  items = items.slice().sort((a, b) => {
+    const aVal = sortField === 'code' ? String(a.code || '') : Number(a[sortField] ?? 0);
+    const bVal = sortField === 'code' ? String(b.code || '') : Number(b[sortField] ?? 0);
+    if (aVal < bVal) return -1 * dir;
+    if (aVal > bVal) return 1 * dir;
+    return 0;
+  });
+
+  const totals = allItems.reduce(
+    (acc, item) => {
+      acc.active += item.activeNow || 0;
+      acc.historical += item.totalHistorical || 0;
+      acc.churned += item.churned || 0;
+      return acc;
+    },
+    { active: 0, historical: 0, churned: 0 }
+  );
+
+  if (elements.subscriberTotalCodes) {
+    elements.subscriberTotalCodes.textContent = String(allItems.length);
+  }
+  if (elements.subscriberTotalActive) {
+    elements.subscriberTotalActive.textContent = String(totals.active);
+  }
+  if (elements.subscriberTotalHistorical) {
+    elements.subscriberTotalHistorical.textContent = String(totals.historical);
+  }
+  if (elements.subscriberTotalChurned) {
+    elements.subscriberTotalChurned.textContent = String(totals.churned);
+  }
+  if (elements.subscriberLastRefresh) {
+    elements.subscriberLastRefresh.textContent = state.subscriberLastRefreshAt
+      ? formatTimestamp({ iso: state.subscriberLastRefreshAt })
+      : 'Never';
+  }
+
+  if (elements.subscriberTableBody) {
+    elements.subscriberTableBody.innerHTML = items
+      .map((item) => {
+        const activeBar = Math.min(100, Math.round(((item.activeNow || 0) / Math.max(item.totalHistorical || 1, 1)) * 100));
+        return `
+        <tr>
+          <td>
+            <span class="admin-subscriber-code">${escapeHtml(item.code)}</span>
+          </td>
+          <td class="admin-subscriber-metric admin-subscriber-metric--active">
+            <span class="admin-subscriber-metric__value">${escapeHtml(String(item.activeNow ?? 0))}</span>
+            <span class="admin-subscriber-bar" style="--bar-pct:${activeBar}%"></span>
+          </td>
+          <td>${escapeHtml(String(item.totalCurrent ?? 0))}</td>
+          <td>${escapeHtml(String(item.totalHistorical ?? 0))}</td>
+          <td>${escapeHtml(String(item.churned ?? 0))}</td>
+          <td>${escapeHtml(String(item.trialActive ?? 0))}</td>
+          <td class="admin-subscriber-updated">${escapeHtml(item.lastUpdatedIso ? formatTimestamp({ iso: item.lastUpdatedIso }) : '—')}</td>
+        </tr>`;
+      })
+      .join('');
+  }
+
+  if (elements.subscriberEmpty) {
+    if (!items.length && allItems.length) {
+      elements.subscriberEmpty.textContent = 'No codes match your current filters.';
+    } else if (!allItems.length) {
+      elements.subscriberEmpty.textContent = 'No subscriber data available yet. Stats populate once referral codes have active subscribers.';
+    }
+    elements.subscriberEmpty.hidden = items.length > 0;
   }
 }
 
@@ -3454,9 +3804,11 @@ async function loadDashboard(options) {
       runHealthCheck('reports', loadReports),
       runHealthCheck('audit_log', loadBackendAuditLogs),
       runHealthCheck('admin_settings', loadAdminSettings),
+      runHealthCheck('subscriber_stats', loadSubscriberStats),
     ]);
     renderOverview();
     renderCodesTable();
+    renderSubscriberInsights();
     renderReportsTable();
     updateIdentity();
     setView('ready');
@@ -3648,9 +4000,11 @@ async function handleRefreshHealth() {
       runHealthCheck('reports', loadReports),
       runHealthCheck('audit_log', loadBackendAuditLogs),
       runHealthCheck('admin_settings', loadAdminSettings),
+      runHealthCheck('subscriber_stats', loadSubscriberStats),
     ]);
     renderOverview();
     renderReportsTable();
+    renderSubscriberInsights();
     showBanner('Health checks refreshed.', 'success');
   } catch (error) {
     renderHealthDashboard();
@@ -4777,6 +5131,28 @@ function bindEvents() {
   elements.newCode?.addEventListener('click', () => resetCodeForm(null));
   elements.resetCodeForm?.addEventListener('click', () => resetCodeForm(null));
   elements.codeForm?.addEventListener('submit', handleCodeSave);
+  elements.refreshSubscribers?.addEventListener('click', async () => {
+    clearBanner();
+    try {
+      await loadSubscriberStats();
+      renderSubscriberInsights();
+      showBanner('Subscriber data refreshed.', 'success');
+    } catch (error) {
+      showBanner(getErrorParts(error).message, 'error');
+    }
+  });
+  elements.subscriberSearchInput?.addEventListener('input', () => {
+    state.filters.subscriberQuery = elements.subscriberSearchInput.value;
+    renderSubscriberInsights();
+  });
+  elements.subscriberMetricFilter?.addEventListener('change', () => {
+    state.filters.subscriberMetric = elements.subscriberMetricFilter.value;
+    renderSubscriberInsights();
+  });
+  elements.subscriberSortSelect?.addEventListener('change', () => {
+    state.filters.subscriberSort = elements.subscriberSortSelect.value;
+    renderSubscriberInsights();
+  });
   elements.codeValue?.addEventListener('input', () => {
     updateCodeReferralLink(elements.codeValue.value);
   });
