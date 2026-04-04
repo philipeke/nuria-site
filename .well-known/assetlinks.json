@@ -1,11 +1,15 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.oakdev.nuria",
       "sha256_cert_fingerprints": [
-        "32:BA:BD:10:08:58:D7:62:28:35:CC:C8:69:33:39:DF:6A:69:7F:A4:7E:08:3C:53:C7:84:2C:03:64:C4:FC:D2"
+        "32:BA:BD:10:08:58:D7:62:28:35:CC:C8:69:33:39:DF:6A:69:7F:A4:7E:08:3C:53:C7:84:2C:03:64:C4:FC:D2",
+        "23:92:65:EC:AC:44:CF:6F:FD:2C:4C:EB:1F:28:97:19:9C:CB:8C:96:07:06:DB:79:71:06:86:84:0F:A8:6A:8F"
       ]
     }
   }
