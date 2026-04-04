@@ -274,6 +274,7 @@ const state = {
   approvalRequests: {},
   subscriberStats: [],
   subscriberLastRefreshAt: '',
+  subscriberUnavailableReason: '',
   filters: {
     codeQuery: '',
     codeStatus: '',
@@ -2897,9 +2898,18 @@ function renderCodesTable() {
 }
 
 async function loadSubscriberStats() {
-  const stats = await getSubscriberStatsByCode();
-  state.subscriberStats = Array.isArray(stats) ? stats : [];
-  state.subscriberLastRefreshAt = new Date().toISOString();
+  try {
+    const stats = await getSubscriberStatsByCode();
+    state.subscriberStats = Array.isArray(stats) ? stats : [];
+    state.subscriberLastRefreshAt = new Date().toISOString();
+    state.subscriberUnavailableReason = '';
+  } catch (error) {
+    state.subscriberStats = [];
+    state.subscriberUnavailableReason = getActionableErrorMessage(
+      error,
+      'Could not load subscriber stats.'
+    );
+  }
 }
 
 function renderSubscriberInsights() {
