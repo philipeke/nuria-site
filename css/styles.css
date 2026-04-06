@@ -3884,6 +3884,38 @@ address.legal-address strong { color: var(--color-text); }
   cursor: default;
 }
 
+.admin-referral-link--plain {
+  color: var(--color-text);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.admin-referral-link--plain[aria-disabled="true"] {
+  color: var(--color-text-dim);
+}
+
+.admin-app-strings {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.admin-app-strings__helper {
+  margin-top: 0.35rem;
+}
+
+.admin-app-strings__grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.admin-app-string {
+  display: grid;
+  gap: 0.38rem;
+}
+
 .admin-checkbox {
   display: inline-flex;
   align-items: center;

@@ -142,6 +142,12 @@ const elements = {
   codeValue: document.getElementById('adminCodeValue'),
   codeReferralLink: document.getElementById('adminCodeReferralLink'),
   copyReferralLinkButton: document.getElementById('adminCopyReferralLinkButton'),
+  codePlainString: document.getElementById('adminCodePlainString'),
+  copyCodeStringButton: document.getElementById('adminCopyCodeStringButton'),
+  codeAppString: document.getElementById('adminCodeAppString'),
+  copyAppStringButton: document.getElementById('adminCopyAppStringButton'),
+  codeJoinPathString: document.getElementById('adminCodeJoinPathString'),
+  copyJoinPathButton: document.getElementById('adminCopyJoinPathButton'),
   affiliateId: document.getElementById('adminAffiliateId'),
   displayName: document.getElementById('adminDisplayName'),
   partnerNuriaEmail: document.getElementById('adminPartnerNuriaEmail'),
@@ -2584,12 +2590,59 @@ function getGeneratedReferralLink(code) {
   return `${origin}/join/${encodeURIComponent(normalizedCode)}`;
 }
 
+function getGeneratedJoinPath(code) {
+  const normalizedCode = typeof site.normalizeReferralCode === 'function'
+    ? site.normalizeReferralCode(code)
+    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
+
+  if (!normalizedCode) {
+    return '';
+  }
+
+  return `/join/${encodeURIComponent(normalizedCode)}`;
+}
+
+function getGeneratedAppString(code) {
+  const normalizedCode = typeof site.normalizeReferralCode === 'function'
+    ? site.normalizeReferralCode(code)
+    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
+
+  if (!normalizedCode) {
+    return '';
+  }
+
+  if (typeof site.getReferralSchemeUrl === 'function') {
+    return site.getReferralSchemeUrl(normalizedCode);
+  }
+
+  const scheme = site?.config?.appScheme || 'nuria';
+  return `${scheme}://join?ref=${encodeURIComponent(normalizedCode)}`;
+}
+
+function setGeneratedStringValue(element, button, value, emptyLabel) {
+  if (!element || !button) {
+    return;
+  }
+
+  const label = emptyLabel || 'Enter a code to generate app strings';
+  const text = String(value || '').trim();
+  element.dataset.value = text;
+  element.textContent = text || label;
+  element.setAttribute('aria-disabled', text ? 'false' : 'true');
+  button.disabled = !text;
+}
+
 function updateCodeReferralLink(rawCode) {
   if (!elements.codeReferralLink || !elements.copyReferralLinkButton) {
     return;
   }
 
   const link = getGeneratedReferralLink(rawCode);
+  const codeString = typeof site.normalizeReferralCode === 'function'
+    ? site.normalizeReferralCode(rawCode)
+    : String(rawCode || '').trim().toUpperCase().replace(/\s+/g, '');
+  const appString = getGeneratedAppString(rawCode);
+  const joinPath = getGeneratedJoinPath(rawCode);
   elements.codeReferralLink.dataset.value = link;
 
   if (!link) {
@@ -2597,6 +2650,24 @@ function updateCodeReferralLink(rawCode) {
     elements.codeReferralLink.href = '#';
     elements.codeReferralLink.setAttribute('aria-disabled', 'true');
     elements.copyReferralLinkButton.disabled = true;
+    setGeneratedStringValue(
+      elements.codePlainString,
+      elements.copyCodeStringButton,
+      '',
+      'Enter a code to generate app strings'
+    );
+    setGeneratedStringValue(
+      elements.codeAppString,
+      elements.copyAppStringButton,
+      '',
+      'Enter a code to generate app strings'
+    );
+    setGeneratedStringValue(
+      elements.codeJoinPathString,
+      elements.copyJoinPathButton,
+      '',
+      'Enter a code to generate app strings'
+    );
     return;
   }
 
@@ -2604,6 +2675,24 @@ function updateCodeReferralLink(rawCode) {
   elements.codeReferralLink.href = link;
   elements.codeReferralLink.setAttribute('aria-disabled', 'false');
   elements.copyReferralLinkButton.disabled = false;
+  setGeneratedStringValue(
+    elements.codePlainString,
+    elements.copyCodeStringButton,
+    codeString,
+    'Enter a code to generate app strings'
+  );
+  setGeneratedStringValue(
+    elements.codeAppString,
+    elements.copyAppStringButton,
+    appString,
+    'Enter a code to generate app strings'
+  );
+  setGeneratedStringValue(
+    elements.codeJoinPathString,
+    elements.copyJoinPathButton,
+    joinPath,
+    'Enter a code to generate app strings'
+  );
 }
 
 function readPartnerProfileFromForm() {
@@ -3965,6 +4054,45 @@ async function handleCopyReferralLink() {
   }
 }
 
+async function copyGeneratedCodeString(value, emptyMessage, successMessage) {
+  const text = String(value || '').trim();
+  if (!text) {
+    showBanner(emptyMessage, 'info');
+    return;
+  }
+
+  try {
+    await copyPlainText(text);
+    showBanner(successMessage, 'success');
+  } catch (_error) {
+    showBanner('Could not copy string on this browser.', 'error');
+  }
+}
+
+async function handleCopyCodeString() {
+  await copyGeneratedCodeString(
+    elements.codePlainString?.dataset?.value,
+    'Enter a referral code first to generate the code string.',
+    'Code string copied.'
+  );
+}
+
+async function handleCopyAppString() {
+  await copyGeneratedCodeString(
+    elements.codeAppString?.dataset?.value,
+    'Enter a referral code first to generate the app string.',
+    'App string copied.'
+  );
+}
+
+async function handleCopyJoinPath() {
+  await copyGeneratedCodeString(
+    elements.codeJoinPathString?.dataset?.value,
+    'Enter a referral code first to generate the join path.',
+    'Join path copied.'
+  );
+}
+
 function handleExportOpsSnapshotJson() {
   const snapshot = getOpsSnapshot();
   createAndDownloadFile(
@@ -5167,6 +5295,9 @@ function bindEvents() {
     updateCodeReferralLink(elements.codeValue.value);
   });
   elements.copyReferralLinkButton?.addEventListener('click', handleCopyReferralLink);
+  elements.copyCodeStringButton?.addEventListener('click', handleCopyCodeString);
+  elements.copyAppStringButton?.addEventListener('click', handleCopyAppString);
+  elements.copyJoinPathButton?.addEventListener('click', handleCopyJoinPath);
   elements.refreshReports?.addEventListener('click', async () => {
     clearBanner();
     try {
