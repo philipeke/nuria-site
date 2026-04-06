@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuria Partner Portal</title>
+  <meta
+    name="description"
+    content="Private partner portal for linked Nuria partners."
+  />
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="theme-color" content="#050c08" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="icon" type="image/png" href="/assets/favicon-tab.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="partner-portal-body">
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <div class="partner-shell" data-partner-portal-page>
+    <header class="partner-topbar">
+      <div class="partner-topbar__brand">
+        <a href="/" class="partner-topbar__logo-link" aria-label="Nuria home">
+          <img src="../assets/logo.png" alt="Nuria" class="partner-topbar__logo" />
+        </a>
+        <div>
+          <p class="partner-topbar__eyebrow">Private portal</p>
+          <h1 class="partner-topbar__title">Nuria Partner</h1>
+        </div>
+      </div>
+      <div class="partner-topbar__actions">
+        <div class="partner-topbar__identity" id="partnerAuthSummary" hidden></div>
+        <button type="button" class="btn btn--outline" id="partnerRefreshButton" hidden>
+          Refresh
+        </button>
+        <button type="button" class="btn btn--outline" id="partnerSignOutButton" hidden>
+          Sign out
+        </button>
+      </div>
+    </header>
+
+    <main class="partner-main">
+      <div class="partner-banner" id="partnerGlobalNotice" hidden></div>
+
+      <section class="partner-state-card" data-partner-view="loading-auth">
+        <div class="referral-loading">
+          <div class="referral-spinner" aria-hidden="true"></div>
+          <div>
+            <h2 class="partner-state-card__title">Checking your session</h2>
+            <p class="partner-state-card__copy">
+              Verifying Firebase Auth before loading partner access.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="partner-auth-layout" data-partner-view="signed-out" hidden>
+        <article class="partner-panel partner-panel--hero">
+          <p class="partner-panel__eyebrow">Same account as the app</p>
+          <h2 class="partner-panel__title">Your partner dashboard on web</h2>
+          <p class="partner-panel__copy">
+            Sign in with the same Nuria account your team has linked to your partner profile.
+            Only linked partner accounts can enter this portal.
+          </p>
+
+          <div class="partner-feature-list">
+            <div class="partner-feature-item">
+              <strong>Aggregate-only</strong>
+              <span>Partners only see summary metrics, not subscriber identities.</span>
+            </div>
+            <div class="partner-feature-item">
+              <strong>Strict access</strong>
+              <span>Access follows the linked Nuria account via partner `portalUid` first, then verified email fallback.</span>
+            </div>
+            <div class="partner-feature-item">
+              <strong>Flexible login</strong>
+              <span>Use Google if your Nuria account uses Google. Otherwise sign in with email and password.</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="partner-panel partner-panel--auth">
+          <p class="partner-panel__eyebrow">Partner sign in</p>
+          <h2 class="partner-panel__title">Use your linked Nuria account</h2>
+          <p class="partner-panel__copy">
+            If you have never set a password for this email on web, use password reset first.
+          </p>
+
+          <div class="partner-auth-actions">
+            <button type="button" class="btn btn--outline partner-google-button" id="partnerGoogleSignInButton">
+              Continue with Google
+            </button>
+          </div>
+
+          <div class="partner-auth-divider">
+            <span>or use email</span>
+          </div>
+
+          <form class="partner-auth-form" id="partnerEmailSignInForm">
+            <div class="form-group">
+              <label class="form-label" for="partnerEmailInput">Email</label>
+              <input
+                class="form-input"
+                id="partnerEmailInput"
+                name="email"
+                type="email"
+                autocomplete="username"
+                placeholder="partner@example.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="partnerPasswordInput">Password</label>
+              <input
+                class="form-input"
+                id="partnerPasswordInput"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Your Nuria password"
+                required
+              />
+            </div>
+
+            <div class="partner-auth-actions">
+              <button type="submit" class="btn btn--gold">Sign in</button>
+              <button type="button" class="btn btn--outline" id="partnerSendPasswordResetButton">
+                Reset password
+              </button>
+            </div>
+          </form>
+
+          <p class="partner-form-error" id="partnerAuthError" hidden></p>
+        </article>
+      </section>
+
+      <section class="partner-state-card" data-partner-view="loading-portal" hidden>
+        <div class="referral-loading">
+          <div class="referral-spinner" aria-hidden="true"></div>
+          <div>
+            <h2 class="partner-state-card__title">Loading partner insights</h2>
+            <p class="partner-state-card__copy">
+              Fetching your linked partner overview, codes, and activity.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="partner-state-card" data-partner-view="unlinked" hidden>
+        <p class="partner-state-card__eyebrow">Access not ready</p>
+        <h2 class="partner-state-card__title">This account is not linked to a partner profile</h2>
+        <p class="partner-state-card__copy" id="partnerUnlinkedCopy">
+          Ask the Nuria team to link your Nuria account email or UID to your partner profile first.
+        </p>
+        <div class="partner-auth-actions">
+          <button type="button" class="btn btn--outline" id="partnerSignOutUnlinked">
+            Sign out
+          </button>
+        </div>
+      </section>
+
+      <section class="partner-state-card" data-partner-view="error" hidden>
+        <p class="partner-state-card__eyebrow">Something went wrong</p>
+        <h2 class="partner-state-card__title">The partner portal could not load</h2>
+        <p class="partner-state-card__copy" id="partnerErrorCopy">
+          An unexpected error blocked this page.
+        </p>
+        <div class="partner-auth-actions">
+          <button type="button" class="btn btn--outline" id="partnerRetryLoad">
+            Try again
+          </button>
+        </div>
+      </section>
+
+      <section class="partner-dashboard" data-partner-view="ready" hidden>
+        <article class="partner-hero-card">
+          <div class="partner-hero-card__head">
+            <div>
+              <p class="partner-hero-card__eyebrow">Linked account</p>
+              <h2 class="partner-hero-card__title" id="partnerHeroName">Partner</h2>
+              <p class="partner-hero-card__copy" id="partnerHeroCopy">
+                Track the aggregate health of your Nuria partner activity.
+              </p>
+            </div>
+            <div class="partner-hero-card__meta">
+              <span class="partner-chip" id="partnerHeroStatus">Status</span>
+              <span class="partner-chip partner-chip--accent" id="partnerHeroCode">Code</span>
+            </div>
+          </div>
+
+          <div class="partner-hero-card__details">
+            <div class="partner-hero-card__detail">
+              <span>Linked email</span>
+              <strong id="partnerHeroEmail">-</strong>
+            </div>
+            <div class="partner-hero-card__detail">
+              <span>Last partner update</span>
+              <strong id="partnerHeroUpdatedAt">-</strong>
+            </div>
+            <div class="partner-hero-card__detail">
+              <span>Snapshot generated</span>
+              <strong id="partnerGeneratedAt">-</strong>
+            </div>
+          </div>
+
+          <div class="partner-selector" id="partnerAccountSelector" hidden></div>
+        </article>
+
+        <div class="partner-metric-grid">
+          <article class="partner-metric-card">
+            <span class="partner-metric-card__label">Active subscribers</span>
+            <strong class="partner-metric-card__value" id="partnerActiveSubscribers">0</strong>
+          </article>
+          <article class="partner-metric-card">
+            <span class="partner-metric-card__label">Pending referrals</span>
+            <strong class="partner-metric-card__value" id="partnerPendingReferrals">0</strong>
+          </article>
+          <article class="partner-metric-card">
+            <span class="partner-metric-card__label">At risk</span>
+            <strong class="partner-metric-card__value" id="partnerAtRiskSubscribers">0</strong>
+          </article>
+          <article class="partner-metric-card">
+            <span class="partner-metric-card__label">Total activations</span>
+            <strong class="partner-metric-card__value" id="partnerTotalActivations">0</strong>
+          </article>
+        </div>
+
+        <div class="partner-grid">
+          <article class="partner-panel">
+            <div class="partner-panel__header">
+              <div>
+                <p class="partner-panel__eyebrow">Momentum</p>
+                <h3 class="partner-panel__title">Last 30 days</h3>
+              </div>
+            </div>
+            <div class="partner-mini-grid">
+              <div class="partner-mini-stat">
+                <span>New subscribers</span>
+                <strong id="partnerLast30Initial">0</strong>
+              </div>
+              <div class="partner-mini-stat">
+                <span>Renewals</span>
+                <strong id="partnerLast30Renewals">0</strong>
+              </div>
+              <div class="partner-mini-stat">
+                <span>Refunds</span>
+                <strong id="partnerLast30Refunds">0</strong>
+              </div>
+              <div class="partner-mini-stat">
+                <span>Revocations</span>
+                <strong id="partnerLast30Revocations">0</strong>
+              </div>
+            </div>
+
+            <div class="partner-commission-card" id="partnerCommissionCard">
+              <span>Tracked commission</span>
+              <strong id="partnerTrackedCommission">-</strong>
+              <p>
+                Based on the aggregate commission rows currently available for your partner activity.
+              </p>
+            </div>
+          </article>
+
+          <article class="partner-panel">
+            <div class="partner-panel__header">
+              <div>
+                <p class="partner-panel__eyebrow">Health</p>
+                <h3 class="partner-panel__title">Portfolio health</h3>
+              </div>
+            </div>
+
+            <div class="partner-progress-list">
+              <div class="partner-progress">
+                <div class="partner-progress__head">
+                  <span>Activation rate</span>
+                  <strong id="partnerActivationRate">0%</strong>
+                </div>
+                <div class="partner-progress__track">
+                  <span class="partner-progress__fill" id="partnerActivationRateFill"></span>
+                </div>
+              </div>
+
+              <div class="partner-progress">
+                <div class="partner-progress__head">
+                  <span>Portfolio health</span>
+                  <strong id="partnerPortfolioHealthRate">0%</strong>
+                </div>
+                <div class="partner-progress__track">
+                  <span class="partner-progress__fill partner-progress__fill--accent" id="partnerPortfolioHealthFill"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="partner-mini-grid partner-mini-grid--single">
+              <div class="partner-mini-stat">
+                <span>Attributed users</span>
+                <strong id="partnerAttributedUsers">0</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <article class="partner-panel">
+          <div class="partner-panel__header">
+            <div>
+              <p class="partner-panel__eyebrow">Journey</p>
+              <h3 class="partner-panel__title">Subscriber journey</h3>
+            </div>
+          </div>
+
+          <div class="partner-journey-grid">
+            <div class="partner-journey-tile partner-journey-tile--gold">
+              <span class="partner-journey-tile__label">Pending referrals</span>
+              <strong class="partner-journey-tile__value" id="partnerJourneyPending">0</strong>
+            </div>
+            <div class="partner-journey-tile partner-journey-tile--success">
+              <span class="partner-journey-tile__label">Active subscribers</span>
+              <strong class="partner-journey-tile__value" id="partnerJourneyActive">0</strong>
+            </div>
+            <div class="partner-journey-tile partner-journey-tile--warn">
+              <span class="partner-journey-tile__label">At risk</span>
+              <strong class="partner-journey-tile__value" id="partnerJourneyRisk">0</strong>
+            </div>
+            <div class="partner-journey-tile partner-journey-tile--muted">
+              <span class="partner-journey-tile__label">Inactive</span>
+              <strong class="partner-journey-tile__value" id="partnerJourneyInactive">0</strong>
+            </div>
+          </div>
+        </article>
+
+        <div class="partner-grid">
+          <article class="partner-panel">
+            <div class="partner-panel__header">
+              <div>
+                <p class="partner-panel__eyebrow">Referral codes</p>
+                <h3 class="partner-panel__title">Your active setup</h3>
+              </div>
+            </div>
+            <div class="partner-code-list" id="partnerCodesList"></div>
+          </article>
+
+          <article class="partner-panel">
+            <div class="partner-panel__header">
+              <div>
+                <p class="partner-panel__eyebrow">Subscriber status</p>
+                <h3 class="partner-panel__title">Current breakdown</h3>
+              </div>
+            </div>
+            <div class="partner-status-list" id="partnerStatusList"></div>
+          </article>
+        </div>
+
+        <article class="partner-panel">
+          <div class="partner-panel__header">
+            <div>
+              <p class="partner-panel__eyebrow">Recent activity</p>
+              <h3 class="partner-panel__title">Latest partner events</h3>
+            </div>
+          </div>
+          <div class="partner-activity-list" id="partnerRecentActivity"></div>
+        </article>
+
+        <article class="partner-panel partner-panel--note">
+          <p class="partner-panel__eyebrow">Privacy note</p>
+          <h3 class="partner-panel__title">Aggregate partner visibility only</h3>
+          <p class="partner-panel__copy">
+            This web portal mirrors the Nuria app partner portal and only shows aggregated referral and subscriber metrics. Individual subscriber identities are intentionally not exposed.
+          </p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/site-utils.js"></script>
+  <script type="module" src="../js/partner-portal.js"></script>
+</body>
+</html>

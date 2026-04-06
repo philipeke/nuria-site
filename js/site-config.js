@@ -11,6 +11,7 @@
     appStoreUrl: 'https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913',
     googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv',
     firebaseFunctionsRegion: 'us-central1',
+    firebaseAppCheckSiteKey: '',
     affiliateAdminComplianceMode: 'hybrid',
     firebase: {
       apiKey: 'AIzaSyBu_VDD7NNOFvL2f9stqajF4LjCHpAvavk',

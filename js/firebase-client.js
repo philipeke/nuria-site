@@ -4,6 +4,10 @@ import {
   getApp,
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import {
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js';
+import {
   getAuth,
   GoogleAuthProvider,
   browserLocalPersistence,
@@ -36,6 +40,7 @@ import {
 const config = window.NURIA_SITE_CONFIG || {};
 const firebaseConfig = config.firebase || {};
 const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const appCheckSiteKey = String(config.firebaseAppCheckSiteKey || '').trim();
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 const functions = getFunctions(
@@ -51,6 +56,20 @@ googleProvider.setCustomParameters({
 });
 
 const authPersistenceReady = setPersistence(auth, browserLocalPersistence).catch(() => {});
+let appCheckReady = Promise.resolve(null);
+
+if (appCheckSiteKey) {
+  try {
+    const appCheck = initializeAppCheck(firebaseApp, {
+      provider: new ReCaptchaV3Provider(appCheckSiteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+    appCheckReady = Promise.resolve(appCheck);
+  } catch (error) {
+    console.warn('[firebase-client] App Check initialization failed', error);
+    appCheckReady = Promise.resolve(null);
+  }
+}
 
 export function subscribeToAuthState(callback) {
   return onAuthStateChanged(auth, callback);
@@ -80,7 +99,16 @@ export async function waitForAuthPersistenceReady() {
   await authPersistenceReady;
 }
 
+export function isAppCheckConfigured() {
+  return Boolean(appCheckSiteKey);
+}
+
+export async function waitForAppCheckReady() {
+  await appCheckReady;
+}
+
 export async function callFirebaseFunction(name, data) {
+  await appCheckReady;
   const callable = httpsCallable(functions, name);
   try {
     const result = await callable(data || {});

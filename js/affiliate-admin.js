@@ -15,6 +15,7 @@ import {
 } from './firebase-client.js';
 
 const site = window.NuriaSite || {};
+const partnerRegistry = globalThis.NuriaAffiliatePartnerRegistry || {};
 const page = document.querySelector('[data-affiliate-admin-page]');
 const ACTIVITY_LOG_KEY = 'nuria_affiliate_admin_activity_log_v1';
 const CHECKLIST_STATE_KEY = 'nuria_affiliate_admin_monthly_checklist_v1';
@@ -40,6 +41,7 @@ const ADMIN_PAGE_PATHS = {
   'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
   settings: '/internal/affiliate-admin/settings/',
 };
+const DASHBOARD_COPY_CALL_TIMEOUT_MS = 15000;
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -283,6 +285,7 @@ const state = {
   recentReports: [],
   recentCodes: [],
   codes: [],
+  partners: [],
   reports: [],
   backendAuditLogs: [],
   reportRecipients: [],
@@ -569,6 +572,16 @@ function getActionableErrorMessage(error, fallbackMessage) {
   const code = parts.code;
   const message = parts.message.toLowerCase();
 
+  if (code === 'deadline-exceeded' || message.includes('timed out') || message.includes('timeout')) {
+    if (error?.adminCallable === 'getDashboardTopPlaceholderAdmin') {
+      return 'Dashboard copy load timed out. Try again. If it keeps hanging, verify the backend callable is deployed and that Firebase App Check or reCAPTCHA is not blocking this site.';
+    }
+    if (error?.adminCallable === 'upsertDashboardTopPlaceholderAdmin') {
+      return 'Dashboard copy save timed out. The backend may be slow or blocked by App Check. Wait a moment and try again.';
+    }
+    return 'This request timed out before the backend responded. Try again.';
+  }
+
   if (code === 'unauthenticated') {
     return 'Session expired. Sign in again to continue.';
   }
@@ -627,6 +640,13 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (message.includes('copy_required')) {
     return 'English title or body is required when the dashboard placeholder is enabled.';
+  }
+
+  if (message.includes('app check') || message.includes('recaptcha')) {
+    const callableHint = error?.adminCallable
+      ? ` (${error.adminCallable})`
+      : '';
+    return `Firebase App Check blocked this request${callableHint}. Verify the site App Check key and allowed web domains, then try again.`;
   }
 
   if (message.includes('report_not_found')) {
@@ -735,9 +755,7 @@ function normalizePartnerEmailMap(rawValue) {
   if (!rawValue || typeof rawValue !== 'object') return {};
   const result = {};
   Object.keys(rawValue).forEach((codeKey) => {
-    const normalizedCode = typeof site.normalizeReferralCode === 'function'
-      ? site.normalizeReferralCode(codeKey)
-      : String(codeKey || '').trim().toUpperCase().replace(/\s+/g, '');
+    const normalizedCode = normalizeReferralCodeValue(codeKey);
     const normalizedEmail = normalizeEmail(rawValue[codeKey]);
     if (normalizedCode && isValidEmail(normalizedEmail)) {
       result[normalizedCode] = normalizedEmail;
@@ -750,9 +768,7 @@ function normalizePartnerProfilesMap(rawValue) {
   if (!rawValue || typeof rawValue !== 'object') return {};
   const result = {};
   Object.keys(rawValue).forEach((codeKey) => {
-    const normalizedCode = typeof site.normalizeReferralCode === 'function'
-      ? site.normalizeReferralCode(codeKey)
-      : String(codeKey || '').trim().toUpperCase().replace(/\s+/g, '');
+    const normalizedCode = normalizeReferralCodeValue(codeKey);
     if (!normalizedCode) return;
     const normalized = normalizePartnerProfile(rawValue[codeKey] || {});
     if (normalized) {
@@ -760,6 +776,136 @@ function normalizePartnerProfilesMap(rawValue) {
     }
   });
   return result;
+}
+
+function normalizeReferralCodeValue(value) {
+  if (typeof site.normalizeReferralCode === 'function') {
+    return site.normalizeReferralCode(value);
+  }
+  if (typeof partnerRegistry.normalizeReferralCode === 'function') {
+    return partnerRegistry.normalizeReferralCode(value);
+  }
+  return String(value || '').trim().toUpperCase().replace(/\s+/g, '');
+}
+
+function normalizePartnerStatusValue(value) {
+  if (typeof partnerRegistry.normalizePartnerStatus === 'function') {
+    return partnerRegistry.normalizePartnerStatus(value);
+  }
+  const status = String(value || '').trim().toLowerCase();
+  if (status === 'inactive' || status === 'archived') {
+    return status;
+  }
+  return 'active';
+}
+
+function normalizePartnerDocValue(rawValue) {
+  if (typeof partnerRegistry.normalizePartnerDoc === 'function') {
+    return partnerRegistry.normalizePartnerDoc(rawValue);
+  }
+  if (!rawValue || typeof rawValue !== 'object') return null;
+  const affiliateId = String(rawValue.affiliateId || '').trim();
+  const primaryReferralCode = normalizeReferralCodeValue(rawValue.primaryReferralCode || '');
+  if (!affiliateId && !primaryReferralCode) return null;
+  return {
+    affiliateId,
+    displayName: String(rawValue.displayName || '').trim() || null,
+    status: normalizePartnerStatusValue(rawValue.status),
+    primaryReferralCode: primaryReferralCode || null,
+    contactName: String(rawValue.contactName || '').trim() || null,
+    contactEmail: normalizeEmail(rawValue.contactEmail),
+    portalUid: String(rawValue.portalUid || '').trim() || null,
+    portalEmail: normalizeEmail(rawValue.portalEmail),
+    note: String(rawValue.note || '').trim() || null,
+    updatedAt: rawValue.updatedAt || null,
+    updatedByEmail: String(rawValue.updatedByEmail || '').trim() || null,
+  };
+}
+
+function normalizePartnerListValue(rawValue) {
+  if (typeof partnerRegistry.normalizePartnerList === 'function') {
+    return partnerRegistry.normalizePartnerList(rawValue);
+  }
+  if (!Array.isArray(rawValue)) return [];
+  return rawValue.map((item) => normalizePartnerDocValue(item)).filter(Boolean);
+}
+
+function findLinkedPartnerForCode(item) {
+  if (typeof partnerRegistry.findPartnerForCode === 'function') {
+    return partnerRegistry.findPartnerForCode(item || {}, state.partners || []);
+  }
+
+  const affiliateId = String(item?.affiliateId || '').trim();
+  const normalizedCode = normalizeReferralCodeValue(item?.code || item?.primaryReferralCode || '');
+  const partners = normalizePartnerListValue(state.partners);
+
+  if (affiliateId) {
+    const partner = partners.find((entry) => entry.affiliateId === affiliateId);
+    if (partner) return partner;
+  }
+
+  if (normalizedCode) {
+    return partners.find((entry) => entry.primaryReferralCode === normalizedCode) || null;
+  }
+
+  return null;
+}
+
+function buildPartnerUpsertPayloadForCode(options) {
+  const settings = Object.assign({}, options || {});
+  if (typeof partnerRegistry.buildPartnerUpsertPayload === 'function') {
+    return partnerRegistry.buildPartnerUpsertPayload(settings);
+  }
+
+  const existingPartner = normalizePartnerDocValue(settings.existingPartner);
+  const codeItem = settings.codeItem || {};
+  const affiliateId = String(codeItem.affiliateId || existingPartner?.affiliateId || '').trim();
+  if (!affiliateId) {
+    throw new Error('affiliate_id_required');
+  }
+
+  const normalizedEmail = normalizeEmail(settings.partnerEmail);
+  const lookup = settings.lookupResult && typeof settings.lookupResult === 'object'
+    ? settings.lookupResult
+    : null;
+  const lookupFound = lookup?.found === true;
+  const lookupEmail = normalizeEmail(lookup?.email) || normalizedEmail;
+  const lookupUid = String(lookup?.uid || '').trim() || null;
+  const existingPortalEmail = normalizeEmail(existingPartner?.portalEmail);
+  const preserveExistingUid = settings.lookupFailed === true
+    && normalizedEmail
+    && existingPortalEmail === normalizedEmail
+    && Boolean(existingPartner?.portalUid);
+
+  return {
+    affiliateId,
+    displayName: String(codeItem.displayName || existingPartner?.displayName || '').trim() || null,
+    status: normalizePartnerStatusValue(existingPartner?.status || codeItem.status || 'active'),
+    primaryReferralCode:
+      normalizeReferralCodeValue(codeItem.code || codeItem.primaryReferralCode || existingPartner?.primaryReferralCode || '')
+      || null,
+    contactName: String(existingPartner?.contactName || '').trim() || null,
+    contactEmail: lookupEmail || normalizeEmail(existingPartner?.contactEmail),
+    portalUid: normalizedEmail
+      ? (lookupFound ? lookupUid : preserveExistingUid ? existingPartner?.portalUid || null : null)
+      : null,
+    portalEmail: normalizedEmail ? lookupEmail : null,
+    note: String(existingPartner?.note || '').trim() || null,
+  };
+}
+
+function buildPartnerRegistryEntries() {
+  if (typeof partnerRegistry.buildPartnerRegistryItems === 'function') {
+    return partnerRegistry.buildPartnerRegistryItems({
+      codes: state.codes || [],
+      partners: state.partners || [],
+      legacyEmailsByCode: state.partnerEmailsByCode || {},
+      legacyPartnerRegistryByCode: state.partnerRegistryByCode || {},
+      legacyPartnerProfilesByCode: state.partnerProfilesByCode || {},
+    });
+  }
+
+  return [];
 }
 
 function resetDashboardCopyState(options) {
@@ -1259,14 +1405,34 @@ function hasPartnerProfileData(profile) {
 }
 
 function getPartnerProfileForCode(item) {
-  const code = String(item?.code || '').trim().toUpperCase();
+  const code = normalizeReferralCodeValue(item?.code || '');
   if (!code) return null;
   return state.partnerProfilesByCode?.[code] || null;
 }
 
 function renderPartnerLinkStatus(item) {
   if (!elements.partnerLinkStatus) return;
+  const partner = findLinkedPartnerForCode(item || {});
   const registry = getPartnerRegistryEntryForCode(item || {});
+  if (registry?.status === 'lookup_error' && !partner?.portalUid) {
+    elements.partnerLinkStatus.textContent =
+      `Lookup error: ${registry.statusReason || 'Could not verify right now.'}`;
+    return;
+  }
+
+  if (partner?.portalUid) {
+    const display = partner.displayName || partner.affiliateId || registry?.partnerDisplayName || registry?.displayName || partner.portalEmail || 'Partner';
+    elements.partnerLinkStatus.textContent =
+      `Linked to ${display} (${partner.portalEmail || partner.contactEmail || '-'}) · UID ${partner.portalUid}`;
+    return;
+  }
+
+  if (partner?.portalEmail) {
+    elements.partnerLinkStatus.textContent =
+      `Partner access is linked by verified email fallback (${partner.portalEmail}). Save again after lookup to store a strict UID when available.`;
+    return;
+  }
+
   if (!registry) {
     elements.partnerLinkStatus.textContent =
       'No linked Nuria account yet. Add partner email and save to verify account mapping.';
@@ -1281,18 +1447,15 @@ function renderPartnerLinkStatus(item) {
     return;
   }
 
-  if (registry.status === 'lookup_error') {
-    elements.partnerLinkStatus.textContent =
-      `Lookup error: ${registry.statusReason || 'Could not verify right now.'}`;
-    return;
-  }
-
   elements.partnerLinkStatus.textContent =
     `Email saved but not verified yet (${registry.statusReason || 'not_found'}).`;
 }
 
 function getPartnerEmailForCode(item) {
-  const code = String(item?.code || '').trim().toUpperCase();
+  const partner = findLinkedPartnerForCode(item || {});
+  if (partner?.portalEmail) return partner.portalEmail;
+  if (partner?.contactEmail) return partner.contactEmail;
+  const code = normalizeReferralCodeValue(item?.code || '');
   if (!code) return '';
   const fromItem = normalizeEmail(item?.partnerNuriaEmail || item?.partnerEmail || '');
   if (isValidEmail(fromItem)) return fromItem;
@@ -1301,7 +1464,7 @@ function getPartnerEmailForCode(item) {
 }
 
 function getPartnerRegistryEntryForCode(item) {
-  const code = String(item?.code || '').trim().toUpperCase();
+  const code = normalizeReferralCodeValue(item?.code || '');
   if (!code) return null;
   return state.partnerRegistryByCode?.[code] || null;
 }
@@ -3082,6 +3245,29 @@ function setButtonBusy(button, busy, busyLabel) {
   }
 }
 
+function withActionTimeout(promise, timeoutMs, meta) {
+  const safeTimeoutMs = Number(timeoutMs) > 0 ? Number(timeoutMs) : 15000;
+  const details = meta && typeof meta === 'object' ? meta : {};
+  let timerId = null;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    timerId = window.setTimeout(() => {
+      const error = new Error(details.message || 'request_timed_out');
+      error.code = details.code || 'deadline-exceeded';
+      if (details.adminCallable) {
+        error.adminCallable = details.adminCallable;
+      }
+      reject(error);
+    }, safeTimeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timerId != null) {
+      window.clearTimeout(timerId);
+    }
+  });
+}
+
 function setCodeFormError(message) {
   if (!elements.codeFormError) {
     return;
@@ -3610,7 +3796,14 @@ async function ensureDashboardCopyLoaded(options) {
     renderDashboardCopy();
 
     try {
-      const data = await callFirebaseFunction('getDashboardTopPlaceholderAdmin');
+      const data = await withActionTimeout(
+        callFirebaseFunction('getDashboardTopPlaceholderAdmin'),
+        DASHBOARD_COPY_CALL_TIMEOUT_MS,
+        {
+          adminCallable: 'getDashboardTopPlaceholderAdmin',
+          message: 'dashboard_copy_load_timeout',
+        }
+      );
       const item = normalizeDashboardCopyItem(data?.item);
       state.dashboardCopyAdmin = data?.admin || null;
       state.dashboardCopyItem = item;
@@ -3731,7 +3924,14 @@ async function handleDashboardCopySave(event) {
   renderDashboardCopy();
 
   try {
-    const data = await callFirebaseFunction('upsertDashboardTopPlaceholderAdmin', payload);
+    const data = await withActionTimeout(
+      callFirebaseFunction('upsertDashboardTopPlaceholderAdmin', payload),
+      DASHBOARD_COPY_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'upsertDashboardTopPlaceholderAdmin',
+        message: 'dashboard_copy_save_timeout',
+      }
+    );
     const item = normalizeDashboardCopyItem(data?.item);
     state.dashboardCopyItem = item;
     state.dashboardCopyDraft = createDashboardCopyDraft(item);
@@ -3867,9 +4067,10 @@ function resetCodeForm(item) {
     return;
   }
 
+  const linkedPartner = findLinkedPartnerForCode(value) || null;
   elements.codeValue.value = value.code || '';
   elements.affiliateId.value = value.affiliateId || '';
-  elements.displayName.value = value.displayName || '';
+  elements.displayName.value = value.displayName || linkedPartner?.displayName || '';
   if (elements.partnerNuriaEmail) {
     elements.partnerNuriaEmail.value = getPartnerEmailForCode(value) || '';
   }
@@ -3941,13 +4142,20 @@ function renderOverview() {
   elements.currentRoles.textContent = state.admin?.roles?.join(', ') || '-';
   elements.currentSource.textContent = humanizeAccessSource(state.admin?.source || '');
   const codes = Array.isArray(state.codes) ? state.codes : [];
+  const partners = normalizePartnerListValue(state.partners);
   const reports = Array.isArray(state.reports) ? state.reports : [];
   const activeCodes = codes.filter((item) => item.status === 'active').length;
-  const trackedAffiliates = new Set(
-    codes
-      .map((item) => String(item.affiliateId || '').trim())
-      .filter(Boolean)
-  ).size;
+  const trackedAffiliates = partners.length
+    ? new Set(
+      partners
+        .map((item) => String(item.affiliateId || '').trim())
+        .filter(Boolean)
+    ).size
+    : new Set(
+      codes
+        .map((item) => String(item.affiliateId || '').trim())
+        .filter(Boolean)
+    ).size;
   const latestReportRows = reports.length ? Number(reports[0].ledgerRowCount ?? 0) : 0;
   const unpaidReports = reports.filter((item) => item.status !== 'paid').length;
   const draftReports = reports.filter((item) => item.status === 'draft').length;
@@ -4466,55 +4674,32 @@ function renderSettingsForm() {
 
 function renderPartnerRegistry() {
   if (!elements.partnerRegistryList) return;
-  const codes = Array.isArray(state.codes) ? state.codes : [];
-  const items = codes
-    .map((item) => {
-      const email = getPartnerEmailForCode(item);
-      if (!email) return null;
-      const code = String(item.code || '').trim().toUpperCase();
-      const registry = getPartnerRegistryEntryForCode(item);
-      const profile = getPartnerProfileForCode(item);
-      return {
-        code,
-        affiliateId: item.affiliateId || '-',
-        displayName: item.displayName || '-',
-        email,
-        partnerUid: registry?.partnerUid || '',
-        partnerDisplayName: registry?.partnerDisplayName || '',
-        linkedAt: registry?.linkedAt || '',
-        linkedBy: registry?.linkedBy || '',
-        status: registry?.status || 'mapped_unverified',
-        statusReason: registry?.statusReason || '',
-        partnerType: profile?.partnerType || 'private',
-        mobile: profile?.mobile || '',
-        country: profile?.country || '',
-        vat: profile?.vat || '',
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.code.localeCompare(b.code));
+  const items = buildPartnerRegistryEntries();
 
   if (!items.length) {
-    elements.partnerRegistryList.innerHTML = '<p class="admin-empty admin-empty--inline">No partner emails linked yet.</p>';
+    elements.partnerRegistryList.innerHTML = '<p class="admin-empty admin-empty--inline">No affiliate partners synced yet.</p>';
     return;
   }
 
   elements.partnerRegistryList.innerHTML = items
     .map((item) => {
       const linkedAt = item.linkedAt ? formatTimestamp({ iso: item.linkedAt }) : 'Not recorded';
+      const updatedAt = item.updatedAt ? formatTimestamp(item.updatedAt) : 'Not synced yet';
       const metaDisplayName = item.partnerDisplayName || item.displayName;
       const statusLabel = item.status === 'verified'
         ? 'verified'
         : item.status === 'lookup_error'
           ? 'lookup_error'
-          : 'mapped_unverified';
+          : item.status === 'unlinked'
+            ? 'unlinked'
+            : 'mapped_unverified';
       return `
         <div class="admin-mini-item">
           <span class="admin-mini-item__title">${escapeHtml(metaDisplayName)} (${escapeHtml(item.code)})</span>
-          <span class="admin-mini-item__meta">${escapeHtml(item.email)} &middot; ${escapeHtml(item.affiliateId)} &middot; ${escapeHtml(statusLabel)}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.email)} &middot; ${escapeHtml(item.affiliateId)} &middot; ${escapeHtml(statusLabel)} &middot; partner ${escapeHtml(item.partnerStatus || 'active')}</span>
           <span class="admin-mini-item__meta">${escapeHtml(item.partnerType)}${item.mobile ? ` &middot; ${escapeHtml(item.mobile)}` : ''}${item.country ? ` &middot; ${escapeHtml(item.country)}` : ''}${item.vat ? ` &middot; VAT ${escapeHtml(item.vat)}` : ''}</span>
           <span class="admin-mini-item__meta">${escapeHtml(item.partnerUid || '-')} &middot; ${escapeHtml(item.statusReason || '-')}</span>
-          <span class="admin-mini-item__meta">${escapeHtml(item.linkedBy || 'admin')} &middot; ${escapeHtml(linkedAt)}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.linkedBy || item.updatedByEmail || 'admin')} &middot; linked ${escapeHtml(linkedAt)} &middot; synced ${escapeHtml(updatedAt)}</span>
         </div>
       `;
     })
@@ -4734,6 +4919,15 @@ async function loadCodes() {
   state.codes = Array.isArray(data.items) ? data.items : [];
 }
 
+async function loadPartners() {
+  const data = await callFirebaseFunction('listAffiliatePartnersAdmin', {
+    limit: 300,
+    includeInactive: true,
+  });
+
+  state.partners = normalizePartnerListValue(Array.isArray(data.items) ? data.items : []);
+}
+
 async function loadReports() {
   const data = await callFirebaseFunction('listAffiliatePayoutReportsAdmin', {
     limit: 24,
@@ -4845,9 +5039,7 @@ async function loadAdminSettings() {
 }
 
 async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInput) {
-  const normalizedCode = typeof site.normalizeReferralCode === 'function'
-    ? site.normalizeReferralCode(code)
-    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
+  const normalizedCode = normalizeReferralCodeValue(code);
   if (!normalizedCode) return;
 
   const nextMap = Object.assign({}, state.partnerEmailsByCode || {});
@@ -4856,50 +5048,70 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
   const nextProfiles = Object.assign({}, state.partnerProfilesByCode || {});
   const normalizedEmail = normalizeEmail(partnerEmail || '');
   const normalizedProfile = normalizePartnerProfile(profileInput || {});
+  const codeItem = {
+    code: normalizedCode,
+    affiliateId: String(metadata?.affiliateId || '').trim(),
+    displayName: String(metadata?.displayName || '').trim(),
+    status: String(metadata?.status || '').trim() || 'active',
+  };
+  const existingPartner = findLinkedPartnerForCode(codeItem);
+  let lookup = null;
+  let lookupFailed = false;
+  let status = 'unlinked';
+  let statusReason = 'email_removed';
+
   if (normalizedEmail && isValidEmail(normalizedEmail)) {
-    let lookup = null;
-    let status = 'mapped_unverified';
-    let statusReason = 'not_found';
     try {
       lookup = await lookupNuriaPartnerByEmail(normalizedEmail);
-      if (lookup?.found === true) {
-        status = 'verified';
-        statusReason = lookup.source || 'lookup';
-      } else {
-        status = 'mapped_unverified';
-        statusReason = lookup?.source || 'not_found';
-      }
+      status = lookup?.found === true ? 'verified' : 'mapped_unverified';
+      statusReason = lookup?.source || 'not_found';
     } catch (lookupError) {
-      status = 'lookup_error';
+      lookupFailed = true;
       statusReason = getActionableErrorMessage(lookupError, getErrorParts(lookupError).message);
     }
+  }
 
+  const partnerPayload = buildPartnerUpsertPayloadForCode({
+    codeItem,
+    existingPartner,
+    partnerEmail: normalizedEmail,
+    lookupResult: lookup,
+    lookupFailed,
+  });
+  await callFirebaseFunction('upsertAffiliatePartnerAdmin', partnerPayload);
+
+  if (normalizedEmail && isValidEmail(normalizedEmail)) {
+    const resolvedStatus = partnerPayload.portalUid
+      ? 'verified'
+      : lookupFailed
+        ? 'lookup_error'
+        : status;
     nextMap[normalizedCode] = normalizedEmail;
     nextRegistry[normalizedCode] = {
-      email: lookup?.email || normalizedEmail,
-      affiliateId: String(metadata?.affiliateId || '').trim(),
-      displayName: String(metadata?.displayName || '').trim(),
-      partnerUid: lookup?.uid || '',
-      partnerDisplayName: lookup?.displayName || '',
+      email: partnerPayload.portalEmail || lookup?.email || normalizedEmail,
+      affiliateId: partnerPayload.affiliateId,
+      displayName: partnerPayload.displayName || codeItem.displayName,
+      partnerUid: partnerPayload.portalUid || '',
+      partnerDisplayName: lookup?.displayName || partnerPayload.displayName || '',
       linkedAt: new Date().toISOString(),
       linkedBy: getActivityActor(),
-      status,
+      status: resolvedStatus,
       statusReason,
     };
-    if (lookup?.uid) {
-      nextUids[normalizedCode] = lookup.uid;
+    if (partnerPayload.portalUid) {
+      nextUids[normalizedCode] = partnerPayload.portalUid;
     } else {
       delete nextUids[normalizedCode];
-    }
-    if (normalizedProfile) {
-      nextProfiles[normalizedCode] = normalizedProfile;
-    } else {
-      delete nextProfiles[normalizedCode];
     }
   } else {
     delete nextMap[normalizedCode];
     delete nextRegistry[normalizedCode];
     delete nextUids[normalizedCode];
+  }
+
+  if (normalizedProfile) {
+    nextProfiles[normalizedCode] = normalizedProfile;
+  } else {
     delete nextProfiles[normalizedCode];
   }
 
@@ -5007,6 +5219,7 @@ async function loadDashboard(options) {
     await Promise.all([
       runHealthCheck('bootstrap', loadBootstrap),
       runHealthCheck('codes', loadCodes),
+      runHealthCheck('partners', loadPartners),
       runHealthCheck('reports', loadReports),
       runHealthCheck('audit_log', loadBackendAuditLogs),
       runHealthCheck('admin_settings', loadAdminSettings),
@@ -5207,12 +5420,15 @@ async function handleRefreshHealth() {
   try {
     await Promise.all([
       runHealthCheck('bootstrap', loadBootstrap),
+      runHealthCheck('codes', loadCodes),
+      runHealthCheck('partners', loadPartners),
       runHealthCheck('reports', loadReports),
       runHealthCheck('audit_log', loadBackendAuditLogs),
       runHealthCheck('admin_settings', loadAdminSettings),
       runHealthCheck('subscriber_stats', loadSubscriberStats),
     ]);
     renderOverview();
+    renderCodesTable();
     renderReportsTable();
     renderSubscriberInsights();
     showBanner('Health checks refreshed.', 'success');
@@ -5224,6 +5440,13 @@ async function handleRefreshHealth() {
 
 async function handleReverifyPartnerRegistry() {
   const map = Object.assign({}, state.partnerEmailsByCode || {});
+  buildPartnerRegistryEntries().forEach((item) => {
+    const normalizedCode = normalizeReferralCodeValue(item.code || item.primaryReferralCode || '');
+    const normalizedEmail = normalizeEmail(item.email || '');
+    if (normalizedCode && isValidEmail(normalizedEmail)) {
+      map[normalizedCode] = normalizedEmail;
+    }
+  });
   const codes = Object.keys(map);
   if (!codes.length) {
     showBanner('No linked partner emails found to verify yet.', 'info');
@@ -5234,12 +5457,14 @@ async function handleReverifyPartnerRegistry() {
   clearBanner();
   try {
     for (const code of codes) {
-      const codeItem = (state.codes || []).find((item) => String(item.code || '').toUpperCase() === code);
+      const codeItem = (state.codes || []).find((item) => normalizeReferralCodeValue(item.code || '') === code);
       await savePartnerEmailMapping(code, map[code], {
         affiliateId: codeItem?.affiliateId || '',
         displayName: codeItem?.displayName || '',
+        status: codeItem?.status || 'active',
       }, state.partnerProfilesByCode?.[code] || null);
     }
+    await loadPartners();
     renderPartnerRegistry();
     showBanner('Partner registry re-verification completed.', 'success');
     addActivityLog('Re-verified Nuria partners registry.', 'success');
@@ -5524,9 +5749,7 @@ async function handleCodeSave(event) {
 
   const editing = elements.editingExistingCode.value === 'true';
   const payload = {
-    code: typeof site.normalizeReferralCode === 'function'
-      ? site.normalizeReferralCode(elements.codeValue.value)
-      : String(elements.codeValue.value || '').trim().toUpperCase().replace(/\s+/g, ''),
+    code: normalizeReferralCodeValue(elements.codeValue.value),
     affiliateId: elements.affiliateId.value.trim(),
     displayName: elements.displayName.value.trim() || null,
     status: elements.codeStatus.value,
@@ -5574,7 +5797,9 @@ async function handleCodeSave(event) {
       await savePartnerEmailMapping(saved.code || payload.code, partnerNuriaEmail, {
         affiliateId: saved.affiliateId || payload.affiliateId,
         displayName: saved.displayName || payload.displayName || '',
+        status: saved.status || payload.status || 'active',
       }, partnerProfile);
+      await loadPartners();
     } catch (emailError) {
       showBanner(
         getActionableErrorMessage(
@@ -6318,8 +6543,9 @@ function bindEvents() {
   elements.refreshCodes?.addEventListener('click', async () => {
     clearBanner();
     try {
-      await loadCodes();
+      await Promise.all([loadCodes(), loadPartners()]);
       renderCodesTable();
+      renderPartnerRegistry();
     } catch (error) {
       showBanner(getErrorParts(error).message, 'error');
     }
@@ -6335,8 +6561,9 @@ function bindEvents() {
   elements.includeInactiveCodes?.addEventListener('change', async () => {
     clearBanner();
     try {
-      await loadCodes();
+      await Promise.all([loadCodes(), loadPartners()]);
       renderCodesTable();
+      renderPartnerRegistry();
     } catch (error) {
       showBanner(getErrorParts(error).message, 'error');
     }
