@@ -501,6 +501,16 @@ function setAdminPage(pageKey, options) {
   setChecklistPopoverOpen(false);
   setMobileNavOpen(false);
 
+  if (
+    next !== 'dashboard-copy'
+    && elements.globalNotice
+    && !elements.globalNotice.hidden
+    && state.dashboardCopyError
+    && String(elements.globalNotice.textContent || '').trim() === state.dashboardCopyError
+  ) {
+    clearBanner();
+  }
+
   elements.pageSections.forEach((section) => {
     const active = section.dataset.adminPage === next;
     section.hidden = !active;
@@ -528,7 +538,7 @@ function setAdminPage(pageKey, options) {
   }
 
   if (next === 'dashboard-copy' && state.user) {
-    ensureDashboardCopyLoaded().catch(() => {});
+    ensureDashboardCopyLoaded({ silent: true }).catch(() => {});
     if (previousPage !== next || !state.dashboardCopyLoaded) {
       track('dashboard_copy_admin_viewed', {
         route: ADMIN_PAGE_PATHS[next],
