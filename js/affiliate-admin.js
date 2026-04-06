@@ -23,6 +23,8 @@ const COMPACT_MODE_KEY = 'nuria_affiliate_admin_compact_mode_v1';
 const ONBOARDING_DISMISSED_KEY = 'nuria_affiliate_admin_onboarding_dismissed_v1';
 const ONBOARDING_SESSION_CLOSED_KEY = 'nuria_affiliate_admin_onboarding_closed_session_v1';
 const LOGIN_SUCCESS_SOUND_URL = '/assets/nuria%20site.wav';
+const SPIRIT_PLAY_LABEL = 'Play music';
+const SPIRIT_RESUME_LABEL = 'Resume music';
 const SPIRIT_BUTTON_DEFAULT_LABEL = 'Summon spirit ✨';
 const CHECKLIST_STEPS = ['generated', 'verified', 'exported', 'paid', 'receipt'];
 const ADMIN_PAGE_PATHS = {
@@ -35,6 +37,7 @@ const ADMIN_PAGE_PATHS = {
   subscribers: '/internal/affiliate-admin/subscribers/',
   reports: '/internal/affiliate-admin/reports/',
   'report-detail': '/internal/affiliate-admin/report-detail/',
+  'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
   settings: '/internal/affiliate-admin/settings/',
 };
 
@@ -72,7 +75,9 @@ const elements = {
   globalNotice: document.getElementById('adminGlobalNotice'),
   authSummary: document.getElementById('adminAuthSummary'),
   playSpiritSound: document.getElementById('adminPlaySpiritSound'),
-  spiritToast: document.getElementById('adminSpiritToast'),
+  pauseSpiritSound: document.getElementById('adminPauseSpiritSound'),
+  stopSpiritSound: document.getElementById('adminStopSpiritSound'),
+  spiritSoundState: document.getElementById('adminSpiritSoundState'),
   signOutTop: document.getElementById('adminSignOutTop'),
   emailSignInForm: document.getElementById('adminEmailSignInForm'),
   authError: document.getElementById('adminAuthError'),
@@ -142,12 +147,6 @@ const elements = {
   codeValue: document.getElementById('adminCodeValue'),
   codeReferralLink: document.getElementById('adminCodeReferralLink'),
   copyReferralLinkButton: document.getElementById('adminCopyReferralLinkButton'),
-  codePlainString: document.getElementById('adminCodePlainString'),
-  copyCodeStringButton: document.getElementById('adminCopyCodeStringButton'),
-  codeAppString: document.getElementById('adminCodeAppString'),
-  copyAppStringButton: document.getElementById('adminCopyAppStringButton'),
-  codeJoinPathString: document.getElementById('adminCodeJoinPathString'),
-  copyJoinPathButton: document.getElementById('adminCopyJoinPathButton'),
   affiliateId: document.getElementById('adminAffiliateId'),
   displayName: document.getElementById('adminDisplayName'),
   partnerNuriaEmail: document.getElementById('adminPartnerNuriaEmail'),
@@ -206,6 +205,40 @@ const elements = {
   markPaidButton: document.getElementById('adminMarkPaidButton'),
   finalizePayoutButton: document.getElementById('adminFinalizePayoutButton'),
   closePackageButton: document.getElementById('adminClosePackageButton'),
+  refreshDashboardCopy: document.getElementById('adminRefreshDashboardCopy'),
+  dashboardCopyLoadingState: document.getElementById('adminDashboardCopyLoadingState'),
+  dashboardCopyErrorState: document.getElementById('adminDashboardCopyErrorState'),
+  dashboardCopyErrorCopy: document.getElementById('adminDashboardCopyErrorCopy'),
+  dashboardCopyRetry: document.getElementById('adminDashboardCopyRetry'),
+  dashboardCopyReady: document.getElementById('adminDashboardCopyReady'),
+  dashboardCopyForm: document.getElementById('adminDashboardCopyForm'),
+  dashboardCopyEnabled: document.getElementById('adminDashboardCopyEnabled'),
+  dashboardCopyTitleEn: document.getElementById('adminDashboardCopyTitleEn'),
+  dashboardCopyTitleMeta: document.getElementById('adminDashboardCopyTitleMeta'),
+  dashboardCopyBodyEn: document.getElementById('adminDashboardCopyBodyEn'),
+  dashboardCopyBodyMeta: document.getElementById('adminDashboardCopyBodyMeta'),
+  dashboardCopyAutoTranslate: document.getElementById('adminDashboardCopyAutoTranslate'),
+  dashboardCopyForceTranslate: document.getElementById('adminDashboardCopyForceTranslate'),
+  saveDashboardCopyButton: document.getElementById('adminSaveDashboardCopyButton'),
+  dashboardCopyFormError: document.getElementById('adminDashboardCopyFormError'),
+  dashboardCopyLocaleSearch: document.getElementById('adminDashboardCopyLocaleSearch'),
+  dashboardCopyLocaleCount: document.getElementById('adminDashboardCopyLocaleCount'),
+  dashboardCopyTranslationCount: document.getElementById('adminDashboardCopyTranslationCount'),
+  dashboardCopyTranslationsList: document.getElementById('adminDashboardCopyTranslationsList'),
+  dashboardCopyReadinessSummary: document.getElementById('adminDashboardCopyReadinessSummary'),
+  dashboardCopyReadinessBadge: document.getElementById('adminDashboardCopyReadinessBadge'),
+  dashboardCopyChecklist: document.getElementById('adminDashboardCopyChecklist'),
+  dashboardCopyGuidance: document.getElementById('adminDashboardCopyGuidance'),
+  dashboardCopyPublishedSummary: document.getElementById('adminDashboardCopyPublishedSummary'),
+  dashboardCopyPublishedCompare: document.getElementById('adminDashboardCopyPublishedCompare'),
+  dashboardCopyChangeList: document.getElementById('adminDashboardCopyChangeList'),
+  dashboardCopyPreviewLocaleHint: document.getElementById('adminDashboardCopyPreviewLocaleHint'),
+  dashboardCopyPreviewLocale: document.getElementById('adminDashboardCopyPreviewLocale'),
+  dashboardCopyPreviewCard: document.getElementById('adminDashboardCopyPreviewCard'),
+  dashboardCopyPreviewTitle: document.getElementById('adminDashboardCopyPreviewTitle'),
+  dashboardCopyPreviewBody: document.getElementById('adminDashboardCopyPreviewBody'),
+  dashboardCopyPreviewEmpty: document.getElementById('adminDashboardCopyPreviewEmpty'),
+  dashboardCopyMetadata: document.getElementById('adminDashboardCopyMetadata'),
   recipientForm: document.getElementById('adminRecipientForm'),
   recipientEmail: document.getElementById('adminRecipientEmail'),
   addRecipientButton: document.getElementById('adminAddRecipientButton'),
@@ -299,11 +332,22 @@ const state = {
   finalizeInFlight: false,
   closePackageInFlight: false,
   saveSettingsInFlight: false,
+  dashboardCopyAdmin: null,
+  dashboardCopyItem: null,
+  dashboardCopyDraft: null,
+  dashboardCopyLoaded: false,
+  dashboardCopyLoading: false,
+  dashboardCopyLoadPromise: null,
+  dashboardCopyError: '',
+  dashboardCopySaveInFlight: false,
+  dashboardCopyLocaleSearch: '',
+  dashboardCopyPreviewLocale: '',
+  dashboardCopyPreviewTouched: false,
 };
 let loginSuccessSound = null;
-let spiritToastTimeoutId = null;
 let checklistRemoteSyncTimeoutId = null;
 let previousAuthUid = null;
+const dashboardCopyLocaleLabelCache = new Map();
 
 function setChecklistPopoverOpen(open) {
   if (!elements.checklistNavPopover || !elements.checklistNavToggle) return;
@@ -449,6 +493,7 @@ function setAdminPage(pageKey, options) {
   const available = new Set(elements.pageSections.map((section) => section.dataset.adminPage));
   const normalized = normalizeAdminPageKey(pageKey);
   const next = available.has(normalized) ? normalized : 'landing';
+  const previousPage = state.currentPage;
   state.currentPage = next;
   setChecklistPopoverOpen(false);
   setMobileNavOpen(false);
@@ -477,6 +522,15 @@ function setAdminPage(pageKey, options) {
 
   if (settings.updateUrl) {
     updateAdminPageUrl(next);
+  }
+
+  if (next === 'dashboard-copy' && state.user) {
+    ensureDashboardCopyLoaded().catch(() => {});
+    if (previousPage !== next || !state.dashboardCopyLoaded) {
+      track('dashboard_copy_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
   }
 }
 
@@ -569,6 +623,10 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (message.includes('invalid_fixed_payout_minor')) {
     return 'Fixed payout must be a whole number >= 0.';
+  }
+
+  if (message.includes('copy_required')) {
+    return 'English title or body is required when the dashboard placeholder is enabled.';
   }
 
   if (message.includes('report_not_found')) {
@@ -702,6 +760,476 @@ function normalizePartnerProfilesMap(rawValue) {
     }
   });
   return result;
+}
+
+function resetDashboardCopyState(options) {
+  const settings = Object.assign({ preservePreviewLocale: true }, options || {});
+  const previewLocale = settings.preservePreviewLocale ? state.dashboardCopyPreviewLocale : '';
+  state.dashboardCopyAdmin = null;
+  state.dashboardCopyItem = null;
+  state.dashboardCopyDraft = null;
+  state.dashboardCopyLoaded = false;
+  state.dashboardCopyLoading = false;
+  state.dashboardCopyLoadPromise = null;
+  state.dashboardCopyError = '';
+  state.dashboardCopySaveInFlight = false;
+  state.dashboardCopyLocaleSearch = '';
+  state.dashboardCopyPreviewLocale = previewLocale || '';
+  state.dashboardCopyPreviewTouched = false;
+}
+
+function cloneDashboardCopyTranslations(translations) {
+  const result = {};
+  Object.entries(translations || {}).forEach(([locale, bundle]) => {
+    const title = String(bundle?.title || '').trim();
+    const body = String(bundle?.body || '').trim();
+    if (!title && !body) return;
+    result[locale] = {
+      title,
+      body,
+    };
+  });
+  return result;
+}
+
+function normalizeDashboardCopyTranslations(rawValue) {
+  const result = {};
+  if (!rawValue || typeof rawValue !== 'object' || Array.isArray(rawValue)) {
+    return result;
+  }
+
+  Object.entries(rawValue).forEach(([localeKey, bundle]) => {
+    if (!bundle || typeof bundle !== 'object' || Array.isArray(bundle)) {
+      return;
+    }
+
+    const locale = String(localeKey || '').trim();
+    const title = String(bundle.title || '').trim();
+    const body = String(bundle.body || '').trim();
+
+    if (!locale || (!title && !body)) {
+      return;
+    }
+
+    result[locale] = {
+      title,
+      body,
+    };
+  });
+
+  return result;
+}
+
+function normalizeDashboardCopyItem(rawItem) {
+  const supportedLocales = Array.from(
+    new Set(
+      (Array.isArray(rawItem?.supportedLocales) ? rawItem.supportedLocales : [])
+        .map((locale) => String(locale || '').trim())
+        .filter((locale) => locale && locale.toLowerCase() !== 'en')
+    )
+  ).sort((left, right) => left.localeCompare(right));
+
+  return {
+    copyId: String(rawItem?.copyId || 'dashboard_top_placeholder').trim() || 'dashboard_top_placeholder',
+    enabled: rawItem?.enabled !== false,
+    titleEn: String(rawItem?.titleEn || '').trim(),
+    bodyEn: String(rawItem?.bodyEn || '').trim(),
+    translations: normalizeDashboardCopyTranslations(rawItem?.translations),
+    supportedLocales,
+    createdAt: rawItem?.createdAt || { ms: null, iso: null },
+    updatedAt: rawItem?.updatedAt || { ms: null, iso: null },
+    updatedByUid: String(rawItem?.updatedByUid || '').trim() || null,
+    updatedByEmail: String(rawItem?.updatedByEmail || '').trim() || null,
+  };
+}
+
+function createDashboardCopyDraft(item) {
+  return {
+    enabled: item?.enabled !== false,
+    titleEn: String(item?.titleEn || '').trim(),
+    bodyEn: String(item?.bodyEn || '').trim(),
+    autoTranslate: true,
+    forceTranslate: false,
+    translations: cloneDashboardCopyTranslations(item?.translations),
+  };
+}
+
+function getDashboardCopyLocaleCandidates(locale) {
+  const raw = String(locale || '').trim();
+  if (!raw) return [];
+
+  const values = [];
+  const pushCandidate = (value) => {
+    const next = String(value || '').trim();
+    if (!next || values.includes(next)) return;
+    values.push(next);
+  };
+
+  pushCandidate(raw);
+  pushCandidate(raw.toLowerCase());
+
+  const dashed = raw.replace(/_/g, '-');
+  pushCandidate(dashed);
+  pushCandidate(dashed.toLowerCase());
+
+  const base = dashed.toLowerCase().split('-')[0];
+  if (base && base !== dashed.toLowerCase()) {
+    pushCandidate(base);
+  }
+
+  if (!values.includes('en')) {
+    values.push('en');
+  }
+
+  return values;
+}
+
+function getDashboardCopyTranslationValue(translations, locale, field) {
+  const bundles = translations || {};
+  for (const candidate of getDashboardCopyLocaleCandidates(locale)) {
+    const value = String(bundles?.[candidate]?.[field] || '').trim();
+    if (value) {
+      return {
+        value,
+        source: candidate,
+      };
+    }
+  }
+
+  return {
+    value: '',
+    source: '',
+  };
+}
+
+function getDashboardCopyPreviewSnapshot(draft, locale) {
+  const safeDraft = draft || createDashboardCopyDraft({});
+  const titleMatch = getDashboardCopyTranslationValue(safeDraft.translations, locale, 'title');
+  const bodyMatch = getDashboardCopyTranslationValue(safeDraft.translations, locale, 'body');
+  const title = titleMatch.value || String(safeDraft.titleEn || '').trim();
+  const body = bodyMatch.value || String(safeDraft.bodyEn || '').trim();
+
+  return {
+    enabled: safeDraft.enabled !== false,
+    title,
+    body,
+    titleSource: titleMatch.value ? titleMatch.source : 'en',
+    bodySource: bodyMatch.value ? bodyMatch.source : 'en',
+    chain: getDashboardCopyLocaleCandidates(locale),
+    hasVisibleCopy: safeDraft.enabled !== false && Boolean(title || body),
+  };
+}
+
+function getPreferredDashboardCopyPreviewLocale(supportedLocales) {
+  const locales = Array.isArray(supportedLocales) ? supportedLocales : [];
+  const browserLocale = String(window.navigator?.language || '').trim();
+  const browserBase = browserLocale.toLowerCase().split(/[-_]/)[0];
+  return (
+    locales.find((locale) => locale === browserLocale)
+    || locales.find((locale) => locale.toLowerCase() === browserLocale.toLowerCase())
+    || locales.find((locale) => locale.toLowerCase() === browserBase)
+    || 'en'
+  );
+}
+
+function getDashboardCopyLocaleLabel(locale) {
+  const safeLocale = String(locale || '').trim();
+  if (!safeLocale) return 'Unknown locale';
+  if (dashboardCopyLocaleLabelCache.has(safeLocale)) {
+    return dashboardCopyLocaleLabelCache.get(safeLocale);
+  }
+
+  const normalized = safeLocale.replace(/_/g, '-');
+  const parts = normalized.split('-');
+  const languageCode = String(parts[0] || '').toLowerCase();
+  const regionCode = String(parts[1] || '').toUpperCase();
+
+  let languageLabel = languageCode || safeLocale;
+  let regionLabel = regionCode;
+
+  try {
+    if (typeof Intl.DisplayNames === 'function' && languageCode) {
+      const names = new Intl.DisplayNames([window.navigator?.language || 'en'], { type: 'language' });
+      languageLabel = names.of(languageCode) || languageLabel;
+      if (regionCode) {
+        const regionNames = new Intl.DisplayNames([window.navigator?.language || 'en'], { type: 'region' });
+        regionLabel = regionNames.of(regionCode) || regionLabel;
+      }
+    }
+  } catch (_error) {
+    // Ignore Intl label failures and fall back to raw locale codes.
+  }
+
+  const label = regionLabel
+    ? `${languageLabel} (${regionLabel})`
+    : languageLabel;
+  dashboardCopyLocaleLabelCache.set(safeLocale, label);
+  return label;
+}
+
+function getDashboardCopyLocaleSummary(bundle) {
+  const hasTitle = Boolean(String(bundle?.title || '').trim());
+  const hasBody = Boolean(String(bundle?.body || '').trim());
+  if (hasTitle && hasBody) return 'Title + body stored';
+  if (hasTitle) return 'Title stored';
+  if (hasBody) return 'Body stored';
+  return 'No locale text stored';
+}
+
+function getDashboardCopyStoredLocaleCount(translations) {
+  return Object.values(translations || {}).filter((bundle) => {
+    return Boolean(String(bundle?.title || '').trim() || String(bundle?.body || '').trim());
+  }).length;
+}
+
+function getDashboardCopyComparableShape(source) {
+  return {
+    enabled: source?.enabled !== false,
+    titleEn: String(source?.titleEn || '').trim(),
+    bodyEn: String(source?.bodyEn || '').trim(),
+    translations: cloneDashboardCopyTranslations(source?.translations),
+  };
+}
+
+function truncateDashboardCopyValue(value, maxLength) {
+  const text = String(value || '').trim();
+  if (!text) return 'Empty';
+  const limit = Number(maxLength) > 0 ? Number(maxLength) : 120;
+  return text.length > limit
+    ? `${text.slice(0, limit - 1).trimEnd()}…`
+    : text;
+}
+
+function hasDashboardCopyUnsavedChanges() {
+  if (!state.dashboardCopyDraft || !state.dashboardCopyItem) {
+    return false;
+  }
+
+  if (state.dashboardCopyDraft.autoTranslate !== true || state.dashboardCopyDraft.forceTranslate === true) {
+    return true;
+  }
+
+  const draftShape = getDashboardCopyComparableShape(state.dashboardCopyDraft);
+  const itemShape = getDashboardCopyComparableShape(state.dashboardCopyItem);
+  return JSON.stringify(draftShape) !== JSON.stringify(itemShape);
+}
+
+function getDashboardCopyReadinessModel() {
+  const draft = state.dashboardCopyDraft || createDashboardCopyDraft({});
+  const item = state.dashboardCopyItem || normalizeDashboardCopyItem({});
+  const englishTitle = String(draft.titleEn || '').trim();
+  const englishBody = String(draft.bodyEn || '').trim();
+  const englishReady = Boolean(englishTitle || englishBody);
+  const enabled = draft.enabled !== false;
+  const unsaved = hasDashboardCopyUnsavedChanges();
+  const translatedCount = getDashboardCopyStoredLocaleCount(draft.translations);
+  const supportedCount = Array.isArray(item.supportedLocales) ? item.supportedLocales.length : 0;
+  const previewedLocale = state.dashboardCopyPreviewTouched && state.dashboardCopyPreviewLocale !== 'en'
+    ? state.dashboardCopyPreviewLocale
+    : '';
+  const translationPlanReady = supportedCount === 0 || translatedCount > 0 || draft.autoTranslate !== false;
+
+  let badgeTone = 'info';
+  let badgeLabel = 'Draft';
+  let summary = 'Review the basics here before you publish changes to the app.';
+
+  if (enabled && !englishReady) {
+    badgeTone = 'error';
+    badgeLabel = 'Needs copy';
+    summary = 'Add an English title or body before you turn this placeholder on in the app.';
+  } else if (enabled && unsaved) {
+    badgeTone = 'warn';
+    badgeLabel = 'Save needed';
+    summary = 'This draft looks ready to review, but it is not live in the app until you save it.';
+  } else if (enabled && englishReady) {
+    badgeTone = 'success';
+    badgeLabel = 'Ready';
+    summary = 'The saved version is ready to appear in the app. You can still preview another locale before publishing.';
+  } else if (!enabled && unsaved) {
+    badgeTone = 'info';
+    badgeLabel = 'Hidden draft';
+    summary = 'The placeholder is still hidden. Save when you want this hidden draft to become the current backend version.';
+  } else if (!enabled && englishReady) {
+    badgeTone = 'info';
+    badgeLabel = 'Hidden';
+    summary = 'The placeholder is safely hidden in the app while you keep refining the copy.';
+  } else {
+    badgeTone = 'info';
+    badgeLabel = 'Hidden';
+    summary = 'This placeholder is currently hidden and has no visible English source yet.';
+  }
+
+  const checklist = [
+    {
+      complete: englishReady,
+      title: 'English fallback is written',
+      detail: englishReady
+        ? 'The app can safely fall back to English when a locale-specific text is missing.'
+        : 'Write at least a title or a body in English first.',
+    },
+    {
+      complete: !unsaved,
+      title: 'All changes are saved',
+      detail: unsaved
+        ? 'This browser still has unsaved edits. Save to push them to the backend.'
+        : 'The editor matches the latest saved backend version.',
+    },
+    {
+      complete: enabled,
+      title: 'Placeholder is enabled',
+      detail: enabled
+        ? 'The card is allowed to show in the app once the saved document is loaded.'
+        : 'Keep this off while drafting privately or switch it on when ready.',
+    },
+    {
+      complete: translationPlanReady,
+      title: 'Translation plan is covered',
+      detail: draft.autoTranslate !== false
+        ? 'Missing locales will be generated server-side on the next save.'
+        : translatedCount > 0
+          ? `${translatedCount} locale${translatedCount === 1 ? '' : 's'} already have stored text.`
+          : 'Other locales will fall back to English until you add manual overrides.',
+    },
+    {
+      complete: Boolean(previewedLocale),
+      title: 'A non-English locale has been previewed',
+      detail: previewedLocale
+        ? `Preview checked for ${previewedLocale}.`
+        : 'Switch the preview to one target locale before publishing.',
+    },
+  ];
+
+  const guidance = [
+    {
+      title: 'English source length',
+      detail: `${englishTitle.length} title chars · ${englishBody.length} body chars`,
+    },
+    {
+      title: 'Locale coverage',
+      detail: `${translatedCount} stored locale${translatedCount === 1 ? '' : 's'} out of ${supportedCount} supported`,
+    },
+    {
+      title: 'Current publish mode',
+      detail: enabled ? 'Visible in app when saved' : 'Hidden in app until you enable it',
+    },
+  ];
+
+  if (unsaved) {
+    guidance.unshift({
+      title: 'Unsaved draft',
+      detail: 'Your latest edits are only local right now. Save to make them live in the backend.',
+    });
+  }
+
+  if (!draft.autoTranslate && translatedCount === 0) {
+    guidance.push({
+      title: 'Translation note',
+      detail: 'With auto-translate off, all unsupported locales will keep falling back to English.',
+    });
+  }
+
+  return {
+    badgeTone,
+    badgeLabel,
+    summary,
+    checklist,
+    guidance,
+  };
+}
+
+function getDashboardCopyChangeSummary() {
+  const draft = state.dashboardCopyDraft || createDashboardCopyDraft({});
+  const item = state.dashboardCopyItem || normalizeDashboardCopyItem({});
+  const changes = [];
+
+  if ((draft.enabled !== false) !== (item.enabled !== false)) {
+    changes.push(
+      draft.enabled !== false
+        ? 'Visibility will change from hidden to visible in the app.'
+        : 'Visibility will change from visible to hidden in the app.'
+    );
+  }
+
+  const liveTitle = String(item.titleEn || '').trim();
+  const draftTitle = String(draft.titleEn || '').trim();
+  if (liveTitle !== draftTitle) {
+    changes.push(
+      draftTitle
+        ? `English title will update to: "${truncateDashboardCopyValue(draftTitle, 80)}"`
+        : 'English title will be cleared.'
+    );
+  }
+
+  const liveBody = String(item.bodyEn || '').trim();
+  const draftBody = String(draft.bodyEn || '').trim();
+  if (liveBody !== draftBody) {
+    changes.push(
+      draftBody
+        ? `English body will update to: "${truncateDashboardCopyValue(draftBody, 110)}"`
+        : 'English body will be cleared.'
+    );
+  }
+
+  const liveTranslations = item.translations || {};
+  const draftTranslations = draft.translations || {};
+  const localeKeys = Array.from(new Set(Object.keys(liveTranslations).concat(Object.keys(draftTranslations))));
+  const changedLocales = localeKeys.filter((locale) => {
+    const liveBundle = {
+      title: String(liveTranslations?.[locale]?.title || '').trim(),
+      body: String(liveTranslations?.[locale]?.body || '').trim(),
+    };
+    const draftBundle = {
+      title: String(draftTranslations?.[locale]?.title || '').trim(),
+      body: String(draftTranslations?.[locale]?.body || '').trim(),
+    };
+    return JSON.stringify(liveBundle) !== JSON.stringify(draftBundle);
+  });
+
+  if (changedLocales.length) {
+    const sample = changedLocales.slice(0, 4).join(', ');
+    changes.push(
+      changedLocales.length > 4
+        ? `Manual locale overrides changed in ${changedLocales.length} locales (${sample}, +${changedLocales.length - 4} more).`
+        : `Manual locale overrides changed in ${changedLocales.length} locale${changedLocales.length === 1 ? '' : 's'} (${sample}).`
+    );
+  }
+
+  if (draft.autoTranslate !== true) {
+    changes.push('Auto-translate is turned off for the next save, so missing locales will keep falling back to English.');
+  }
+
+  if (draft.forceTranslate === true && draft.autoTranslate !== false) {
+    changes.push('Force re-translate is turned on, so the next save will refresh generated locales from the English source.');
+  }
+
+  return changes;
+}
+
+function buildDashboardCopySaveTranslations(item, draft) {
+  const previousTranslations = item?.translations || {};
+  const nextTranslations = draft?.translations || {};
+  const payload = {};
+
+  Object.keys(nextTranslations).forEach((locale) => {
+    const nextTitle = String(nextTranslations?.[locale]?.title || '').trim();
+    const nextBody = String(nextTranslations?.[locale]?.body || '').trim();
+    const prevTitle = String(previousTranslations?.[locale]?.title || '').trim();
+    const prevBody = String(previousTranslations?.[locale]?.body || '').trim();
+    const bundle = {};
+
+    if (nextTitle && nextTitle !== prevTitle) {
+      bundle.title = nextTitle;
+    }
+    if (nextBody && nextBody !== prevBody) {
+      bundle.body = nextBody;
+    }
+
+    if (Object.keys(bundle).length) {
+      payload[locale] = bundle;
+    }
+  });
+
+  return payload;
 }
 
 function normalizePartnerProfile(rawProfile) {
@@ -872,32 +1400,89 @@ function getLoginSuccessSound() {
     loginSuccessSound = new Audio(LOGIN_SUCCESS_SOUND_URL);
     loginSuccessSound.preload = 'auto';
     loginSuccessSound.volume = 0.8;
+    loginSuccessSound.addEventListener('play', updateSpiritSoundControls);
+    loginSuccessSound.addEventListener('pause', updateSpiritSoundControls);
+    loginSuccessSound.addEventListener('ended', () => {
+      loginSuccessSound.currentTime = 0;
+      updateSpiritSoundControls();
+    });
   }
 
   return loginSuccessSound;
 }
 
-async function playLoginSuccessSound() {
+async function playLoginSuccessSound(options) {
+  const settings = Object.assign({ restart: false }, options || {});
   try {
     const sound = getLoginSuccessSound();
-    sound.currentTime = 0;
+    if (settings.restart || sound.ended) {
+      sound.currentTime = 0;
+    }
     await sound.play();
   } catch (_error) {
     // Browser autoplay policies can block audio; ignore silently.
+  } finally {
+    updateSpiritSoundControls();
   }
 }
 
-function showSpiritToast() {
-  if (!elements.spiritToast) return;
-  elements.spiritToast.hidden = false;
-  if (spiritToastTimeoutId) {
-    window.clearTimeout(spiritToastTimeoutId);
+function updateSpiritSoundControls() {
+  const sound = loginSuccessSound;
+  const isPlaying = Boolean(sound && !sound.paused && !sound.ended);
+  const canResume = Boolean(sound && sound.paused && sound.currentTime > 0);
+  const canStop = Boolean(sound && (isPlaying || sound.currentTime > 0));
+
+  if (elements.playSpiritSound) {
+    elements.playSpiritSound.disabled = isPlaying;
+    elements.playSpiritSound.textContent = canResume
+      ? SPIRIT_RESUME_LABEL
+      : SPIRIT_PLAY_LABEL;
   }
-  spiritToastTimeoutId = window.setTimeout(() => {
-    if (elements.spiritToast) {
-      elements.spiritToast.hidden = true;
+
+  if (elements.pauseSpiritSound) {
+    elements.pauseSpiritSound.disabled = !isPlaying;
+  }
+
+  if (elements.stopSpiritSound) {
+    elements.stopSpiritSound.disabled = !canStop;
+  }
+
+  if (elements.spiritSoundState) {
+    let label = 'Music stopped';
+    let stateName = 'stopped';
+
+    if (isPlaying) {
+      label = 'Music playing';
+      stateName = 'playing';
+    } else if (canResume) {
+      label = 'Music paused';
+      stateName = 'paused';
     }
-  }, 2600);
+
+    elements.spiritSoundState.textContent = label;
+    elements.spiritSoundState.dataset.state = stateName;
+  }
+}
+
+function pauseLoginSuccessSound() {
+  if (!loginSuccessSound || loginSuccessSound.paused) {
+    updateSpiritSoundControls();
+    return;
+  }
+
+  loginSuccessSound.pause();
+  updateSpiritSoundControls();
+}
+
+function stopLoginSuccessSound() {
+  if (!loginSuccessSound) {
+    updateSpiritSoundControls();
+    return;
+  }
+
+  loginSuccessSound.pause();
+  loginSuccessSound.currentTime = 0;
+  updateSpiritSoundControls();
 }
 
 function setSpiritButtonFunLabel() {
@@ -2565,6 +3150,611 @@ function updateIdentity() {
   elements.signOutTop.hidden = false;
 }
 
+function syncDashboardCopyToggleState() {
+  if (!elements.dashboardCopyAutoTranslate || !elements.dashboardCopyForceTranslate) {
+    return;
+  }
+
+  const autoTranslate = elements.dashboardCopyAutoTranslate.checked;
+  elements.dashboardCopyForceTranslate.disabled = !autoTranslate;
+  if (!autoTranslate) {
+    elements.dashboardCopyForceTranslate.checked = false;
+    if (state.dashboardCopyDraft) {
+      state.dashboardCopyDraft.forceTranslate = false;
+    }
+  }
+}
+
+function setDashboardCopyFormError(message) {
+  if (!elements.dashboardCopyFormError) {
+    return;
+  }
+
+  elements.dashboardCopyFormError.hidden = !message;
+  elements.dashboardCopyFormError.textContent = message || '';
+}
+
+function renderDashboardCopyTranslations() {
+  if (!elements.dashboardCopyTranslationsList || !state.dashboardCopyDraft) {
+    return;
+  }
+
+  const supportedLocales = Array.isArray(state.dashboardCopyItem?.supportedLocales)
+    ? state.dashboardCopyItem.supportedLocales.slice()
+    : [];
+  const query = normalizeSearchValue(state.dashboardCopyLocaleSearch);
+
+  if (elements.dashboardCopyLocaleSearch && elements.dashboardCopyLocaleSearch.value !== state.dashboardCopyLocaleSearch) {
+    elements.dashboardCopyLocaleSearch.value = state.dashboardCopyLocaleSearch;
+  }
+
+  if (elements.dashboardCopyLocaleCount) {
+    const suffix = supportedLocales.length === 1 ? '' : 's';
+    elements.dashboardCopyLocaleCount.textContent = `${supportedLocales.length} supported locale${suffix}`;
+  }
+
+  if (elements.dashboardCopyTranslationCount) {
+    const storedCount = getDashboardCopyStoredLocaleCount(state.dashboardCopyDraft.translations);
+    const suffix = storedCount === 1 ? '' : 's';
+    elements.dashboardCopyTranslationCount.textContent = `${storedCount} locale${suffix} filled`;
+  }
+
+  if (!supportedLocales.length) {
+    elements.dashboardCopyTranslationsList.innerHTML =
+      '<p class="admin-empty admin-empty--inline">No supported locales were returned by the backend.</p>';
+    return;
+  }
+
+  const localeEntries = supportedLocales
+    .map((locale) => ({
+      locale,
+      label: getDashboardCopyLocaleLabel(locale),
+    }))
+    .sort((left, right) => left.label.localeCompare(right.label));
+
+  const filteredLocales = localeEntries.filter(({ locale, label }) => {
+    if (!query) return true;
+    return normalizeSearchValue(locale).includes(query) || normalizeSearchValue(label).includes(query);
+  });
+
+  if (!filteredLocales.length) {
+    elements.dashboardCopyTranslationsList.innerHTML =
+      '<p class="admin-empty admin-empty--inline">No locales matched that search.</p>';
+    return;
+  }
+
+  elements.dashboardCopyTranslationsList.innerHTML = filteredLocales
+    .map(({ locale, label }, index) => {
+      const bundle = state.dashboardCopyDraft.translations?.[locale] || {};
+      const open = query || locale === state.dashboardCopyPreviewLocale || index === 0;
+      const meta = getDashboardCopyLocaleSummary(bundle);
+      return `
+        <details class="admin-collapsible admin-dashboard-copy__locale-item"${open ? ' open' : ''}>
+          <summary class="admin-collapsible__summary">
+            <span class="admin-dashboard-copy__locale-heading">
+              <strong class="admin-dashboard-copy__locale-code">${escapeHtml(locale)}</strong>
+              <span class="admin-dashboard-copy__locale-name">${escapeHtml(label)}</span>
+            </span>
+            <span class="admin-collapsible__meta">${escapeHtml(meta)}</span>
+          </summary>
+          <div class="admin-collapsible__content">
+            <div class="form-group">
+              <label class="form-label" for="adminDashboardCopyLocaleTitle-${escapeHtml(locale)}">Title override</label>
+              <input
+                class="form-input"
+                id="adminDashboardCopyLocaleTitle-${escapeHtml(locale)}"
+                type="text"
+                value="${escapeHtml(bundle.title || '')}"
+                data-dashboard-copy-locale="${escapeHtml(locale)}"
+                data-dashboard-copy-field="title"
+                placeholder="Leave blank to keep the current stored title"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="adminDashboardCopyLocaleBody-${escapeHtml(locale)}">Body override</label>
+              <textarea
+                class="form-input form-textarea"
+                id="adminDashboardCopyLocaleBody-${escapeHtml(locale)}"
+                rows="4"
+                data-dashboard-copy-locale="${escapeHtml(locale)}"
+                data-dashboard-copy-field="body"
+                placeholder="Leave blank to keep the current stored body"
+              >${escapeHtml(bundle.body || '')}</textarea>
+            </div>
+            <p class="admin-panel__helper admin-dashboard-copy__locale-helper">
+              Filled fields overwrite the stored locale on save. Blank fields keep the current stored translation until you regenerate from English.
+            </p>
+          </div>
+        </details>
+      `;
+    })
+    .join('');
+}
+
+function renderDashboardCopyPreview() {
+  if (!state.dashboardCopyDraft) {
+    return;
+  }
+
+  const previewLocales = ['en'].concat(Array.isArray(state.dashboardCopyItem?.supportedLocales) ? state.dashboardCopyItem.supportedLocales : []);
+  const uniquePreviewLocales = Array.from(new Set(previewLocales));
+  if (!uniquePreviewLocales.includes(state.dashboardCopyPreviewLocale)) {
+    state.dashboardCopyPreviewLocale = getPreferredDashboardCopyPreviewLocale(state.dashboardCopyItem?.supportedLocales);
+  }
+  if (!state.dashboardCopyPreviewLocale) {
+    state.dashboardCopyPreviewLocale = 'en';
+  }
+
+  if (elements.dashboardCopyPreviewLocale) {
+    elements.dashboardCopyPreviewLocale.innerHTML = uniquePreviewLocales
+      .map((locale) => {
+        const selected = locale === state.dashboardCopyPreviewLocale ? ' selected' : '';
+        const label = locale === 'en' ? 'English' : getDashboardCopyLocaleLabel(locale);
+        return `<option value="${escapeHtml(locale)}"${selected}>${escapeHtml(label)} (${escapeHtml(locale)})</option>`;
+      })
+      .join('');
+  }
+
+  const preview = getDashboardCopyPreviewSnapshot(state.dashboardCopyDraft, state.dashboardCopyPreviewLocale);
+  const sourceCopy = preview.titleSource === preview.bodySource
+    ? `Currently resolving from ${preview.titleSource}.`
+    : `Title resolves from ${preview.titleSource}; body resolves from ${preview.bodySource}.`;
+
+  if (elements.dashboardCopyPreviewLocaleHint) {
+    elements.dashboardCopyPreviewLocaleHint.textContent =
+      `Resolution chain: ${preview.chain.join(' -> ')}. ${sourceCopy}`;
+  }
+
+  if (elements.dashboardCopyPreviewCard) {
+    elements.dashboardCopyPreviewCard.classList.toggle('is-disabled', !preview.enabled);
+  }
+
+  if (elements.dashboardCopyPreviewTitle) {
+    elements.dashboardCopyPreviewTitle.hidden = !preview.title;
+    elements.dashboardCopyPreviewTitle.textContent = preview.title || '';
+  }
+
+  if (elements.dashboardCopyPreviewBody) {
+    elements.dashboardCopyPreviewBody.hidden = !preview.body;
+    elements.dashboardCopyPreviewBody.textContent = preview.body || '';
+  }
+
+  if (elements.dashboardCopyPreviewEmpty) {
+    elements.dashboardCopyPreviewEmpty.hidden = preview.hasVisibleCopy;
+    elements.dashboardCopyPreviewEmpty.textContent = preview.enabled
+      ? 'This placeholder does not have visible text for the selected locale.'
+      : 'This placeholder is currently disabled in the app.';
+  }
+}
+
+function renderDashboardCopyMetadata() {
+  if (!elements.dashboardCopyMetadata || !state.dashboardCopyItem || !state.dashboardCopyDraft) {
+    return;
+  }
+
+  const item = state.dashboardCopyItem;
+  const draft = state.dashboardCopyDraft;
+  const storedCount = getDashboardCopyStoredLocaleCount(draft.translations);
+  const metadata = [
+    {
+      title: 'Document',
+      meta: item.copyId || 'dashboard_top_placeholder',
+    },
+    {
+      title: 'Status',
+      meta: draft.enabled ? 'Enabled in app' : 'Hidden in app',
+    },
+    {
+      title: 'Updated',
+      meta: item.updatedAt?.iso
+        ? `${formatTimestamp(item.updatedAt)}${item.updatedByEmail ? ` by ${item.updatedByEmail}` : ''}`
+        : 'Never saved yet',
+    },
+    {
+      title: 'Created',
+      meta: item.createdAt?.iso ? formatTimestamp(item.createdAt) : 'Not created yet',
+    },
+    {
+      title: 'Locale coverage',
+      meta: `${storedCount} stored / ${Array.isArray(item.supportedLocales) ? item.supportedLocales.length : 0} supported`,
+    },
+    {
+      title: 'Save mode',
+      meta: draft.autoTranslate
+        ? `Auto-translate on${draft.forceTranslate ? ' · force refresh on next save' : ''}`
+        : 'Auto-translate off',
+    },
+  ];
+
+  elements.dashboardCopyMetadata.innerHTML = metadata
+    .map((entry) => {
+      return `
+        <div class="admin-mini-item">
+          <span class="admin-mini-item__title">${escapeHtml(entry.title)}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(entry.meta)}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderDashboardCopyFieldMeta() {
+  if (!state.dashboardCopyDraft) {
+    return;
+  }
+
+  const titleLength = String(state.dashboardCopyDraft.titleEn || '').trim().length;
+  const bodyLength = String(state.dashboardCopyDraft.bodyEn || '').trim().length;
+
+  if (elements.dashboardCopyTitleMeta) {
+    const tone = titleLength > 120 ? ' Keep it tighter if possible for smaller screens.' : ' Short, calm headlines work best here.';
+    elements.dashboardCopyTitleMeta.textContent = `${titleLength} / 180 characters.${tone}`;
+  }
+
+  if (elements.dashboardCopyBodyMeta) {
+    let message = `${bodyLength} characters. Keep it concise so it still reads well on smaller phones.`;
+    if (bodyLength > 220) {
+      message = `${bodyLength} characters. This is getting long for a compact dashboard card.`;
+    } else if (bodyLength > 0 && bodyLength < 50) {
+      message = `${bodyLength} characters. You still have room if the message needs a little more context.`;
+    }
+    elements.dashboardCopyBodyMeta.textContent = message;
+  }
+}
+
+function renderDashboardCopyChecklist() {
+  const readiness = getDashboardCopyReadinessModel();
+
+  if (elements.dashboardCopyReadinessBadge) {
+    elements.dashboardCopyReadinessBadge.textContent = readiness.badgeLabel;
+    elements.dashboardCopyReadinessBadge.className = 'admin-tag';
+    elements.dashboardCopyReadinessBadge.classList.add(`admin-tag--${readiness.badgeTone}`);
+  }
+
+  if (elements.dashboardCopyReadinessSummary) {
+    elements.dashboardCopyReadinessSummary.textContent = readiness.summary;
+  }
+
+  if (elements.dashboardCopyChecklist) {
+    elements.dashboardCopyChecklist.innerHTML = readiness.checklist
+      .map((item) => {
+        return `
+          <div class="admin-dashboard-copy-checklist__item${item.complete ? ' is-complete' : ''}">
+            <span class="admin-dashboard-copy-checklist__mark" aria-hidden="true">${item.complete ? 'OK' : 'TODO'}</span>
+            <div class="admin-dashboard-copy-checklist__copy">
+              <strong>${escapeHtml(item.title)}</strong>
+              <span>${escapeHtml(item.detail)}</span>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  if (elements.dashboardCopyGuidance) {
+    elements.dashboardCopyGuidance.innerHTML = readiness.guidance
+      .map((item) => {
+        return `
+          <div class="admin-mini-item">
+            <span class="admin-mini-item__title">${escapeHtml(item.title)}</span>
+            <span class="admin-mini-item__meta">${escapeHtml(item.detail)}</span>
+          </div>
+        `;
+      })
+      .join('');
+  }
+}
+
+function renderDashboardCopyPublishedSnapshot() {
+  if (!elements.dashboardCopyPublishedCompare || !elements.dashboardCopyChangeList) {
+    return;
+  }
+
+  const draft = state.dashboardCopyDraft || createDashboardCopyDraft({});
+  const item = state.dashboardCopyItem || normalizeDashboardCopyItem({});
+  const unsaved = hasDashboardCopyUnsavedChanges();
+  const liveSaved = Boolean(item.updatedAt?.iso || item.createdAt?.iso || item.titleEn || item.bodyEn || getDashboardCopyStoredLocaleCount(item.translations));
+  const liveUpdatedLabel = item.updatedAt?.iso
+    ? `${formatTimestamp(item.updatedAt)}${item.updatedByEmail ? ` by ${item.updatedByEmail}` : ''}`
+    : 'Nothing published yet';
+  const draftStatus = draft.enabled !== false ? 'Will be visible when saved' : 'Will stay hidden when saved';
+  const liveStatus = item.enabled !== false ? 'Visible in app' : 'Hidden in app';
+
+  if (elements.dashboardCopyPublishedSummary) {
+    elements.dashboardCopyPublishedSummary.textContent = unsaved
+      ? 'You have local draft changes. Compare them with the saved backend version before publishing.'
+      : 'The draft currently matches the last saved backend version.';
+  }
+
+  elements.dashboardCopyPublishedCompare.innerHTML = `
+    <div class="admin-dashboard-copy-compare__card">
+      <div class="admin-dashboard-copy-compare__head">
+        <strong>Live in app</strong>
+        <span class="admin-tag admin-tag--${item.enabled !== false ? 'success' : 'info'}">${escapeHtml(item.enabled !== false ? 'Live' : 'Hidden')}</span>
+      </div>
+      <p class="admin-dashboard-copy-compare__meta">${escapeHtml(liveSaved ? liveUpdatedLabel : 'No saved version exists yet.')}</p>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>Status</span>
+        <strong>${escapeHtml(liveStatus)}</strong>
+      </div>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>English title</span>
+        <strong>${escapeHtml(truncateDashboardCopyValue(item.titleEn, 68))}</strong>
+      </div>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>English body</span>
+        <strong>${escapeHtml(truncateDashboardCopyValue(item.bodyEn, 88))}</strong>
+      </div>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>Stored locales</span>
+        <strong>${escapeHtml(String(getDashboardCopyStoredLocaleCount(item.translations)))}</strong>
+      </div>
+    </div>
+    <div class="admin-dashboard-copy-compare__card${unsaved ? ' is-draft' : ''}">
+      <div class="admin-dashboard-copy-compare__head">
+        <strong>Current draft</strong>
+        <span class="admin-tag admin-tag--${unsaved ? 'warn' : 'success'}">${escapeHtml(unsaved ? 'Unsaved' : 'Saved')}</span>
+      </div>
+      <p class="admin-dashboard-copy-compare__meta">${escapeHtml(unsaved ? 'Local browser draft waiting to be saved.' : 'Matches the latest backend version.')}</p>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>Status</span>
+        <strong>${escapeHtml(draftStatus)}</strong>
+      </div>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>English title</span>
+        <strong>${escapeHtml(truncateDashboardCopyValue(draft.titleEn, 68))}</strong>
+      </div>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>English body</span>
+        <strong>${escapeHtml(truncateDashboardCopyValue(draft.bodyEn, 88))}</strong>
+      </div>
+      <div class="admin-dashboard-copy-compare__row">
+        <span>Stored locales</span>
+        <strong>${escapeHtml(String(getDashboardCopyStoredLocaleCount(draft.translations)))}</strong>
+      </div>
+    </div>
+  `;
+
+  const changes = getDashboardCopyChangeSummary();
+  if (!changes.length) {
+    elements.dashboardCopyChangeList.innerHTML = `
+      <div class="admin-mini-item">
+        <span class="admin-mini-item__title">No pending changes</span>
+        <span class="admin-mini-item__meta">Saving now would keep the published snapshot exactly as it is.</span>
+      </div>
+    `;
+    return;
+  }
+
+  elements.dashboardCopyChangeList.innerHTML = changes
+    .map((change, index) => {
+      return `
+        <div class="admin-mini-item">
+          <span class="admin-mini-item__title">Change ${index + 1}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(change)}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function renderDashboardCopy() {
+  const hasDraft = Boolean(state.dashboardCopyDraft);
+
+  setButtonBusy(elements.refreshDashboardCopy, state.dashboardCopyLoading, 'Refreshing');
+  setButtonBusy(elements.saveDashboardCopyButton, state.dashboardCopySaveInFlight, 'Saving');
+
+  if (elements.dashboardCopyLoadingState) {
+    elements.dashboardCopyLoadingState.hidden = !(state.dashboardCopyLoading && !hasDraft);
+  }
+
+  if (elements.dashboardCopyErrorState) {
+    elements.dashboardCopyErrorState.hidden = !(state.dashboardCopyError && !hasDraft);
+  }
+
+  if (elements.dashboardCopyErrorCopy) {
+    elements.dashboardCopyErrorCopy.textContent = state.dashboardCopyError || 'Dashboard copy could not be loaded.';
+  }
+
+  if (elements.dashboardCopyReady) {
+    elements.dashboardCopyReady.hidden = !hasDraft;
+  }
+
+  if (!hasDraft) {
+    return;
+  }
+
+  if (elements.dashboardCopyEnabled) {
+    elements.dashboardCopyEnabled.checked = state.dashboardCopyDraft.enabled !== false;
+  }
+  if (elements.dashboardCopyTitleEn) {
+    elements.dashboardCopyTitleEn.value = state.dashboardCopyDraft.titleEn || '';
+  }
+  if (elements.dashboardCopyBodyEn) {
+    elements.dashboardCopyBodyEn.value = state.dashboardCopyDraft.bodyEn || '';
+  }
+  if (elements.dashboardCopyAutoTranslate) {
+    elements.dashboardCopyAutoTranslate.checked = state.dashboardCopyDraft.autoTranslate !== false;
+  }
+  if (elements.dashboardCopyForceTranslate) {
+    elements.dashboardCopyForceTranslate.checked = state.dashboardCopyDraft.forceTranslate === true;
+  }
+
+  syncDashboardCopyToggleState();
+  renderDashboardCopyFieldMeta();
+  renderDashboardCopyChecklist();
+  renderDashboardCopyPublishedSnapshot();
+  renderDashboardCopyTranslations();
+  renderDashboardCopyPreview();
+  renderDashboardCopyMetadata();
+}
+
+async function ensureDashboardCopyLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.dashboardCopyLoadPromise && !settings.force) {
+    return state.dashboardCopyLoadPromise;
+  }
+
+  if (state.dashboardCopyLoaded && !settings.force) {
+    renderDashboardCopy();
+    return state.dashboardCopyItem;
+  }
+
+  const task = (async () => {
+    state.dashboardCopyLoading = true;
+    if (!state.dashboardCopyDraft) {
+      state.dashboardCopyError = '';
+    }
+    setDashboardCopyFormError('');
+    renderDashboardCopy();
+
+    try {
+      const data = await callFirebaseFunction('getDashboardTopPlaceholderAdmin');
+      const item = normalizeDashboardCopyItem(data?.item);
+      state.dashboardCopyAdmin = data?.admin || null;
+      state.dashboardCopyItem = item;
+      state.dashboardCopyDraft = createDashboardCopyDraft(item);
+      state.dashboardCopyLoaded = true;
+      state.dashboardCopyError = '';
+      if (!state.dashboardCopyPreviewLocale || !['en'].concat(item.supportedLocales).includes(state.dashboardCopyPreviewLocale)) {
+        state.dashboardCopyPreviewLocale = getPreferredDashboardCopyPreviewLocale(item.supportedLocales);
+      }
+      return item;
+    } catch (error) {
+      const message = getActionableErrorMessage(error, 'Dashboard copy could not be loaded.');
+      state.dashboardCopyError = message;
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.dashboardCopyLoading = false;
+      state.dashboardCopyLoadPromise = null;
+      renderDashboardCopy();
+    }
+  })();
+
+  state.dashboardCopyLoadPromise = task;
+  return task;
+}
+
+function handleDashboardCopyBaseFieldsInput() {
+  if (!state.dashboardCopyDraft) {
+    return;
+  }
+
+  state.dashboardCopyDraft.enabled = elements.dashboardCopyEnabled?.checked !== false;
+  state.dashboardCopyDraft.titleEn = String(elements.dashboardCopyTitleEn?.value || '');
+  state.dashboardCopyDraft.bodyEn = String(elements.dashboardCopyBodyEn?.value || '');
+  state.dashboardCopyDraft.autoTranslate = elements.dashboardCopyAutoTranslate?.checked !== false;
+  state.dashboardCopyDraft.forceTranslate = elements.dashboardCopyForceTranslate?.checked === true;
+
+  syncDashboardCopyToggleState();
+  setDashboardCopyFormError('');
+  renderDashboardCopyFieldMeta();
+  renderDashboardCopyChecklist();
+  renderDashboardCopyPublishedSnapshot();
+  renderDashboardCopyPreview();
+  renderDashboardCopyMetadata();
+}
+
+function handleDashboardCopyLocaleSearchInput() {
+  state.dashboardCopyLocaleSearch = String(elements.dashboardCopyLocaleSearch?.value || '');
+  renderDashboardCopyTranslations();
+}
+
+function handleDashboardCopyTranslationInput(event) {
+  const field = event.target?.dataset?.dashboardCopyField;
+  const locale = event.target?.dataset?.dashboardCopyLocale;
+  if (!field || !locale || !state.dashboardCopyDraft) {
+    return;
+  }
+
+  const nextBundle = Object.assign({}, state.dashboardCopyDraft.translations?.[locale] || {});
+  nextBundle[field] = String(event.target.value || '');
+
+  if (!String(nextBundle.title || '').trim() && !String(nextBundle.body || '').trim()) {
+    delete state.dashboardCopyDraft.translations[locale];
+  } else {
+    state.dashboardCopyDraft.translations[locale] = nextBundle;
+  }
+
+  setDashboardCopyFormError('');
+  renderDashboardCopyChecklist();
+  renderDashboardCopyPublishedSnapshot();
+  renderDashboardCopyPreview();
+  renderDashboardCopyMetadata();
+
+  if (elements.dashboardCopyTranslationCount) {
+    const storedCount = getDashboardCopyStoredLocaleCount(state.dashboardCopyDraft.translations);
+    const suffix = storedCount === 1 ? '' : 's';
+    elements.dashboardCopyTranslationCount.textContent = `${storedCount} locale${suffix} filled`;
+  }
+}
+
+function handleDashboardCopyPreviewLocaleChange() {
+  state.dashboardCopyPreviewLocale = String(elements.dashboardCopyPreviewLocale?.value || 'en');
+  state.dashboardCopyPreviewTouched = state.dashboardCopyPreviewLocale !== 'en';
+  renderDashboardCopyChecklist();
+  renderDashboardCopyTranslations();
+  renderDashboardCopyPreview();
+  track('dashboard_copy_preview_locale_changed', {
+    locale: state.dashboardCopyPreviewLocale,
+  });
+}
+
+async function handleDashboardCopySave(event) {
+  event.preventDefault();
+  if (!state.dashboardCopyDraft || state.dashboardCopySaveInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setDashboardCopyFormError('');
+
+  const payload = {
+    enabled: state.dashboardCopyDraft.enabled !== false,
+    titleEn: String(state.dashboardCopyDraft.titleEn || '').trim(),
+    bodyEn: String(state.dashboardCopyDraft.bodyEn || '').trim(),
+    autoTranslate: state.dashboardCopyDraft.autoTranslate !== false,
+    forceTranslate: state.dashboardCopyDraft.autoTranslate !== false && state.dashboardCopyDraft.forceTranslate === true,
+    translations: buildDashboardCopySaveTranslations(state.dashboardCopyItem, state.dashboardCopyDraft),
+  };
+
+  if (payload.enabled && !payload.titleEn && !payload.bodyEn) {
+    setDashboardCopyFormError('English title or body is required when the placeholder is enabled.');
+    return;
+  }
+
+  state.dashboardCopySaveInFlight = true;
+  renderDashboardCopy();
+
+  try {
+    const data = await callFirebaseFunction('upsertDashboardTopPlaceholderAdmin', payload);
+    const item = normalizeDashboardCopyItem(data?.item);
+    state.dashboardCopyItem = item;
+    state.dashboardCopyDraft = createDashboardCopyDraft(item);
+    state.dashboardCopyLoaded = true;
+    state.dashboardCopyError = '';
+    setDashboardCopyFormError('');
+    renderDashboardCopy();
+    showBanner('Dashboard copy saved.', 'success');
+    addActivityLog('Updated dashboard top placeholder copy.', 'success');
+    track('dashboard_copy_saved', {
+      enabled: item.enabled,
+      translated_locales: getDashboardCopyStoredLocaleCount(item.translations),
+    });
+  } catch (error) {
+    const message = getActionableErrorMessage(error, 'Dashboard copy could not be saved.');
+    setDashboardCopyFormError(message);
+    showBanner(message, 'error');
+  } finally {
+    state.dashboardCopySaveInFlight = false;
+    renderDashboardCopy();
+  }
+}
+
 function setCodeFormMode(mode) {
   const editing = mode === 'edit';
 
@@ -2590,59 +3780,12 @@ function getGeneratedReferralLink(code) {
   return `${origin}/join/${encodeURIComponent(normalizedCode)}`;
 }
 
-function getGeneratedJoinPath(code) {
-  const normalizedCode = typeof site.normalizeReferralCode === 'function'
-    ? site.normalizeReferralCode(code)
-    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
-
-  if (!normalizedCode) {
-    return '';
-  }
-
-  return `/join/${encodeURIComponent(normalizedCode)}`;
-}
-
-function getGeneratedAppString(code) {
-  const normalizedCode = typeof site.normalizeReferralCode === 'function'
-    ? site.normalizeReferralCode(code)
-    : String(code || '').trim().toUpperCase().replace(/\s+/g, '');
-
-  if (!normalizedCode) {
-    return '';
-  }
-
-  if (typeof site.getReferralSchemeUrl === 'function') {
-    return site.getReferralSchemeUrl(normalizedCode);
-  }
-
-  const scheme = site?.config?.appScheme || 'nuria';
-  return `${scheme}://join?ref=${encodeURIComponent(normalizedCode)}`;
-}
-
-function setGeneratedStringValue(element, button, value, emptyLabel) {
-  if (!element || !button) {
-    return;
-  }
-
-  const label = emptyLabel || 'Enter a code to generate app strings';
-  const text = String(value || '').trim();
-  element.dataset.value = text;
-  element.textContent = text || label;
-  element.setAttribute('aria-disabled', text ? 'false' : 'true');
-  button.disabled = !text;
-}
-
 function updateCodeReferralLink(rawCode) {
   if (!elements.codeReferralLink || !elements.copyReferralLinkButton) {
     return;
   }
 
   const link = getGeneratedReferralLink(rawCode);
-  const codeString = typeof site.normalizeReferralCode === 'function'
-    ? site.normalizeReferralCode(rawCode)
-    : String(rawCode || '').trim().toUpperCase().replace(/\s+/g, '');
-  const appString = getGeneratedAppString(rawCode);
-  const joinPath = getGeneratedJoinPath(rawCode);
   elements.codeReferralLink.dataset.value = link;
 
   if (!link) {
@@ -2650,24 +3793,6 @@ function updateCodeReferralLink(rawCode) {
     elements.codeReferralLink.href = '#';
     elements.codeReferralLink.setAttribute('aria-disabled', 'true');
     elements.copyReferralLinkButton.disabled = true;
-    setGeneratedStringValue(
-      elements.codePlainString,
-      elements.copyCodeStringButton,
-      '',
-      'Enter a code to generate app strings'
-    );
-    setGeneratedStringValue(
-      elements.codeAppString,
-      elements.copyAppStringButton,
-      '',
-      'Enter a code to generate app strings'
-    );
-    setGeneratedStringValue(
-      elements.codeJoinPathString,
-      elements.copyJoinPathButton,
-      '',
-      'Enter a code to generate app strings'
-    );
     return;
   }
 
@@ -2675,24 +3800,6 @@ function updateCodeReferralLink(rawCode) {
   elements.codeReferralLink.href = link;
   elements.codeReferralLink.setAttribute('aria-disabled', 'false');
   elements.copyReferralLinkButton.disabled = false;
-  setGeneratedStringValue(
-    elements.codePlainString,
-    elements.copyCodeStringButton,
-    codeString,
-    'Enter a code to generate app strings'
-  );
-  setGeneratedStringValue(
-    elements.codeAppString,
-    elements.copyAppStringButton,
-    appString,
-    'Enter a code to generate app strings'
-  );
-  setGeneratedStringValue(
-    elements.codeJoinPathString,
-    elements.copyJoinPathButton,
-    joinPath,
-    'Enter a code to generate app strings'
-  );
 }
 
 function readPartnerProfileFromForm() {
@@ -3997,7 +5104,7 @@ async function handleEmailSignIn(event) {
     await waitForAuthPersistenceReady();
     await signInWithEmailPassword(email, password);
     state.pendingOnboardingAfterLogin = true;
-    await playLoginSuccessSound();
+    await playLoginSuccessSound({ restart: true });
   } catch (error) {
     const parts = getErrorParts(error);
     elements.authError.hidden = false;
@@ -4032,11 +5139,15 @@ async function handleSendPasswordReset() {
 }
 
 async function handlePlaySpiritSound() {
-  setButtonBusy(elements.playSpiritSound, true, 'Playing');
   await playLoginSuccessSound();
-  showSpiritToast();
-  setButtonBusy(elements.playSpiritSound, false);
-  setSpiritButtonFunLabel();
+}
+
+function handlePauseSpiritSound() {
+  pauseLoginSuccessSound();
+}
+
+function handleStopSpiritSound() {
+  stopLoginSuccessSound();
 }
 
 async function handleCopyReferralLink() {
@@ -4052,45 +5163,6 @@ async function handleCopyReferralLink() {
   } catch (_error) {
     showBanner('Could not copy link on this browser.', 'error');
   }
-}
-
-async function copyGeneratedCodeString(value, emptyMessage, successMessage) {
-  const text = String(value || '').trim();
-  if (!text) {
-    showBanner(emptyMessage, 'info');
-    return;
-  }
-
-  try {
-    await copyPlainText(text);
-    showBanner(successMessage, 'success');
-  } catch (_error) {
-    showBanner('Could not copy string on this browser.', 'error');
-  }
-}
-
-async function handleCopyCodeString() {
-  await copyGeneratedCodeString(
-    elements.codePlainString?.dataset?.value,
-    'Enter a referral code first to generate the code string.',
-    'Code string copied.'
-  );
-}
-
-async function handleCopyAppString() {
-  await copyGeneratedCodeString(
-    elements.codeAppString?.dataset?.value,
-    'Enter a referral code first to generate the app string.',
-    'App string copied.'
-  );
-}
-
-async function handleCopyJoinPath() {
-  await copyGeneratedCodeString(
-    elements.codeJoinPathString?.dataset?.value,
-    'Enter a referral code first to generate the join path.',
-    'Join path copied.'
-  );
 }
 
 function handleExportOpsSnapshotJson() {
@@ -4429,6 +5501,7 @@ async function handleSignOut() {
     await signOutUser();
     state.pendingOnboardingAfterLogin = false;
     state.admin = null;
+    stopLoginSuccessSound();
     resetCodeForm(null);
     clearSelectedReport();
     updateIdentity();
@@ -5107,6 +6180,8 @@ function bindEvents() {
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.sendPasswordResetButton?.addEventListener('click', handleSendPasswordReset);
   elements.playSpiritSound?.addEventListener('click', handlePlaySpiritSound);
+  elements.pauseSpiritSound?.addEventListener('click', handlePauseSpiritSound);
+  elements.stopSpiritSound?.addEventListener('click', handleStopSpiritSound);
   elements.signOutTop?.addEventListener('click', handleSignOut);
   elements.signOutUnauthorized?.addEventListener('click', handleSignOut);
   elements.retryLoad?.addEventListener('click', () => loadDashboard());
@@ -5295,9 +6370,6 @@ function bindEvents() {
     updateCodeReferralLink(elements.codeValue.value);
   });
   elements.copyReferralLinkButton?.addEventListener('click', handleCopyReferralLink);
-  elements.copyCodeStringButton?.addEventListener('click', handleCopyCodeString);
-  elements.copyAppStringButton?.addEventListener('click', handleCopyAppString);
-  elements.copyJoinPathButton?.addEventListener('click', handleCopyJoinPath);
   elements.refreshReports?.addEventListener('click', async () => {
     clearBanner();
     try {
@@ -5330,6 +6402,23 @@ function bindEvents() {
   elements.closePackageButton?.addEventListener('click', handleClosePackage);
   elements.approveMarkPaidButton?.addEventListener('click', handleApproveMarkPaid);
   elements.markPaidForm?.addEventListener('submit', handleMarkPaid);
+  elements.refreshDashboardCopy?.addEventListener('click', () => {
+    clearBanner();
+    ensureDashboardCopyLoaded({ force: true }).catch(() => {});
+  });
+  elements.dashboardCopyRetry?.addEventListener('click', () => {
+    clearBanner();
+    ensureDashboardCopyLoaded({ force: true }).catch(() => {});
+  });
+  elements.dashboardCopyForm?.addEventListener('submit', handleDashboardCopySave);
+  elements.dashboardCopyEnabled?.addEventListener('change', handleDashboardCopyBaseFieldsInput);
+  elements.dashboardCopyTitleEn?.addEventListener('input', handleDashboardCopyBaseFieldsInput);
+  elements.dashboardCopyBodyEn?.addEventListener('input', handleDashboardCopyBaseFieldsInput);
+  elements.dashboardCopyAutoTranslate?.addEventListener('change', handleDashboardCopyBaseFieldsInput);
+  elements.dashboardCopyForceTranslate?.addEventListener('change', handleDashboardCopyBaseFieldsInput);
+  elements.dashboardCopyLocaleSearch?.addEventListener('input', handleDashboardCopyLocaleSearchInput);
+  elements.dashboardCopyTranslationsList?.addEventListener('input', handleDashboardCopyTranslationInput);
+  elements.dashboardCopyPreviewLocale?.addEventListener('change', handleDashboardCopyPreviewLocaleChange);
   elements.recipientForm?.addEventListener('submit', handleRecipientAdd);
   elements.settingsForm?.addEventListener('submit', handleSaveSettings);
   elements.partnerType?.addEventListener('change', syncPartnerTypeFields);
@@ -5366,13 +6455,17 @@ function initializeFormDefaults() {
   renderChecklist();
   renderNextStep();
   resetCodeForm(null);
+  resetDashboardCopyState({ preservePreviewLocale: false });
+  renderDashboardCopy();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
 
 function handleAuthState(user) {
-  const wasLoggedOut = !previousAuthUid;
-  previousAuthUid = user?.uid || null;
+  const previousUid = previousAuthUid;
+  const nextUid = user?.uid || null;
+  const wasLoggedOut = !previousUid;
+  previousAuthUid = nextUid;
   state.user = user;
   state.admin = null;
   elements.authError.hidden = true;
@@ -5380,9 +6473,17 @@ function handleAuthState(user) {
   updateIdentity();
 
   if (!user) {
+    resetDashboardCopyState({ preservePreviewLocale: false });
+    renderDashboardCopy();
+    stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
     return;
+  }
+
+  if (!previousUid || previousUid !== nextUid) {
+    resetDashboardCopyState({ preservePreviewLocale: true });
+    renderDashboardCopy();
   }
 
   if (wasLoggedOut) {
@@ -5392,6 +6493,7 @@ function handleAuthState(user) {
 }
 
 bindEvents();
+updateSpiritSoundControls();
 placeMobileDrawer();
 setMobileNavOpen(false);
 bindAdminTopbarScrollCollapse();

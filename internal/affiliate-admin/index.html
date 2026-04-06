@@ -100,6 +100,15 @@
               <button type="button" class="btn btn--outline admin-spirit-button" id="adminPlaySpiritSound">
                 Summon spirit ✨
               </button>
+              <button type="button" class="btn btn--outline" id="adminPauseSpiritSound" disabled>
+                Pause
+              </button>
+              <button type="button" class="btn btn--outline" id="adminStopSpiritSound" disabled>
+                Stop
+              </button>
+              <span class="admin-audio-status" id="adminSpiritSoundState" aria-live="polite">
+                Music stopped
+              </span>
               <button type="button" class="btn btn--outline" id="adminSignOutTop" hidden>
                 Sign out
               </button>
@@ -114,6 +123,7 @@
                 <a href="/internal/affiliate-admin/subscribers/" class="admin-section-nav__link" data-admin-page-link="subscribers">Subscribers</a>
                 <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
+                <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-section-nav__link" data-admin-page-link="dashboard-copy">Dashboard copy</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
               </div>
 
@@ -310,6 +320,16 @@
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="report-detail">
                   <span class="admin-mini-item__title">Report detail</span>
                   <span class="admin-mini-item__meta">Export, finalize, and review report data</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="admin-nav-group">
+              <h3 class="admin-nav-group__title">App content</h3>
+              <div class="admin-nav-group__cards">
+                <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="dashboard-copy">
+                  <span class="admin-mini-item__title">Dashboard copy</span>
+                  <span class="admin-mini-item__meta">Manage the translated placeholder card shown at the top of the app dashboard</span>
                 </a>
               </div>
             </div>
@@ -738,65 +758,6 @@
                   <button type="button" class="btn btn--outline" id="adminCopyReferralLinkButton" disabled>
                     Copy link
                   </button>
-                </div>
-              </div>
-
-              <div class="admin-detail-section admin-app-strings">
-                <div>
-                  <h4 class="admin-section-title">App strings</h4>
-                  <p class="admin-panel__helper admin-app-strings__helper">
-                    Type or paste these exact strings inside internal app/admin surfaces when you need the code in Nuria-native format.
-                  </p>
-                </div>
-
-                <div class="admin-app-strings__grid">
-                  <div class="admin-app-string">
-                    <span class="form-label">Referral code string</span>
-                    <div class="admin-referral-link-row">
-                      <div
-                        id="adminCodePlainString"
-                        class="admin-referral-link admin-referral-link--plain"
-                        aria-disabled="true"
-                      >
-                        Enter a code to generate app strings
-                      </div>
-                      <button type="button" class="btn btn--outline" id="adminCopyCodeStringButton" disabled>
-                        Copy code
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="admin-app-string">
-                    <span class="form-label">App deep link string</span>
-                    <div class="admin-referral-link-row">
-                      <div
-                        id="adminCodeAppString"
-                        class="admin-referral-link admin-referral-link--plain"
-                        aria-disabled="true"
-                      >
-                        Enter a code to generate app strings
-                      </div>
-                      <button type="button" class="btn btn--outline" id="adminCopyAppStringButton" disabled>
-                        Copy app string
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="admin-app-string">
-                    <span class="form-label">Web join path string</span>
-                    <div class="admin-referral-link-row">
-                      <div
-                        id="adminCodeJoinPathString"
-                        class="admin-referral-link admin-referral-link--plain"
-                        aria-disabled="true"
-                      >
-                        Enter a code to generate app strings
-                      </div>
-                      <button type="button" class="btn btn--outline" id="adminCopyJoinPathButton" disabled>
-                        Copy path
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -1339,6 +1300,191 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionDashboardCopy" data-admin-page="dashboard-copy" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">App content</p>
+              <h2 class="admin-panel__title">Dashboard copy</h2>
+            </div>
+            <button type="button" class="btn btn--outline" id="adminRefreshDashboardCopy">
+              Refresh
+            </button>
+          </div>
+
+          <p class="admin-panel__helper">
+            Manage the translated placeholder card shown near the top of the Nuria app dashboard. English is the source copy; missing locales can be generated server-side when auto-translate is enabled.
+          </p>
+
+          <div class="admin-detail-section admin-dashboard-copy__state" id="adminDashboardCopyLoadingState" hidden>
+            <div class="referral-loading">
+              <div class="referral-spinner" aria-hidden="true"></div>
+              <div>
+                <h3 class="admin-section-title">Loading dashboard copy</h3>
+                <p class="admin-panel__helper">
+                  Fetching the current placeholder document and supported locale list.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-detail-section admin-dashboard-copy__state" id="adminDashboardCopyErrorState" hidden>
+            <p class="admin-empty admin-empty--inline" id="adminDashboardCopyErrorCopy">
+              Dashboard copy could not be loaded.
+            </p>
+            <div class="admin-form__actions">
+              <button type="button" class="btn btn--outline" id="adminDashboardCopyRetry">
+                Try again
+              </button>
+            </div>
+          </div>
+
+          <div class="admin-dashboard-copy" id="adminDashboardCopyReady" hidden>
+            <div class="admin-split admin-dashboard-copy__split">
+              <form class="admin-form admin-dashboard-copy__editor" id="adminDashboardCopyForm">
+                <div class="admin-form__header">
+                  <h3 class="admin-section-title">Editor</h3>
+                  <p class="admin-panel__helper">
+                    The app resolves copy as full locale tag, then base language, then English. Save once to publish updated fallback and translated text.
+                  </p>
+                </div>
+
+                <label class="admin-checkbox">
+                  <input type="checkbox" id="adminDashboardCopyEnabled" name="enabled" />
+                  <span>Show the dashboard placeholder in the app</span>
+                </label>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminDashboardCopyTitleEn">English title</label>
+                  <input
+                    class="form-input"
+                    id="adminDashboardCopyTitleEn"
+                    name="titleEn"
+                    type="text"
+                    maxlength="180"
+                    placeholder="English headline shown in the dashboard card"
+                  />
+                  <p class="admin-panel__helper admin-dashboard-copy__field-meta" id="adminDashboardCopyTitleMeta">
+                    0 / 180 characters. Short, calm headlines work best here.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminDashboardCopyBodyEn">English body</label>
+                  <textarea
+                    class="form-input form-textarea"
+                    id="adminDashboardCopyBodyEn"
+                    name="bodyEn"
+                    rows="5"
+                    placeholder="English body copy shown below the headline"
+                  ></textarea>
+                  <p class="admin-panel__helper admin-dashboard-copy__field-meta" id="adminDashboardCopyBodyMeta">
+                    0 characters. Keep it concise so it still reads well on smaller phones.
+                  </p>
+                </div>
+
+                <div class="admin-dashboard-copy__toggles">
+                  <label class="admin-checkbox">
+                    <input type="checkbox" id="adminDashboardCopyAutoTranslate" name="autoTranslate" />
+                    <span>Auto-translate missing locales on save</span>
+                  </label>
+                  <label class="admin-checkbox">
+                    <input type="checkbox" id="adminDashboardCopyForceTranslate" name="forceTranslate" />
+                    <span>Force re-translate all locales on next save</span>
+                  </label>
+                </div>
+
+                <div class="admin-form__actions">
+                  <button type="submit" class="btn btn--gold" id="adminSaveDashboardCopyButton">
+                    Save dashboard copy
+                  </button>
+                </div>
+                <p class="admin-form-error" id="adminDashboardCopyFormError" hidden></p>
+
+                <div class="admin-detail-section admin-dashboard-copy__translations">
+                  <div class="admin-panel__actions admin-dashboard-copy__toolbar">
+                    <div>
+                      <h3 class="admin-section-title">Locale translations</h3>
+                      <p class="admin-panel__helper admin-dashboard-copy__toolbar-copy">
+                        Search locales and override title/body only where you need to adjust the generated translation manually. Filled fields overwrite the stored locale on save; blank fields keep the current stored translation.
+                      </p>
+                    </div>
+                    <input
+                      class="form-input admin-filter-input admin-dashboard-copy__locale-search"
+                      id="adminDashboardCopyLocaleSearch"
+                      type="search"
+                      placeholder="Search locale or language"
+                    />
+                  </div>
+
+                  <div class="admin-dashboard-copy__locale-stats">
+                    <span class="admin-tag admin-tag--info" id="adminDashboardCopyLocaleCount">0 supported locales</span>
+                    <span class="admin-tag admin-tag--success" id="adminDashboardCopyTranslationCount">0 locales filled</span>
+                  </div>
+
+                  <div class="admin-dashboard-copy__locale-list" id="adminDashboardCopyTranslationsList"></div>
+                </div>
+              </form>
+
+              <div class="admin-dashboard-copy__sidebar">
+                <div class="admin-detail-section admin-dashboard-copy__readiness">
+                  <div class="admin-dashboard-copy__readiness-head">
+                    <div>
+                      <h3 class="admin-section-title">Publishing checklist</h3>
+                      <p class="admin-panel__helper admin-dashboard-copy__toolbar-copy" id="adminDashboardCopyReadinessSummary">
+                        Review the basics here before you publish changes to the app.
+                      </p>
+                    </div>
+                    <span class="admin-tag admin-tag--info" id="adminDashboardCopyReadinessBadge">Draft</span>
+                  </div>
+
+                  <div class="admin-dashboard-copy-checklist" id="adminDashboardCopyChecklist"></div>
+                  <div class="admin-mini-list admin-dashboard-copy__guidance" id="adminDashboardCopyGuidance"></div>
+                </div>
+
+                <div class="admin-detail-section admin-dashboard-copy__snapshot">
+                  <div>
+                    <h3 class="admin-section-title">Last published snapshot</h3>
+                    <p class="admin-panel__helper admin-dashboard-copy__toolbar-copy" id="adminDashboardCopyPublishedSummary">
+                      Compare the saved backend version with the draft you are editing now.
+                    </p>
+                  </div>
+
+                  <div class="admin-dashboard-copy-compare" id="adminDashboardCopyPublishedCompare"></div>
+                  <div class="admin-mini-list admin-dashboard-copy__changes" id="adminDashboardCopyChangeList"></div>
+                </div>
+
+                <div class="admin-detail-section">
+                  <div class="admin-panel__actions admin-dashboard-copy__toolbar">
+                    <div>
+                      <h3 class="admin-section-title">Preview</h3>
+                      <p class="admin-panel__helper admin-dashboard-copy__toolbar-copy" id="adminDashboardCopyPreviewLocaleHint">
+                        Preview falls back to English when a locale is missing.
+                      </p>
+                    </div>
+                    <select class="form-input form-select admin-dashboard-copy__preview-select" id="adminDashboardCopyPreviewLocale"></select>
+                  </div>
+
+                  <div class="admin-dashboard-copy-preview" id="adminDashboardCopyPreviewCard">
+                    <div class="admin-dashboard-copy-preview__handle" aria-hidden="true"></div>
+                    <div class="admin-dashboard-copy-preview__content">
+                      <h3 class="admin-dashboard-copy-preview__title" id="adminDashboardCopyPreviewTitle"></h3>
+                      <p class="admin-dashboard-copy-preview__body" id="adminDashboardCopyPreviewBody"></p>
+                      <p class="admin-empty admin-empty--inline admin-dashboard-copy-preview__empty" id="adminDashboardCopyPreviewEmpty" hidden>
+                        This placeholder is disabled or empty for the selected locale.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="admin-detail-section">
+                  <h3 class="admin-section-title">Metadata</h3>
+                  <div class="admin-mini-list" id="adminDashboardCopyMetadata"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings" hidden>
           <div class="admin-panel__header">
             <div>
@@ -1438,12 +1584,12 @@
         </p>
       </div>
       <p class="admin-panel__eyebrow">Welcome</p>
-      <h2 class="admin-panel__title" id="adminOnboardingTitle">Quick tour: monthly payout workflow</h2>
+      <h2 class="admin-panel__title" id="adminOnboardingTitle">Quick tour: affiliate ops and app content</h2>
       <p class="admin-panel__helper">
-        This admin center helps you run the full affiliate payout cycle with clear audit records.
+        This admin center helps you run affiliate payouts and manage internal app content with clear audit records.
       </p>
 
-      <p class="admin-onboarding-progress" id="adminOnboardingProgress">Step 1 of 6</p>
+      <p class="admin-onboarding-progress" id="adminOnboardingProgress">Step 1 of 7</p>
       <div class="admin-onboarding-track">
         <div class="admin-onboarding-step" data-onboarding-step="0">
           <h3>Generate and open report</h3>
@@ -1462,10 +1608,14 @@
           <p>Review discrepancy alerts, missing affiliate mappings, and recipient bounce issues.</p>
         </div>
         <div class="admin-onboarding-step" data-onboarding-step="4" hidden>
+          <h3>Dashboard copy and snapshot</h3>
+          <p>Use Dashboard copy for the app placeholder card. Check Last published snapshot first, compare live vs draft, preview at least one non-English locale, then save when ready.</p>
+        </div>
+        <div class="admin-onboarding-step" data-onboarding-step="5" hidden>
           <h3>Health dashboard</h3>
           <p>Track callable health, latest successful checks, and backend error ratio.</p>
         </div>
-        <div class="admin-onboarding-step" data-onboarding-step="5" hidden>
+        <div class="admin-onboarding-step" data-onboarding-step="6" hidden>
           <h3>Settings and close</h3>
           <p>Manage recipients and defaults centrally, then finalize payout and lock month.</p>
         </div>
@@ -1477,6 +1627,7 @@
         <button type="button" class="admin-onboarding-dot" data-onboarding-dot="3" aria-label="Go to step 4"></button>
         <button type="button" class="admin-onboarding-dot" data-onboarding-dot="4" aria-label="Go to step 5"></button>
         <button type="button" class="admin-onboarding-dot" data-onboarding-dot="5" aria-label="Go to step 6"></button>
+        <button type="button" class="admin-onboarding-dot" data-onboarding-dot="6" aria-label="Go to step 7"></button>
       </div>
 
       <div class="admin-modal__actions">
