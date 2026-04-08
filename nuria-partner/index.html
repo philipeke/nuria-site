@@ -26,6 +26,7 @@
   <div class="hero__geo-bg" aria-hidden="true"></div>
 
   <div class="partner-shell" data-partner-portal-page>
+    <div class="partner-portal-ambient" aria-hidden="true"></div>
     <header class="partner-topbar">
       <div class="partner-topbar__brand">
         <a href="/" class="partner-topbar__logo-link" aria-label="Nuria home">
@@ -38,6 +39,10 @@
       </div>
       <div class="partner-topbar__actions">
         <div class="partner-topbar__identity" id="partnerAuthSummary" hidden></div>
+        <span class="partner-live-pill" id="partnerLivePill" hidden>
+          <span class="partner-live-pill__dot" aria-hidden="true"></span>
+          <span id="partnerLivePillText">Live</span>
+        </span>
         <button type="button" class="btn btn--outline" id="partnerRefreshButton" hidden>
           Refresh
         </button>
@@ -91,8 +96,14 @@
           <p class="partner-panel__eyebrow">Partner sign in</p>
           <h2 class="partner-panel__title">Use your linked Nuria account</h2>
           <p class="partner-panel__copy">
-            If you have never set a password for this email on web, use password reset first.
+            Use the email your organisation registered with Nuria. Your admin must enable web portal login for that address.
           </p>
+
+          <ol class="partner-auth-guide">
+            <li>Enter your email, then optionally <strong>Check email</strong> to see whether Google or password sign-in is available.</li>
+            <li>Sign in with Google if you use Gmail for Nuria, or with password otherwise.</li>
+            <li>No password yet? Use <strong>Reset password</strong> to receive a link, or create a password below if you have no Nuria account.</li>
+          </ol>
 
           <div class="partner-auth-actions">
             <button type="button" class="btn btn--outline partner-google-button" id="partnerGoogleSignInButton">
@@ -136,8 +147,42 @@
               <button type="button" class="btn btn--outline" id="partnerSendPasswordResetButton">
                 Reset password
               </button>
+              <button type="button" class="btn btn--outline" id="partnerCheckEmailButton">
+                Check email
+              </button>
             </div>
           </form>
+
+          <p class="partner-check-email-hint" id="partnerCheckEmailHint" hidden></p>
+
+          <details class="partner-register-panel">
+            <summary class="partner-register-panel__summary">First time? Create a password for this email</summary>
+            <form class="partner-register-form" id="partnerRegisterForm">
+              <div class="form-group">
+                <label class="form-label" for="partnerRegisterPassword">Choose password</label>
+                <input
+                  class="form-input"
+                  id="partnerRegisterPassword"
+                  name="registerPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  placeholder="At least 8 characters"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="partnerRegisterPasswordConfirm">Confirm password</label>
+                <input
+                  class="form-input"
+                  id="partnerRegisterPasswordConfirm"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                />
+              </div>
+              <button type="submit" class="btn btn--gold" id="partnerRegisterSubmit">Create Nuria login</button>
+            </form>
+          </details>
 
           <p class="partner-form-error" id="partnerAuthError" hidden></p>
         </article>
@@ -181,11 +226,11 @@
         </div>
       </section>
 
-      <section class="partner-dashboard" data-partner-view="ready" hidden>
+      <section class="partner-dashboard partner-dashboard--premium" data-partner-view="ready" hidden>
         <article class="partner-hero-card">
           <div class="partner-hero-card__head">
             <div>
-              <p class="partner-hero-card__eyebrow">Linked account</p>
+              <p class="partner-hero-card__eyebrow">Your partner profile</p>
               <h2 class="partner-hero-card__title" id="partnerHeroName">Partner</h2>
               <p class="partner-hero-card__copy" id="partnerHeroCopy">
                 Track the aggregate health of your Nuria partner activity.
@@ -215,24 +260,36 @@
           <div class="partner-selector" id="partnerAccountSelector" hidden></div>
         </article>
 
-        <div class="partner-metric-grid">
-          <article class="partner-metric-card">
-            <span class="partner-metric-card__label">Active subscribers</span>
-            <strong class="partner-metric-card__value" id="partnerActiveSubscribers">0</strong>
-          </article>
-          <article class="partner-metric-card">
-            <span class="partner-metric-card__label">Pending referrals</span>
-            <strong class="partner-metric-card__value" id="partnerPendingReferrals">0</strong>
-          </article>
-          <article class="partner-metric-card">
-            <span class="partner-metric-card__label">At risk</span>
-            <strong class="partner-metric-card__value" id="partnerAtRiskSubscribers">0</strong>
-          </article>
-          <article class="partner-metric-card">
-            <span class="partner-metric-card__label">Total activations</span>
-            <strong class="partner-metric-card__value" id="partnerTotalActivations">0</strong>
-          </article>
-        </div>
+        <section class="partner-dashboard-section" aria-labelledby="partner-overview-heading">
+          <div class="partner-dashboard-section__intro">
+            <h2 class="partner-section-heading" id="partner-overview-heading">Overview</h2>
+            <p class="partner-section-lead">
+              The headline numbers for your programme. Everything here is aggregated; individual subscribers are never listed.
+            </p>
+          </div>
+          <div class="partner-metric-grid">
+            <article class="partner-metric-card partner-metric-card--spotlight">
+              <span class="partner-metric-card__label">Active subscribers</span>
+              <strong class="partner-metric-card__value" id="partnerActiveSubscribers">0</strong>
+              <span class="partner-metric-card__hint">Paying subscriptions attributed to you right now</span>
+            </article>
+            <article class="partner-metric-card partner-metric-card--spotlight">
+              <span class="partner-metric-card__label">Pending referrals</span>
+              <strong class="partner-metric-card__value" id="partnerPendingReferrals">0</strong>
+              <span class="partner-metric-card__hint">On the path to activation</span>
+            </article>
+            <article class="partner-metric-card">
+              <span class="partner-metric-card__label">At risk</span>
+              <strong class="partner-metric-card__value" id="partnerAtRiskSubscribers">0</strong>
+              <span class="partner-metric-card__hint">May need attention soon</span>
+            </article>
+            <article class="partner-metric-card">
+              <span class="partner-metric-card__label">Total activations</span>
+              <strong class="partner-metric-card__value" id="partnerTotalActivations">0</strong>
+              <span class="partner-metric-card__hint">All-time first purchases via your codes</span>
+            </article>
+          </div>
+        </section>
 
         <div class="partner-grid">
           <article class="partner-panel">

@@ -34,6 +34,7 @@ run('normalizes partner docs from callable payloads', () => {
     contactEmail: 'partner@example.com',
     portalUid: 'uid_123',
     portalEmail: 'portal@example.com',
+    portalWebAccessEnabled: false,
     note: 'Important',
     updatedAt: null,
     updatedByEmail: null,
@@ -95,6 +96,7 @@ run('builds partner upsert payload with verified portal uid when lookup succeeds
     contactEmail: 'partner@example.com',
     portalUid: 'uid_123',
     portalEmail: 'partner@example.com',
+    portalWebAccessEnabled: false,
     note: 'VIP partner',
   });
 });
@@ -121,6 +123,7 @@ run('clears portal fields when partner email is removed but preserves contact in
   assert.strictEqual(payload.portalEmail, null);
   assert.strictEqual(payload.portalUid, null);
   assert.strictEqual(payload.note, 'Keep this note');
+  assert.strictEqual(payload.portalWebAccessEnabled, false);
 });
 
 run('preserves existing uid on transient lookup failure for the same email', () => {
@@ -140,6 +143,41 @@ run('preserves existing uid on transient lookup failure for the same email', () 
 
   assert.strictEqual(payload.portalUid, 'uid_123');
   assert.strictEqual(payload.portalEmail, 'partner@example.com');
+  assert.strictEqual(payload.portalWebAccessEnabled, false);
+});
+
+run('honours explicit portalWebAccessEnabled flag', () => {
+  const on = registry.buildPartnerUpsertPayload({
+    codeItem: { code: 'X', affiliateId: 'a1' },
+    existingPartner: { affiliateId: 'a1', portalEmail: 'p@example.com', portalWebAccessEnabled: false },
+    partnerEmail: 'p@example.com',
+    lookupResult: { found: true, uid: 'u1', email: 'p@example.com' },
+    portalWebAccessEnabled: true,
+  });
+  assert.strictEqual(on.portalWebAccessEnabled, true);
+
+  const off = registry.buildPartnerUpsertPayload({
+    codeItem: { code: 'X', affiliateId: 'a1' },
+    existingPartner: { affiliateId: 'a1', portalEmail: 'p@example.com', portalWebAccessEnabled: true },
+    partnerEmail: 'p@example.com',
+    lookupResult: { found: true, uid: 'u1', email: 'p@example.com' },
+    portalWebAccessEnabled: false,
+  });
+  assert.strictEqual(off.portalWebAccessEnabled, false);
+});
+
+run('preserves portalWebAccessEnabled when not explicitly set', () => {
+  const payload = registry.buildPartnerUpsertPayload({
+    codeItem: { code: 'X', affiliateId: 'a1' },
+    existingPartner: {
+      affiliateId: 'a1',
+      portalEmail: 'p@example.com',
+      portalWebAccessEnabled: true,
+    },
+    partnerEmail: 'p@example.com',
+    lookupResult: { found: true, uid: 'u1', email: 'p@example.com' },
+  });
+  assert.strictEqual(payload.portalWebAccessEnabled, true);
 });
 
 run('builds merged registry rows from partner docs and legacy billing profile data', () => {

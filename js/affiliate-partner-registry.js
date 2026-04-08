@@ -53,6 +53,7 @@
       contactEmail: normalizeEmail(rawValue.contactEmail),
       portalUid: asOptionalString(rawValue.portalUid),
       portalEmail: normalizeEmail(rawValue.portalEmail),
+      portalWebAccessEnabled: Boolean(rawValue.portalWebAccessEnabled),
       note: asOptionalString(rawValue.note),
       updatedAt: rawValue.updatedAt || null,
       updatedByEmail: asOptionalString(rawValue.updatedByEmail),
@@ -120,6 +121,14 @@
       ? (lookupEmail || normalizedEmail)
       : null;
 
+    var hasExplicitPortalWebAccess = Object.prototype.hasOwnProperty.call(settings, 'portalWebAccessEnabled');
+    var portalWebAccessEnabled = false;
+    if (normalizedEmail) {
+      portalWebAccessEnabled = hasExplicitPortalWebAccess
+        ? Boolean(settings.portalWebAccessEnabled)
+        : Boolean(existingPartner && existingPartner.portalWebAccessEnabled);
+    }
+
     return {
       affiliateId: affiliateId,
       displayName: asOptionalString(codeItem.displayName || existingPartner && existingPartner.displayName),
@@ -131,6 +140,7 @@
         ? (lookupFound ? lookupUid : preserveExistingUid ? existingPartner.portalUid : null)
         : null,
       portalEmail: resolvedPortalEmail,
+      portalWebAccessEnabled: portalWebAccessEnabled,
       note: asOptionalString(existingPartner && existingPartner.note),
     };
   }

@@ -1,5 +1,5 @@
 /* ============================================================
-   NURIA — Daily Sunni Islamic Guidance & Reflection App
+   NURIA — Daily Islamic Guidance & Reflection App
    Website Stylesheet
    OakDev & AI AB © 2026
    ============================================================ */
@@ -3509,6 +3509,28 @@ address.legal-address strong { color: var(--color-text); }
   line-height: 1.8;
 }
 
+.admin-partner-portal-access__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.admin-partner-portal-access .admin-partner-portal-access__status {
+  margin-top: 0.35rem;
+}
+
+.admin-codes-portal-hint {
+  margin-bottom: 1rem;
+}
+
+.admin-inline-link {
+  color: var(--color-gold-bright);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .admin-state-card {
   padding: 1.5rem;
 }
@@ -5379,6 +5401,78 @@ code {
   gap: 0.2rem;
 }
 
+/* Join page — partner portal entry */
+
+.page-hero__partner-cta {
+  margin: 1.25rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(234, 246, 240, 0.72);
+}
+
+.page-hero__partner-link {
+  color: var(--color-gold-bright);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.45);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.page-hero__partner-link:hover,
+.page-hero__partner-link:focus-visible {
+  color: #f5e6b8;
+  border-bottom-color: rgba(240, 208, 128, 0.75);
+}
+
+.page-hero__partner-cta-suffix {
+  color: rgba(234, 246, 240, 0.58);
+}
+
+.referral-partner-login {
+  margin: 1.35rem 0 1.5rem;
+  padding: 1.25rem 1.2rem;
+  border-radius: 22px;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  background:
+    linear-gradient(145deg, rgba(201, 168, 76, 0.09), rgba(45, 190, 108, 0.06));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.referral-partner-login__label {
+  margin: 0 0 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(234, 246, 240, 0.52);
+}
+
+.referral-partner-login__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.referral-partner-login__copy {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: rgba(234, 246, 240, 0.72);
+}
+
+.referral-partner-login__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 480px) {
+  .referral-partner-login__btn {
+    width: auto;
+  }
+}
+
 /* Partner web portal */
 
 .partner-portal-body {
@@ -5387,9 +5481,21 @@ code {
 
 .partner-shell {
   position: relative;
+  z-index: 1;
   max-width: 1240px;
   margin: 0 auto;
   padding: 1.4rem 1.3rem 3.6rem;
+}
+
+.partner-portal-ambient {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 18% -8%, rgba(201, 168, 76, 0.16), transparent 55%),
+    radial-gradient(ellipse 55% 42% at 92% 12%, rgba(45, 190, 108, 0.11), transparent 50%),
+    radial-gradient(ellipse 50% 38% at 48% 102%, rgba(96, 165, 250, 0.07), transparent 48%);
 }
 
 .partner-topbar {
@@ -5649,6 +5755,32 @@ code {
   gap: 1rem;
 }
 
+.partner-dashboard-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.partner-dashboard-section__intro {
+  padding: 0 0.15rem;
+}
+
+.partner-section-heading {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.partner-section-lead {
+  margin: 0.45rem 0 0;
+  max-width: 52rem;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(234, 246, 240, 0.66);
+}
+
 .partner-hero-card {
   padding: 1.65rem;
 }
@@ -5803,6 +5935,24 @@ code {
   display: grid;
   gap: 0.45rem;
   padding: 1rem 1.05rem;
+}
+
+.partner-metric-card--spotlight {
+  border-color: rgba(201, 168, 76, 0.28);
+  background:
+    linear-gradient(160deg, rgba(201, 168, 76, 0.1), rgba(255, 255, 255, 0.03));
+  box-shadow: 0 14px 36px rgba(201, 168, 76, 0.08);
+}
+
+.partner-metric-card--spotlight .partner-metric-card__value {
+  font-size: clamp(1.55rem, 2.6vw, 2.35rem);
+}
+
+.partner-metric-card__hint {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(234, 246, 240, 0.52);
+  margin-top: 0.1rem;
 }
 
 .partner-metric-card__value,
@@ -5998,6 +6148,106 @@ code {
   background:
     linear-gradient(180deg, rgba(201, 168, 76, 0.05), rgba(255, 255, 255, 0)),
     rgba(8, 24, 17, 0.88);
+}
+
+.partner-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(45, 190, 108, 0.28);
+  color: #a7f3d0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.partner-live-pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.85);
+  animation: partner-live-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes partner-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
+}
+
+.partner-auth-guide {
+  margin: 1rem 0 0.35rem;
+  padding-left: 1.2rem;
+  color: rgba(234, 246, 240, 0.72);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.partner-check-email-hint {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(234, 246, 240, 0.78);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.partner-register-panel {
+  margin-top: 1.05rem;
+  border-radius: 20px;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.partner-register-panel__summary {
+  padding: 0.95rem 1.1rem;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-gold-bright);
+  list-style: none;
+}
+
+.partner-register-panel__summary::-webkit-details-marker {
+  display: none;
+}
+
+.partner-register-form {
+  padding: 0 1.1rem 1.15rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.partner-dashboard--premium .partner-hero-card {
+  border-color: rgba(201, 168, 76, 0.24);
+}
+
+.partner-dashboard--premium .partner-metric-card--spotlight {
+  animation: partner-metric-shine 9s ease-in-out infinite;
+}
+
+@keyframes partner-metric-shine {
+  0%,
+  100% {
+    box-shadow: 0 14px 36px rgba(201, 168, 76, 0.08);
+  }
+  50% {
+    box-shadow: 0 20px 52px rgba(201, 168, 76, 0.16);
+  }
 }
 
 .partner-empty {

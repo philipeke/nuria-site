@@ -43,6 +43,13 @@ run('settings copy explains that partner registry is backend-driven', () => {
   assert(affiliateAdminHtml.includes('secure affiliate partner registry'));
 });
 
+run('affiliate code form exposes partner web portal access toggles', () => {
+  assert(affiliateAdminHtml.includes('adminPartnerPortalEnableButton'));
+  assert(affiliateAdminHtml.includes('adminPartnerPortalDisableButton'));
+  assert(affiliateAdminScript.includes('handlePartnerPortalAccessChange'));
+  assert(affiliateAdminScript.includes('portalWebAccessEnabled'));
+});
+
 if (process.exitCode && process.exitCode !== 0) {
   process.exit(process.exitCode);
 }

@@ -11,7 +11,9 @@ import {
   getAuth,
   GoogleAuthProvider,
   browserLocalPersistence,
+  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  fetchSignInMethodsForEmail,
   onAuthStateChanged,
   setPersistence,
   signInWithEmailAndPassword,
@@ -81,6 +83,14 @@ export async function signInWithGoogle() {
 
 export async function signInWithEmailPassword(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function createUserWithEmailPassword(email, password) {
+  return createUserWithEmailAndPassword(auth, email, password);
+}
+
+export async function fetchAuthSignInMethodsForEmail(email) {
+  return fetchSignInMethodsForEmail(auth, email);
 }
 
 export async function signOutUser() {

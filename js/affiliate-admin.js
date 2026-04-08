@@ -153,6 +153,10 @@ const elements = {
   displayName: document.getElementById('adminDisplayName'),
   partnerNuriaEmail: document.getElementById('adminPartnerNuriaEmail'),
   partnerLinkStatus: document.getElementById('adminPartnerLinkStatus'),
+  partnerPortalAccessRow: document.getElementById('adminPartnerPortalAccessRow'),
+  partnerPortalAccessStatus: document.getElementById('adminPartnerPortalAccessStatus'),
+  partnerPortalEnableButton: document.getElementById('adminPartnerPortalEnableButton'),
+  partnerPortalDisableButton: document.getElementById('adminPartnerPortalDisableButton'),
   partnerProfileDetails: document.getElementById('adminPartnerProfileDetails'),
   partnerType: document.getElementById('adminPartnerType'),
   partnerMobile: document.getElementById('adminPartnerMobile'),
@@ -329,6 +333,7 @@ const state = {
   backendAuditUnavailableReason: '',
   recipientSettingsUnavailableReason: '',
   saveCodeInFlight: false,
+  savePortalAccessInFlight: false,
   generateReportInFlight: false,
   markPaidInFlight: false,
   exportInFlight: false,
@@ -826,6 +831,7 @@ function normalizePartnerDocValue(rawValue) {
     contactEmail: normalizeEmail(rawValue.contactEmail),
     portalUid: String(rawValue.portalUid || '').trim() || null,
     portalEmail: normalizeEmail(rawValue.portalEmail),
+    portalWebAccessEnabled: Boolean(rawValue.portalWebAccessEnabled),
     note: String(rawValue.note || '').trim() || null,
     updatedAt: rawValue.updatedAt || null,
     updatedByEmail: String(rawValue.updatedByEmail || '').trim() || null,
@@ -887,6 +893,14 @@ function buildPartnerUpsertPayloadForCode(options) {
     && existingPortalEmail === normalizedEmail
     && Boolean(existingPartner?.portalUid);
 
+  const hasExplicitPortalWebAccess = Object.prototype.hasOwnProperty.call(settings, 'portalWebAccessEnabled');
+  let portalWebAccessEnabled = false;
+  if (normalizedEmail) {
+    portalWebAccessEnabled = hasExplicitPortalWebAccess
+      ? Boolean(settings.portalWebAccessEnabled)
+      : Boolean(existingPartner?.portalWebAccessEnabled);
+  }
+
   return {
     affiliateId,
     displayName: String(codeItem.displayName || existingPartner?.displayName || '').trim() || null,
@@ -900,6 +914,7 @@ function buildPartnerUpsertPayloadForCode(options) {
       ? (lookupFound ? lookupUid : preserveExistingUid ? existingPartner?.portalUid || null : null)
       : null,
     portalEmail: normalizedEmail ? lookupEmail : null,
+    portalWebAccessEnabled,
     note: String(existingPartner?.note || '').trim() || null,
   };
 }
@@ -1459,6 +1474,133 @@ function renderPartnerLinkStatus(item) {
 
   elements.partnerLinkStatus.textContent =
     `Email saved but not verified yet (${registry.statusReason || 'not_found'}).`;
+}
+
+function renderPartnerPortalAccessRow(item) {
+  if (!elements.partnerPortalAccessRow) return;
+  const code = normalizeReferralCodeValue(
+    (item && item.code) || elements.codeValue?.value || ''
+  );
+  if (!code) {
+    elements.partnerPortalAccessStatus.textContent =
+      'Select a code from the table or type a referral code above, then add Partner Nuria email — you can enable web portal login here once a code is set.';
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+    return;
+  }
+
+  if (state.savePortalAccessInFlight) {
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+    return;
+  }
+
+  const affiliateId = String((item && item.affiliateId) || elements.affiliateId?.value || '').trim();
+  const savedItem = { code, affiliateId };
+  const partner = findLinkedPartnerForCode(savedItem) || null;
+  const draftEmail = normalizeEmail(elements.partnerNuriaEmail?.value || '');
+  const savedEmail = normalizeEmail(partner?.portalEmail || getPartnerEmailForCode(savedItem));
+
+  const emailForAction = draftEmail || savedEmail;
+  if (!emailForAction || !isValidEmail(emailForAction)) {
+    elements.partnerPortalAccessStatus.textContent =
+      'Affiliate portal (/nuria-partner): add a Partner Nuria email, then enable web login for that address.';
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+    return;
+  }
+
+  const emailDirty = Boolean(draftEmail && savedEmail && draftEmail !== savedEmail);
+  const accessActive = Boolean(partner?.portalWebAccessEnabled && savedEmail);
+
+  if (emailDirty) {
+    elements.partnerPortalAccessStatus.textContent =
+      'Email field changed since last save. Save the code, or use Enable / Disable to apply portal access to the address in the field.';
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = !accessActive;
+  } else if (accessActive) {
+    elements.partnerPortalAccessStatus.textContent =
+      `Web portal login is ON for ${savedEmail}. Partner signs in at /nuria-partner with that Nuria account.`;
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = false;
+  } else {
+    elements.partnerPortalAccessStatus.textContent =
+      `Web portal login is OFF. Enable it when ${emailForAction} is correct — partner uses password or Google with that Nuria account.`;
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+  }
+}
+
+function getCodeFormDraftItem() {
+  const code = normalizeReferralCodeValue(elements.codeValue?.value || '');
+  if (!code) return null;
+  return {
+    code,
+    affiliateId: elements.affiliateId?.value?.trim(),
+    displayName: elements.displayName?.value?.trim(),
+    status: elements.codeStatus?.value,
+    partnerNuriaEmail: elements.partnerNuriaEmail?.value,
+  };
+}
+
+async function handlePartnerPortalAccessChange(enable) {
+  if (state.savePortalAccessInFlight) return;
+  const code = normalizeReferralCodeValue(elements.codeValue?.value || '');
+  if (!code) {
+    showBanner('Enter or select a referral code first.', 'info');
+    return;
+  }
+  const partnerEmail = normalizeEmail(elements.partnerNuriaEmail?.value || '');
+  if (!partnerEmail || !isValidEmail(partnerEmail)) {
+    showBanner('Enter a valid Partner Nuria email first.', 'info');
+    return;
+  }
+  const metadata = {
+    affiliateId: elements.affiliateId.value.trim(),
+    displayName: elements.displayName.value.trim(),
+    status: elements.codeStatus.value,
+  };
+
+  clearBanner();
+  state.savePortalAccessInFlight = true;
+  if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+  if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+  try {
+    await savePartnerEmailMapping(
+      code,
+      partnerEmail,
+      metadata,
+      readPartnerProfileFromForm(),
+      { portalWebAccessEnabled: enable }
+    );
+    await loadPartners();
+    const match = (state.codes || []).find((row) => normalizeReferralCodeValue(row.code) === code);
+    showBanner(
+      enable
+        ? `Web portal login enabled for ${partnerEmail}.`
+        : `Web portal login disabled for ${partnerEmail}.`,
+      'success'
+    );
+    addActivityLog(
+      enable
+        ? `Enabled affiliate web portal for ${code} (${partnerEmail}).`
+        : `Disabled affiliate web portal for ${code} (${partnerEmail}).`,
+      enable ? 'success' : 'info'
+    );
+    state.savePortalAccessInFlight = false;
+    resetCodeForm(
+      match || {
+        code,
+        affiliateId: metadata.affiliateId,
+        displayName: metadata.displayName,
+        status: metadata.status || 'active',
+      }
+    );
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+    state.savePortalAccessInFlight = false;
+    renderPartnerPortalAccessRow(getCodeFormDraftItem());
+  }
 }
 
 function getPartnerEmailForCode(item) {
@@ -4070,6 +4212,7 @@ function resetCodeForm(item) {
     elements.currency.value = '';
     updateCodeReferralLink('');
     renderPartnerLinkStatus(null);
+    renderPartnerPortalAccessRow(null);
     if (elements.partnerProfileDetails) {
       elements.partnerProfileDetails.open = false;
     }
@@ -4104,6 +4247,7 @@ function resetCodeForm(item) {
   elements.currency.value = value.currency || '';
   updateCodeReferralLink(value.code || '');
   renderPartnerLinkStatus(value);
+  renderPartnerPortalAccessRow(value);
   if (elements.partnerProfileDetails) {
     elements.partnerProfileDetails.open = hasPartnerProfileData(profile);
   }
@@ -5048,7 +5192,7 @@ async function loadAdminSettings() {
   }
 }
 
-async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInput) {
+async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInput, portalAccessPatch) {
   const normalizedCode = normalizeReferralCodeValue(code);
   if (!normalizedCode) return;
 
@@ -5058,6 +5202,7 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
   const nextProfiles = Object.assign({}, state.partnerProfilesByCode || {});
   const normalizedEmail = normalizeEmail(partnerEmail || '');
   const normalizedProfile = normalizePartnerProfile(profileInput || {});
+  const accessPatch = portalAccessPatch || {};
   const codeItem = {
     code: normalizedCode,
     affiliateId: String(metadata?.affiliateId || '').trim(),
@@ -5081,13 +5226,17 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
     }
   }
 
-  const partnerPayload = buildPartnerUpsertPayloadForCode({
+  const upsertSettings = {
     codeItem,
     existingPartner,
     partnerEmail: normalizedEmail,
     lookupResult: lookup,
     lookupFailed,
-  });
+  };
+  if (Object.prototype.hasOwnProperty.call(accessPatch, 'portalWebAccessEnabled')) {
+    upsertSettings.portalWebAccessEnabled = accessPatch.portalWebAccessEnabled;
+  }
+  const partnerPayload = buildPartnerUpsertPayloadForCode(upsertSettings);
   await callFirebaseFunction('upsertAffiliatePartnerAdmin', partnerPayload);
 
   if (normalizedEmail && isValidEmail(normalizedEmail)) {
@@ -6581,6 +6730,18 @@ function bindEvents() {
   elements.newCode?.addEventListener('click', () => resetCodeForm(null));
   elements.resetCodeForm?.addEventListener('click', () => resetCodeForm(null));
   elements.codeForm?.addEventListener('submit', handleCodeSave);
+  elements.partnerPortalEnableButton?.addEventListener('click', () => {
+    handlePartnerPortalAccessChange(true);
+  });
+  elements.partnerPortalDisableButton?.addEventListener('click', () => {
+    handlePartnerPortalAccessChange(false);
+  });
+  elements.partnerNuriaEmail?.addEventListener('input', () => {
+    renderPartnerPortalAccessRow(getCodeFormDraftItem());
+  });
+  elements.codeValue?.addEventListener('input', () => {
+    renderPartnerPortalAccessRow(getCodeFormDraftItem());
+  });
   elements.refreshSubscribers?.addEventListener('click', async () => {
     clearBanner();
     try {

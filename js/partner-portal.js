@@ -1,5 +1,7 @@
 import {
   callFirebaseFunction,
+  createUserWithEmailPassword,
+  fetchAuthSignInMethodsForEmail,
   getCurrentUser,
   isAppCheckConfigured,
   sendPasswordReset,
@@ -62,6 +64,13 @@ const elements = {
   codesList: document.getElementById('partnerCodesList'),
   statusList: document.getElementById('partnerStatusList'),
   recentActivity: document.getElementById('partnerRecentActivity'),
+  livePill: document.getElementById('partnerLivePill'),
+  livePillText: document.getElementById('partnerLivePillText'),
+  checkEmailButton: document.getElementById('partnerCheckEmailButton'),
+  checkEmailHint: document.getElementById('partnerCheckEmailHint'),
+  registerForm: document.getElementById('partnerRegisterForm'),
+  registerPassword: document.getElementById('partnerRegisterPassword'),
+  registerPasswordConfirm: document.getElementById('partnerRegisterPasswordConfirm'),
 };
 
 const state = {
@@ -70,7 +79,26 @@ const state = {
   snapshot: null,
   selectedIndex: 0,
   loadPromise: null,
+  viewName: 'loading-auth',
 };
+
+const PARTNER_REFRESH_MS = 52000;
+let partnerRefreshTimer = null;
+
+function clearPartnerRefreshTimer() {
+  if (partnerRefreshTimer) {
+    window.clearInterval(partnerRefreshTimer);
+    partnerRefreshTimer = null;
+  }
+}
+
+function startPartnerRefreshTimer() {
+  clearPartnerRefreshTimer();
+  partnerRefreshTimer = window.setInterval(() => {
+    if (!state.user || state.viewName !== 'ready') return;
+    loadPartnerPortal({ force: true }).catch(() => {});
+  }, PARTNER_REFRESH_MS);
+}
 
 function track(name, params) {
   if (typeof site.trackEvent === 'function') {
@@ -88,6 +116,14 @@ function escapeHtml(value) {
 }
 
 function setView(name) {
+  state.viewName = name;
+  if (name !== 'ready') {
+    clearPartnerRefreshTimer();
+  }
+  if (name !== 'ready' && elements.livePill) {
+    elements.livePill.hidden = true;
+  }
+
   elements.views.forEach((view) => {
     view.hidden = view.dataset.partnerView !== name;
   });
@@ -412,7 +448,7 @@ function renderHero(partner) {
   if (elements.heroCopy) {
     const primaryCode = partner.primaryReferralCode || partner.affiliateId;
     elements.heroCopy.textContent =
-      `Aggregate partner performance for ${primaryCode}. This mirrors the Nuria app portal using the same linked account access.`;
+      `Referral code ${primaryCode}. Same secure data as in the Nuria app — sign in with the account linked to your partner profile.`;
   }
   if (elements.heroStatus) {
     elements.heroStatus.textContent = humanizeStatus(partner.status);
@@ -559,6 +595,18 @@ function renderRecentActivity(partner) {
     .join('');
 }
 
+function updateLiveIndicator() {
+  if (!elements.livePill || !elements.livePillText) return;
+  if (state.viewName !== 'ready') {
+    elements.livePill.hidden = true;
+    return;
+  }
+  elements.livePill.hidden = false;
+  const ms = state.snapshot?.generatedAtMs;
+  const when = ms ? formatRelativeTime(ms) : 'just now';
+  elements.livePillText.textContent = `Auto-refresh · data ${when}`;
+}
+
 function renderPortal() {
   const partner = getSelectedPartner();
   if (!partner) return;
@@ -569,6 +617,7 @@ function renderPortal() {
   renderCodes(partner);
   renderStatusBreakdown(partner);
   renderRecentActivity(partner);
+  updateLiveIndicator();
 }
 
 function getActionablePortalErrorMessage(error) {
@@ -616,6 +665,14 @@ function getActionablePortalErrorMessage(error) {
 
   if (code === 'too-many-requests') {
     return 'Too many attempts. Wait a moment and try again.';
+  }
+
+  if (code === 'email-already-in-use') {
+    return 'An account already exists for this email. Sign in above or use Reset password.';
+  }
+
+  if (code === 'weak-password') {
+    return 'Password is too weak. Use at least 8 characters.';
   }
 
   return parts.message;
@@ -666,6 +723,8 @@ async function loadPartnerPortal(options) {
       }
       renderPortal();
       setView('ready');
+      startPartnerRefreshTimer();
+      updateLiveIndicator();
       track('partner_web_portal_loaded', {
         partner_count: state.snapshot.partners.length,
       });
@@ -673,6 +732,17 @@ async function loadPartnerPortal(options) {
       const parts = getErrorParts(error);
       if (parts.code === 'permission-denied') {
         const user = state.user;
+        const msg = parts.message.toLowerCase();
+        if (msg.includes('portal_web_access_disabled')) {
+          elements.unlinkedCopy.textContent =
+            `Signed in as ${user?.email || 'this account'}, but web portal login is not enabled for your partner profile yet. Ask your Nuria contact to turn on "Enable web portal login" in affiliate admin for your email.`;
+          showBanner(elements.unlinkedCopy.textContent, 'info');
+          setView('unlinked');
+          track('partner_web_portal_access_blocked', {
+            reason: 'portal_access_disabled',
+          });
+          return;
+        }
         elements.unlinkedCopy.textContent =
           `Signed in as ${user?.email || 'this account'}, but it is not linked to any active partner profile yet. Ask the Nuria team to connect your portal UID or verified email in the partner admin.`;
         showBanner(elements.unlinkedCopy.textContent, 'info');
@@ -744,6 +814,77 @@ async function handleGoogleSignIn() {
   }
 }
 
+async function handleCheckEmail() {
+  const email = String(elements.emailInput?.value || '').trim();
+  clearBanner();
+  setAuthError('');
+  if (!email) {
+    setAuthError('Enter your email first.');
+    return;
+  }
+  setButtonBusy(elements.checkEmailButton, true, 'Checking');
+  try {
+    await waitForAuthPersistenceReady();
+    const methods = await fetchAuthSignInMethodsForEmail(email);
+    if (!elements.checkEmailHint) return;
+    elements.checkEmailHint.hidden = false;
+    if (!methods.length) {
+      elements.checkEmailHint.textContent =
+        'No password or Google login found for this email yet. Use “Create a password” below, or sign in with Google if you use Gmail for Nuria.';
+    } else if (methods.includes('google.com') && methods.includes('password')) {
+      elements.checkEmailHint.textContent =
+        'This email can sign in with Google or password. Use whichever matches your Nuria app login.';
+    } else if (methods.includes('google.com')) {
+      elements.checkEmailHint.textContent =
+        'This email is set up with Google sign-in. Use Continue with Google, or add a password via Reset password if your admin asked you to.';
+    } else {
+      elements.checkEmailHint.textContent =
+        'This email has a password on file. Sign in above or use Reset password if you forgot it.';
+    }
+  } catch (error) {
+    setAuthError(getActionablePortalErrorMessage(error));
+  } finally {
+    setButtonBusy(elements.checkEmailButton, false);
+  }
+}
+
+async function handleRegisterSubmit(event) {
+  event.preventDefault();
+  clearBanner();
+  setAuthError('');
+  const email = String(elements.emailInput?.value || '').trim();
+  const p1 = String(elements.registerPassword?.value || '');
+  const p2 = String(elements.registerPasswordConfirm?.value || '');
+  if (!email) {
+    setAuthError('Enter the same email in the field above.');
+    return;
+  }
+  if (p1.length < 8) {
+    setAuthError('Password must be at least 8 characters.');
+    return;
+  }
+  if (p1 !== p2) {
+    setAuthError('Passwords do not match.');
+    return;
+  }
+  const submitButton = elements.registerForm?.querySelector('button[type="submit"]');
+  setButtonBusy(submitButton, true, 'Creating');
+  try {
+    await waitForAuthPersistenceReady();
+    await createUserWithEmailPassword(email, p1);
+    track('partner_web_portal_register', {
+      method: 'password',
+    });
+    showBanner('Account created. You are signed in. Loading your partner dashboard…', 'success');
+    if (elements.registerPassword) elements.registerPassword.value = '';
+    if (elements.registerPasswordConfirm) elements.registerPasswordConfirm.value = '';
+  } catch (error) {
+    setAuthError(getActionablePortalErrorMessage(error));
+  } finally {
+    setButtonBusy(submitButton, false);
+  }
+}
+
 async function handlePasswordReset() {
   const email = String(elements.emailInput?.value || '').trim();
   if (!email) {
@@ -769,6 +910,7 @@ async function handlePasswordReset() {
 
 async function handleSignOut() {
   clearBanner();
+  clearPartnerRefreshTimer();
   await signOutUser();
 }
 
@@ -790,6 +932,8 @@ function applyLocationHints() {
 function bindEvents() {
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.googleSignInButton?.addEventListener('click', handleGoogleSignIn);
+  elements.checkEmailButton?.addEventListener('click', handleCheckEmail);
+  elements.registerForm?.addEventListener('submit', handleRegisterSubmit);
   elements.sendPasswordResetButton?.addEventListener('click', handlePasswordReset);
   elements.signOutButton?.addEventListener('click', handleSignOut);
   elements.signOutUnlinked?.addEventListener('click', handleSignOut);
@@ -812,6 +956,7 @@ function handleAuthState(user) {
 
   if (!user) {
     clearBanner();
+    clearPartnerRefreshTimer();
     setView('signed-out');
     return;
   }
