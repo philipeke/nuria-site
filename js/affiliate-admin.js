@@ -1484,7 +1484,8 @@ function renderPartnerPortalAccessRow(item) {
   if (!code) {
     elements.partnerPortalAccessStatus.textContent =
       'Select a code from the table or type a referral code above, then add Partner Nuria email — you can enable web portal login here once a code is set.';
-    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    // Keep buttons clickable so the handler can show banners (disabled buttons swallow clicks).
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
     return;
   }
@@ -1505,7 +1506,7 @@ function renderPartnerPortalAccessRow(item) {
   if (!emailForAction || !isValidEmail(emailForAction)) {
     elements.partnerPortalAccessStatus.textContent =
       'Affiliate portal (/nuria-partner): add a Partner Nuria email, then enable web login for that address.';
-    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
     return;
   }
@@ -1556,9 +1557,9 @@ async function handlePartnerPortalAccessChange(enable) {
     return;
   }
   const metadata = {
-    affiliateId: elements.affiliateId.value.trim(),
-    displayName: elements.displayName.value.trim(),
-    status: elements.codeStatus.value,
+    affiliateId: String(elements.affiliateId?.value || '').trim(),
+    displayName: String(elements.displayName?.value || '').trim(),
+    status: String(elements.codeStatus?.value || '').trim() || 'active',
   };
 
   clearBanner();
@@ -4213,9 +4214,6 @@ function resetCodeForm(item) {
     updateCodeReferralLink('');
     renderPartnerLinkStatus(null);
     renderPartnerPortalAccessRow(null);
-    if (elements.partnerProfileDetails) {
-      elements.partnerProfileDetails.open = false;
-    }
     syncPartnerTypeFields();
     return;
   }
@@ -4248,9 +4246,6 @@ function resetCodeForm(item) {
   updateCodeReferralLink(value.code || '');
   renderPartnerLinkStatus(value);
   renderPartnerPortalAccessRow(value);
-  if (elements.partnerProfileDetails) {
-    elements.partnerProfileDetails.open = hasPartnerProfileData(profile);
-  }
   syncPartnerTypeFields();
 }
 
