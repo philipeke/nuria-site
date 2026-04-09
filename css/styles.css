@@ -1595,12 +1595,25 @@ body::after {
   }
 }
 
-/* Tablet & phone: mobilversion.png + portrait frame (matches <picture> max-width: 900px) */
+/* Tablet & phone: mobilversion.png — natural image height so the whole phone stays visible */
 @media (max-width: 900px) {
   .market-story__frame--bild1 {
+    display: block;
+    aspect-ratio: unset;
+    height: auto;
     border-radius: clamp(18px, 2.5vw, 22px);
-    aspect-ratio: 1471 / 1342;
     padding: clamp(0.35rem, 2vw, 0.55rem);
+  }
+
+  .market-story__picture--bild1 {
+    width: 100%;
+    height: auto;
+  }
+
+  .market-story__picture--bild1 img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
   }
 
   .market-story--about .market-story__frame:not(.market-story__frame--bild1) {
