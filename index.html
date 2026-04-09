@@ -333,15 +333,18 @@
         </div>
         <figure class="market-story__figure market-story__figure--bild1">
           <div class="market-story__frame market-story__frame--bild1">
-            <img
-              src="assets/bild1.png"
-              alt="Nuria on a phone: Quran reading and Islamic guidance"
-              class="market-story__img market-story__img--about"
-              width="3168"
-              height="1344"
-              loading="lazy"
-              decoding="async"
-            />
+            <picture class="market-story__picture market-story__picture--bild1">
+              <source media="(max-width: 900px)" srcset="assets/mobilversion.png" />
+              <img
+                src="assets/bild1.png"
+                alt="Nuria on a phone: Quran reading and Islamic guidance"
+                class="market-story__img market-story__img--about"
+                width="3168"
+                height="1344"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </div>
           <figcaption class="market-story__caption" data-i18n="about.showcase_caption">Nuria on your phone — Quran, prayer, and reflection in one place.</figcaption>
         </figure>

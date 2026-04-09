@@ -1368,10 +1368,10 @@ body::after {
   padding: clamp(1.2rem, 2.3vw, 1.85rem) clamp(1rem, 2.2vw, 1.65rem);
   gap: clamp(1rem, 2.2vw, 1.65rem);
   background:
-    radial-gradient(ellipse 85% 55% at 50% 0%, rgba(201, 168, 76, 0.1) 0%, transparent 52%),
-    radial-gradient(ellipse 70% 50% at 12% 88%, rgba(45, 190, 108, 0.09) 0%, transparent 48%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.012) 100%),
-    rgba(6, 14, 10, 0.72);
+    radial-gradient(ellipse 85% 55% at 50% 0%, rgba(201, 168, 76, 0.12) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 50% at 12% 88%, rgba(45, 190, 108, 0.12) 0%, transparent 48%),
+    radial-gradient(ellipse 65% 45% at 50% 100%, rgba(45, 190, 108, 0.06) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(32, 58, 42, 0.45) 0%, rgba(8, 18, 13, 0.88) 100%);
 }
 
 .market-story__copy--bild1 {
@@ -1406,33 +1406,54 @@ body::after {
 .market-story__frame--bild1 {
   width: 100%;
   max-width: 100%;
-  padding: clamp(0.4rem, 1vw, 0.65rem);
+  padding: clamp(0.5rem, 1.15vw, 0.75rem);
   aspect-ratio: 3168 / 1344;
   border-radius: clamp(20px, 3.2vw, 28px);
   overflow: hidden;
+  /* Match showcase-grande (bild3): green glass, not flat black */
   background:
-    radial-gradient(ellipse 90% 70% at 50% 100%, rgba(45, 190, 108, 0.1) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(12, 28, 20, 0.97) 0%, rgba(2, 7, 5, 0.98) 100%);
-  border: 1px solid rgba(201, 168, 76, 0.2);
+    linear-gradient(145deg, rgba(32, 72, 52, 0.38) 0%, rgba(6, 14, 10, 0.9) 52%, rgba(4, 10, 7, 0.94) 100%);
+  border: 1px solid rgba(201, 168, 76, 0.22);
   box-shadow:
-    0 40px 88px -36px rgba(0, 0, 0, 0.82),
+    0 32px 72px rgba(0, 0, 0, 0.52),
     0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 0 56px rgba(45, 190, 108, 0.05);
+    0 1px 0 rgba(255, 255, 255, 0.09) inset,
+    0 0 48px rgba(45, 190, 108, 0.06);
+}
+
+.market-story__picture--bild1 {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.market-story__picture--bild1 img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
 .market-story--bild1 .market-story__frame--bild1::after {
-  background:
-    linear-gradient(180deg, rgba(7, 17, 12, 0.12) 0%, transparent 22%, transparent 78%, rgba(7, 17, 12, 0.18) 100%),
-    linear-gradient(90deg, rgba(7, 17, 12, 0.08) 0%, transparent 8%, transparent 92%, rgba(7, 17, 12, 0.08) 100%);
+  /* Light glass sheen like .showcase-grande__inner::after */
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    transparent 18%,
+    transparent 82%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
 }
 
 .market-story--bild1 .market-story__img--about {
-  border-radius: clamp(14px, 2.4vw, 20px);
+  border-radius: clamp(14px, 2.8vw, 22px);
   box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.42),
-    0 0 0 1px rgba(255, 255, 255, 0.07);
-  filter: saturate(0.98) contrast(1.04) brightness(1.02);
+    0 12px 36px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 0, 0, 0.18);
+  filter: saturate(0.98) contrast(1.03) brightness(1.02);
 }
 
 .market-story--daily {
@@ -1574,6 +1595,19 @@ body::after {
   }
 }
 
+/* Tablet & phone: mobilversion.png + portrait frame (matches <picture> max-width: 900px) */
+@media (max-width: 900px) {
+  .market-story__frame--bild1 {
+    border-radius: clamp(18px, 2.5vw, 22px);
+    aspect-ratio: 1471 / 1342;
+    padding: clamp(0.35rem, 2vw, 0.55rem);
+  }
+
+  .market-story--about .market-story__frame:not(.market-story__frame--bild1) {
+    aspect-ratio: 3168 / 1344;
+  }
+}
+
 @media (max-width: 768px) {
   .about-suite-layout {
     gap: 1.25rem;
@@ -1595,10 +1629,6 @@ body::after {
     gap: 0.85rem;
   }
 
-  .market-story__frame--bild1 {
-    border-radius: 20px;
-  }
-
   .showcase-grande {
     margin-top: 2.35rem;
   }
@@ -1609,10 +1639,6 @@ body::after {
 
   .market-story__frame {
     border-radius: 20px;
-  }
-
-  .market-story--about .market-story__frame {
-    aspect-ratio: 3168 / 1344;
   }
 
   .market-story--daily .market-story__frame {
