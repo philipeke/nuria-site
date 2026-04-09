@@ -698,9 +698,9 @@
           </div>
 
           <p class="admin-banner admin-banner--info admin-codes-portal-hint">
-            <strong>Affiliate web portal</strong> (<code>/nuria-partner</code>): open a code in the form below (click a row or type a code), enter
-            <strong>Partner Nuria email</strong>, then use
-            <strong>Enable web portal login</strong> — that section sits directly under the email field.
+            <strong>Affiliate web portal</strong> (<code>/nuria-partner</code>): open a code in the form (table row or type a code), fill
+            <strong>Partner Nuria email</strong> and partner profile if needed, then scroll to
+            <strong>Enable portal login</strong> (below billing fields).
           </p>
 
           <div class="admin-split">
@@ -723,7 +723,8 @@
               </p>
             </div>
 
-            <form class="admin-form" id="adminCodeForm">
+            <form id="adminCodeForm" class="admin-code-form-outer">
+              <div class="admin-form admin-code-form-scroll">
               <div class="admin-form__header">
                 <h3 class="admin-section-title" id="adminCodeFormTitle">Create code</h3>
                 <p class="admin-panel__helper" id="adminCodeFormHelper">
@@ -1036,6 +1037,7 @@
               </div>
 
               <p class="admin-form-error" id="adminCodeFormError" hidden></p>
+              </div>
             </form>
           </div>
         </article>
