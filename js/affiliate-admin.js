@@ -851,9 +851,17 @@ function findLinkedPartnerForCode(item) {
     return partnerRegistry.findPartnerForCode(item || {}, state.partners || []);
   }
 
-  const affiliateId = String(item?.affiliateId || '').trim();
+  let affiliateId = String(item?.affiliateId || '').trim();
   const normalizedCode = normalizeReferralCodeValue(item?.code || item?.primaryReferralCode || '');
   const partners = normalizePartnerListValue(state.partners);
+
+  // If the form draft does not carry affiliateId (e.g. typed code), resolve it from loaded codes.
+  if (!affiliateId && normalizedCode) {
+    const codeMatch = (state.codes || []).find(
+      (entry) => normalizeReferralCodeValue(entry?.code || '') === normalizedCode
+    );
+    affiliateId = String(codeMatch?.affiliateId || '').trim();
+  }
 
   if (affiliateId) {
     const partner = partners.find((entry) => entry.affiliateId === affiliateId);
@@ -1499,6 +1507,7 @@ function renderPartnerPortalAccessRow(item) {
   const affiliateId = String((item && item.affiliateId) || elements.affiliateId?.value || '').trim();
   const savedItem = { code, affiliateId };
   const partner = findLinkedPartnerForCode(savedItem) || null;
+  const registry = getPartnerRegistryEntryForCode(savedItem) || null;
   const draftEmail = normalizeEmail(elements.partnerNuriaEmail?.value || '');
   const savedEmail = normalizeEmail(partner?.portalEmail || getPartnerEmailForCode(savedItem));
 
@@ -1512,7 +1521,12 @@ function renderPartnerPortalAccessRow(item) {
   }
 
   const emailDirty = Boolean(draftEmail && savedEmail && draftEmail !== savedEmail);
-  const accessActive = Boolean(partner?.portalWebAccessEnabled && savedEmail);
+  const accessActive = Boolean(
+    savedEmail && (
+      partner?.portalWebAccessEnabled
+      || registry?.portalWebAccessEnabled === true
+    )
+  );
 
   if (emailDirty) {
     elements.partnerPortalAccessStatus.textContent =
@@ -5257,6 +5271,7 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
       affiliateId: partnerPayload.affiliateId,
       displayName: partnerPayload.displayName || codeItem.displayName,
       partnerUid: partnerPayload.portalUid || '',
+      portalWebAccessEnabled: Boolean(partnerPayload.portalWebAccessEnabled),
       partnerDisplayName: lookup?.displayName || partnerPayload.displayName || '',
       linkedAt: new Date().toISOString(),
       linkedBy: getActivityActor(),

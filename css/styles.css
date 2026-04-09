@@ -5746,6 +5746,15 @@ code {
   align-items: stretch;
 }
 
+.partner-portal-body--login-only .partner-panel--hero {
+  display: none;
+}
+
+.partner-portal-body--login-only .partner-auth-layout {
+  grid-template-columns: minmax(320px, 680px);
+  justify-content: center;
+}
+
 .partner-panel--hero {
   padding: 1.7rem;
 }

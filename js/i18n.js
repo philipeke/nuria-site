@@ -360,8 +360,8 @@ const T = {
       partner_login_title: 'Sign in to your partner dashboard',
       partner_login_copy:
         'If your organisation has a Nuria partner account, open the web portal to see referral performance, codes, and recent activity. Use the same Nuria login your team has linked in our partner registry.',
-      partner_login_btn: 'Partner sign-in',
-      partner_login_hero_link: 'Partner sign-in',
+      partner_login_btn: 'Affiliate Portal',
+      partner_login_hero_link: 'Affiliate Portal',
       partner_login_hero_suffix: ' — aggregate stats and referral codes for registered Nuria partners.',
     },
   },

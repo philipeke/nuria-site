@@ -81,6 +81,7 @@ const state = {
   loadPromise: null,
   viewName: 'loading-auth',
 };
+const loginOnly = new URLSearchParams(window.location.search || '').get('view') === 'login';
 
 const PARTNER_REFRESH_MS = 52000;
 let partnerRefreshTimer = null;
@@ -923,6 +924,7 @@ function applyLocationHints() {
 
   const loginHint = String(params.get('view') || '').trim().toLowerCase();
   if (loginHint === 'login') {
+    document.body.classList.add('partner-portal-body--login-only');
     window.requestAnimationFrame(() => {
       elements.emailInput?.focus();
     });
@@ -958,6 +960,11 @@ function handleAuthState(user) {
     clearBanner();
     clearPartnerRefreshTimer();
     setView('signed-out');
+    return;
+  }
+
+  if (loginOnly) {
+    window.location.replace('/nuria-partner/');
     return;
   }
 
