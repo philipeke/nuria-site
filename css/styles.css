@@ -1185,47 +1185,139 @@ body::after {
   line-height: 1.8;
 }
 
-/* ===== MARKET SHOWCASE (landing landscape visual) ===== */
-.section--market-showcase {
-  padding: 2rem 0 2.75rem;
+/* ===== ABOUT — in-context market visual (editorial strip) ===== */
+.market-showcase-block {
+  --market-fade: 21, 45, 30; /* matches --color-bg-2 #152d1e */
+  margin: clamp(2.75rem, 6vw, 5rem) 0 clamp(2.5rem, 5vw, 4.5rem);
+  padding: clamp(1.75rem, 4vw, 2.75rem) 0 0;
   position: relative;
-  overflow: hidden;
 }
-.section--market-showcase::before {
+.market-showcase-block::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: min(72%, 420px);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.45), transparent);
+  pointer-events: none;
+  opacity: 0.85;
+}
+/* Same strip on main page background (e.g. end of Daily) — vignette matches --color-bg */
+.market-showcase-block--on-deep {
+  --market-fade: 15, 32, 23;
+  margin-top: clamp(2.25rem, 5vw, 4rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: clamp(1.35rem, 3vw, 2rem);
+}
+.market-showcase-block__header {
+  text-align: center;
+  max-width: 36rem;
+  margin: 0 auto var(--space-xl);
+  padding: 0 var(--space-sm);
+}
+.market-showcase-block__eyebrow {
+  margin-bottom: 0.75rem;
+}
+.market-showcase-block__lead {
+  font-size: clamp(0.98rem, 1.9vw, 1.12rem);
+  color: var(--color-text-dim);
+  line-height: 1.8;
+  margin: 0;
+  font-weight: 400;
+}
+.market-showcase-block__figure {
+  margin: 0;
+  max-width: min(1024px, 100%);
+  margin-inline: auto;
+}
+.market-showcase-block__viewport {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: rgba(5, 14, 10, 0.65);
+  box-shadow:
+    0 28px 64px -18px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(201, 168, 76, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+/* Soft blend into section background — avoids a “pasted rectangle” */
+.market-showcase-block__viewport::after {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse 85% 65% at 50% 35%, rgba(45, 190, 108, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 45% at 85% 65%, rgba(201, 168, 76, 0.06) 0%, transparent 50%);
+  border-radius: inherit;
   pointer-events: none;
-}
-.market-showcase {
-  position: relative;
-  max-width: 1100px;
-  margin: 0 auto;
-  border-radius: clamp(14px, 2.2vw, 22px);
-  border: 1px solid rgba(201, 168, 76, 0.14);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.4),
-    0 20px 56px rgba(0, 0, 0, 0.5),
-    0 0 70px rgba(45, 190, 108, 0.07);
-  overflow: hidden;
-  background: rgba(4, 10, 7, 0.5);
-}
-.market-showcase__glow {
-  position: absolute;
-  inset: -25%;
-  background: radial-gradient(circle at 50% 42%, rgba(45, 190, 108, 0.1) 0%, transparent 42%);
-  pointer-events: none;
-  z-index: 0;
-}
-.market-showcase__img {
-  position: relative;
   z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--market-fade), 0.96) 0%,
+      rgba(var(--market-fade), 0) 20%,
+      rgba(var(--market-fade), 0) 80%,
+      rgba(var(--market-fade), 0.96) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(var(--market-fade), 0.9) 0%,
+      rgba(var(--market-fade), 0) 11%,
+      rgba(var(--market-fade), 0) 89%,
+      rgba(var(--market-fade), 0.9) 100%
+    );
+}
+.market-showcase-block__img {
   display: block;
   width: 100%;
   height: auto;
+  vertical-align: middle;
+}
+.market-showcase-block__caption {
+  margin: var(--space-md) auto 0;
+  max-width: 32rem;
+  padding: 0 var(--space-sm);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-dimmer);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .market-showcase-block {
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg) 0 var(--space-md);
+  }
+  .market-showcase-block__header {
+    margin-bottom: var(--space-lg);
+  }
+  .market-showcase-block__viewport {
+    border-radius: var(--radius-lg);
+  }
+  .market-showcase-block__viewport::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--market-fade), 0.98) 0%,
+        rgba(var(--market-fade), 0) 14%,
+        rgba(var(--market-fade), 0) 86%,
+        rgba(var(--market-fade), 0.98) 100%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(var(--market-fade), 0.92) 0%,
+        rgba(var(--market-fade), 0) 7%,
+        rgba(var(--market-fade), 0) 93%,
+        rgba(var(--market-fade), 0.92) 100%
+      );
+  }
+}
+
+[dir="rtl"] .market-showcase-block__caption {
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 /* ===== CATEGORIES ===== */

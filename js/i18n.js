@@ -73,6 +73,9 @@ const T = {
       suite_i10: 'Companions texts and Muslim role models',
       suite_i11: 'Nearest mosque finder and ruqyah',
       suite_i12: 'Islamic calendar, Muhasaba, badges, and progress tracking',
+      showcase_label: 'Calm in the everyday',
+      showcase_lead: 'Quran, prayer tools, and guidance — one peaceful screen when you open Nuria.',
+      showcase_caption: 'Nuria on your phone — Quran, prayer, and reflection in one place.',
     },
     daily: {
       label: 'What Awaits You Each Day',
@@ -83,6 +86,9 @@ const T = {
       d2_text: 'Meet a luminary of the Islamic tradition — a Companion, a great Imam, a scholar of the heart. Each day, a new light from our tradition to inspire your own journey.',
       d3_title: 'Personal Reflection',
       d3_text: 'Your daily spiritual companion. A reflection crafted with wisdom and intention, speaking directly to where you are on your path — every single day.',
+      showcase_label: 'Your day, gently held',
+      showcase_lead: 'Morning scripture, role models, and reflection — Nuria meets you where you are.',
+      showcase_caption: 'Another glimpse of Nuria in everyday life.',
     },
     quote2: {
       text: '"Indeed, Allah is beautiful and He loves beauty."',
@@ -426,6 +432,9 @@ const T = {
       suite_i10: 'نصوص عن الصحابة والقدوات المسلمة',
       suite_i11: 'البحث عن أقرب مسجد والرقية',
       suite_i12: 'التقويم الإسلامي والمحاسبة والشارات وتتبع التقدم',
+      showcase_label: 'سكينة في يومك',
+      showcase_lead: 'القرآن وأدوات الصلاة والإرشاد — في شاشة هادئة عندما تفتح نوريا.',
+      showcase_caption: 'نوريا على هاتفك — القرآن والصلاة والتأمل في مكان واحد.',
     },
     daily: {
       label: 'ما ينتظرك كل يوم',
@@ -436,6 +445,9 @@ const T = {
       d2_text: 'تعرف على عَلَم من أعلام التراث الإسلامي — صحابياً جليلاً أو إماماً عظيماً أو عالِماً للقلوب. كل يوم نور جديد من تراثنا.',
       d3_title: 'تأمل شخصي',
       d3_text: 'رفيقك الروحي اليومي. تأمل مصنوع بحكمة وقصد، يتحدث مباشرة إلى مرحلتك على دربك.',
+      showcase_label: 'يومك بهدوء',
+      showcase_lead: 'آية الصباح والقدوات والتأمل — نوريا معك حيثما كنت.',
+      showcase_caption: 'لمحة أخرى من نوريا في يومك.',
     },
     quote2: {
       text: '«إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ»',
@@ -766,6 +778,9 @@ const T = {
       suite_i10: 'صحابہ اور مسلمان قدوات کے متون',
       suite_i11: 'قریب ترین مسجد اور رقیہ',
       suite_i12: 'اسلامی کیلنڈر، محاسبہ، badges اور progress tracking',
+      showcase_label: 'روزمرہ میں سکون',
+      showcase_lead: 'قرآن، نماز کے اوزار، اور رہنمائی — ایک پرسکون سکرین جب آپ نوریا کھولیں۔',
+      showcase_caption: 'آپ کے فون پر نوریا — قرآن، نماز، اور غور و فکر ایک جگہ۔',
     },
     daily: {
       label: 'ہر روز آپ کا کیا انتظار ہے',
@@ -776,6 +791,9 @@ const T = {
       d2_text: 'اسلامی روایت کے ایک روشن ستارے سے ملیں — صحابی، عظیم امام، یا دل کے عالم۔ ہر روز ہماری روایت کی ایک نئی روشنی۔',
       d3_title: 'ذاتی مراقبہ',
       d3_text: 'آپ کا روزانہ روحانی ساتھی۔ حکمت اور ارادے سے تیار کردہ مراقبہ، جو آپ کے راستے پر آپ کی موجودہ جگہ سے براہ راست بات کرتا ہے۔',
+      showcase_label: 'آپ کا دن، نرمی سے',
+      showcase_lead: 'صبح کی آیت، قدوات، اور مراقبہ — نوریا آپ سے جہاں آپ ہیں ملتی ہے۔',
+      showcase_caption: 'روزمرہ زندگی میں نوریا کی ایک اور جھلک۔',
     },
     quote2: {
       text: '«بے شک اللہ خوبصورت ہے اور خوبصورتی کو پسند کرتا ہے۔»',
@@ -1107,6 +1125,9 @@ const T = {
       suite_i10: 'Teks tentang Sahabat dan teladan Muslim',
       suite_i11: 'Pencari masjid terdekat dan ruqyah',
       suite_i12: 'Kalender Islam, muhasabah, lencana, dan pelacakan kemajuan',
+      showcase_label: 'Tenang di keseharian Anda',
+      showcase_lead: 'Al-Qur\'an, alat shalat, dan bimbingan — satu layar yang damai saat Anda membuka Nuria.',
+      showcase_caption: 'Nuria di ponsel Anda — Al-Qur\'an, shalat, dan refleksi dalam satu tempat.',
     },
     daily: {
       label: 'Yang Menanti Anda Setiap Hari',
@@ -1117,6 +1138,9 @@ const T = {
       d2_text: 'Kenali tokoh bercahaya dalam tradisi Islam — seorang Sahabat, Imam agung, atau ulama hati. Setiap hari, cahaya baru dari tradisi kita.',
       d3_title: 'Refleksi Pribadi',
       d3_text: 'Teman spiritual harian Anda. Sebuah refleksi yang dibuat dengan hikmah dan niat, berbicara langsung kepada Anda di mana pun Anda berada dalam perjalanan ini.',
+      showcase_label: 'Hari Anda, dengan lembut',
+      showcase_lead: 'Ayat pagi, teladan, dan refleksi — Nuria menyapa Anda di mana pun berada.',
+      showcase_caption: 'Sekilas lain dari Nuria dalam keseharian.',
     },
     quote2: {
       text: '"Sesungguhnya Allah itu Maha Indah dan Dia mencintai keindahan."',
@@ -1448,6 +1472,9 @@ const T = {
       suite_i10: 'Textes sur les Compagnons et modèles musulmans',
       suite_i11: 'Recherche de mosquée et ruqyah',
       suite_i12: 'Calendrier islamique, muhasaba, badges et suivi des progrès',
+      showcase_label: 'Au calme au quotidien',
+      showcase_lead: 'Coran, outils de prière et accompagnement — un écran paisible lorsque vous ouvrez Nuria.',
+      showcase_caption: 'Nuria sur votre téléphone — Coran, prière et réflexion au même endroit.',
     },
     daily: {
       label: 'Ce Qui Vous Attend Chaque Jour',
@@ -1458,6 +1485,9 @@ const T = {
       d2_text: 'Rencontrez un luminaire de la tradition islamique — un Compagnon, un grand Im\u00e2m, un savant du c\u0153ur. Chaque jour, une nouvelle lumi\u00e8re de notre tradition.',
       d3_title: 'R\u00e9flexion Personnelle',
       d3_text: 'Votre compagnon spirituel quotidien. Une r\u00e9flexion con\u00e7ue avec sagesse et intention, vous parlant directement l\u00e0 o\u00f9 vous \u00eates sur votre chemin.',
+      showcase_label: 'Votre journ\u00e9e, en douceur',
+      showcase_lead: 'Verset du matin, mod\u00e8les et r\u00e9flexion \u2014 Nuria vous accompagne o\u00f9 que vous soyez.',
+      showcase_caption: 'Un autre aper\u00e7u de Nuria au quotidien.',
     },
     quote2: {
       text: '\u00ab\u00a0Certes, Allah est beau et Il aime la beaut\u00e9.\u00a0\u00bb',
@@ -1789,6 +1819,9 @@ const T = {
       suite_i10: 'Sahabe metinleri ve Müslüman rol modeller',
       suite_i11: 'En yakın cami bulucu ve rukye',
       suite_i12: 'İslam takvimi, muhasaba, rozetler ve ilerleme takibi',
+      showcase_label: 'Gündelik hayatta huzur',
+      showcase_lead: 'Kur\'an, namaz araçları ve rehberlik — Nuria\'yı açtığınızda tek bir sakin ekran.',
+      showcase_caption: 'Telefonunuzda Nuria — Kur\'an, namaz ve tefekkür bir arada.',
     },
     daily: {
       label: 'Her Gün Sizi Neler Bekliyor',
@@ -1799,6 +1832,9 @@ const T = {
       d2_text: 'İslami geleneğin bir aydınlık ismiyle tanışın — bir Sahabi, büyük bir İmam, bir kalp alimi. Her gün geleneğimizden yeni bir ışık.',
       d3_title: 'Kişisel Tefekkür',
       d3_text: 'Günlük manevi eşlikçiniz. Hikmet ve niyetle hazırlanmış, yolculuğunuzda tam olarak bulunduğunuz yere doğrudan seslenen bir tefekkür.',
+      showcase_label: 'Gününüz, huzurla',
+      showcase_lead: 'Sabah ayeti, rol modelleri ve tefekkür — Nuria sizi bulunduğunuz yerde karşılar.',
+      showcase_caption: 'Günlük yaşamda Nuria\'dan bir bakış daha.',
     },
     quote2: {
       text: '"Şüphesiz Allah güzeldir ve güzelliği sever."',
