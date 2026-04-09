@@ -641,39 +641,36 @@ body::after {
   animation: float 6s ease-in-out infinite;
 }
 
-/* Side hardware buttons */
+/* Side hardware buttons — slim modern handset */
 .phone-frame-btn {
   position: absolute;
   z-index: 5;
-  background: linear-gradient(180deg, #3a3a3a 0%, #1c1c1c 50%, #2a2a2a 100%);
+  width: 2px;
+  background: linear-gradient(180deg, #2e2e2e 0%, #141414 45%, #1a1a1a 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    inset 0 -1px 0 rgba(0,0,0,0.4),
-    0 2px 8px rgba(0,0,0,0.7);
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.35);
 }
 /* Volume up */
 .phone-frame-btn--vol-up {
-  left: -4px;
-  top: 108px;
-  width: 4px;
-  height: 42px;
-  border-radius: 3px 0 0 3px;
+  left: -2px;
+  top: 112px;
+  height: 32px;
+  border-radius: 1px 0 0 1px;
 }
 /* Volume down */
 .phone-frame-btn--vol-dn {
-  left: -4px;
-  top: 163px;
-  width: 4px;
-  height: 42px;
-  border-radius: 3px 0 0 3px;
+  left: -2px;
+  top: 152px;
+  height: 32px;
+  border-radius: 1px 0 0 1px;
 }
 /* Power / sleep button */
 .phone-frame-btn--power {
-  right: -4px;
-  top: 148px;
-  width: 4px;
-  height: 72px;
-  border-radius: 0 3px 3px 0;
+  right: -2px;
+  top: 142px;
+  height: 56px;
+  border-radius: 0 1px 1px 0;
 }
 
 .hero__phone {
@@ -1174,6 +1171,49 @@ body::after {
   font-size: 0.9rem;
   color: var(--color-text-dim);
   line-height: 1.8;
+}
+
+/* ===== MARKET SHOWCASE (landing landscape visual) ===== */
+.section--market-showcase {
+  padding: 2rem 0 2.75rem;
+  position: relative;
+  overflow: hidden;
+}
+.section--market-showcase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 85% 65% at 50% 35%, rgba(45, 190, 108, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 85% 65%, rgba(201, 168, 76, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.market-showcase {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-radius: clamp(14px, 2.2vw, 22px);
+  border: 1px solid rgba(201, 168, 76, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.4),
+    0 20px 56px rgba(0, 0, 0, 0.5),
+    0 0 70px rgba(45, 190, 108, 0.07);
+  overflow: hidden;
+  background: rgba(4, 10, 7, 0.5);
+}
+.market-showcase__glow {
+  position: absolute;
+  inset: -25%;
+  background: radial-gradient(circle at 50% 42%, rgba(45, 190, 108, 0.1) 0%, transparent 42%);
+  pointer-events: none;
+  z-index: 0;
+}
+.market-showcase__img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* ===== CATEGORIES ===== */
