@@ -680,7 +680,7 @@ function getActionablePortalErrorMessage(error) {
 }
 
 async function callPartnerPortalCallable() {
-  const callableNames = ['getAffiliatePartnerPortalWeb', 'getAffiliatePartnerPortal'];
+  const callableNames = ['getAffiliatePartnerPortal'];
   let lastError = null;
   for (const name of callableNames) {
     try {
