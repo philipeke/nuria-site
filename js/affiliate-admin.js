@@ -1549,11 +1549,19 @@ async function handlePartnerPortalAccessChange(enable) {
   const code = normalizeReferralCodeValue(elements.codeValue?.value || '');
   if (!code) {
     showBanner('Enter or select a referral code first.', 'info');
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent =
+        'Pick a code from the table or type one above, then try again.';
+    }
     return;
   }
   const partnerEmail = normalizeEmail(elements.partnerNuriaEmail?.value || '');
   if (!partnerEmail || !isValidEmail(partnerEmail)) {
     showBanner('Enter a valid Partner Nuria email first.', 'info');
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent =
+        'Add a valid Partner Nuria email in the field above (same account they use to sign in).';
+    }
     return;
   }
   const metadata = {
@@ -1566,6 +1574,9 @@ async function handlePartnerPortalAccessChange(enable) {
   state.savePortalAccessInFlight = true;
   if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
   if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+  if (elements.partnerPortalAccessStatus) {
+    elements.partnerPortalAccessStatus.textContent = enable ? 'Enabling portal login…' : 'Disabling portal login…';
+  }
   try {
     await savePartnerEmailMapping(
       code,
@@ -1588,7 +1599,6 @@ async function handlePartnerPortalAccessChange(enable) {
         : `Disabled affiliate web portal for ${code} (${partnerEmail}).`,
       enable ? 'success' : 'info'
     );
-    state.savePortalAccessInFlight = false;
     resetCodeForm(
       match || {
         code,
@@ -1599,6 +1609,7 @@ async function handlePartnerPortalAccessChange(enable) {
     );
   } catch (error) {
     showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+  } finally {
     state.savePortalAccessInFlight = false;
     renderPartnerPortalAccessRow(getCodeFormDraftItem());
   }
