@@ -723,8 +723,8 @@
               </p>
             </div>
 
-            <form id="adminCodeForm" class="admin-code-form-outer">
-              <div class="admin-form admin-code-form-scroll">
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminCodeForm">
               <div class="admin-form__header">
                 <h3 class="admin-section-title" id="adminCodeFormTitle">Create code</h3>
                 <p class="admin-panel__helper" id="adminCodeFormHelper">
@@ -804,6 +804,29 @@
                 <p class="admin-panel__helper" id="adminPartnerLinkStatus">
                   No linked Nuria account yet. Add partner email and save to verify account mapping.
                 </p>
+              </div>
+
+              <div class="form-group admin-partner-portal-access" id="adminPartnerPortalAccessRow">
+                <p class="form-label">Affiliate web portal (/nuria-partner)</p>
+                <p class="admin-panel__helper admin-partner-portal-access__status" id="adminPartnerPortalAccessStatus">
+                  Web portal login is OFF. Enable it when the partner email is correct.
+                </p>
+                <div class="admin-partner-portal-access__actions">
+                  <button
+                    type="button"
+                    class="btn btn--gold"
+                    id="adminPartnerPortalEnableButton"
+                  >
+                    Enable portal login
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn--outline"
+                    id="adminPartnerPortalDisableButton"
+                  >
+                    Disable portal login
+                  </button>
+                </div>
               </div>
 
               <section class="admin-detail-section admin-partner-profile-section" id="adminPartnerProfileDetails">
@@ -951,29 +974,6 @@
                 </div>
               </section>
 
-              <div class="form-group admin-partner-portal-access" id="adminPartnerPortalAccessRow">
-                <p class="form-label">Affiliate web portal (/nuria-partner)</p>
-                <p class="admin-panel__helper admin-partner-portal-access__status" id="adminPartnerPortalAccessStatus">
-                  Web portal login is OFF. Enable it when the partner email is correct.
-                </p>
-                <div class="admin-partner-portal-access__actions">
-                  <button
-                    type="button"
-                    class="btn btn--gold"
-                    id="adminPartnerPortalEnableButton"
-                  >
-                    Enable portal login
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn--outline"
-                    id="adminPartnerPortalDisableButton"
-                  >
-                    Disable portal login
-                  </button>
-                </div>
-              </div>
-
               <div class="admin-form__grid">
                 <div class="form-group">
                   <label class="form-label" for="adminCodeStatus">Status</label>
@@ -1037,8 +1037,8 @@
               </div>
 
               <p class="admin-form-error" id="adminCodeFormError" hidden></p>
-              </div>
             </form>
+            </div>
           </div>
         </article>
 

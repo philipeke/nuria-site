@@ -3792,9 +3792,8 @@ address.legal-address strong { color: var(--color-text); }
   gap: 0.85rem;
 }
 
-/* Affiliate codes: table + form columns share max height; scroll lives on an inner div (form element scrolling is unreliable). */
+/* Affiliate codes: table + form columns share max height with dedicated wrappers. */
 @media (min-width: 1101px) {
-  /* Panel uses overflow:hidden globally — allow this section to show full split + inner scroll. */
   #adminSectionCodes.admin-panel {
     overflow: visible;
   }
@@ -3811,34 +3810,33 @@ address.legal-address strong { color: var(--color-text); }
     -webkit-overflow-scrolling: touch;
   }
 
-  #adminSectionCodes #adminCodeForm.admin-code-form-outer {
-    position: relative;
-    z-index: 1;
+  #adminSectionCodes .admin-code-form-wrap {
     align-self: stretch;
-    display: flex;
-    flex-direction: column;
     min-height: 0;
     max-height: calc(100vh - 9rem);
-    overflow: hidden;
-    padding-right: 0;
-  }
-
-  #adminSectionCodes #adminCodeForm .admin-code-form-scroll {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding-right: 0.25rem;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
 
+  #adminSectionCodes #adminCodeForm {
+    min-height: 100%;
+  }
+
+  #adminSectionCodes .admin-code-form-wrap {
+    overflow-x: hidden;
+  }
+
+  #adminSectionCodes .admin-code-form-wrap .admin-form {
+    padding-right: 0.25rem;
+  }
+
   #adminSectionCodes .admin-table-wrap::-webkit-scrollbar,
-  #adminSectionCodes #adminCodeForm .admin-code-form-scroll::-webkit-scrollbar {
+  #adminSectionCodes .admin-code-form-wrap::-webkit-scrollbar {
     width: 8px;
   }
 
   #adminSectionCodes .admin-table-wrap::-webkit-scrollbar-thumb,
-  #adminSectionCodes #adminCodeForm .admin-code-form-scroll::-webkit-scrollbar-thumb {
+  #adminSectionCodes .admin-code-form-wrap::-webkit-scrollbar-thumb {
     background: rgba(201, 168, 76, 0.32);
     border-radius: 999px;
   }
@@ -5301,7 +5299,7 @@ code {
     grid-template-columns: 1fr;
   }
 
-  #adminCodeForm.admin-code-form-outer {
+  #adminCodeForm {
     position: static;
     top: auto;
     max-height: none;
@@ -5309,10 +5307,9 @@ code {
     padding-right: 0;
   }
 
-  #adminCodeForm .admin-code-form-scroll {
+  .admin-code-form-wrap {
     overflow: visible;
     max-height: none;
-    padding-right: 0;
   }
 
   .admin-hero,
