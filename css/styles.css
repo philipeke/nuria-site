@@ -5666,6 +5666,37 @@ code {
   gap: 1rem;
 }
 
+/* Partner portal: .partner-dashboard uses display:grid — that must not override the HTML hidden attribute. */
+.partner-main > [data-partner-view][hidden],
+.partner-main > .partner-banner[hidden] {
+  display: none !important;
+}
+
+.partner-portal-body--login-only .partner-topbar {
+  display: none !important;
+}
+
+.partner-portal-body--login-only .partner-shell {
+  min-height: 100vh;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.partner-portal-body--login-only .partner-main {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partner-portal-body--login-only .partner-main > [data-partner-view]:not([hidden]) {
+  width: 100%;
+  max-width: 720px;
+}
+
 .partner-banner,
 .partner-state-card,
 .partner-panel,

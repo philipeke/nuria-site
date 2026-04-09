@@ -23,6 +23,15 @@
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
 <body class="partner-portal-body">
+  <script>
+    (function () {
+      try {
+        if (new URLSearchParams(window.location.search || '').get('view') === 'login') {
+          document.body.classList.add('partner-portal-body--login-only');
+        }
+      } catch (_e) {}
+    })();
+  </script>
   <div class="hero__geo-bg" aria-hidden="true"></div>
 
   <div class="partner-shell" data-partner-portal-page>
