@@ -1302,7 +1302,11 @@ body::after {
 
 .market-story__frame {
   position: relative;
-  aspect-ratio: 13 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.7rem, 1.35vw, 1rem);
+  aspect-ratio: 3168 / 1344;
   border-radius: 24px;
   overflow: hidden;
   background: rgba(4, 12, 8, 0.86);
@@ -1313,7 +1317,7 @@ body::after {
 }
 
 .market-story--daily .market-story__frame {
-  aspect-ratio: 5 / 6;
+  aspect-ratio: 2752 / 1536;
 }
 
 .market-story__frame::after {
@@ -1330,19 +1334,17 @@ body::after {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   filter: saturate(0.92) contrast(1.02) brightness(0.94);
-  transform: scale(1.08);
-  transform-origin: center;
+  transform: none;
 }
 
 .market-story__img--about {
-  object-position: 72% 48%;
+  object-position: center;
 }
 
 .market-story__img--daily {
-  object-position: 24% 30%;
-  transform: scale(1.18);
+  object-position: center;
 }
 
 .market-story__caption {
@@ -1404,21 +1406,19 @@ body::after {
   }
 
   .market-story--about .market-story__frame {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3168 / 1344;
   }
 
   .market-story--daily .market-story__frame {
-    aspect-ratio: 11 / 13;
+    aspect-ratio: 2752 / 1536;
   }
 
   .market-story__img--about {
-    object-position: 68% center;
-    transform: scale(1.1);
+    object-position: center;
   }
 
   .market-story__img--daily {
-    object-position: 22% 28%;
-    transform: scale(1.22);
+    object-position: center;
   }
 
   .market-story__caption {
@@ -3123,16 +3123,21 @@ address.legal-address strong { color: var(--color-text); }
 
 @media (max-width: 768px) {
   .hero {
-    padding: 120px 1.25rem 32px;
+    padding: 120px 1.25rem 18px;
   }
   .hero__phone-wrap {
-    margin-top: 1.75rem;
+    margin-top: 2.4rem;
+    height: 20.5rem;
+    align-items: flex-start;
     padding-top: 0;
   }
   .phone-frame-wrap {
     transform: scale(0.5) rotateY(-14deg) rotateX(7deg) rotateZ(2.5deg);
     transform-origin: center top;
     margin-bottom: 0;
+  }
+  .hero + .section--quote {
+    padding-top: 2.5rem;
   }
 }
 
@@ -3207,10 +3212,11 @@ address.legal-address strong { color: var(--color-text); }
   .download__buttons { flex-direction: column; align-items: center; }
   .hero__stats { gap: 1.5rem; }
   .hero {
-    padding: 112px 1rem 24px;
+    padding: 112px 1rem 12px;
   }
   .hero__phone-wrap {
-    margin-top: 1.5rem;
+    margin-top: 2.2rem;
+    height: 17.5rem;
   }
   .phone-frame-wrap {
     transform: scale(0.43) rotateY(-14deg) rotateX(7deg) rotateZ(2.5deg);
