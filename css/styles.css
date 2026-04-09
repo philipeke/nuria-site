@@ -3792,7 +3792,7 @@ address.legal-address strong { color: var(--color-text); }
   gap: 0.85rem;
 }
 
-/* Affiliate codes: table + form columns share max height with dedicated wrappers. */
+/* Affiliate codes: table + form columns share fixed viewport height with dedicated wrappers. */
 @media (min-width: 1101px) {
   #adminSectionCodes.admin-panel {
     overflow: visible;
@@ -3805,21 +3805,24 @@ address.legal-address strong { color: var(--color-text); }
 
   #adminSectionCodes .admin-table-wrap {
     min-height: 0;
-    max-height: calc(100vh - 9rem);
+    height: calc(100vh - 9rem);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
   }
 
   #adminSectionCodes .admin-code-form-wrap {
     align-self: stretch;
     min-height: 0;
-    max-height: calc(100vh - 9rem);
+    height: calc(100vh - 9rem);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+    min-width: 0;
   }
 
   #adminSectionCodes #adminCodeForm {
-    min-height: 100%;
+    min-height: min-content;
   }
 
   #adminSectionCodes .admin-code-form-wrap {
