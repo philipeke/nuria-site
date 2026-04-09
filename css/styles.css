@@ -620,81 +620,91 @@ body::after {
   animation: fadeInRight 1.2s ease 0.5s both;
   position: relative;
   z-index: 1;
+  perspective: 1180px;
+  perspective-origin: 52% 42%;
 }
 .hero__phone-wrap::before {
   content: '';
   position: absolute;
   inset: -80px;
   background:
-    radial-gradient(ellipse 55% 60% at 40% 50%, rgba(45,190,108,0.22) 0%, transparent 65%),
-    radial-gradient(ellipse 55% 60% at 62% 50%, rgba(196,130,30,0.20) 0%, transparent 65%);
+    radial-gradient(ellipse 48% 42% at 32% 48%, rgba(224, 196, 130, 0.38) 0%, transparent 58%),
+    radial-gradient(ellipse 42% 38% at 72% 52%, rgba(196, 154, 60, 0.32) 0%, transparent 55%),
+    radial-gradient(ellipse 58% 58% at 48% 50%, rgba(45,190,108,0.16) 0%, transparent 68%);
   border-radius: 50%;
   animation: breathe 4s ease infinite;
   pointer-events: none;
   z-index: -1;
 }
 
-/* Phone frame wrapper — allows side buttons to overflow the phone */
+/* Outer: 3D tilt (matches reference mockup angle) */
 .phone-frame-wrap {
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  transform: rotateY(-14deg) rotateX(7deg) rotateZ(2.5deg);
+}
+
+/* Inner: vertical float only — keeps scale + 3D separate in media queries */
+.phone-frame-float {
   position: relative;
   display: inline-flex;
   animation: float 6s ease-in-out infinite;
 }
 
-/* Side hardware buttons — slim modern handset */
+/* Side hardware buttons — slim champagne-gold slivers */
 .phone-frame-btn {
   position: absolute;
   z-index: 5;
-  width: 2px;
-  background: linear-gradient(180deg, #2e2e2e 0%, #141414 45%, #1a1a1a 100%);
+  width: 1.5px;
+  background: linear-gradient(180deg, #e8d4a8 0%, #a68958 38%, #6b5a3d 72%, #4a3f2e 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 1px 0 rgba(255, 252, 240, 0.45),
     inset 0 -1px 0 rgba(0,0,0,0.35);
+}
+.phone-frame-btn--mute {
+  left: -1.5px;
+  top: 96px;
+  height: 20px;
+  border-radius: 1px 0 0 1px;
 }
 /* Volume up */
 .phone-frame-btn--vol-up {
-  left: -2px;
-  top: 112px;
-  height: 32px;
+  left: -1.5px;
+  top: 124px;
+  height: 28px;
   border-radius: 1px 0 0 1px;
 }
 /* Volume down */
 .phone-frame-btn--vol-dn {
-  left: -2px;
-  top: 152px;
-  height: 32px;
+  left: -1.5px;
+  top: 158px;
+  height: 28px;
   border-radius: 1px 0 0 1px;
 }
 /* Power / sleep button */
 .phone-frame-btn--power {
-  right: -2px;
-  top: 142px;
-  height: 56px;
+  right: -1.5px;
+  top: 138px;
+  height: 48px;
   border-radius: 0 1px 1px 0;
 }
 
 .hero__phone {
   width: 285px;
   height: 590px;
-  background: linear-gradient(165deg, #282828 0%, #111111 100%);
+  background: linear-gradient(158deg, #4a3f32 0%, #252018 38%, #100e0b 100%);
   border-radius: 46px;
-  /* Visible aluminium-style bezel */
-  border: 3px solid rgba(255,255,255,0.18);
+  border: 2px solid rgba(218, 190, 135, 0.5);
   box-shadow:
-    /* Inner highlight — top-left edge catch */
-    inset 0 2px 0 rgba(255,255,255,0.22),
-    inset 0 -2px 0 rgba(255,255,255,0.06),
-    inset 2px 0 0 rgba(255,255,255,0.08),
-    /* Outer metal ring */
-    0 0 0 1px rgba(0,0,0,0.85),
-    /* Green ambient glow */
-    0 0 35px 8px rgba(45,190,108,0.32),
-    0 0 80px 20px rgba(45,190,108,0.18),
-    /* Gold/orange ambient glow */
-    0 0 55px 12px rgba(196,130,30,0.28),
-    0 0 110px 30px rgba(196,130,30,0.14),
-    /* Base drop shadow */
-    0 40px 100px rgba(0,0,0,0.85);
+    inset 0 2px 4px rgba(255, 248, 228, 0.22),
+    inset 0 -6px 16px rgba(0,0,0,0.5),
+    inset 2px 0 3px rgba(255, 235, 200, 0.1),
+    0 0 0 1px rgba(32, 26, 18, 0.95),
+    0 0 36px 10px rgba(212, 175, 95, 0.28),
+    0 0 64px 22px rgba(196, 154, 60, 0.14),
+    0 0 48px 12px rgba(45,190,108,0.14),
+    0 40px 100px rgba(0,0,0,0.82);
   overflow: hidden;
   position: relative;
 }
@@ -709,7 +719,9 @@ body::after {
   background: #000;
   border-radius: 14px;
   z-index: 10;
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 2px 8px rgba(0,0,0,0.5);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 95, 0.12),
+    0 2px 8px rgba(0,0,0,0.55);
 }
 
 /* Home indicator bar */
@@ -2831,6 +2843,7 @@ address.legal-address strong { color: var(--color-text); }
   .hero__actions,
   .hero__scroll-indicator,
   .hero__phone-wrap,
+  .phone-frame-float,
   .hero__logo-wrap::before,
   .hero__phone-wrap::before,
   .hero__scroll-line::after,
@@ -2843,6 +2856,32 @@ address.legal-address strong { color: var(--color-text); }
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .hero__phone-wrap {
+    perspective: none;
+  }
+  .phone-frame-wrap {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (max-width: 1024px) {
+  .phone-frame-wrap {
+    transform: scale(0.62);
+    transform-origin: center top;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 768px) {
+  .phone-frame-wrap {
+    transform: scale(0.5);
+    transform-origin: center top;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 480px) {
+  .phone-frame-wrap {
+    transform: scale(0.43);
+    transform-origin: center top;
   }
 }
 
@@ -2863,7 +2902,7 @@ address.legal-address strong { color: var(--color-text); }
     justify-content: center;
   }
   .phone-frame-wrap {
-    transform: scale(0.62);
+    transform: scale(0.62) rotateY(-14deg) rotateX(7deg) rotateZ(2.5deg);
     transform-origin: center top;
     margin-bottom: 0;
   }
@@ -2892,7 +2931,7 @@ address.legal-address strong { color: var(--color-text); }
     padding-top: 0;
   }
   .phone-frame-wrap {
-    transform: scale(0.5);
+    transform: scale(0.5) rotateY(-14deg) rotateX(7deg) rotateZ(2.5deg);
     transform-origin: center top;
     margin-bottom: 0;
   }
@@ -2975,7 +3014,7 @@ address.legal-address strong { color: var(--color-text); }
     margin-top: 1.5rem;
   }
   .phone-frame-wrap {
-    transform: scale(0.43);
+    transform: scale(0.43) rotateY(-14deg) rotateX(7deg) rotateZ(2.5deg);
     transform-origin: center top;
     margin-bottom: 0;
   }
