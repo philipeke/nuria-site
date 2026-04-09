@@ -3792,7 +3792,7 @@ address.legal-address strong { color: var(--color-text); }
   gap: 0.85rem;
 }
 
-/* Affiliate codes: table + form columns share fixed viewport height with dedicated wrappers. */
+/* Affiliate codes: table + form columns should stay scrollable on desktop. */
 @media (min-width: 1101px) {
   #adminSectionCodes.admin-panel {
     overflow: visible;
@@ -3805,8 +3805,9 @@ address.legal-address strong { color: var(--color-text); }
 
   #adminSectionCodes .admin-table-wrap {
     min-height: 0;
-    height: calc(100vh - 9rem);
-    overflow: auto;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-gutter: stable;
   }
@@ -3814,19 +3815,16 @@ address.legal-address strong { color: var(--color-text); }
   #adminSectionCodes .admin-code-form-wrap {
     align-self: stretch;
     min-height: 0;
-    height: calc(100vh - 9rem);
-    overflow: auto;
+    max-height: calc(100vh - 9rem);
+    overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-gutter: stable;
     min-width: 0;
   }
 
   #adminSectionCodes #adminCodeForm {
-    min-height: min-content;
-  }
-
-  #adminSectionCodes .admin-code-form-wrap {
-    overflow-x: hidden;
+    min-height: 100%;
   }
 
   #adminSectionCodes .admin-code-form-wrap .admin-form {
