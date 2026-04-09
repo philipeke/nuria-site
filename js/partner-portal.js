@@ -7,6 +7,7 @@ import {
   sendPasswordReset,
   signInWithEmailPassword,
   signInWithGoogle,
+  signInWithApple,
   signOutUser,
   subscribeToAuthState,
   waitForAuthPersistenceReady,
@@ -27,6 +28,7 @@ const elements = {
   signOutButton: document.getElementById('partnerSignOutButton'),
   emailSignInForm: document.getElementById('partnerEmailSignInForm'),
   googleSignInButton: document.getElementById('partnerGoogleSignInButton'),
+  appleSignInButton: document.getElementById('partnerAppleSignInButton'),
   sendPasswordResetButton: document.getElementById('partnerSendPasswordResetButton'),
   emailInput: document.getElementById('partnerEmailInput'),
   authError: document.getElementById('partnerAuthError'),
@@ -803,7 +805,6 @@ async function handleGoogleSignIn() {
   setAuthError('');
   setButtonBusy(elements.googleSignInButton, true, 'Opening');
   try {
-    await waitForAuthPersistenceReady();
     await signInWithGoogle();
     track('partner_web_portal_login', {
       method: 'google',
@@ -814,6 +815,23 @@ async function handleGoogleSignIn() {
     setButtonBusy(elements.googleSignInButton, false);
   }
 }
+
+async function handleAppleSignIn() {
+  clearBanner();
+  setAuthError('');
+  setButtonBusy(elements.appleSignInButton, true, 'Opening');
+  try {
+    await signInWithApple();
+    track('partner_web_portal_login', {
+      method: 'apple',
+    });
+  } catch (error) {
+    setAuthError(getActionablePortalErrorMessage(error));
+  } finally {
+    setButtonBusy(elements.appleSignInButton, false);
+  }
+}
+
 
 async function handleCheckEmail() {
   const email = String(elements.emailInput?.value || '').trim();
@@ -934,6 +952,7 @@ function applyLocationHints() {
 function bindEvents() {
   elements.emailSignInForm?.addEventListener('submit', handleEmailSignIn);
   elements.googleSignInButton?.addEventListener('click', handleGoogleSignIn);
+  elements.appleSignInButton?.addEventListener('click', handleAppleSignIn);
   elements.checkEmailButton?.addEventListener('click', handleCheckEmail);
   elements.registerForm?.addEventListener('submit', handleRegisterSubmit);
   elements.sendPasswordResetButton?.addEventListener('click', handlePasswordReset);

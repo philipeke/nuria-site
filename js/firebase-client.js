@@ -19,6 +19,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  OAuthProvider,
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import {
   getFunctions,
@@ -50,12 +51,15 @@ const functions = getFunctions(
   config.firebaseFunctionsRegion || 'us-central1'
 );
 const googleProvider = new GoogleAuthProvider();
+const appleProvider = new OAuthProvider('apple.com');
 const complianceMode = String(config.affiliateAdminComplianceMode || 'callable_only').trim().toLowerCase();
 const callableOnlyMode = complianceMode === 'callable_only';
 
 googleProvider.setCustomParameters({
   prompt: 'select_account',
 });
+appleProvider.addScope('email');
+appleProvider.addScope('name');
 
 const authPersistenceReady = setPersistence(auth, browserLocalPersistence).catch(() => {});
 let appCheckReady = Promise.resolve(null);
@@ -78,7 +82,13 @@ export function subscribeToAuthState(callback) {
 }
 
 export async function signInWithGoogle() {
+  await authPersistenceReady;
   return signInWithPopup(auth, googleProvider);
+}
+
+export async function signInWithApple() {
+  await authPersistenceReady;
+  return signInWithPopup(auth, appleProvider);
 }
 
 export async function signInWithEmailPassword(email, password) {
