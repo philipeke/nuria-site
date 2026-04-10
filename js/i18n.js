@@ -19,6 +19,35 @@ const T = {
       about: 'About', daily: 'Daily', categories: 'Categories',
       plans: 'Plans', support: 'Support', download: 'Download',
     },
+    a11y: {
+      nav_main: 'Main navigation',
+      nav_home: 'Nuria — Home',
+      open_menu: 'Open menu',
+      section_hero: 'Introduction',
+      quote_verse: 'Featured verse',
+      section_about: 'About Nuria',
+      section_daily: 'Daily features',
+      quote_hadith: 'Featured hadith',
+      section_categories: 'Reflection categories',
+      section_new_features: 'New features',
+      section_pricing: 'Plans',
+      section_download: 'Download Nuria',
+      footer_nav: 'Footer navigation',
+      store_apple: 'Download Nuria on the App Store',
+      store_apple_short: 'Download on the App Store',
+      store_google: 'Get Nuria on Google Play',
+      legal_toc: 'Table of contents',
+      img_phone_screenshot: 'Screenshot of the Nuria app',
+      img_showcase_about: 'Nuria on a phone: Quran reading and Islamic guidance',
+      img_showcase_daily: 'Nuria app: daily guidance and reflection',
+      img_launcher: 'Nuria app icon',
+    },
+    site: {
+      index_title: 'Nuria — Free Islamic Guidance App',
+      index_desc: 'Nuria is free to download with daily Islamic guidance, prayer tools, and thoughtful reflection rooted in the Quran and authentic Islamic teaching.',
+      index_og_title: 'Nuria — Free Islamic Guidance App',
+      index_og_desc: 'Download Nuria for free and explore daily Islamic guidance, prayer tools, and reflection rooted in the Quran.',
+    },
     hero: {
       subtitle: 'Free Islamic Quran, Prayer & Guidance',
       desc: 'Nuria is now free to download, bringing the full Quran with audio and 40+ Quran translations, duas, dhikr, prayer tools, reflections, and more into one beautiful Islamic companion — available in 100+ languages.',
@@ -148,8 +177,8 @@ const T = {
       std_desc: 'Create your account and start free with the full Nuria experience at your fingertips: Quran, duas, prayer tools, audio, tracking, and 50 starter credits for reflections.',
       std_f1: '\u2713\u00a0\u00a0Full Quran with audio and 40+ Quran translations',           std_f2: '\u2713\u00a0\u00a0Duas, adhkar, daily verse, and dhikr',
       std_f3: '\u2713\u00a0\u00a0Prayer times, adhan, Qibla, and mosque finder', std_f4: '\u2713\u00a0\u00a0Islamic audio, companions texts, and guides',
-      std_f5: '\u2713\u00a0\u00a0Prayer tracking, Islamic calendar, and badges',      std_f6: '\u2713\u00a0\u00a050 starter credits included',
       std_f5: '\u2713\u00a0\u00a0Prayer tracking, Muhasaba, Islamic calendar, and badges',
+      std_f6: '\u2713\u00a0\u00a050 starter credits included',
       std_f7: '\u2713\u00a0\u00a0Nuria reflections across 15 categories',
       std_f8: '\u2713\u00a0\u00a0Read, listen, learn, and track for free',
       std_f9: '\u2717\u00a0\u00a0Ask Nuria access',
@@ -183,6 +212,7 @@ const T = {
       col1: 'App', home: 'Home', about: 'About', plans: 'Plans', partner: 'Nuria Partner', dl: 'Download',
       col2: 'Legal', privacy: 'Privacy Policy', terms: 'Terms of Service', cookies: 'Cookie Policy', delete: 'Delete Account',
       col3: 'Help', support_center: 'Support Center', contact: 'Contact Us',
+      nav_privacy: 'Privacy', nav_terms: 'Terms', nav_support: 'Support', nav_delete: 'Delete Account',
       copy: '\u00a9 2026 OakDev & AI AB. All rights reserved.',
     },
     pages: {
@@ -197,6 +227,22 @@ const T = {
       cookies_label: 'Legal', cookies_title: 'Cookie Policy',
       cookies_subtitle: 'Learn exactly what cookies we use, why we use them, and how your choice is respected.',
       legal_notice: '',
+      doc_support_title: 'Support — Nuria Islamic Guidance App',
+      doc_support_desc: 'Need help with Nuria? Find answers to common questions or reach out to our support team.',
+      doc_delete_title: 'Delete Account — Nuria',
+      doc_delete_desc: 'Request permanent deletion of your Nuria account and associated data.',
+      doc_cookies_title: 'Cookie Policy — Nuria',
+      doc_cookies_desc: 'How Nuria uses cookies and local storage on this website.',
+      doc_privacy_title: 'Privacy Policy — Nuria',
+      doc_privacy_desc: 'How OakDev & AI AB handles your personal data when you use Nuria.',
+      doc_terms_title: 'Terms of Service — Nuria',
+      doc_terms_desc: 'Terms governing use of the Nuria app and website.',
+      not_found_title: 'Page Not Found | Nuria',
+      not_found_desc: 'The requested Nuria page is not available.',
+      not_found_label: 'Nuria',
+      not_found_heading: 'Page not found',
+      not_found_sub: 'The page you requested is not available. If you were trying to open a referral link, please check the URL or return to Nuria.',
+      not_found_home: 'Go to homepage',
     },
     cookie: {
       aria_label: 'Cookie consent',
@@ -2143,6 +2189,27 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const v = getVal(lang, el.dataset.i18nPlaceholder);
     if (v !== undefined && v !== null) el.placeholder = v;
+  });
+
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+    const v = getVal(lang, el.dataset.i18nAriaLabel);
+    if (v) el.setAttribute('aria-label', v);
+  });
+
+  document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+    const v = getVal(lang, el.dataset.i18nAlt);
+    if (v) el.setAttribute('alt', v);
+  });
+
+  const titleEl = document.querySelector('title[data-i18n-title]');
+  if (titleEl) {
+    const v = getVal(lang, titleEl.dataset.i18nTitle);
+    if (v) document.title = v;
+  }
+
+  document.querySelectorAll('meta[data-i18n-content]').forEach(el => {
+    const v = getVal(lang, el.dataset.i18nContent);
+    if (v) el.setAttribute('content', v);
   });
 
   // legal notice banner — show only for non-English languages

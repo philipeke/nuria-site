@@ -519,12 +519,18 @@ body::after {
   display: inline-block;
   margin-bottom: 1rem;
 }
-/* radiant halo behind the logo */
+/* radiant halo behind the logo — warm center so dark-green ink reads on #0f2017 */
 .hero__logo-wrap::before {
   content: '';
   position: absolute;
   inset: -60px;
-  background: radial-gradient(circle, rgba(45, 190, 108, 0.28) 0%, rgba(201, 168, 76, 0.08) 45%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 248, 232, 0.16) 0%,
+    rgba(45, 190, 108, 0.26) 28%,
+    rgba(201, 168, 76, 0.12) 48%,
+    transparent 72%
+  );
   border-radius: 50%;
   animation: breathe 5s ease infinite;
   pointer-events: none;
@@ -535,7 +541,13 @@ body::after {
   width: auto;
   max-width: 100%;
   position: relative;
-  filter: drop-shadow(0 0 55px rgba(45, 190, 108, 0.65));
+  /* Asset uses deep forest greens (~#0b4e0c); lift luminance + warm rim so mark & wordmark separate from bg */
+  filter:
+    brightness(1.08)
+    contrast(1.04)
+    drop-shadow(0 0 1px rgba(255, 252, 246, 0.7))
+    drop-shadow(0 0 14px rgba(236, 210, 130, 0.4))
+    drop-shadow(0 0 52px rgba(45, 190, 108, 0.55));
 }
 
 .hero__subtitle {
@@ -1454,6 +1466,17 @@ body::after {
     0 12px 36px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(0, 0, 0, 0.18);
   filter: saturate(0.98) contrast(1.03) brightness(1.02);
+}
+
+/* Light silver hairline around bild1.png (desktop strip only) */
+@media (min-width: 901px) {
+  .market-story--bild1 .market-story__img--about {
+    border: 1px solid rgba(210, 218, 228, 0.78);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 12px 36px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(0, 0, 0, 0.16);
+  }
 }
 
 .market-story--daily {
@@ -3742,9 +3765,10 @@ address.legal-address strong { color: var(--color-text); }
   border-radius: 16px;
   object-fit: contain;
   object-position: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.09);
   padding: 0.1rem;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  filter: brightness(1.09) drop-shadow(0 0 1px rgba(255, 250, 240, 0.45));
 }
 
 .admin-topbar__eyebrow,
@@ -6148,8 +6172,8 @@ code {
   width: 58px;
   height: 58px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(201, 168, 76, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.22);
 }
 
 .partner-topbar__logo-link:focus-visible {
@@ -6161,6 +6185,7 @@ code {
   width: 36px;
   height: 36px;
   object-fit: contain;
+  filter: brightness(1.1) drop-shadow(0 0 0.75px rgba(255, 250, 240, 0.5));
 }
 
 .partner-topbar__eyebrow,
