@@ -96,6 +96,9 @@ button { font-family: inherit; }
   --glow-gold:     0 0 50px rgba(201, 168, 76, 0.2);
   --shadow-card:   0 8px 32px rgba(0, 0, 0, 0.45);
   --shadow-hover:  0 20px 60px rgba(0, 0, 0, 0.55);
+
+  /* Logo: mask source (alpha → “reversed” luminous gradient in UI) */
+  --nuria-logo-mask: url("../assets/Nuria%20Logo.png");
 }
 
 /* ===== GLOBAL BACKGROUND ===== */
@@ -519,16 +522,16 @@ body::after {
   display: inline-block;
   margin-bottom: 1rem;
 }
-/* radiant halo behind the logo — warm center so dark-green ink reads on #0f2017 */
+/* Halo behind the framed logo */
 .hero__logo-wrap::before {
   content: '';
   position: absolute;
   inset: -60px;
   background: radial-gradient(
     circle,
-    rgba(255, 248, 232, 0.16) 0%,
-    rgba(45, 190, 108, 0.26) 28%,
-    rgba(201, 168, 76, 0.12) 48%,
+    rgba(255, 248, 232, 0.12) 0%,
+    rgba(45, 190, 108, 0.2) 28%,
+    rgba(201, 168, 76, 0.1) 48%,
     transparent 72%
   );
   border-radius: 50%;
@@ -536,18 +539,59 @@ body::after {
   pointer-events: none;
 }
 
+/* Gradient border + dark plate; mark is drawn with masked gradients (green in asset → light “reversed” look) */
+.hero__logo-frame {
+  display: inline-block;
+  padding: 3px;
+  border-radius: 36px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 253, 248, 0.98) 0%,
+    rgba(175, 215, 195, 0.72) 26%,
+    rgba(201, 168, 76, 0.85) 55%,
+    rgba(234, 246, 240, 0.78) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.22) inset,
+    0 22px 52px rgba(0, 0, 0, 0.42),
+    0 0 72px rgba(45, 190, 108, 0.22);
+}
+
+.hero__logo-frame__inner {
+  border-radius: 33px;
+  padding: clamp(0.75rem, 2vw, 1.35rem) clamp(1rem, 2.5vw, 1.75rem);
+  background:
+    radial-gradient(ellipse 100% 85% at 50% 18%, rgba(55, 110, 78, 0.38), transparent 58%),
+    radial-gradient(ellipse 90% 72% at 50% 100%, rgba(5, 14, 10, 0.72), rgba(6, 14, 10, 0.94));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
 .hero__logo {
-  height: 270px;
-  width: auto;
+  display: block;
+  width: min(270px, 92vw);
+  height: min(270px, 92vw);
   max-width: 100%;
+  margin: 0 auto;
   position: relative;
-  /* Asset uses deep forest greens (~#0b4e0c); lift luminance + warm rim so mark & wordmark separate from bg */
-  filter:
-    brightness(1.08)
-    contrast(1.04)
-    drop-shadow(0 0 1px rgba(255, 252, 246, 0.7))
-    drop-shadow(0 0 14px rgba(236, 210, 130, 0.4))
-    drop-shadow(0 0 52px rgba(45, 190, 108, 0.55));
+  border-radius: 26px;
+  background:
+    linear-gradient(
+      168deg,
+      #ffffff 0%,
+      #f2f8f4 26%,
+      #d2e8dc 58%,
+      rgba(201, 168, 76, 0.42) 100%
+    ),
+    radial-gradient(circle at 50% 38%, rgba(18, 44, 30, 0.58), rgba(4, 10, 7, 0.97));
+  -webkit-mask-image: var(--nuria-logo-mask);
+  mask-image: var(--nuria-logo-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  filter: drop-shadow(0 3px 16px rgba(0, 0, 0, 0.28));
 }
 
 .hero__subtitle {
@@ -3758,17 +3802,43 @@ address.legal-address strong { color: var(--color-text); }
   min-width: 0;
 }
 
-.admin-topbar__logo {
+.admin-topbar__logo-frame {
   display: block;
+  flex-shrink: 0;
   width: 128px;
   height: 60px;
+  padding: 2px;
+  border-radius: 18px;
+  background: linear-gradient(
+    150deg,
+    rgba(255, 252, 248, 0.96) 0%,
+    rgba(110, 165, 130, 0.48) 42%,
+    rgba(201, 168, 76, 0.78) 100%
+  );
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.2);
+}
+
+.admin-topbar__logo {
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 16px;
-  object-fit: contain;
-  object-position: center;
-  background: rgba(255, 255, 255, 0.09);
-  padding: 0.1rem;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
-  filter: brightness(1.09) drop-shadow(0 0 1px rgba(255, 250, 240, 0.45));
+  background:
+    linear-gradient(
+      165deg,
+      #ffffff 0%,
+      #e5f2eb 48%,
+      rgba(201, 168, 76, 0.4) 100%
+    ),
+    radial-gradient(ellipse 85% 75% at 50% 35%, rgba(16, 40, 28, 0.68), rgba(5, 12, 9, 0.94));
+  -webkit-mask-image: var(--nuria-logo-mask);
+  mask-image: var(--nuria-logo-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .admin-topbar__eyebrow,
@@ -5589,12 +5659,10 @@ code {
     gap: 0.55rem;
   }
 
-  .admin-topbar__logo {
+  .admin-topbar__logo-frame {
     width: 86px;
     height: 42px;
     flex-shrink: 0;
-    object-fit: contain;
-    object-position: center;
   }
 
   .admin-topbar__eyebrow {
@@ -6172,8 +6240,8 @@ code {
   width: 58px;
   height: 58px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(201, 168, 76, 0.22);
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.16);
 }
 
 .partner-topbar__logo-link:focus-visible {
@@ -6181,11 +6249,37 @@ code {
   outline-offset: 3px;
 }
 
+.partner-topbar__logo-frame {
+  display: block;
+  width: 50px;
+  height: 50px;
+  padding: 2px;
+  border-radius: 15px;
+  background: linear-gradient(
+    148deg,
+    rgba(255, 253, 250, 0.94) 0%,
+    rgba(95, 150, 118, 0.42) 45%,
+    rgba(201, 168, 76, 0.68) 100%
+  );
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
 .partner-topbar__logo {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  filter: brightness(1.1) drop-shadow(0 0 0.75px rgba(255, 250, 240, 0.5));
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 13px;
+  background:
+    linear-gradient(172deg, #ffffff 0%, #e8f3ec 55%, rgba(201, 168, 76, 0.36) 100%),
+    radial-gradient(circle at 50% 40%, rgba(12, 32, 22, 0.58), rgba(4, 10, 7, 0.95));
+  -webkit-mask-image: var(--nuria-logo-mask);
+  mask-image: var(--nuria-logo-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .partner-topbar__eyebrow,
