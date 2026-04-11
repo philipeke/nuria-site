@@ -97,7 +97,7 @@ button { font-family: inherit; }
   --shadow-card:   0 8px 32px rgba(0, 0, 0, 0.45);
   --shadow-hover:  0 20px 60px rgba(0, 0, 0, 0.55);
 
-  /* Logo gradient ring (same family as former frame border — inner fill matches surface behind) */
+  /* Hero logo fill + gradient accents on partner/admin rings */
   --logo-ring-gradient: linear-gradient(
     145deg,
     rgba(255, 253, 248, 0.98) 0%,
@@ -545,24 +545,7 @@ body::after {
   pointer-events: none;
 }
 
-/* Gradient ring: outer = decorative border; inner fill = page bg so PNG transparency still reads */
-.hero__logo-ring {
-  display: inline-block;
-  padding: 3px;
-  border-radius: 36px;
-  background: var(--logo-ring-gradient);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
-    0 18px 44px rgba(0, 0, 0, 0.28),
-    0 0 56px rgba(45, 190, 108, 0.2);
-}
-
-.hero__logo-ring__inner {
-  border-radius: 33px;
-  background: var(--color-bg);
-}
-
-/* Light gradient fill clipped to logo alpha — transparency around the mark preserved */
+/* Gradient fill clipped to logo alpha — transparency around the mark preserved */
 .hero__logo {
   display: block;
   width: clamp(200px, 88vw, 270px);
@@ -570,13 +553,7 @@ body::after {
   max-width: 100%;
   margin: 0 auto;
   position: relative;
-  background: linear-gradient(
-    168deg,
-    #ffffff 0%,
-    #f2f8f4 28%,
-    #d2e8dc 58%,
-    rgba(201, 168, 76, 0.45) 100%
-  );
+  background: var(--logo-ring-gradient);
   -webkit-mask-image: url("../assets/Nuria%20Logo.png");
   mask-image: url("../assets/Nuria%20Logo.png");
   -webkit-mask-source-type: alpha;
@@ -588,7 +565,10 @@ body::after {
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
-  filter: drop-shadow(0 2px 16px rgba(45, 190, 108, 0.2)) drop-shadow(0 0 24px rgba(255, 252, 245, 0.1));
+  filter:
+    drop-shadow(0 4px 22px rgba(0, 0, 0, 0.35))
+    drop-shadow(0 0 28px rgba(45, 190, 108, 0.28))
+    drop-shadow(0 0 40px rgba(201, 168, 76, 0.15));
 }
 
 .hero__subtitle {
