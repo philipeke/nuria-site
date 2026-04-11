@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Page Not Found | Nuria</title>
-  <meta name="description" content="Nuria page not found." />
+  <title data-i18n-title="pages.not_found_title">Page Not Found | Nuria</title>
+  <meta name="description" data-i18n-content="pages.not_found_desc" content="The requested Nuria page is not available." />
   <meta name="theme-color" content="#050c08" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
@@ -30,23 +30,23 @@
       }
     }());
   </script>
+  <script src="/js/i18n.js"></script>
 </head>
 <body>
   <div class="hero__geo-bg" aria-hidden="true"></div>
   <header class="page-hero">
     <div class="container">
-      <p class="page-hero__label">Nuria</p>
-      <h1 class="page-hero__title">Page not found</h1>
-      <p class="page-hero__subtitle">
+      <p class="page-hero__label" data-i18n="pages.not_found_label">Nuria</p>
+      <h1 class="page-hero__title" data-i18n="pages.not_found_heading">Page not found</h1>
+      <p class="page-hero__subtitle" data-i18n="pages.not_found_sub">
         The page you requested is not available. If you were trying to open a referral link, please check the URL or return to Nuria.
       </p>
       <div class="hero__actions" style="justify-content:center; margin-top: 2rem;">
-        <a href="/" class="btn btn--gold">Go to homepage</a>
+        <a href="/" class="btn btn--gold" data-i18n="pages.not_found_home">Go to homepage</a>
         <a href="/join" class="btn btn--outline">Referral page</a>
       </div>
     </div>
   </header>
-  <script src="/js/i18n.js"></script>
   <script src="/js/main.js"></script>
 </body>
 </html>

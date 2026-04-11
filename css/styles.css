@@ -571,6 +571,16 @@ body::after {
     drop-shadow(0 0 40px rgba(201, 168, 76, 0.15));
 }
 
+/* Two-column hero: text is left-aligned; geometrically centered logo sat right of the text block — nudge to align with subtitle */
+@media (min-width: 1025px) {
+  .hero__logo {
+    left: -1rem;
+  }
+  [dir="rtl"] .hero__logo {
+    left: 1rem;
+  }
+}
+
 .hero__subtitle {
   font-family: var(--font-heading);
   font-size: clamp(1.1rem, 2.2vw, 1.4rem);

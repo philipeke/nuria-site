@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy — Nuria</title>
-  <meta name="description" content="Privacy Policy for the Nuria Islamic guidance and reflection app by OakDev & AI AB. GDPR-compliant data practices." />
+  <title data-i18n-title="pages.doc_privacy_title">Privacy Policy — Nuria</title>
+  <meta name="description" data-i18n-content="pages.doc_privacy_desc" content="Privacy Policy for the Nuria Islamic guidance and reflection app by OakDev & AI AB. GDPR-compliant data practices." />
   <meta name="theme-color" content="#050c08" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
@@ -20,9 +20,9 @@
   <!-- =========================================================
        NAVIGATION
   ========================================================= -->
-  <nav class="nav scrolled" id="nav" role="navigation" aria-label="Main">
+  <nav class="nav scrolled" id="nav" role="navigation" data-i18n-aria-label="a11y.nav_main" aria-label="Main navigation">
     <div class="nav__container">
-      <a href="/" class="nav__logo" aria-label="Nuria — Home">
+      <a href="/" class="nav__logo" data-i18n-aria-label="a11y.nav_home" aria-label="Nuria — Home">
         <img src="../assets/icon.png" alt="Nuria" class="nav__logo-img" />
       </a>
       <div class="nav__links" id="navLinks">
@@ -50,7 +50,7 @@
           <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
         </div>
       </div>
-      <button class="nav__hamburger" id="hamburger" aria-label="Open menu">
+      <button class="nav__hamburger" id="hamburger" data-i18n-aria-label="a11y.open_menu" aria-label="Open menu">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -84,14 +84,14 @@
     <div class="container">
       <div class="page-content__card">
 
-        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 2 April 2026</p>
+        <p><strong>Effective date:</strong> 1 January 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 10 April 2026</p>
 
         <p>This Privacy Policy describes how <strong>OakDev &amp; AI AB</strong> ("we", "us", or "our") collects, uses, stores, and protects your personal data when you use the Nuria mobile application ("the App") and this website. We are established in Sweden and are subject to the General Data Protection Regulation (EU) 2016/679 ("GDPR") and the Swedish Data Protection Act (<em>Lag (2018:218) med kompletterande bestämmelser till EU:s dataskyddsförordning</em>).</p>
 
         <p>Please read this policy carefully. If you do not agree with how we handle your data, please do not use the App.</p>
 
         <!-- TOC -->
-        <nav class="legal-toc" aria-label="Table of contents">
+        <nav class="legal-toc" data-i18n-aria-label="a11y.legal_toc" aria-label="Table of contents">
           <strong>Contents</strong>
           <ol>
             <li><a href="#priv-1">Who We Are — Data Controller</a></li>
@@ -108,7 +108,12 @@
             <li><a href="#priv-12">Cookies and This Website</a></li>
             <li><a href="#priv-13">Changes to This Policy</a></li>
             <li><a href="#priv-14">Supervisory Authority</a></li>
-            <li><a href="#priv-15">Contact Us</a></li>
+            <li><a href="#priv-15">Automated Processing, AI, and Profiling</a></li>
+            <li><a href="#priv-16">United Kingdom, California, and Other Jurisdictions</a></li>
+            <li><a href="#priv-17">Marketing, ePrivacy, and Electronic Communications</a></li>
+            <li><a href="#priv-18">Law Enforcement, Legal Process, and Business Transfers</a></li>
+            <li><a href="#priv-19">Processor Records, DPO, and No Sale of Data</a></li>
+            <li><a href="#priv-20">Contact Us</a></li>
           </ol>
         </nav>
 
@@ -133,7 +138,7 @@
 
         <h3>2.2 Purchase and Subscription Data</h3>
         <p>Optional purchases and subscriptions — including the Barakah support subscription and any other paid digital features offered inside the App — are processed <strong>exclusively</strong> by <strong>Apple Inc.</strong> (App Store) or <strong>Google LLC</strong> (Google Play) using their own payment infrastructure. <strong>OakDev &amp; AI AB does not receive, store, or process your payment card details, bank account information, or any other financial instrument data at any point.</strong></p>
-        <p>We receive from Apple or Google a <strong>purchase receipt token</strong>, a <strong>transaction or order identifier</strong>, the <strong>product identifier</strong> purchased, and the <strong>purchase or renewal timestamp</strong>. We use this metadata solely to:</p>
+        <p>We receive from Apple or Google a <strong>purchase receipt token</strong>, a <strong>transaction or order identifier</strong>, the <strong>product identifier</strong> purchased (for example the monthly Barakah product <code>nuria_supporter_monthly</code> on Android or <code>nuria_membership_monthly</code> on iOS, or the annual Barakah product <code>nuria_membership_yearly</code> on both platforms — identifiers may change if store listings are updated), and the <strong>purchase or renewal timestamp</strong>. We use this metadata solely to:</p>
         <ul>
           <li>Verify that a purchase is valid and has not been used fraudulently.</li>
           <li>Apply starter credits, subscriber credits, or other entitlements to your account.</li>
@@ -167,7 +172,30 @@
         <h3>2.8 Support Communications</h3>
         <p>When you contact us by email or through any form on this website, we retain your name, email address, and the content of your message in order to respond to you and maintain a record of our communications. We may retain notes relating to your support case for as long as is reasonably necessary to resolve the matter and handle any related follow-up.</p>
 
-        <h3 id="priv-2-9">2.9 Location Data (Qibla &amp; Prayer Times)</h3>
+        <h3 id="priv-2-9">2.9 Nuria Legacy — device-local encrypted storage and journals</h3>
+        <p><strong>Nuria Legacy</strong> is a set of optional tools for personal planning and remembrance. Unless you explicitly use a cloud-linked feature described in Section 2.10, data you enter here stays on your device:</p>
+        <ul>
+          <li><strong>Legacy Vault, Akhirah wishes, and timed messages:</strong> These are persisted using your operating system's <strong>secure storage</strong> (for example Apple Keychain or Android encrypted preferences via <em>flutter_secure_storage</em>). The content is not transmitted to OakDev &amp; AI AB servers <em>solely because you saved it</em>. We cannot decrypt or read this content on our servers; access is limited to your app installation on your device.</li>
+          <li><strong>Deen Journey milestones:</strong> Dates and titles you record are stored in ordinary on-device app preferences (<em>SharedPreferences</em>) and are <strong>not</strong> synchronised to our cloud backend.</li>
+          <li><strong>Voice notes inside Legacy:</strong> If you record audio for timed messages or similar Legacy flows, the microphone is activated only while you record; audio files remain on your device unless you later attach them to a cloud feature (such as a legacy bequest) described in Section 2.10.</li>
+        </ul>
+
+        <h3 id="priv-2-10">2.10 Family Deen Tree, invitations, legacy bequests, and Firebase Storage</h3>
+        <p>If you use the <strong>Family Deen Tree</strong> or <strong>legacy bequests</strong>, we process additional personal data on Google Cloud infrastructure:</p>
+        <ul>
+          <li><strong>Firestore (cloud database):</strong> We store your tree identifier, family name, owner and linked user identifiers, member records (including display names, relationship types, optional dates of birth or passing, member status, invite codes, and — for members who link a Nuria account — optional <strong>deen statistics</strong> you choose to share with the tree). Legacy bequest drafts and sealed items (text, metadata, audience rules, voice file paths) are stored under your user identifier.</li>
+          <li><strong>Email invitations:</strong> When you invite someone by email, that email address is processed by our <strong>Firebase Cloud Functions</strong> to send a transactional invitation message. We do not use invitation emails for marketing.</li>
+          <li><strong>Passing and release workflows:</strong> Where the App supports family confirmation of a member's passing, our systems process confirmation counts, thresholds, timestamps, and scheduled release times. Automated functions may run on a short grace period before certain legacy content becomes available to recipients, as described in the App.</li>
+          <li><strong>Firebase Cloud Storage:</strong> Audio files for voice legacy bequests are uploaded to our storage bucket (for example under paths such as <code>legacy_bequests/{your user id}/{bequest id}.m4a</code>). Download and deletion are governed by security rules and your account actions.</li>
+        </ul>
+
+        <h3 id="priv-2-11">2.11 Halqa spiritual circles</h3>
+        <p><strong>Halqa</strong> stores circle metadata, membership, display names, and spiritual progress signals in <strong>Firestore</strong>. Halqa is designed for lightweight group motivation; it is <strong>not</strong> a full instant-messaging product and does not provide open-ended private chat between members beyond what the feature explicitly displays.</p>
+
+        <h3 id="priv-2-12">2.12 Muhasaba (self-accountability journal)</h3>
+        <p><strong>Muhasaba</strong> entries are stored <strong>only on your device</strong> in app preferences. They are <strong>not</strong> uploaded to our servers. If you replace your device or uninstall the App without restoring an encrypted device backup that includes Nuria data, Muhasaba content may be lost.</p>
+
+        <h3 id="priv-2-13">2.13 Location Data (Qibla &amp; Prayer Times)</h3>
         <p>When you use the <strong>Qibla Compass</strong> or <strong>Prayer Times</strong> features, the App requests access to your device's location via the standard permission granted by your operating system. This is governed by the following principles:</p>
         <ul>
           <li><strong>What is accessed:</strong> Your device's approximate or precise GPS coordinates, as authorised by you through the iOS or Android permission dialogue.</li>
@@ -178,7 +206,7 @@
           <li><strong>Legal basis:</strong> Consent (Article 6(1)(a) GDPR), granted through your device-level permission. You may withdraw consent at any time by revoking the location permission in device settings.</li>
         </ul>
 
-        <h3>2.10 Ask Nuria — Free-Form Questions</h3>
+        <h3 id="priv-2-14">2.14 Ask Nuria — Free-Form Questions</h3>
         <p>When you use the <strong>Ask Nuria</strong> feature (available to active Barakah subscribers and other eligible users as shown in the App), you type a free-form question and submit it to receive a personalised AI-generated response rooted in authentic Islamic teaching. Regarding this data:</p>
         <ul>
           <li><strong>What is collected:</strong> The exact text of the question you submit and the AI-generated answer returned to you are both stored on our servers and linked to your account.</li>
@@ -188,7 +216,7 @@
           <li><strong>What we do not do:</strong> We do not use the content of your questions to build advertising profiles, do not sell them, and do not share them with third parties for any commercial purpose outside of what is described in this policy.</li>
         </ul>
 
-        <h3 id="priv-2-11">2.11 Partner Programme, Nuria Partner Accounts, and Operational Partner Profiles</h3>
+        <h3 id="priv-2-15">2.15 Partner Programme, Nuria Partner Accounts, and Operational Partner Profiles</h3>
         <p>Nuria operates a <strong>Partner Programme</strong> through which Islamic organisations, mosques, community groups, and other partners may receive a unique referral code to share with their communities. When a new user installs the App via a partner referral link or enters a referral code:</p>
         <ul>
           <li><strong>What is collected (referral attribution):</strong> The referral code used, the date of first activation, and whether the referred user completes account registration. We do not collect additional personal details of the referred user beyond what is already collected under Section 2.1.</li>
@@ -214,8 +242,9 @@
         <p><strong>Legal basis (operational profile):</strong> Performance of a contract (Art. 6(1)(b)) where we have a contractual or partner relationship requiring payment; compliance with legal obligations (Art. 6(1)(c)) for accounting and tax records; and legitimate interests (Art. 6(1)(f)) in preventing fraud, abuse, and duplicate payments in the Partner Programme.</p>
         <p><strong>Retention (financial and operational records):</strong> Banking, payout, and reconciliation records may be retained for up to <strong>7 years</strong> from the end of the financial year to which they relate, in line with Swedish accounting and tax requirements, or longer where required by law or to resolve disputes. Aggregate referral statistics are retained indefinitely where they contain no personal data.</p>
 
-        <h3>2.12 What We Do Not Collect</h3>
-        <p>We do <strong>not</strong> collect contacts from your address book, camera data, microphone data, or any biometric data. We do <strong>not</strong> transmit or store your GPS location on our servers (Section 2.9). We do <strong>not</strong> build advertising profiles, participate in real-time bidding networks, or sell your personal data to any third party, ever, under any circumstances.</p>
+        <h3 id="priv-2-16">2.16 What We Do Not Collect (and limited exceptions)</h3>
+        <p>We do <strong>not</strong> collect contacts from your address book, routine camera rolls, or biometric templates. We do <strong>not</strong> transmit or store your GPS location on our servers (Section 2.13). We do <strong>not</strong> build advertising profiles, participate in real-time bidding networks, or sell your personal data to any third party, ever, under any circumstances.</p>
+        <p><strong>Microphone and camera — limited use:</strong> The App does <strong>not</strong> access your microphone or camera in the background. The microphone may be used <strong>only when you actively initiate recording</strong> (for example a voice legacy bequest or a voice note flow in Nuria Legacy), and only for the duration of that action. We do not use your microphone for ambient listening or analytics.</p>
 
         <!-- ─── SECTION 3 ─────────────────────────────────────────── -->
         <h2 id="priv-3">3. Special Category Data (Religious Beliefs &amp; Personal Questions)</h2>
@@ -225,6 +254,8 @@
           <li><strong>Reflection history:</strong> The content of personalised reflections you have received is stored in your account history.</li>
           <li><strong>Ask Nuria question and answer history:</strong> Free-form questions you submit through Ask Nuria may contain personal spiritual matters, religious questions, or information about your beliefs, emotional circumstances, or life situations.</li>
           <li><strong>Fact of App use:</strong> The mere fact that you use an Islamic faith-based app may itself indicate your religious affiliation or beliefs.</li>
+          <li><strong>Family Deen Tree and legacy bequests:</strong> Names and life details you enter about yourself and relatives may reveal religious or family circumstances. Voice or text bequests may contain deeply personal or faith-related content.</li>
+          <li><strong>Muhasaba and Deen Journey (where they reflect worship or spirituality):</strong> Free-text or structured entries may reveal religious belief or practice. Muhasaba is stored only on your device (Section 2.12).</li>
         </ul>
         <p>We process this special category data exclusively on the basis of your <strong>explicit consent</strong> (Article 9(2)(a) GDPR), which you provide by creating a Nuria account and actively using these features. You may withdraw this consent at any time by deleting your account (which removes all personal data subject to the retention obligations described in Section 8).</p>
         <p>We do not share your reflection history, category usage, or submitted questions with any third party for any purpose other than:</p>
@@ -313,6 +344,22 @@
               <td>Disclosing data to legal or regulatory authorities when required</td>
               <td>Legal obligation (Art. 6(1)(c))</td>
             </tr>
+            <tr>
+              <td>Operating the Family Deen Tree, email invitations, passing confirmations, and legacy bequests (Firestore, Cloud Functions, Firebase Storage)</td>
+              <td>Performance of a contract (Art. 6(1)(b)); Explicit consent for special category content where applicable (Art. 9(2)(a)); Legitimate interests in operating community features (Art. 6(1)(f))</td>
+            </tr>
+            <tr>
+              <td>Operating Halqa circles (membership and progress data in Firestore)</td>
+              <td>Performance of a contract (Art. 6(1)(b)); Legitimate interests (Art. 6(1)(f))</td>
+            </tr>
+            <tr>
+              <td>Storing Nuria Legacy content solely on your device using OS secure storage</td>
+              <td>Consent (Art. 6(1)(a)); Performance of a contract where the feature is part of your use of the App (Art. 6(1)(b))</td>
+            </tr>
+            <tr>
+              <td>Processing microphone audio when you actively record voice for a legacy bequest or related Legacy feature</td>
+              <td>Consent (Art. 6(1)(a)) — granted when you start recording</td>
+            </tr>
           </tbody>
         </table>
 
@@ -330,6 +377,9 @@
           <li>Deliver daily content (daily Quranic verse, role model of the day, daily reflection, Islamic calendar events, and similar curated content) to your App home screen.</li>
           <li>Send push notifications, including prayer-time Adhan reminders (if you have enabled this) and transactional notifications (for example, when a purchase is confirmed).</li>
           <li>Manage the Partner Programme, including attributing new registrations to the correct partner referral code; communicating aggregate programme statistics to registered partners; verifying partner email addresses against Nuria user accounts; storing Firebase UIDs for matched accounts where available; and processing operational partner profile data (including payout and banking details) solely for programme administration, reconciliation, and legal compliance.</li>
+          <li>Operate the Family Deen Tree and related invitation emails; process member records, optional shared deen statistics, and passing-confirmation workflows; and deliver legacy bequests to eligible recipients when release conditions configured in the App are met.</li>
+          <li>Operate Halqa circles — including membership, challenges, and progress signals shown in the App — without operating a general-purpose messaging service.</li>
+          <li>Host voice files associated with legacy bequests in Firebase Cloud Storage when you create or update a voice bequest.</li>
           <li>Respond to your support enquiries and process account deletion requests.</li>
           <li>Improve the App through analysis of anonymised, aggregated usage data.</li>
           <li>Detect, investigate, and prevent fraud, abuse, and security incidents.</li>
@@ -356,7 +406,9 @@
         <strong>Services used:</strong></p>
         <ul>
           <li><strong>Firebase Authentication:</strong> Manages secure user account creation and sign-in using your email address.</li>
-          <li><strong>Cloud Firestore / Firebase Realtime Database:</strong> Stores your account data, credit balance, reflection history, and subscription state on Google Cloud infrastructure. It also stores <strong>restricted administrative configuration</strong> for the Partner Programme (for example referral-code mappings, partner email and UID cross-references, and operational partner payout profiles) that are not exposed to other end users.</li>
+          <li><strong>Cloud Firestore:</strong> Stores your account data, credit balance, reflection history, and subscription state on Google Cloud infrastructure; <strong>Family Deen Tree</strong> documents and member subcollections; <strong>Halqa</strong> circle documents and related subcollections; <strong>legacy bequest</strong> item documents; and <strong>restricted administrative configuration</strong> for the Partner Programme (for example referral-code mappings, partner email and UID cross-references, and operational partner payout profiles) that are not exposed to other end users.</li>
+          <li><strong>Firebase Cloud Functions:</strong> Executes server-side logic — for example sending family-tree invitation emails, coordinating passing-related workflows, and releasing legacy bequests when defined conditions are satisfied.</li>
+          <li><strong>Firebase Cloud Storage:</strong> Stores audio files for voice legacy bequests under access rules tied to your account.</li>
           <li><strong>Firebase Cloud Messaging (FCM):</strong> Routes push notification delivery to Android devices using your FCM device token.</li>
           <li><strong>Firebase Crashlytics:</strong> Collects anonymised crash reports and diagnostic data to help us identify and resolve bugs.</li>
           <li><strong>Firebase Remote Config / Analytics (anonymised):</strong> Used for anonymous feature-flag management and aggregate usage analytics where applicable.</li>
@@ -400,8 +452,10 @@
           <li><strong>Credit balance and transaction log:</strong> Retained for the lifetime of your account. Removed within <strong>30 days</strong> of account deletion, subject to the accounting retention rule below.</li>
           <li><strong>Purchase receipt metadata (transaction IDs, product IDs, dates, amounts):</strong> Retained for <strong>7 years</strong> from the date of each transaction, in compliance with Swedish accounting law (<em>Bokföringslagen</em> 1999:1078), even after account deletion. Only the minimum data required for accounting records is retained; your email address is retained in association with these records for the same 7-year period for the purpose of linking them to the relevant accounting entries if required.</li>
           <li><strong>Push notification tokens:</strong> Retained while your account is active and notifications are enabled. Deleted within <strong>30 days</strong> of account deletion, or immediately upon revocation of notification permission if you explicitly disable all notifications.</li>
+          <li><strong>Family Deen Tree, Halqa, and legacy bequest data held in Firestore or Cloud Storage:</strong> Retained while your account remains active and you keep the relevant content. Upon account deletion, we delete or irreversibly anonymise these records within <strong>30 days</strong>, except where a longer period is required to resolve a dispute, comply with law, or complete an in-progress automated workflow that must finish for the protection of other users (for example a narrowly scoped technical retention window for queued functions). Voice files in Firebase Storage are removed as part of that process when the parent bequest is deleted.</li>
+          <li><strong>Nuria Legacy device-only data (Vault, Akhirah wishes, timed messages, Deen Journey, Muhasaba):</strong> Because this data is stored locally on your device, it is not erased by us when you delete your remote account. It is removed when you uninstall the App, erase the device, or clear app data through your operating system — subject to your own backup settings.</li>
           <li><strong>Partner programme contact data (general):</strong> Retained for the duration of the partner relationship and for <strong>3 years</strong> thereafter to handle disputes or follow-up relating to the programme, unless a longer period applies under the rule below.</li>
-          <li><strong>Partner payout, banking, tax, and reconciliation records:</strong> May be retained for up to <strong>7 years</strong> from the end of the financial year to which they relate (or longer where required by law), in line with Section 2.11.</li>
+          <li><strong>Partner payout, banking, tax, and reconciliation records:</strong> May be retained for up to <strong>7 years</strong> from the end of the financial year to which they relate (or longer where required by law), in line with Section 2.15.</li>
           <li><strong>Support communications:</strong> Retained for up to <strong>3 years</strong> after the last communication in the thread, unless you request earlier deletion and no overriding legal basis prevents us from complying.</li>
           <li><strong>Crash reports:</strong> Retained for up to <strong>12 months</strong> from the date of the crash event.</li>
           <li><strong>Anonymised aggregate usage data:</strong> May be retained indefinitely, as it contains no personal identifiers and cannot be used to identify any individual.</li>
@@ -421,7 +475,8 @@
           <li><strong>Right to withdraw consent (Art. 7(3)):</strong> Where we rely on consent as the legal basis — including explicit consent for special category data — you may withdraw that consent at any time by deleting your account, revoking device-level permissions (location, notifications), or contacting us. Withdrawal does not affect the lawfulness of any processing carried out before the withdrawal.</li>
           <li><strong>Right not to be subject to solely automated decision-making (Art. 22):</strong> We do not make solely automated decisions about you that produce legal or similarly significant effects.</li>
         </ul>
-        <p>If you are not satisfied with our response to any rights request, you have the right to lodge a complaint with the Swedish supervisory authority (see Section 14) or any EU supervisory authority competent for your place of habitual residence or work.</p>
+        <p>If you are not satisfied with our response to any rights request, you have the right to lodge a complaint with the Swedish supervisory authority (see Section 14) or any EU supervisory authority competent for your place of habitual residence or work, in accordance with <strong>Article 77 GDPR</strong>. Nothing in this policy limits your right to an effective judicial remedy against a legally binding decision of a supervisory authority concerning you, or to bring proceedings against us under <strong>Article 78 GDPR</strong>, where applicable.</p>
+        <p>Where we process data for the establishment, exercise, or defence of <strong>legal claims</strong>, we may retain relevant data for longer than ordinary retention periods where necessary for those purposes, as permitted by Article 6(1)(f) and Article 9(2)(f) GDPR.</p>
 
         <!-- ─── SECTION 10 ─────────────────────────────────────────── -->
         <h2 id="priv-10">10. Security</h2>
@@ -471,7 +526,36 @@
         <p>If you are a resident of another EU member state, you may also lodge a complaint with the supervisory authority in your member state of habitual residence, place of work, or the place where the alleged infringement occurred.</p>
 
         <!-- ─── SECTION 15 ─────────────────────────────────────────── -->
-        <h2 id="priv-15">15. Contact Us</h2>
+        <h2 id="priv-15">15. Automated Processing, AI, Profiling, and Meaningful Human Involvement</h2>
+        <p><strong>Ask Nuria</strong> uses automated natural-language processing to generate suggested answers. You remain responsible for how you interpret and act on any output. We do <strong>not</strong> use Ask Nuria outputs to make solely automated decisions about you that produce legal or similarly significant effects within the meaning of <strong>Article 22 GDPR</strong>. Credit balances and subscription entitlements are determined by <strong>deterministic rules</strong> tied to your purchases and account state (not by profiling your behaviour for automated decision-making).</p>
+        <p>We may use <strong>pseudonymous analytics</strong> (for example aggregate feature usage) to improve the App. Where we rely on <strong>legitimate interests</strong> for analytics, we apply minimisation and, where appropriate, aggregate or de-identify data so that individual users are not singled out.</p>
+        <p>If in the future we introduce processing that qualifies as solely automated decision-making with legal or similarly significant effects, we will update this policy and provide the information required under Article 13(2)(f) and Article 22 GDPR before that processing takes effect.</p>
+
+        <!-- ─── SECTION 16 ─────────────────────────────────────────── -->
+        <h2 id="priv-16">16. United Kingdom, California, and Other Non-EU Jurisdictions</h2>
+        <p><strong>United Kingdom:</strong> If you are in the UK, our processing is also subject to the UK GDPR and the Data Protection Act 2018. You may lodge a complaint with the <strong>Information Commissioner's Office (ICO)</strong> (<a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>). International transfers from the UK are safeguarded using appropriate mechanisms (for example the UK International Data Transfer Agreement / Addendum where relevant).</p>
+        <p><strong>California (USA):</strong> If California law applies to you, we provide the following disclosures in addition to the rest of this policy: we collect the categories of personal information described in Section 2 (including identifiers such as email, commercial information relating to purchases, internet or electronic activity in the App, and inferences drawn from your use of features). We use this information for the business and commercial purposes described in Sections 5 and 6. We do <strong>not</strong> "sell" or "share" personal information as those terms are defined under the California Consumer Privacy Act (CCPA) as amended (including CPRA) — we do not disclose personal information to third parties for cross-context behavioural advertising. California residents may have rights to know, delete, and correct personal information, and to limit certain uses of sensitive information, subject to statutory exceptions. To exercise rights, email <a href="mailto:hello@oakdev.app">hello@oakdev.app</a>. We will not discriminate against you for exercising these rights. Authorised agents may submit requests where permitted by law.</p>
+        <p><strong>Other regions:</strong> If mandatory local law grants you additional rights or imposes additional obligations on us, we will comply with applicable law to the extent it applies to our processing.</p>
+
+        <!-- ─── SECTION 17 ─────────────────────────────────────────── -->
+        <h2 id="priv-17">17. Marketing, ePrivacy, and Electronic Communications</h2>
+        <p>We send <strong>transactional and service emails</strong> (for example account verification, security notices, purchase confirmations, and responses to support requests) where necessary for the performance of our contract with you or your legitimate expectations of service communications.</p>
+        <p>Where applicable law (including the EU <strong>ePrivacy Directive</strong> as implemented in national law) requires consent for certain electronic communications or for storing/accessing information on your device beyond what is strictly necessary, we rely on your <strong>consent</strong> obtained through the App or platform (for example push-notification permission).</p>
+        <p>If we ever send <strong>optional marketing communications</strong> about Nuria or related products, we will only do so where permitted by law and, where required, with your <strong>prior opt-in consent</strong>, and each message will include a clear way to opt out.</p>
+
+        <!-- ─── SECTION 18 ─────────────────────────────────────────── -->
+        <h2 id="priv-18">18. Law Enforcement, Legal Process, and Business Transfers</h2>
+        <p>We may disclose personal data where required by applicable law, regulation, legal process, or an enforceable governmental request, provided the disclosure is proportionate and lawful. Where not prohibited, we will notify you before disclosure unless we reasonably believe notice would defeat the purpose of the request or create risk of harm.</p>
+        <p>If we are involved in a merger, acquisition, asset sale, financing, or insolvency, your personal data may be transferred as part of that transaction. The transferee will be required to honour commitments consistent with this Privacy Policy or notify you of changes as required by law.</p>
+
+        <!-- ─── SECTION 19 ─────────────────────────────────────────── -->
+        <h2 id="priv-19">19. Records of Processing, Data Protection Officer, and "No Sale"</h2>
+        <p>We maintain internal records of processing activities as required by <strong>Article 30 GDPR</strong> (and equivalent UK obligations where applicable).</p>
+        <p>We have <strong>not</strong> appointed a Data Protection Officer under <strong>Article 37 GDPR</strong>, as our core processing activities do not require a DPO under current applicable guidance; you may address all privacy enquiries and requests to the contact details in Section 20.</p>
+        <p>We do <strong>not</strong> sell your personal data for monetary or other valuable consideration. We do not allow third parties to use your personal data for their own independent marketing unrelated to providing the App.</p>
+
+        <!-- ─── SECTION 20 ─────────────────────────────────────────── -->
+        <h2 id="priv-20">20. Contact Us</h2>
         <p>For any questions, concerns, or requests relating to this Privacy Policy or your personal data — including any GDPR rights requests — please contact us using the details below. We aim to acknowledge all privacy-related requests within <strong>72 hours</strong> and resolve them within <strong>30 days</strong>.</p>
         <address class="legal-address">
           <strong>OakDev &amp; AI AB</strong><br />
@@ -497,7 +581,7 @@
           <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul — every single day.</p>
           <p class="footer__bismillah" lang="ar">الله أكبر</p>
         </div>
-        <nav class="footer__links" aria-label="Footer navigation">
+        <nav class="footer__links" data-i18n-aria-label="a11y.footer_nav" aria-label="Footer navigation">
           <div class="footer__col">
             <span class="footer__col-title" data-i18n="footer.col1">App</span>
             <a href="/" data-i18n="footer.home">Home</a>
@@ -523,11 +607,11 @@
       <div class="footer__bottom">
         <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
-          <a href="/privacy">Privacy</a>
-          <a href="../terms">Terms</a>
+          <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
+          <a href="../terms" data-i18n="footer.nav_terms">Terms</a>
           <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
-          <a href="/support">Support</a>
-          <a href="../delete-account">Delete Account</a>
+          <a href="/support" data-i18n="footer.nav_support">Support</a>
+          <a href="../delete-account" data-i18n="footer.nav_delete">Delete Account</a>
         </div>
       </div>
     </div>

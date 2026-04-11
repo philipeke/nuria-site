@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nuria — Free Islamic Guidance App</title>
-  <meta name="description" content="Nuria is free to download with daily Islamic guidance, prayer tools, and thoughtful reflection rooted in the Quran and authentic Islamic teaching." />
+  <title data-i18n-title="site.index_title">Nuria — Free Islamic Guidance App</title>
+  <meta name="description" data-i18n-content="site.index_desc" content="Nuria is free to download with daily Islamic guidance, prayer tools, and thoughtful reflection rooted in the Quran and authentic Islamic teaching." />
   <meta name="theme-color" content="#050c08" />
 
   <!-- Open Graph -->
-  <meta property="og:title"       content="Nuria — Free Islamic Guidance App" />
-  <meta property="og:description" content="Download Nuria for free and explore daily Islamic guidance, prayer tools, and reflection rooted in the Quran." />
+  <meta property="og:title"       data-i18n-content="site.index_og_title" content="Nuria — Free Islamic Guidance App" />
+  <meta property="og:description" data-i18n-content="site.index_og_desc" content="Download Nuria for free and explore daily Islamic guidance, prayer tools, and reflection rooted in the Quran." />
   <meta property="og:image"       content="assets/Nuria%20Logo.png" />
   <meta property="og:type"        content="website" />
   <meta property="og:site_name"   content="Nuria" />
 
   <!-- Twitter -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="Nuria — Free Islamic Guidance App" />
-  <meta name="twitter:description" content="Download Nuria for free and explore daily Islamic guidance, prayer tools, and reflection rooted in the Quran." />
+  <meta name="twitter:title"       data-i18n-content="site.index_og_title" content="Nuria — Free Islamic Guidance App" />
+  <meta name="twitter:description" data-i18n-content="site.index_og_desc" content="Download Nuria for free and explore daily Islamic guidance, prayer tools, and reflection rooted in the Quran." />
   <meta name="twitter:image"       content="assets/Nuria%20Logo.png" />
 
   <!-- Favicon (center-cropped from icon for a larger mark in the tab) -->
@@ -38,9 +38,9 @@
   <!-- =========================================================
        NAVIGATION
   ========================================================= -->
-  <nav class="nav" id="nav" role="navigation" aria-label="Main">
+  <nav class="nav" id="nav" role="navigation" data-i18n-aria-label="a11y.nav_main" aria-label="Main navigation">
     <div class="nav__container">
-      <a href="/" class="nav__logo" aria-label="Nuria — Home">
+      <a href="/" class="nav__logo" data-i18n-aria-label="a11y.nav_home" aria-label="Nuria — Home">
         <img src="assets/icon.png" alt="Nuria" class="nav__logo-img" width="1024" height="1024" decoding="async" />
       </a>
 
@@ -57,11 +57,11 @@
         <div class="nav__download-menu" id="downloadMenu">
           <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="nav__download-option" data-store-link="app-store" target="_blank" rel="noopener noreferrer">
             <svg class="nav__download-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-            App Store
+            <span data-i18n="hero.appstore">App Store</span>
           </a>
           <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="nav__download-option" data-store-link="google-play" target="_blank" rel="noopener noreferrer">
             <svg class="nav__download-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"/></svg>
-            Google Play
+            <span data-i18n="hero.googleplay">Google Play</span>
           </a>
         </div>
       </div>
@@ -82,7 +82,7 @@
         </div>
       </div>
 
-      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <button class="nav__hamburger" id="hamburger" data-i18n-aria-label="a11y.open_menu" aria-label="Open menu" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>
@@ -96,7 +96,7 @@
   <canvas class="hero__canvas" id="starCanvas" aria-hidden="true"></canvas>
   <div class="hero__geo-bg" aria-hidden="true"></div>
 
-  <section class="hero" id="hero" aria-label="Hero">
+  <section class="hero" id="hero" data-i18n-aria-label="a11y.section_hero" aria-label="Introduction">
     <!-- Content -->
     <div class="hero__content">
       <p class="hero__bismillah" lang="ar">بِسْمِ اللهِ الرَّحْمَنِ الرَّحِيم</p>
@@ -127,23 +127,23 @@
       </div>
 
       <div class="hero__actions">
-        <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store" data-store-link="app-store" aria-label="Download Nuria on the App Store" target="_blank" rel="noopener noreferrer">
+        <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store" data-store-link="app-store" data-i18n-aria-label="a11y.store_apple" aria-label="Download Nuria on the App Store" target="_blank" rel="noopener noreferrer">
           <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
           </svg>
           <span>
-            <small>Download on the</small>
-            App Store
+            <small data-i18n="hero.appstore_small">Download on the</small>
+            <span data-i18n="hero.appstore">App Store</span>
           </span>
         </a>
 
-        <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="btn btn--store" data-store-link="google-play" aria-label="Get Nuria on Google Play" target="_blank" rel="noopener noreferrer">
+        <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="btn btn--store" data-store-link="google-play" data-i18n-aria-label="a11y.store_google" aria-label="Get Nuria on Google Play" target="_blank" rel="noopener noreferrer">
           <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"/>
           </svg>
           <span>
-            <small>Get it on</small>
-            Google Play
+            <small data-i18n="hero.googleplay_small">Get it on</small>
+            <span data-i18n="hero.googleplay">Google Play</span>
           </span>
         </a>
       </div>
@@ -164,7 +164,7 @@
           <div class="phone-frame-btn phone-frame-btn--power"></div>
           <div class="hero__phone">
             <div class="hero__phone-screen">
-              <img src="assets/new-phone.png" alt="Nuria app screenshot" class="hero__phone-screenshot" width="1080" height="2400" decoding="async" fetchpriority="high" />
+              <img src="assets/new-phone.png" alt="Nuria app screenshot" data-i18n-alt="a11y.img_phone_screenshot" class="hero__phone-screenshot" width="1080" height="2400" decoding="async" fetchpriority="high" />
             </div>
           </div>
         </div>
@@ -175,7 +175,7 @@
   <!-- =========================================================
        QURAN QUOTE
   ========================================================= -->
-  <section class="section section--quote" aria-label="Featured verse">
+  <section class="section section--quote" data-i18n-aria-label="a11y.quote_verse" aria-label="Featured verse">
     <div class="container">
       <blockquote class="featured-quote animate-on-scroll">
         <span class="featured-quote__star" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span>
@@ -189,7 +189,7 @@
   <!-- =========================================================
        ABOUT / FEATURES
   ========================================================= -->
-  <section class="section section--about" id="about" aria-label="About Nuria">
+  <section class="section section--about" id="about" data-i18n-aria-label="a11y.section_about" aria-label="About Nuria">
     <div class="container">
       <div class="section__label" data-i18n="about.label">About Nuria</div>
       <h2 class="section__title" data-i18n-html="about.title">A Companion of <em>Light</em> for Every Soul</h2>
@@ -338,6 +338,7 @@
               <img
                 src="assets/bild1.png"
                 alt="Nuria on a phone: Quran reading and Islamic guidance"
+                data-i18n-alt="a11y.img_showcase_about"
                 class="market-story__img market-story__img--about"
                 loading="lazy"
                 decoding="async"
@@ -353,7 +354,7 @@
   <!-- =========================================================
        DAILY BLESSINGS
   ========================================================= -->
-  <section class="section section--daily" id="daily" aria-label="Daily features">
+  <section class="section section--daily" id="daily" data-i18n-aria-label="a11y.section_daily" aria-label="Daily features">
     <div class="container">
       <div class="section__label" data-i18n="daily.label">What Awaits You Each Day</div>
       <h2 class="section__title" data-i18n-html="daily.title">Every Morning, a New <em>Blessing</em></h2>
@@ -387,6 +388,7 @@
             <img
               src="assets/bild3.png"
               alt="Nuria app interface: daily guidance and reflection"
+              data-i18n-alt="a11y.img_showcase_daily"
               class="showcase-grande__img"
               width="1024"
               height="571"
@@ -402,7 +404,7 @@
   <!-- =========================================================
        HADITH QUOTE
   ========================================================= -->
-  <section class="section section--quote" aria-label="Featured Hadith">
+  <section class="section section--quote" data-i18n-aria-label="a11y.quote_hadith" aria-label="Featured hadith">
     <div class="container">
       <blockquote class="featured-quote animate-on-scroll">
         <span class="featured-quote__star" aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span>
@@ -416,7 +418,7 @@
   <!-- =========================================================
        CATEGORIES
   ========================================================= -->
-  <section class="section section--categories" id="categories" aria-label="Reflection categories">
+  <section class="section section--categories" id="categories" data-i18n-aria-label="a11y.section_categories" aria-label="Reflection categories">
     <div class="container">
       <div class="section__label" data-i18n="categories.label">15 Reflection Categories</div>
       <h2 class="section__title" data-i18n-html="categories.title">Every Dimension of Your <em>Soul</em></h2>
@@ -508,7 +510,7 @@
   <!-- =========================================================
        NEW FEATURES SPOTLIGHT
   ========================================================= -->
-  <section class="section section--new-features" id="tools" aria-label="New features">
+  <section class="section section--new-features" id="tools" data-i18n-aria-label="a11y.section_new_features" aria-label="New features">
     <div class="container">
       <div class="section__label" data-i18n="newfeatures.label">New in Nuria</div>
       <h2 class="section__title" data-i18n-html="newfeatures.title">More Than Reflection — <em>Complete</em> Islamic Companion</h2>
@@ -646,7 +648,7 @@
   <!-- =========================================================
        PRICING
   ========================================================= -->
-  <section class="section section--pricing" id="pricing" aria-label="Plans">
+  <section class="section section--pricing" id="pricing" data-i18n-aria-label="a11y.section_pricing" aria-label="Plans">
     <div class="container">
       <div class="section__label" data-i18n="pricing.label">Choose Your Path</div>
       <h2 class="section__title" data-i18n-html="pricing.title">Begin <em>Free</em>, Support with <em>Barakah</em></h2>
@@ -708,13 +710,14 @@
   <!-- =========================================================
        DOWNLOAD CTA
   ========================================================= -->
-  <section class="section section--download" id="download" aria-label="Download Nuria">
+  <section class="section section--download" id="download" data-i18n-aria-label="a11y.section_download" aria-label="Download Nuria">
     <div class="container">
       <div class="download-wrap">
         <div class="download__launcher animate-on-scroll">
           <img
             src="assets/logo-launcher.png"
             alt="Nuria App"
+            data-i18n-alt="a11y.img_launcher"
             class="download__launcher-img"
             width="1024"
             height="1024"
@@ -732,22 +735,22 @@
             Download Nuria for free and get the full Quran, duas, prayer tools, Islamic audio, tracking, and 50 starter credits in one app. If it brings you value, choose Barakah to support the team and unlock extra subscriber features.
           </p>
           <div class="download__buttons">
-            <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store btn--store-lg" data-store-link="app-store" aria-label="Download on the App Store" target="_blank" rel="noopener noreferrer">
+            <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store btn--store-lg" data-store-link="app-store" data-i18n-aria-label="a11y.store_apple_short" aria-label="Download on the App Store" target="_blank" rel="noopener noreferrer">
               <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
               </svg>
               <span>
-                <small>Download on the</small>
-                App Store
+                <small data-i18n="hero.appstore_small">Download on the</small>
+                <span data-i18n="hero.appstore">App Store</span>
               </span>
             </a>
-            <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="btn btn--store btn--store-lg" data-store-link="google-play" aria-label="Get Nuria on Google Play" target="_blank" rel="noopener noreferrer">
+            <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="btn btn--store btn--store-lg" data-store-link="google-play" data-i18n-aria-label="a11y.store_google" aria-label="Get Nuria on Google Play" target="_blank" rel="noopener noreferrer">
               <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"/>
               </svg>
               <span>
-                <small>Get it on</small>
-                Google Play
+                <small data-i18n="hero.googleplay_small">Get it on</small>
+                <span data-i18n="hero.googleplay">Google Play</span>
               </span>
             </a>
           </div>
@@ -768,7 +771,7 @@
           <p class="footer__bismillah" lang="ar">الله أكبر</p>
         </div>
 
-        <nav class="footer__links" aria-label="Footer navigation">
+        <nav class="footer__links" data-i18n-aria-label="a11y.footer_nav" aria-label="Footer navigation">
           <div class="footer__col">
             <span class="footer__col-title" data-i18n="footer.col1">App</span>
             <a href="#about" data-i18n="footer.about">About Nuria</a>
@@ -795,11 +798,11 @@
       <div class="footer__bottom">
         <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
+          <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
+          <a href="/terms" data-i18n="footer.nav_terms">Terms</a>
           <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
-          <a href="/support">Support</a>
-          <a href="/delete-account">Delete Account</a>
+          <a href="/support" data-i18n="footer.nav_support">Support</a>
+          <a href="/delete-account" data-i18n="footer.nav_delete">Delete Account</a>
         </div>
       </div>
     </div>
