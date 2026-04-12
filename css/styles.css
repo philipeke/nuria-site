@@ -528,12 +528,22 @@ body::after {
   display: inline-block;
   margin-bottom: 1rem;
 }
-/* Desktop: same content width as .hero__desc — logo centers over that column, not over the full half-grid */
+/*
+ * Desktop: logo must sit in the same 470px band as the copy.
+ * With align-self:flex-start, inline-block ignores width:100% and shrinks to the logo — so nothing changed visually.
+ * Use a real block + explicit width so margin:auto on .hero__logo centers the mark over the text block.
+ */
 @media (min-width: 1025px) {
   .hero__logo-wrap {
+    display: block;
     align-self: flex-start;
+    width: min(470px, 100%);
     max-width: 470px;
-    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .hero__subtitle {
+    max-width: 470px;
   }
 }
 /* Soft halo only (no box); logo floats with transparent padding in the PNG */
