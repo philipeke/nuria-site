@@ -6,7 +6,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS = os.path.join(ROOT, "assets")
-SRC = os.path.join(ASSETS, "icon.png")
+SRC = os.path.join(ASSETS, "Nuria Logo.png")
 
 
 def tight_square_for_tab(im: Image.Image, alpha_thresh: int = 16) -> Image.Image:

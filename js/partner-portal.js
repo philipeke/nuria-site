@@ -635,7 +635,7 @@ function getActionablePortalErrorMessage(error) {
   if (message.includes('app check') || code === 'failed-precondition') {
     return isAppCheckConfigured()
       ? 'Partner portal security check failed. Refresh the page and try again.'
-      : 'Partner web access is not fully configured yet. Web App Check must be enabled for this site before partner stats can load.';
+      : 'Partner portal backend is not fully updated yet. Deploy the dedicated web partner callable, or configure Web App Check before retrying.';
   }
 
   if (code === 'popup-closed-by-user') {
@@ -682,7 +682,7 @@ function getActionablePortalErrorMessage(error) {
 }
 
 async function callPartnerPortalCallable() {
-  const callableNames = ['getAffiliatePartnerPortal'];
+  const callableNames = ['getAffiliatePartnerPortalWeb', 'getAffiliatePartnerPortal'];
   let lastError = null;
   for (const name of callableNames) {
     try {
