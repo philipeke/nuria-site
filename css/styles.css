@@ -299,15 +299,16 @@ body::after {
   inset: var(--brand-logo-halo-inset);
   background: radial-gradient(
     circle,
-    rgba(255, 248, 232, 0.1) 0%,
-    rgba(45, 190, 108, 0.16) 28%,
-    rgba(201, 168, 76, 0.08) 48%,
+    rgba(255, 249, 238, 0.08) 0%,
+    rgba(244, 230, 196, 0.07) 24%,
+    rgba(201, 168, 76, 0.06) 44%,
     transparent 72%
   );
   border-radius: 50%;
   animation: breathe 5s ease infinite;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.72;
 }
 .nav__logo-img {
   display: block;
@@ -328,9 +329,9 @@ body::after {
   -webkit-mask-position: center;
   mask-position: center;
   filter:
-    drop-shadow(0 4px 22px rgba(0, 0, 0, 0.35))
-    drop-shadow(0 0 28px rgba(45, 190, 108, 0.28))
-    drop-shadow(0 0 40px rgba(201, 168, 76, 0.15));
+    drop-shadow(0 3px 14px rgba(0, 0, 0, 0.28))
+    drop-shadow(0 0 14px rgba(244, 230, 196, 0.08))
+    drop-shadow(0 0 22px rgba(201, 168, 76, 0.08));
   transition: var(--transition);
 }
 .nav__logo-img:hover {
@@ -623,9 +624,9 @@ body::after {
   -webkit-mask-position: center;
   mask-position: center;
   filter:
-    drop-shadow(0 4px 22px rgba(0, 0, 0, 0.35))
-    drop-shadow(0 0 28px rgba(45, 190, 108, 0.28))
-    drop-shadow(0 0 40px rgba(201, 168, 76, 0.15));
+    drop-shadow(0 3px 14px rgba(0, 0, 0, 0.28))
+    drop-shadow(0 0 14px rgba(244, 230, 196, 0.08))
+    drop-shadow(0 0 22px rgba(201, 168, 76, 0.08));
 }
 
 .hero__subtitle {
@@ -6529,6 +6530,21 @@ code {
 }
 
 /* ── Admin nav grid (landing page) ── */
+
+@media (max-width: 768px) {
+  .admin-partner-card__head,
+  .admin-partner-detail__hero {
+    flex-direction: column;
+  }
+
+  .admin-partner-detail__badges {
+    justify-content: flex-start;
+  }
+
+  .admin-partner-card__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 
 .admin-nav-grid {
   display: grid;
