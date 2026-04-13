@@ -35,6 +35,7 @@ const ADMIN_PAGE_PATHS = {
   checklist: '/internal/affiliate-admin/checklist/',
   'alerts-health': '/internal/affiliate-admin/alerts-health/',
   codes: '/internal/affiliate-admin/codes/',
+  partners: '/internal/affiliate-admin/partners/',
   subscribers: '/internal/affiliate-admin/subscribers/',
   reports: '/internal/affiliate-admin/reports/',
   'report-detail': '/internal/affiliate-admin/report-detail/',
@@ -269,6 +270,24 @@ const elements = {
   partnerRegistryList: document.getElementById('adminPartnerRegistryList'),
   saveSettingsButton: document.getElementById('adminSaveSettingsButton'),
   settingsError: document.getElementById('adminSettingsError'),
+  refreshPartners: document.getElementById('adminRefreshPartners'),
+  partnerSearchInput: document.getElementById('adminPartnerSearchInput'),
+  partnerStatusFilter: document.getElementById('adminPartnerStatusFilter'),
+  partnerSortSelect: document.getElementById('adminPartnerSortSelect'),
+  partnerList: document.getElementById('adminPartnerList'),
+  partnerEmpty: document.getElementById('adminPartnerEmpty'),
+  partnerDetail: document.getElementById('adminPartnerDetail'),
+  partnerTotalCount: document.getElementById('adminPartnerTotalCount'),
+  partnerPortalLiveCount: document.getElementById('adminPartnerPortalLiveCount'),
+  partnerEntriesTotal: document.getElementById('adminPartnerEntriesTotal'),
+  partnerPurchasesTotal: document.getElementById('adminPartnerPurchasesTotal'),
+  partnerActiveTotal: document.getElementById('adminPartnerActiveTotal'),
+  partnerAtRiskTotal: document.getElementById('adminPartnerAtRiskTotal'),
+  partnerLastRefresh: document.getElementById('adminPartnerLastRefresh'),
+  partnerSnapshotMeta: document.getElementById('adminPartnerSnapshotMeta'),
+  partnerTopActivator: document.getElementById('adminPartnerTopActivator'),
+  partnerTopConverter: document.getElementById('adminPartnerTopConverter'),
+  partnerWatchlist: document.getElementById('adminPartnerWatchlist'),
   refreshSubscribers: document.getElementById('adminRefreshSubscribers'),
   subscriberSearchInput: document.getElementById('adminSubscriberSearchInput'),
   subscriberMetricFilter: document.getElementById('adminSubscriberMetricFilter'),
@@ -280,6 +299,7 @@ const elements = {
   subscriberTotalHistorical: document.getElementById('adminSubscriberTotalHistorical'),
   subscriberTotalChurned: document.getElementById('adminSubscriberTotalChurned'),
   subscriberLastRefresh: document.getElementById('adminSubscriberLastRefresh'),
+  subscriberSnapshotMeta: document.getElementById('adminSubscriberSnapshotMeta'),
 };
 
 const state = {
@@ -309,6 +329,7 @@ const state = {
   pendingOnboardingAfterLogin: false,
   checklistMonthOverride: '',
   currentPage: 'landing',
+  selectedPartnerKey: '',
   healthChecks: {},
   adminSettings: {
     defaultFlow: 'balanced',
@@ -324,6 +345,9 @@ const state = {
   filters: {
     codeQuery: '',
     codeStatus: '',
+    partnerQuery: '',
+    partnerStatus: '',
+    partnerSort: 'active-desc',
     reportQuery: '',
     reportStatus: '',
     subscriberQuery: '',
@@ -1653,6 +1677,850 @@ function formatPercent(value) {
   return `${(safe * 100).toFixed(1)}%`;
 }
 
+function normalizeCountValue(value) {
+  const safe = Number(value);
+  if (!Number.isFinite(safe)) return 0;
+  return Math.max(0, Math.round(safe));
+}
+
+function formatWholeNumber(value) {
+  return new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: 0,
+  }).format(normalizeCountValue(value));
+}
+
+function getSubscriberInsightAffiliateMeta(rawValue) {
+  const code = normalizeReferralCodeValue(rawValue?.code || '');
+  if (!code) {
+    return {
+      affiliateId: '',
+      displayName: '',
+    };
+  }
+
+  const rawAffiliateId = String(rawValue?.affiliateId || '').trim();
+  const codeDoc = (state.codes || []).find(
+    (item) => normalizeReferralCodeValue(item?.code || '') === code
+  ) || null;
+  const partnerHint = {
+    code,
+    affiliateId: rawAffiliateId || codeDoc?.affiliateId || '',
+  };
+  const linkedPartner = findLinkedPartnerForCode(partnerHint) || null;
+  const registryEntry = getPartnerRegistryEntryForCode(partnerHint) || null;
+  const partnerProfile = getPartnerProfileForCode(partnerHint) || null;
+  const affiliateId = String(
+    rawAffiliateId
+    || codeDoc?.affiliateId
+    || linkedPartner?.affiliateId
+    || ''
+  ).trim();
+
+  const displayName = [
+    rawValue?.displayName,
+    codeDoc?.displayName,
+    linkedPartner?.displayName,
+    registryEntry?.partnerDisplayName,
+    registryEntry?.displayName,
+    partnerProfile?.businessName,
+    partnerProfile?.companyName,
+    partnerProfile?.legalName,
+    partnerProfile?.accountHolder,
+    linkedPartner?.contactName,
+    affiliateId,
+  ].map((value) => String(value || '').trim()).find(Boolean) || '';
+
+  return {
+    affiliateId,
+    displayName,
+  };
+}
+
+function normalizeSubscriberInsightRow(rawValue) {
+  if (!rawValue || typeof rawValue !== 'object') return null;
+
+  const code = normalizeReferralCodeValue(rawValue.code || '');
+  if (!code) return null;
+
+  const { affiliateId, displayName } = getSubscriberInsightAffiliateMeta(rawValue);
+  const pendingReferrals = normalizeCountValue(
+    rawValue.pendingReferrals ?? rawValue.trialActive
+  );
+  const lockedReferrals = normalizeCountValue(
+    rawValue.lockedReferrals ?? rawValue.totalCurrent
+  );
+  const attributedUsers = normalizeCountValue(
+    rawValue.attributedUsers
+    ?? rawValue.totalHistorical
+    ?? (pendingReferrals + lockedReferrals)
+  );
+  const activeSubscribers = normalizeCountValue(
+    rawValue.activeSubscribers ?? rawValue.activeNow
+  );
+  const atRiskSubscribers = normalizeCountValue(rawValue.atRiskSubscribers);
+  const inactiveSubscribers = normalizeCountValue(
+    rawValue.inactiveSubscribers ?? rawValue.churned
+  );
+  const uncategorizedSubscribers = normalizeCountValue(rawValue.uncategorizedSubscribers);
+  const totalSubscribers = normalizeCountValue(
+    rawValue.totalSubscribers
+    ?? (activeSubscribers + atRiskSubscribers + inactiveSubscribers + uncategorizedSubscribers)
+  );
+  const allTimeInitialPurchases = normalizeCountValue(rawValue.allTimeInitialPurchases);
+  const allTimeRenewals = normalizeCountValue(rawValue.allTimeRenewals);
+  const allTimeRefunds = normalizeCountValue(rawValue.allTimeRefunds);
+  const allTimeRevocations = normalizeCountValue(rawValue.allTimeRevocations);
+  const last30DayInitialPurchases = normalizeCountValue(rawValue.last30DayInitialPurchases);
+  const last30DayRenewals = normalizeCountValue(rawValue.last30DayRenewals);
+  const last30DayRefunds = normalizeCountValue(rawValue.last30DayRefunds);
+  const last30DayRevocations = normalizeCountValue(rawValue.last30DayRevocations);
+  const conversionRateValue = Number(rawValue.conversionRate);
+  const conversionRate = Number.isFinite(conversionRateValue) && conversionRateValue >= 0
+    ? conversionRateValue
+    : (attributedUsers > 0 ? allTimeInitialPurchases / attributedUsers : 0);
+  const portfolioHealthRate = totalSubscribers > 0
+    ? activeSubscribers / totalSubscribers
+    : 0;
+  const lastUpdatedIso = String(rawValue.lastUpdatedIso || '').trim() || null;
+
+  return {
+    code,
+    affiliateId,
+    displayName,
+    status: normalizePartnerStatusValue(rawValue.status),
+    pendingReferrals,
+    lockedReferrals,
+    attributedUsers,
+    activeSubscribers,
+    atRiskSubscribers,
+    inactiveSubscribers,
+    uncategorizedSubscribers,
+    totalSubscribers,
+    allTimeInitialPurchases,
+    allTimeRenewals,
+    allTimeRefunds,
+    allTimeRevocations,
+    last30DayInitialPurchases,
+    last30DayRenewals,
+    last30DayRefunds,
+    last30DayRevocations,
+    lastUpdatedIso,
+    conversionRate,
+    portfolioHealthRate,
+    activeNow: activeSubscribers,
+    totalCurrent: lockedReferrals,
+    totalHistorical: attributedUsers,
+    churned: inactiveSubscribers,
+    trialActive: pendingReferrals,
+  };
+}
+
+function syncSubscriberInsightControls() {
+  if (elements.subscriberMetricFilter) {
+    const metricOptions = [
+      { value: '', label: 'All codes' },
+      { value: 'active-only', label: 'With active subscribers' },
+      { value: 'pending-only', label: 'With pending referrals' },
+      { value: 'converted-only', label: 'With first purchases' },
+      { value: 'risk-only', label: 'With at-risk subscribers' },
+    ];
+    const currentMetric = String(
+      state.filters.subscriberMetric
+      || elements.subscriberMetricFilter.value
+      || ''
+    ).trim();
+    elements.subscriberMetricFilter.innerHTML = metricOptions
+      .map((option) => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+      .join('');
+    elements.subscriberMetricFilter.value = metricOptions.some((option) => option.value === currentMetric)
+      ? currentMetric
+      : '';
+    state.filters.subscriberMetric = elements.subscriberMetricFilter.value;
+  }
+
+  if (elements.subscriberSortSelect) {
+    const sortOptions = [
+      { value: 'active-desc', label: 'Active now (high to low)' },
+      { value: 'entered-desc', label: 'Code entries (high to low)' },
+      { value: 'purchases-desc', label: 'First purchases (high to low)' },
+      { value: 'pending-desc', label: 'Pending referrals (high to low)' },
+      { value: 'code-asc', label: 'Code (A to Z)' },
+      { value: 'code-desc', label: 'Code (Z to A)' },
+    ];
+    const currentSort = String(
+      state.filters.subscriberSort
+      || elements.subscriberSortSelect.value
+      || 'active-desc'
+    ).trim();
+    elements.subscriberSortSelect.innerHTML = sortOptions
+      .map((option) => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+      .join('');
+    elements.subscriberSortSelect.value = sortOptions.some((option) => option.value === currentSort)
+      ? currentSort
+      : 'active-desc';
+    state.filters.subscriberSort = elements.subscriberSortSelect.value;
+  }
+}
+
+function clampPercentValue(value) {
+  const safe = Number(value);
+  if (!Number.isFinite(safe)) return 0;
+  return Math.max(0, Math.min(100, safe));
+}
+
+function scorePartnerProfile(profile) {
+  if (!profile || typeof profile !== 'object') return 0;
+  const fields = [
+    profile.partnerType,
+    profile.mobile,
+    profile.address1,
+    profile.postalCode,
+    profile.city,
+    profile.country,
+    profile.accountHolder,
+    profile.bankName,
+    profile.iban || profile.accountNumber,
+  ];
+  if (profile.partnerType === 'company' && profile.vat) {
+    fields.push(profile.vat);
+  }
+  return fields.filter((value) => String(value || '').trim()).length;
+}
+
+function getPartnerStatusTone(status) {
+  const normalized = normalizePartnerStatusValue(status);
+  if (normalized === 'inactive' || normalized === 'archived') return 'warn';
+  return 'success';
+}
+
+function buildPartnerAnalyticsRows() {
+  const codes = Array.isArray(state.codes) ? state.codes : [];
+  const partners = normalizePartnerListValue(state.partners);
+  const statsByCode = new Map();
+
+  (state.subscriberStats || []).forEach((rawValue) => {
+    const item = normalizeSubscriberInsightRow(rawValue);
+    if (item?.code) {
+      statsByCode.set(item.code, item);
+    }
+  });
+
+  const partnerMap = new Map();
+
+  function ensurePartner(seed) {
+    const key = String(seed.key || '').trim();
+    if (!key) return null;
+    if (partnerMap.has(key)) return partnerMap.get(key);
+
+    const item = {
+      key,
+      affiliateId: String(seed.affiliateId || '').trim(),
+      displayName: String(seed.displayName || '').trim() || 'Partner',
+      partnerStatus: normalizePartnerStatusValue(seed.partnerStatus),
+      primaryReferralCode: normalizeReferralCodeValue(seed.primaryReferralCode || ''),
+      portalEmail: normalizeEmail(seed.portalEmail),
+      portalUid: String(seed.portalUid || '').trim(),
+      portalWebAccessEnabled: Boolean(seed.portalWebAccessEnabled),
+      contactEmail: normalizeEmail(seed.contactEmail),
+      contactName: String(seed.contactName || '').trim(),
+      updatedAtIso: String(seed.updatedAtIso || '').trim(),
+      updatedByEmail: String(seed.updatedByEmail || '').trim(),
+      profile: seed.profile || null,
+      profileScore: scorePartnerProfile(seed.profile),
+      codeCount: 0,
+      activeCodeCount: 0,
+      attributedUsers: 0,
+      pendingReferrals: 0,
+      lockedReferrals: 0,
+      activeSubscribers: 0,
+      atRiskSubscribers: 0,
+      inactiveSubscribers: 0,
+      uncategorizedSubscribers: 0,
+      totalSubscribers: 0,
+      allTimeInitialPurchases: 0,
+      allTimeRenewals: 0,
+      allTimeRefunds: 0,
+      allTimeRevocations: 0,
+      last30DayInitialPurchases: 0,
+      last30DayRenewals: 0,
+      last30DayRefunds: 0,
+      last30DayRevocations: 0,
+      codes: [],
+    };
+    partnerMap.set(key, item);
+    return item;
+  }
+
+  codes.forEach((codeItem) => {
+    const code = normalizeReferralCodeValue(codeItem?.code || '');
+    if (!code) return;
+
+    const linkedPartner = findLinkedPartnerForCode(codeItem) || null;
+    const registry = getPartnerRegistryEntryForCode(codeItem) || null;
+    const profile = getPartnerProfileForCode(codeItem) || null;
+    const stat = statsByCode.get(code) || normalizeSubscriberInsightRow({
+      code,
+      affiliateId: codeItem?.affiliateId,
+      displayName: codeItem?.displayName,
+      status: codeItem?.status,
+    });
+
+    const affiliateId = String(
+      linkedPartner?.affiliateId
+      || codeItem?.affiliateId
+      || registry?.affiliateId
+      || ''
+    ).trim();
+    const row = ensurePartner({
+      key: affiliateId || `code:${code}`,
+      affiliateId,
+      displayName:
+        linkedPartner?.displayName
+        || codeItem?.displayName
+        || registry?.partnerDisplayName
+        || registry?.displayName
+        || affiliateId
+        || code,
+      partnerStatus: linkedPartner?.status || codeItem?.status || 'active',
+      primaryReferralCode: linkedPartner?.primaryReferralCode || code,
+      portalEmail: linkedPartner?.portalEmail || registry?.email,
+      portalUid: linkedPartner?.portalUid || registry?.partnerUid,
+      portalWebAccessEnabled:
+        linkedPartner?.portalWebAccessEnabled
+        || registry?.portalWebAccessEnabled === true,
+      contactEmail: linkedPartner?.contactEmail || registry?.email,
+      contactName: linkedPartner?.contactName,
+      updatedAtIso:
+        linkedPartner?.updatedAt?.iso
+        || stat?.lastUpdatedIso
+        || '',
+      updatedByEmail: linkedPartner?.updatedByEmail || registry?.linkedBy || '',
+      profile,
+    });
+    if (!row) return;
+
+    const nextProfileScore = scorePartnerProfile(profile);
+    if (nextProfileScore > row.profileScore) {
+      row.profile = profile;
+      row.profileScore = nextProfileScore;
+    }
+    if (!row.portalEmail) {
+      row.portalEmail = normalizeEmail(linkedPartner?.portalEmail || registry?.email);
+    }
+    if (!row.contactEmail) {
+      row.contactEmail = normalizeEmail(linkedPartner?.contactEmail || registry?.email);
+    }
+    if (!row.portalUid && registry?.partnerUid) {
+      row.portalUid = String(registry.partnerUid || '').trim();
+    }
+    if (!row.contactName && linkedPartner?.contactName) {
+      row.contactName = String(linkedPartner.contactName || '').trim();
+    }
+    if (!row.updatedAtIso && stat?.lastUpdatedIso) {
+      row.updatedAtIso = stat.lastUpdatedIso;
+    }
+    if (!row.updatedByEmail && linkedPartner?.updatedByEmail) {
+      row.updatedByEmail = String(linkedPartner.updatedByEmail || '').trim();
+    }
+    if (!row.primaryReferralCode) {
+      row.primaryReferralCode = code;
+    }
+    row.portalWebAccessEnabled = row.portalWebAccessEnabled || linkedPartner?.portalWebAccessEnabled === true;
+
+    const codeMetrics = {
+      code,
+      status: normalizePartnerStatusValue(codeItem?.status),
+      revenueShareBps: Number(codeItem?.revenueShareBps ?? 0),
+      fixedPayoutMinor: codeItem?.fixedPayoutMinor ?? null,
+      currency: String(codeItem?.currency || '').trim().toUpperCase(),
+      attributedUsers: stat?.attributedUsers || 0,
+      pendingReferrals: stat?.pendingReferrals || 0,
+      lockedReferrals: stat?.lockedReferrals || 0,
+      activeSubscribers: stat?.activeSubscribers || 0,
+      atRiskSubscribers: stat?.atRiskSubscribers || 0,
+      inactiveSubscribers: stat?.inactiveSubscribers || 0,
+      allTimeInitialPurchases: stat?.allTimeInitialPurchases || 0,
+      last30DayInitialPurchases: stat?.last30DayInitialPurchases || 0,
+      lastUpdatedIso: stat?.lastUpdatedIso || '',
+    };
+
+    row.codes.push(codeMetrics);
+    row.codeCount += 1;
+    if (codeMetrics.status === 'active') {
+      row.activeCodeCount += 1;
+    }
+    row.attributedUsers += stat?.attributedUsers || 0;
+    row.pendingReferrals += stat?.pendingReferrals || 0;
+    row.lockedReferrals += stat?.lockedReferrals || 0;
+    row.activeSubscribers += stat?.activeSubscribers || 0;
+    row.atRiskSubscribers += stat?.atRiskSubscribers || 0;
+    row.inactiveSubscribers += stat?.inactiveSubscribers || 0;
+    row.uncategorizedSubscribers += stat?.uncategorizedSubscribers || 0;
+    row.totalSubscribers += stat?.totalSubscribers || 0;
+    row.allTimeInitialPurchases += stat?.allTimeInitialPurchases || 0;
+    row.allTimeRenewals += stat?.allTimeRenewals || 0;
+    row.allTimeRefunds += stat?.allTimeRefunds || 0;
+    row.allTimeRevocations += stat?.allTimeRevocations || 0;
+    row.last30DayInitialPurchases += stat?.last30DayInitialPurchases || 0;
+    row.last30DayRenewals += stat?.last30DayRenewals || 0;
+    row.last30DayRefunds += stat?.last30DayRefunds || 0;
+    row.last30DayRevocations += stat?.last30DayRevocations || 0;
+  });
+
+  partners.forEach((partner) => {
+    const primaryCode = normalizeReferralCodeValue(partner.primaryReferralCode || '');
+    const stat = primaryCode ? statsByCode.get(primaryCode) : null;
+    const row = ensurePartner({
+      key: String(partner.affiliateId || '').trim() || `code:${primaryCode}`,
+      affiliateId: partner.affiliateId,
+      displayName: partner.displayName || partner.affiliateId || primaryCode,
+      partnerStatus: partner.status,
+      primaryReferralCode: primaryCode,
+      portalEmail: partner.portalEmail,
+      portalUid: partner.portalUid,
+      portalWebAccessEnabled: partner.portalWebAccessEnabled,
+      contactEmail: partner.contactEmail,
+      contactName: partner.contactName,
+      updatedAtIso: partner.updatedAt?.iso || stat?.lastUpdatedIso || '',
+      updatedByEmail: partner.updatedByEmail,
+      profile: primaryCode ? getPartnerProfileForCode({ code: primaryCode }) : null,
+    });
+    if (!row) return;
+    row.portalWebAccessEnabled = row.portalWebAccessEnabled || partner.portalWebAccessEnabled === true;
+    if (!row.portalEmail) row.portalEmail = normalizeEmail(partner.portalEmail);
+    if (!row.contactEmail) row.contactEmail = normalizeEmail(partner.contactEmail);
+    if (!row.contactName) row.contactName = String(partner.contactName || '').trim();
+    if (!row.updatedAtIso) row.updatedAtIso = String(partner.updatedAt?.iso || '').trim();
+    if (!row.updatedByEmail) row.updatedByEmail = String(partner.updatedByEmail || '').trim();
+  });
+
+  return Array.from(partnerMap.values())
+    .map((item) => {
+      item.codes.sort((left, right) => {
+        return (right.activeSubscribers - left.activeSubscribers)
+          || (right.allTimeInitialPurchases - left.allTimeInitialPurchases)
+          || String(left.code || '').localeCompare(String(right.code || ''));
+      });
+      item.conversionRate = item.attributedUsers > 0
+        ? item.allTimeInitialPurchases / item.attributedUsers
+        : 0;
+      item.portfolioHealthRate = item.totalSubscribers > 0
+        ? item.activeSubscribers / item.totalSubscribers
+        : 0;
+      item.pendingShare = item.attributedUsers > 0
+        ? item.pendingReferrals / item.attributedUsers
+        : 0;
+      item.payoutReady = Boolean(
+        item.contactEmail
+        && item.profile?.accountHolder
+        && (item.profile?.iban || item.profile?.accountNumber)
+        && item.profile?.country
+      );
+      item.profileCompletion = item.profileScore;
+      item.attentionScore = (
+        item.atRiskSubscribers * 2
+        + item.inactiveSubscribers
+        + (item.portalWebAccessEnabled ? 0 : 1)
+        + (item.payoutReady ? 0 : 1)
+      );
+      item.needsAttention = (
+        item.partnerStatus !== 'active'
+        || item.atRiskSubscribers > 0
+        || item.inactiveSubscribers > 0
+        || !item.portalWebAccessEnabled
+        || !item.payoutReady
+      );
+      return item;
+    })
+    .sort((left, right) => {
+      return String(left.displayName || left.affiliateId || '').localeCompare(
+        String(right.displayName || right.affiliateId || '')
+      );
+    });
+}
+
+function buildPartnerSpotlightMarkup(config) {
+  const settings = config || {};
+  const item = settings.item || null;
+  if (!item) {
+    return `
+      <p class="admin-partner-spotlight__eyebrow">${escapeHtml(settings.title || 'Spotlight')}</p>
+      <h3 class="admin-partner-spotlight__title">Waiting for data</h3>
+      <p class="admin-partner-spotlight__copy">${escapeHtml(settings.emptyCopy || 'This card will light up once partner data is available.')}</p>
+    `;
+  }
+
+  return `
+    <p class="admin-partner-spotlight__eyebrow">${escapeHtml(settings.title || 'Spotlight')}</p>
+    <h3 class="admin-partner-spotlight__title">${escapeHtml(item.displayName || item.affiliateId || 'Partner')}</h3>
+    <p class="admin-partner-spotlight__metric">${escapeHtml(settings.metricLabel || 'Metric')}: <strong>${escapeHtml(settings.metricValue || '0')}</strong></p>
+    <p class="admin-partner-spotlight__copy">${escapeHtml(settings.copy || '')}</p>
+  `;
+}
+
+function renderPartnerDetail(item) {
+  if (!elements.partnerDetail) return;
+  if (!item) {
+    elements.partnerDetail.innerHTML = '<p class="admin-empty admin-empty--inline">Select a partner to open the detailed analytics view.</p>';
+    return;
+  }
+
+  const funnelMax = Math.max(
+    item.attributedUsers,
+    item.pendingReferrals,
+    item.allTimeInitialPurchases,
+    item.activeSubscribers,
+    1
+  );
+  const funnelSteps = [
+    ['Entered code', item.attributedUsers, 'Every person who entered one of this partner\'s codes'],
+    ['Pending', item.pendingReferrals, 'Code entered but not yet converted to a locked referral'],
+    ['First purchases', item.allTimeInitialPurchases, 'All-time first subscription purchases'],
+    ['Active now', item.activeSubscribers, 'Subscribers currently active on this portfolio'],
+  ];
+  const healthRails = [
+    ['Conversion rate', formatPercent(item.conversionRate), clampPercentValue(item.conversionRate * 100)],
+    ['Portfolio health', formatPercent(item.portfolioHealthRate), clampPercentValue(item.portfolioHealthRate * 100)],
+    ['Pending share', formatPercent(item.pendingShare), clampPercentValue(item.pendingShare * 100)],
+  ];
+  const codesMarkup = item.codes.length
+    ? item.codes.map((codeItem) => {
+      return `
+        <button type="button" class="admin-partner-code-card" data-open-partner-code="${escapeHtml(codeItem.code)}">
+          <div class="admin-partner-code-card__head">
+            <strong>${escapeHtml(codeItem.code)}</strong>
+            <span class="admin-tag ${codeItem.status === 'active' ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(codeItem.status)}</span>
+          </div>
+          <div class="admin-partner-code-card__stats">
+            <span>Entries <strong>${escapeHtml(formatWholeNumber(codeItem.attributedUsers))}</strong></span>
+            <span>Purchases <strong>${escapeHtml(formatWholeNumber(codeItem.allTimeInitialPurchases))}</strong></span>
+            <span>Active <strong>${escapeHtml(formatWholeNumber(codeItem.activeSubscribers))}</strong></span>
+          </div>
+        </button>
+      `;
+    }).join('')
+    : '<p class="admin-empty admin-empty--inline">No referral codes are linked to this partner yet.</p>';
+
+  const metadata = [
+    ['Affiliate ID', item.affiliateId || '-'],
+    ['Primary code', item.primaryReferralCode || '-'],
+    ['Portal email', item.portalEmail || '-'],
+    ['Contact email', item.contactEmail || '-'],
+    ['Contact name', item.contactName || '-'],
+    ['Updated', item.updatedAtIso ? formatTimestamp({ iso: item.updatedAtIso }) : '-'],
+    ['Updated by', item.updatedByEmail || '-'],
+    ['Billing profile', item.payoutReady ? 'ready' : 'incomplete'],
+  ];
+
+  elements.partnerDetail.innerHTML = `
+    <div class="admin-partner-detail">
+      <div class="admin-partner-detail__hero">
+        <div>
+          <p class="admin-panel__eyebrow">Selected partner</p>
+          <h3 class="admin-partner-detail__title">${escapeHtml(item.displayName || item.affiliateId || 'Partner')}</h3>
+          <p class="admin-panel__helper">
+            ${escapeHtml(item.affiliateId || item.primaryReferralCode || 'partner')}
+            &middot; ${escapeHtml(item.codeCount === 1 ? '1 referral code' : `${formatWholeNumber(item.codeCount)} referral codes`)}
+            &middot; ${escapeHtml(item.portalWebAccessEnabled ? 'web portal live' : 'web portal off')}
+          </p>
+        </div>
+        <div class="admin-partner-detail__badges">
+          <span class="admin-tag ${getPartnerStatusTone(item.partnerStatus) === 'success' ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(item.partnerStatus)}</span>
+          <span class="admin-tag ${item.portalWebAccessEnabled ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(item.portalWebAccessEnabled ? 'portal live' : 'portal off')}</span>
+          <span class="admin-tag ${item.payoutReady ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(item.payoutReady ? 'payout ready' : 'billing missing')}</span>
+        </div>
+      </div>
+
+      <div class="admin-form__actions admin-partner-detail__actions">
+        <button type="button" class="btn btn--outline" data-open-partner-code="${escapeHtml(item.primaryReferralCode || '')}">
+          Open primary code
+        </button>
+        <button type="button" class="btn btn--outline" data-open-partner-join="${escapeHtml(item.primaryReferralCode || '')}">
+          Open join page
+        </button>
+        <button type="button" class="btn btn--outline" data-open-partner-portal="${escapeHtml(item.portalEmail || '')}" ${item.portalEmail ? '' : 'disabled'}>
+          Open portal login
+        </button>
+      </div>
+
+      <div class="admin-stat-grid admin-stat-grid--4col admin-partner-detail__stats">
+        <div class="admin-stat-card">
+          <span class="admin-stat-card__label">Code entries</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.attributedUsers))}</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-card__label">First purchases</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.allTimeInitialPurchases))}</span>
+        </div>
+        <div class="admin-stat-card admin-stat-card--active">
+          <span class="admin-stat-card__label">Active now</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.activeSubscribers))}</span>
+        </div>
+        <div class="admin-stat-card admin-stat-card--warn">
+          <span class="admin-stat-card__label">At risk</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.atRiskSubscribers))}</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-card__label">Inactive</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.inactiveSubscribers))}</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-card__label">Conversion rate</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatPercent(item.conversionRate))}</span>
+        </div>
+      </div>
+
+      <div class="admin-partner-detail__split">
+        <section class="admin-detail-section">
+          <h3 class="admin-section-title">Partner funnel</h3>
+          <div class="admin-partner-funnel">
+            ${funnelSteps.map(([label, value, copy]) => `
+              <div class="admin-partner-funnel__step">
+                <div class="admin-partner-funnel__head">
+                  <span>${escapeHtml(label)}</span>
+                  <strong>${escapeHtml(formatWholeNumber(value))}</strong>
+                </div>
+                <div class="admin-partner-funnel__track">
+                  <span class="admin-partner-funnel__fill" style="width:${Math.max(12, Math.round((Number(value) / funnelMax) * 100))}%"></span>
+                </div>
+                <p class="admin-partner-funnel__copy">${escapeHtml(copy)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+
+        <section class="admin-detail-section">
+          <h3 class="admin-section-title">Health and velocity</h3>
+          <div class="admin-partner-rails">
+            ${healthRails.map(([label, value, pct]) => `
+              <div class="admin-partner-rail">
+                <div class="admin-partner-rail__head">
+                  <span>${escapeHtml(label)}</span>
+                  <strong>${escapeHtml(value)}</strong>
+                </div>
+                <div class="admin-partner-rail__track">
+                  <span class="admin-partner-rail__fill" style="width:${clampPercentValue(pct)}%"></span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="admin-stat-grid admin-stat-grid--4col admin-partner-detail__stats admin-partner-detail__stats--compact">
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">30d first purchases</span>
+              <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.last30DayInitialPurchases))}</span>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">30d renewals</span>
+              <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.last30DayRenewals))}</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--warn">
+              <span class="admin-stat-card__label">30d refunds</span>
+              <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.last30DayRefunds))}</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--warn">
+              <span class="admin-stat-card__label">30d revocations</span>
+              <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.last30DayRevocations))}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="admin-partner-detail__split">
+        <section class="admin-detail-section">
+          <h3 class="admin-section-title">Code breakdown</h3>
+          <div class="admin-partner-code-grid">
+            ${codesMarkup}
+          </div>
+        </section>
+
+        <section class="admin-detail-section">
+          <h3 class="admin-section-title">Partner operations metadata</h3>
+          <div class="admin-detail-meta">
+            ${metadata.map(([label, value]) => `
+              <div class="admin-detail-meta__item">
+                <span class="admin-detail-meta__label">${escapeHtml(label)}</span>
+                <strong class="admin-detail-meta__value">${escapeHtml(value)}</strong>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+      </div>
+    </div>
+  `;
+}
+
+function renderPartnerAnalyticsPage() {
+  const allItems = buildPartnerAnalyticsRows();
+  const query = normalizeSearchValue(state.filters.partnerQuery);
+  const statusFilter = String(state.filters.partnerStatus || '').trim();
+  const sortKey = String(state.filters.partnerSort || 'active-desc').trim();
+
+  const totals = allItems.reduce((acc, item) => {
+    acc.partners += 1;
+    acc.portalLive += item.portalWebAccessEnabled ? 1 : 0;
+    acc.entries += item.attributedUsers || 0;
+    acc.purchases += item.allTimeInitialPurchases || 0;
+    acc.active += item.activeSubscribers || 0;
+    acc.atRisk += item.atRiskSubscribers || 0;
+    return acc;
+  }, {
+    partners: 0,
+    portalLive: 0,
+    entries: 0,
+    purchases: 0,
+    active: 0,
+    atRisk: 0,
+  });
+
+  const topActivator = allItems
+    .slice()
+    .sort((left, right) => (right.activeSubscribers - left.activeSubscribers) || (right.allTimeInitialPurchases - left.allTimeInitialPurchases))[0] || null;
+  const topConverter = allItems
+    .filter((item) => item.attributedUsers > 0)
+    .slice()
+    .sort((left, right) => (right.conversionRate - left.conversionRate) || (right.attributedUsers - left.attributedUsers))[0] || null;
+  const watchlist = allItems
+    .slice()
+    .sort((left, right) => (right.attentionScore - left.attentionScore) || (right.atRiskSubscribers - left.atRiskSubscribers))[0] || null;
+
+  if (elements.partnerTotalCount) elements.partnerTotalCount.textContent = formatWholeNumber(totals.partners);
+  if (elements.partnerPortalLiveCount) elements.partnerPortalLiveCount.textContent = formatWholeNumber(totals.portalLive);
+  if (elements.partnerEntriesTotal) elements.partnerEntriesTotal.textContent = formatWholeNumber(totals.entries);
+  if (elements.partnerPurchasesTotal) elements.partnerPurchasesTotal.textContent = formatWholeNumber(totals.purchases);
+  if (elements.partnerActiveTotal) elements.partnerActiveTotal.textContent = formatWholeNumber(totals.active);
+  if (elements.partnerAtRiskTotal) elements.partnerAtRiskTotal.textContent = formatWholeNumber(totals.atRisk);
+  if (elements.partnerLastRefresh) {
+    elements.partnerLastRefresh.textContent = state.subscriberLastRefreshAt
+      ? formatTimestamp({ iso: state.subscriberLastRefreshAt })
+      : 'Never';
+  }
+  if (elements.partnerSnapshotMeta) {
+    elements.partnerSnapshotMeta.textContent = allItems.length
+      ? `Network pulse: ${formatWholeNumber(totals.entries)} code entries, ${formatWholeNumber(totals.purchases)} first purchases, ${formatWholeNumber(totals.active)} active subscribers across ${formatWholeNumber(totals.partners)} partners.`
+      : 'Partner network snapshot will appear here once data has loaded.';
+  }
+  if (elements.partnerTopActivator) {
+    elements.partnerTopActivator.innerHTML = buildPartnerSpotlightMarkup({
+      title: 'Top activator',
+      item: topActivator,
+      metricLabel: 'Active subscribers',
+      metricValue: formatWholeNumber(topActivator?.activeSubscribers || 0),
+      copy: topActivator
+        ? `${formatWholeNumber(topActivator.allTimeInitialPurchases)} first purchases so far and ${formatWholeNumber(topActivator.codeCount)} linked codes in the portfolio.`
+        : 'This card lights up when active subscribers start flowing through the affiliate network.',
+    });
+  }
+  if (elements.partnerTopConverter) {
+    elements.partnerTopConverter.innerHTML = buildPartnerSpotlightMarkup({
+      title: 'Sharpest conversion',
+      item: topConverter,
+      metricLabel: 'Conversion rate',
+      metricValue: formatPercent(topConverter?.conversionRate || 0),
+      copy: topConverter
+        ? `${formatWholeNumber(topConverter.attributedUsers)} code entries have translated into ${formatWholeNumber(topConverter.allTimeInitialPurchases)} first purchases.`
+        : 'Waiting for enough code-entry volume to measure conversion properly.',
+    });
+  }
+  if (elements.partnerWatchlist) {
+    elements.partnerWatchlist.innerHTML = buildPartnerSpotlightMarkup({
+      title: 'Needs attention',
+      item: watchlist,
+      metricLabel: 'Attention score',
+      metricValue: formatWholeNumber(watchlist?.attentionScore || 0),
+      copy: watchlist
+        ? `${formatWholeNumber(watchlist.atRiskSubscribers)} at risk and ${formatWholeNumber(watchlist.inactiveSubscribers)} inactive subscribers. Portal ${watchlist.portalWebAccessEnabled ? 'is live' : 'still needs enabling'}.`
+        : 'No partner needs extra attention right now.',
+    });
+  }
+
+  let items = allItems.filter((item) => {
+    if (statusFilter === 'portal-live' && !item.portalWebAccessEnabled) return false;
+    if (statusFilter === 'needs-attention' && !item.needsAttention) return false;
+    if (statusFilter === 'payout-ready' && !item.payoutReady) return false;
+    if (statusFilter === 'inactive' && item.partnerStatus === 'active') return false;
+    if (!query) return true;
+    const haystack = [
+      item.displayName,
+      item.affiliateId,
+      item.portalEmail,
+      item.contactEmail,
+      item.primaryReferralCode,
+      item.codes.map((codeItem) => codeItem.code).join(' '),
+    ].map((value) => normalizeSearchValue(value)).join(' ');
+    return haystack.includes(query);
+  });
+
+  const [sortField, sortDirection] = sortKey.split('-');
+  const dir = sortDirection === 'asc' ? 1 : -1;
+  const fieldMap = {
+    active: 'activeSubscribers',
+    purchases: 'allTimeInitialPurchases',
+    conversion: 'conversionRate',
+    entries: 'attributedUsers',
+    name: 'displayName',
+  };
+  const normalizedSortField = fieldMap[sortField] || 'activeSubscribers';
+  items = items.slice().sort((left, right) => {
+    const leftValue = normalizedSortField === 'displayName'
+      ? String(left.displayName || left.affiliateId || '')
+      : Number(left[normalizedSortField] ?? 0);
+    const rightValue = normalizedSortField === 'displayName'
+      ? String(right.displayName || right.affiliateId || '')
+      : Number(right[normalizedSortField] ?? 0);
+    if (leftValue < rightValue) return -1 * dir;
+    if (leftValue > rightValue) return 1 * dir;
+    return String(left.displayName || '').localeCompare(String(right.displayName || ''));
+  });
+
+  const selected = items.find((item) => item.key === state.selectedPartnerKey)
+    || (!query && !statusFilter ? allItems.find((item) => item.key === state.selectedPartnerKey) : null)
+    || items[0]
+    || null;
+  state.selectedPartnerKey = selected?.key || '';
+
+  if (elements.partnerList) {
+    elements.partnerList.innerHTML = items
+      .map((item) => {
+        const active = item.key === state.selectedPartnerKey;
+        const rateWidth = clampPercentValue(item.conversionRate * 100);
+        return `
+          <button type="button" class="admin-partner-card${active ? ' is-active' : ''}" data-partner-key="${escapeHtml(item.key)}">
+            <div class="admin-partner-card__head">
+              <div>
+                <span class="admin-partner-card__eyebrow">${escapeHtml(item.affiliateId || item.primaryReferralCode || 'partner')}</span>
+                <strong class="admin-partner-card__title">${escapeHtml(item.displayName || item.affiliateId || 'Partner')}</strong>
+              </div>
+              <span class="admin-tag ${item.portalWebAccessEnabled ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(item.portalWebAccessEnabled ? 'portal live' : 'portal off')}</span>
+            </div>
+            <div class="admin-partner-card__stats">
+              <span>Entries <strong>${escapeHtml(formatWholeNumber(item.attributedUsers))}</strong></span>
+              <span>Purchases <strong>${escapeHtml(formatWholeNumber(item.allTimeInitialPurchases))}</strong></span>
+              <span>Active <strong>${escapeHtml(formatWholeNumber(item.activeSubscribers))}</strong></span>
+            </div>
+            <div class="admin-partner-card__track">
+              <span class="admin-partner-card__fill" style="width:${Math.max(12, rateWidth)}%"></span>
+            </div>
+            <p class="admin-partner-card__meta">
+              ${escapeHtml(item.primaryReferralCode || '-')} &middot; ${escapeHtml(item.codeCount === 1 ? '1 code' : `${formatWholeNumber(item.codeCount)} codes`)} &middot; ${escapeHtml(item.payoutReady ? 'payout ready' : 'billing incomplete')}
+            </p>
+          </button>
+        `;
+      })
+      .join('');
+  }
+
+  if (elements.partnerEmpty) {
+    elements.partnerEmpty.hidden = items.length > 0;
+    if (!items.length && allItems.length) {
+      elements.partnerEmpty.textContent = 'No partners match the current filters.';
+    } else if (!allItems.length) {
+      elements.partnerEmpty.textContent = 'No partners are linked yet. Create a code and connect a partner to light up this dashboard.';
+    }
+  }
+
+  renderPartnerDetail(items.length ? selected : null);
+}
+
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
 }
@@ -2077,9 +2945,33 @@ function buildOpsSnapshotCsv(snapshot) {
 
   if (snapshot.subscriberStats?.length) {
     lines.push('# Subscriber Stats by Code');
-    lines.push([csvCell('Code'), csvCell('Active Now'), csvCell('Total Current'), csvCell('Total Historical'), csvCell('Churned'), csvCell('Trial Active')].join(','));
+    lines.push([
+      csvCell('Code'),
+      csvCell('Affiliate'),
+      csvCell('Entered Code'),
+      csvCell('Pending Referrals'),
+      csvCell('Locked Referrals'),
+      csvCell('First Purchases'),
+      csvCell('Active Now'),
+      csvCell('At Risk'),
+      csvCell('Inactive'),
+      csvCell('Last Updated'),
+    ].join(','));
     snapshot.subscriberStats.forEach((s) => {
-      lines.push([csvCell(s.code), csvCell(s.activeNow ?? 0), csvCell(s.totalCurrent ?? 0), csvCell(s.totalHistorical ?? 0), csvCell(s.churned ?? 0), csvCell(s.trialActive ?? 0)].join(','));
+      const row = normalizeSubscriberInsightRow(s);
+      if (!row) return;
+      lines.push([
+        csvCell(row.code),
+        csvCell(row.displayName || row.affiliateId || ''),
+        csvCell(row.attributedUsers),
+        csvCell(row.pendingReferrals),
+        csvCell(row.lockedReferrals),
+        csvCell(row.allTimeInitialPurchases),
+        csvCell(row.activeSubscribers),
+        csvCell(row.atRiskSubscribers),
+        csvCell(row.inactiveSubscribers),
+        csvCell(row.lastUpdatedIso || ''),
+      ].join(','));
     });
     lines.push('');
   }
@@ -4478,7 +5370,9 @@ function renderCodesTable() {
 async function loadSubscriberStats() {
   try {
     const stats = await getSubscriberStatsByCode();
-    state.subscriberStats = Array.isArray(stats) ? stats : [];
+    state.subscriberStats = Array.isArray(stats)
+      ? stats.map((item) => normalizeSubscriberInsightRow(item)).filter(Boolean)
+      : [];
     state.subscriberLastRefreshAt = new Date().toISOString();
     state.subscriberUnavailableReason = '';
   } catch (error) {
@@ -4579,6 +5473,126 @@ function renderSubscriberInsights() {
       elements.subscriberEmpty.textContent = 'No codes match your current filters.';
     } else if (!allItems.length) {
       elements.subscriberEmpty.textContent = 'No subscriber data available yet. Stats populate once referral codes have active subscribers.';
+    }
+    elements.subscriberEmpty.hidden = items.length > 0;
+  }
+}
+
+function renderSubscriberFunnelInsights() {
+  const search = normalizeSearchValue(state.filters.subscriberQuery);
+  const metric = state.filters.subscriberMetric;
+  const sortKey = state.filters.subscriberSort || 'active-desc';
+  const allItems = (state.subscriberStats || [])
+    .map((item) => normalizeSubscriberInsightRow(item))
+    .filter(Boolean);
+
+  let items = allItems.filter((item) => {
+    if (metric === 'active-only' && item.activeSubscribers === 0) return false;
+    if (metric === 'pending-only' && item.pendingReferrals === 0) return false;
+    if (metric === 'converted-only' && item.allTimeInitialPurchases === 0) return false;
+    if (metric === 'risk-only' && item.atRiskSubscribers === 0) return false;
+    if (!search) return true;
+
+    const haystack = [
+      item.code,
+      item.displayName,
+      item.affiliateId,
+    ].map((value) => normalizeSearchValue(value)).join(' ');
+    return haystack.includes(search);
+  });
+
+  const sortParts = sortKey.split('-');
+  const field = sortParts[0];
+  const dir = sortParts[1] === 'asc' ? 1 : -1;
+  const fieldMap = {
+    active: 'activeSubscribers',
+    entered: 'attributedUsers',
+    purchases: 'allTimeInitialPurchases',
+    pending: 'pendingReferrals',
+    code: 'code',
+  };
+  const sortField = fieldMap[field] || 'activeSubscribers';
+  items = items.slice().sort((a, b) => {
+    const aVal = sortField === 'code' ? String(a.code || '') : Number(a[sortField] ?? 0);
+    const bVal = sortField === 'code' ? String(b.code || '') : Number(b[sortField] ?? 0);
+    if (aVal < bVal) return -1 * dir;
+    if (aVal > bVal) return 1 * dir;
+    return 0;
+  });
+
+  const totals = allItems.reduce(
+    (acc, item) => {
+      acc.active += item.activeSubscribers || 0;
+      acc.entered += item.attributedUsers || 0;
+      acc.pending += item.pendingReferrals || 0;
+      acc.purchases += item.allTimeInitialPurchases || 0;
+      acc.atRisk += item.atRiskSubscribers || 0;
+      acc.inactive += item.inactiveSubscribers || 0;
+      return acc;
+    },
+    { active: 0, entered: 0, pending: 0, purchases: 0, atRisk: 0, inactive: 0 }
+  );
+
+  if (elements.subscriberTotalCodes) {
+    elements.subscriberTotalCodes.textContent = formatWholeNumber(allItems.length);
+  }
+  if (elements.subscriberTotalActive) {
+    elements.subscriberTotalActive.textContent = formatWholeNumber(totals.active);
+  }
+  if (elements.subscriberTotalHistorical) {
+    elements.subscriberTotalHistorical.textContent = formatWholeNumber(totals.entered);
+  }
+  if (elements.subscriberTotalChurned) {
+    elements.subscriberTotalChurned.textContent = formatWholeNumber(totals.pending);
+  }
+  if (elements.subscriberLastRefresh) {
+    elements.subscriberLastRefresh.textContent = state.subscriberLastRefreshAt
+      ? formatTimestamp({ iso: state.subscriberLastRefreshAt })
+      : 'Never';
+  }
+  if (elements.subscriberSnapshotMeta) {
+    elements.subscriberSnapshotMeta.textContent = allItems.length
+      ? `Snapshot: ${formatWholeNumber(totals.purchases)} first purchases, ${formatWholeNumber(totals.active)} active now, ${formatWholeNumber(totals.atRisk)} at risk, ${formatWholeNumber(totals.inactive)} inactive.`
+      : 'Snapshot will appear here once referral code events are tracked.';
+  }
+
+  if (elements.subscriberTableBody) {
+    elements.subscriberTableBody.innerHTML = items
+      .map((item) => {
+        const activeBar = Math.min(
+          100,
+          Math.round(((item.activeSubscribers || 0) / Math.max(item.attributedUsers || 1, 1)) * 100)
+        );
+        const affiliateLabel = item.displayName || item.affiliateId || 'Unassigned partner';
+        return `
+        <tr>
+          <td>
+            <div class="admin-subscriber-code-cell">
+              <span class="admin-subscriber-code">${escapeHtml(item.code)}</span>
+              <span class="admin-subscriber-code-meta">${escapeHtml(affiliateLabel)}</span>
+            </div>
+          </td>
+          <td>${escapeHtml(formatWholeNumber(item.attributedUsers))}</td>
+          <td>${escapeHtml(formatWholeNumber(item.pendingReferrals))}</td>
+          <td>${escapeHtml(formatWholeNumber(item.allTimeInitialPurchases))}</td>
+          <td class="admin-subscriber-metric admin-subscriber-metric--active">
+            <span class="admin-subscriber-metric__value">${escapeHtml(formatWholeNumber(item.activeSubscribers))}</span>
+            <span class="admin-subscriber-bar" style="--bar-pct:${activeBar}%"></span>
+            <span class="admin-subscriber-metric__meta">${escapeHtml(formatPercent(item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0))} of entries live now</span>
+          </td>
+          <td>${escapeHtml(formatWholeNumber(item.atRiskSubscribers))}</td>
+          <td>${escapeHtml(formatWholeNumber(item.inactiveSubscribers))}</td>
+          <td class="admin-subscriber-updated">${escapeHtml(item.lastUpdatedIso ? formatTimestamp({ iso: item.lastUpdatedIso }) : '-')}</td>
+        </tr>`;
+      })
+      .join('');
+  }
+
+  if (elements.subscriberEmpty) {
+    if (!items.length && allItems.length) {
+      elements.subscriberEmpty.textContent = 'No codes match your current filters.';
+    } else if (!allItems.length) {
+      elements.subscriberEmpty.textContent = 'No affiliate funnel data available yet. Stats populate once people enter referral codes or purchase subscriptions.';
     }
     elements.subscriberEmpty.hidden = items.length > 0;
   }
@@ -5407,7 +6421,7 @@ async function loadDashboard(options) {
     ]);
     renderOverview();
     renderCodesTable();
-    renderSubscriberInsights();
+    renderSubscriberFunnelInsights();
     renderReportsTable();
     updateIdentity();
     setView('ready');
@@ -5610,7 +6624,7 @@ async function handleRefreshHealth() {
     renderOverview();
     renderCodesTable();
     renderReportsTable();
-    renderSubscriberInsights();
+    renderSubscriberFunnelInsights();
     showBanner('Health checks refreshed.', 'success');
   } catch (error) {
     renderHealthDashboard();
@@ -6767,7 +7781,7 @@ function bindEvents() {
     clearBanner();
     try {
       await loadSubscriberStats();
-      renderSubscriberInsights();
+      renderSubscriberFunnelInsights();
       showBanner('Subscriber data refreshed.', 'success');
     } catch (error) {
       showBanner(getErrorParts(error).message, 'error');
@@ -6775,15 +7789,15 @@ function bindEvents() {
   });
   elements.subscriberSearchInput?.addEventListener('input', () => {
     state.filters.subscriberQuery = elements.subscriberSearchInput.value;
-    renderSubscriberInsights();
+    renderSubscriberFunnelInsights();
   });
   elements.subscriberMetricFilter?.addEventListener('change', () => {
     state.filters.subscriberMetric = elements.subscriberMetricFilter.value;
-    renderSubscriberInsights();
+    renderSubscriberFunnelInsights();
   });
   elements.subscriberSortSelect?.addEventListener('change', () => {
     state.filters.subscriberSort = elements.subscriberSortSelect.value;
-    renderSubscriberInsights();
+    renderSubscriberFunnelInsights();
   });
   elements.codeValue?.addEventListener('input', () => {
     updateCodeReferralLink(elements.codeValue.value);
@@ -6858,6 +7872,7 @@ function initializeFormDefaults() {
   elements.reportMonth.value = getPreviousUtcMonth();
   state.checklistMonthOverride = elements.reportMonth.value;
   elements.includeRowsToggle.checked = false;
+  syncSubscriberInsightControls();
   state.filters.codeQuery = elements.codeSearchInput?.value || '';
   state.filters.codeStatus = elements.codeStatusFilter?.value || '';
   state.filters.reportQuery = elements.reportSearchInput?.value || '';

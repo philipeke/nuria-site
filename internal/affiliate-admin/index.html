@@ -124,7 +124,8 @@
                 <a href="/internal/affiliate-admin/checklist/" class="admin-section-nav__link" data-admin-page-link="checklist">Checklist</a>
                 <a href="/internal/affiliate-admin/alerts-health/" class="admin-section-nav__link" data-admin-page-link="alerts-health">Alerts & health</a>
                 <a href="/internal/affiliate-admin/codes/" class="admin-section-nav__link" data-admin-page-link="codes">Affiliate codes</a>
-                <a href="/internal/affiliate-admin/subscribers/" class="admin-section-nav__link" data-admin-page-link="subscribers">Subscribers</a>
+                <a href="/internal/affiliate-admin/partners/" class="admin-section-nav__link" data-admin-page-link="partners">Partners</a>
+                <a href="/internal/affiliate-admin/subscribers/" class="admin-section-nav__link" data-admin-page-link="subscribers">Funnel insights</a>
                 <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
                 <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-section-nav__link" data-admin-page-link="dashboard-copy">Dashboard copy</a>
@@ -307,9 +308,13 @@
                   <span class="admin-mini-item__title">Affiliate codes</span>
                   <span class="admin-mini-item__meta">Manage referral codes and partner profiles</span>
                 </a>
+                <a href="/internal/affiliate-admin/partners/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="partners">
+                  <span class="admin-mini-item__title">Partners intelligence</span>
+                  <span class="admin-mini-item__meta">See every partner, search quickly, and open a full performance view</span>
+                </a>
                 <a href="/internal/affiliate-admin/subscribers/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="subscribers">
-                  <span class="admin-mini-item__title">Subscriber insights</span>
-                  <span class="admin-mini-item__meta">Live subscriber counts per referral code</span>
+                  <span class="admin-mini-item__title">Funnel insights</span>
+                  <span class="admin-mini-item__meta">Track code entries, pending referrals, purchases, and live subscribers</span>
                 </a>
               </div>
             </div>
@@ -1046,11 +1051,110 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionPartners" data-admin-page="partners" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Partner intelligence</p>
+              <h2 class="admin-panel__title">Partner performance command center</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <input
+                class="form-input admin-filter-input"
+                id="adminPartnerSearchInput"
+                type="search"
+                placeholder="Search partner, affiliate ID, code, or email"
+              />
+              <select class="form-input form-select admin-filter-select" id="adminPartnerStatusFilter">
+                <option value="">All partners</option>
+                <option value="portal-live">Portal live</option>
+                <option value="needs-attention">Needs attention</option>
+                <option value="payout-ready">Payout ready</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <select class="form-input form-select admin-filter-select" id="adminPartnerSortSelect">
+                <option value="active-desc">Active subscribers</option>
+                <option value="purchases-desc">First purchases</option>
+                <option value="conversion-desc">Conversion rate</option>
+                <option value="entries-desc">Code entries</option>
+                <option value="name-asc">Name A to Z</option>
+              </select>
+              <button type="button" class="btn btn--outline" id="adminRefreshPartners">
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            This is the live network view for every affiliate partner in Nuria. Search for a partner, compare everyone at once, and open a detailed funnel view with code-by-code performance, portal status, and payout readiness.
+          </p>
+
+          <div class="admin-stat-grid admin-stat-grid--4col admin-partner-network">
+            <div class="admin-stat-card admin-stat-card--highlight">
+              <span class="admin-stat-card__label">Tracked partners</span>
+              <span class="admin-stat-card__value" id="adminPartnerTotalCount">0</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--active">
+              <span class="admin-stat-card__label">Portal live</span>
+              <span class="admin-stat-card__value" id="adminPartnerPortalLiveCount">0</span>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Code entries</span>
+              <span class="admin-stat-card__value" id="adminPartnerEntriesTotal">0</span>
+            </div>
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">First purchases</span>
+              <span class="admin-stat-card__value" id="adminPartnerPurchasesTotal">0</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--active">
+              <span class="admin-stat-card__label">Active subscribers</span>
+              <span class="admin-stat-card__value" id="adminPartnerActiveTotal">0</span>
+            </div>
+            <div class="admin-stat-card admin-stat-card--warn">
+              <span class="admin-stat-card__label">At risk</span>
+              <span class="admin-stat-card__value" id="adminPartnerAtRiskTotal">0</span>
+            </div>
+          </div>
+
+          <div class="admin-subscriber-refresh-info">
+            Last refreshed: <span id="adminPartnerLastRefresh">Never</span>
+            <span class="admin-subscriber-refresh-info__meta" id="adminPartnerSnapshotMeta">Partner network snapshot will appear here once data has loaded.</span>
+          </div>
+
+          <div class="admin-partner-spotlights">
+            <div class="admin-partner-spotlight admin-partner-spotlight--gold" id="adminPartnerTopActivator"></div>
+            <div class="admin-partner-spotlight admin-partner-spotlight--emerald" id="adminPartnerTopConverter"></div>
+            <div class="admin-partner-spotlight admin-partner-spotlight--ember" id="adminPartnerWatchlist"></div>
+          </div>
+
+          <div class="admin-partner-hub">
+            <div class="admin-detail-section admin-partner-list-shell">
+              <div class="admin-panel__actions admin-partner-list-shell__head">
+                <div>
+                  <h3 class="admin-section-title">Partner roster</h3>
+                  <p class="admin-panel__helper">
+                    Click a partner to open the full story behind their referrals, conversions, subscriber health, and portal access.
+                  </p>
+                </div>
+              </div>
+              <div class="admin-partner-list" id="adminPartnerList"></div>
+              <p class="admin-empty" id="adminPartnerEmpty" hidden>
+                No partners match the current filters.
+              </p>
+            </div>
+
+            <div class="admin-detail-section admin-partner-detail-shell" id="adminPartnerDetail">
+              <p class="admin-empty admin-empty--inline">
+                Select a partner to open the detailed analytics view.
+              </p>
+            </div>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionSubscribers" data-admin-page="subscribers" hidden>
           <div class="admin-panel__header">
             <div>
-              <p class="admin-panel__eyebrow">Subscriber insights</p>
-              <h2 class="admin-panel__title">Referral code subscribers</h2>
+              <p class="admin-panel__eyebrow">Affiliate funnel</p>
+              <h2 class="admin-panel__title">Referral code journey</h2>
             </div>
             <div class="admin-panel__actions">
               <button type="button" class="btn btn--outline" id="adminRefreshSubscribers">
@@ -1059,7 +1163,7 @@
             </div>
           </div>
           <p class="admin-panel__helper">
-            Live subscriber data per referral code, fetched from Firestore. Use filters to isolate active, churned, or trial subscribers.
+            Live affiliate funnel data per referral code, fetched from Firestore. Track who entered a code, who is still pending, who converted into a first purchase, and which subscribers are active, at risk, or inactive.
           </p>
 
           <div class="admin-stat-grid admin-stat-grid--4col" style="margin-bottom: 1.2rem;">
@@ -1072,11 +1176,11 @@
               <span class="admin-stat-card__value" id="adminSubscriberTotalActive">0</span>
             </div>
             <div class="admin-stat-card">
-              <span class="admin-stat-card__label">Total historical</span>
+              <span class="admin-stat-card__label">Code entries</span>
               <span class="admin-stat-card__value" id="adminSubscriberTotalHistorical">0</span>
             </div>
             <div class="admin-stat-card admin-stat-card--warn">
-              <span class="admin-stat-card__label">Churned</span>
+              <span class="admin-stat-card__label">Pending referrals</span>
               <span class="admin-stat-card__value" id="adminSubscriberTotalChurned">0</span>
             </div>
           </div>
@@ -1086,13 +1190,14 @@
               class="form-input admin-filter-input"
               id="adminSubscriberSearchInput"
               type="search"
-              placeholder="Search by code name"
+              placeholder="Search by code or affiliate"
             />
             <select class="form-input form-select admin-filter-select" id="adminSubscriberMetricFilter">
               <option value="">All codes</option>
               <option value="active-only">With active subscribers</option>
-              <option value="churned-only">With churned</option>
-              <option value="trial-only">With active trials</option>
+              <option value="pending-only">With pending referrals</option>
+              <option value="converted-only">With first purchases</option>
+              <option value="risk-only">With at-risk subscribers</option>
             </select>
             <select class="form-input form-select admin-filter-select" id="adminSubscriberSortSelect">
               <option value="active-desc">Active (high → low)</option>
@@ -1106,6 +1211,7 @@
 
           <div class="admin-subscriber-refresh-info">
             Last refreshed: <span id="adminSubscriberLastRefresh">Never</span>
+            <span class="admin-subscriber-refresh-info__meta" id="adminSubscriberSnapshotMeta">Snapshot will appear here once referral code events are tracked.</span>
           </div>
 
           <div class="admin-table-wrap">
@@ -1113,18 +1219,19 @@
               <thead>
                 <tr>
                   <th>Referral code</th>
+                  <th>Entered code</th>
+                  <th>Pending</th>
+                  <th>First purchases</th>
                   <th>Active now</th>
-                  <th>Total current</th>
-                  <th>Total historical</th>
-                  <th>Churned</th>
-                  <th>Trial active</th>
+                  <th>At risk</th>
+                  <th>Inactive</th>
                   <th>Last updated</th>
                 </tr>
               </thead>
               <tbody id="adminSubscriberTableBody"></tbody>
             </table>
             <p class="admin-empty" id="adminSubscriberEmpty" hidden>
-              No subscriber data available yet. Stats populate once referral codes have active subscribers.
+              No affiliate funnel data available yet. Stats populate once people enter referral codes or purchase subscriptions.
             </p>
           </div>
         </article>

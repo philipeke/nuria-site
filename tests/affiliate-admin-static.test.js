@@ -19,6 +19,10 @@ const affiliateAdminScript = fs.readFileSync(
   path.join(repoRoot, 'js', 'affiliate-admin.js'),
   'utf8'
 );
+const partnerPortalScript = fs.readFileSync(
+  path.join(repoRoot, 'js', 'partner-portal.js'),
+  'utf8'
+);
 const affiliateAdminHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'index.html'),
   'utf8'
@@ -48,6 +52,19 @@ run('affiliate code form exposes partner web portal access toggles', () => {
   assert(affiliateAdminHtml.includes('adminPartnerPortalDisableButton'));
   assert(affiliateAdminScript.includes('handlePartnerPortalAccessChange'));
   assert(affiliateAdminScript.includes('portalWebAccessEnabled'));
+});
+
+run('partner portal prefers the dedicated web callable before the app callable', () => {
+  assert(partnerPortalScript.includes('getAffiliatePartnerPortalWeb'));
+  assert(partnerPortalScript.includes('getAffiliatePartnerPortal'));
+});
+
+run('subscriber dashboard is wired to affiliate funnel metrics', () => {
+  assert(affiliateAdminScript.includes('normalizeSubscriberInsightRow'));
+  assert(affiliateAdminScript.includes('renderSubscriberFunnelInsights'));
+  assert(affiliateAdminHtml.includes('adminSubscriberSnapshotMeta'));
+  assert(affiliateAdminHtml.includes('With pending referrals'));
+  assert(affiliateAdminHtml.includes('First purchases'));
 });
 
 if (process.exitCode && process.exitCode !== 0) {
