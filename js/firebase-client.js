@@ -345,7 +345,7 @@ export async function getSubscriberStatsByCode() {
   try {
     const data = await callWithCompat(
       ['getSubscriberStatsByCodeAdmin'],
-      {}
+      { includeInactive: true }
     );
     return Array.isArray(data?.codes) ? data.codes : [];
   } catch (error) {

@@ -1843,7 +1843,7 @@ function syncSubscriberInsightControls() {
   if (elements.subscriberSortSelect) {
     const sortOptions = [
       { value: 'active-desc', label: 'Active now (high to low)' },
-      { value: 'entered-desc', label: 'Code entries (high to low)' },
+      { value: 'entered-desc', label: 'Attributed users (high to low)' },
       { value: 'purchases-desc', label: 'First purchases (high to low)' },
       { value: 'pending-desc', label: 'Pending referrals (high to low)' },
       { value: 'code-asc', label: 'Code (A to Z)' },
@@ -2175,7 +2175,7 @@ function renderPartnerDetail(item) {
     1
   );
   const funnelSteps = [
-    ['Entered code', item.attributedUsers, 'Every person who entered one of this partner\'s codes'],
+    ['Attributed users', item.attributedUsers, 'Users currently attributed to one of this partner\'s codes (pending or locked)'],
     ['Pending', item.pendingReferrals, 'Code entered but not yet converted to a locked referral'],
     ['First purchases', item.allTimeInitialPurchases, 'All-time first subscription purchases'],
     ['Active now', item.activeSubscribers, 'Subscribers currently active on this portfolio'],
@@ -2247,7 +2247,7 @@ function renderPartnerDetail(item) {
 
       <div class="admin-stat-grid admin-stat-grid--4col admin-partner-detail__stats">
         <div class="admin-stat-card">
-          <span class="admin-stat-card__label">Code entries</span>
+          <span class="admin-stat-card__label">Attributed users</span>
           <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.attributedUsers))}</span>
         </div>
         <div class="admin-stat-card">
@@ -2398,7 +2398,7 @@ function renderPartnerAnalyticsPage() {
   }
   if (elements.partnerSnapshotMeta) {
     elements.partnerSnapshotMeta.textContent = allItems.length
-      ? `Network pulse: ${formatWholeNumber(totals.entries)} code entries, ${formatWholeNumber(totals.purchases)} first purchases, ${formatWholeNumber(totals.active)} active subscribers across ${formatWholeNumber(totals.partners)} partners.`
+      ? `Network pulse: ${formatWholeNumber(totals.entries)} attributed users, ${formatWholeNumber(totals.purchases)} first purchases, ${formatWholeNumber(totals.active)} active subscribers across ${formatWholeNumber(totals.partners)} partners.`
       : 'Partner network snapshot will appear here once data has loaded.';
   }
   if (elements.partnerTopActivator) {
@@ -2419,7 +2419,7 @@ function renderPartnerAnalyticsPage() {
       metricLabel: 'Conversion rate',
       metricValue: formatPercent(topConverter?.conversionRate || 0),
       copy: topConverter
-        ? `${formatWholeNumber(topConverter.attributedUsers)} code entries have translated into ${formatWholeNumber(topConverter.allTimeInitialPurchases)} first purchases.`
+        ? `${formatWholeNumber(topConverter.attributedUsers)} attributed users have translated into ${formatWholeNumber(topConverter.allTimeInitialPurchases)} first purchases.`
         : 'Waiting for enough code-entry volume to measure conversion properly.',
     });
   }
@@ -5318,9 +5318,13 @@ function renderNextStep() {
 function renderCodesTable() {
   const query = normalizeSearchValue(state.filters.codeQuery);
   const statusFilter = normalizeSearchValue(state.filters.codeStatus);
+  const includeInactive = Boolean(elements.includeInactiveCodes?.checked);
   const allItems = state.codes || [];
   const items = allItems.filter((item) => {
     const status = normalizeSearchValue(item.status);
+    if (!includeInactive && (status === 'inactive' || status === 'archived')) {
+      return false;
+    }
     if (statusFilter && status !== statusFilter) {
       return false;
     }
@@ -6102,8 +6106,7 @@ async function runHealthCheck(name, runner) {
 
 async function loadCodes() {
   const data = await callFirebaseFunction('listAffiliateCodesAdmin', {
-    limit: 200,
-    includeInactive: elements.includeInactiveCodes.checked,
+    includeInactive: true,
   });
 
   state.codes = Array.isArray(data.items) ? data.items : [];
@@ -6111,7 +6114,6 @@ async function loadCodes() {
 
 async function loadPartners() {
   const data = await callFirebaseFunction('listAffiliatePartnersAdmin', {
-    limit: 300,
     includeInactive: true,
   });
 

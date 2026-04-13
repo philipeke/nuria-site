@@ -19,6 +19,10 @@ const affiliateAdminScript = fs.readFileSync(
   path.join(repoRoot, 'js', 'affiliate-admin.js'),
   'utf8'
 );
+const firebaseClientScript = fs.readFileSync(
+  path.join(repoRoot, 'js', 'firebase-client.js'),
+  'utf8'
+);
 const partnerPortalScript = fs.readFileSync(
   path.join(repoRoot, 'js', 'partner-portal.js'),
   'utf8'
@@ -70,6 +74,7 @@ run('partner portal prefers the dedicated web callable before the app callable',
 run('subscriber dashboard is wired to affiliate funnel metrics', () => {
   assert(affiliateAdminScript.includes('normalizeSubscriberInsightRow'));
   assert(affiliateAdminScript.includes('renderSubscriberFunnelInsights'));
+  assert(firebaseClientScript.includes("includeInactive: true"));
   assert(affiliateAdminHtml.includes('adminSubscriberSnapshotMeta'));
   assert(affiliateAdminHtml.includes('With pending referrals'));
   assert(affiliateAdminHtml.includes('First purchases'));
