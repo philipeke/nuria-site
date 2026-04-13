@@ -474,7 +474,8 @@ function setView(name) {
     }
   }
   if (elements.sectionNav) {
-    elements.sectionNav.hidden = showLoginOnly || name !== 'ready';
+    // Keep navigation available for signed-in admins even if a panel load fails.
+    elements.sectionNav.hidden = showLoginOnly;
   }
   if (showLoginOnly) {
     setMobileNavOpen(false);
@@ -1534,8 +1535,22 @@ function renderPartnerPortalAccessRow(item) {
   const registry = getPartnerRegistryEntryForCode(savedItem) || null;
   const draftEmail = normalizeEmail(elements.partnerNuriaEmail?.value || '');
   const savedEmail = normalizeEmail(partner?.portalEmail || getPartnerEmailForCode(savedItem));
+  const savedPortalUid = String(partner?.portalUid || registry?.partnerUid || '').trim();
+  const accessActive = Boolean(
+    (partner?.portalWebAccessEnabled || registry?.portalWebAccessEnabled === true)
+    && (savedPortalUid || savedEmail)
+  );
+  const portalIdentityLabel = savedEmail || (savedPortalUid ? 'the linked Nuria account' : '');
 
   const emailForAction = draftEmail || savedEmail;
+  if (accessActive && savedPortalUid && !savedEmail) {
+    elements.partnerPortalAccessStatus.textContent =
+      'Web portal login is ON for the linked Nuria account. Add the partner email here as well if you want the code form to show the exact address.';
+    if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
+    if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = false;
+    return;
+  }
+
   if (!emailForAction || !isValidEmail(emailForAction)) {
     elements.partnerPortalAccessStatus.textContent =
       'Affiliate portal (/nuria-partner): add a Partner Nuria email, then enable web login for that address.';
@@ -1545,12 +1560,6 @@ function renderPartnerPortalAccessRow(item) {
   }
 
   const emailDirty = Boolean(draftEmail && savedEmail && draftEmail !== savedEmail);
-  const accessActive = Boolean(
-    savedEmail && (
-      partner?.portalWebAccessEnabled
-      || registry?.portalWebAccessEnabled === true
-    )
-  );
 
   if (emailDirty) {
     elements.partnerPortalAccessStatus.textContent =
@@ -1559,7 +1568,7 @@ function renderPartnerPortalAccessRow(item) {
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = !accessActive;
   } else if (accessActive) {
     elements.partnerPortalAccessStatus.textContent =
-      `Web portal login is ON for ${savedEmail}. Partner signs in at /nuria-partner with that Nuria account.`;
+      `Web portal login is ON for ${portalIdentityLabel}. Partner signs in at /nuria-partner with that Nuria account.`;
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = false;
   } else {

@@ -94,6 +94,10 @@ run('partner analytics aggregates and renders partner intelligence on the site',
   assert(affiliateAdminScript.includes('data-open-partner-code'));
 });
 
+run('admin navigation stays visible once the user is signed in', () => {
+  assert(affiliateAdminScript.includes('elements.sectionNav.hidden = showLoginOnly;'));
+});
+
 run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(partnerRouteRedirectHtml.includes('?page=partners'));
   assert(subscriberRouteRedirectHtml.includes('?page=subscribers'));
