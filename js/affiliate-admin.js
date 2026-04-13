@@ -1624,6 +1624,8 @@ async function handlePartnerPortalAccessChange(enable) {
       { portalWebAccessEnabled: enable }
     );
     await loadPartners();
+    renderPartnerAnalyticsPage();
+    renderPartnerRegistry();
     const match = (state.codes || []).find((row) => normalizeReferralCodeValue(row.code) === code);
     showBanner(
       enable
@@ -6421,6 +6423,7 @@ async function loadDashboard(options) {
     ]);
     renderOverview();
     renderCodesTable();
+    renderPartnerAnalyticsPage();
     renderSubscriberFunnelInsights();
     renderReportsTable();
     updateIdentity();
@@ -6623,6 +6626,7 @@ async function handleRefreshHealth() {
     ]);
     renderOverview();
     renderCodesTable();
+    renderPartnerAnalyticsPage();
     renderReportsTable();
     renderSubscriberFunnelInsights();
     showBanner('Health checks refreshed.', 'success');
@@ -6659,6 +6663,7 @@ async function handleReverifyPartnerRegistry() {
       }, state.partnerProfilesByCode?.[code] || null);
     }
     await loadPartners();
+    renderPartnerAnalyticsPage();
     renderPartnerRegistry();
     showBanner('Partner registry re-verification completed.', 'success');
     addActivityLog('Re-verified Nuria partners registry.', 'success');
@@ -7005,6 +7010,8 @@ async function handleCodeSave(event) {
     }
     renderOverview();
     renderCodesTable();
+    renderPartnerAnalyticsPage();
+    renderPartnerRegistry();
     resetCodeForm(saved);
     showBanner(
       editing
@@ -7739,9 +7746,71 @@ function bindEvents() {
     try {
       await Promise.all([loadCodes(), loadPartners()]);
       renderCodesTable();
+      renderPartnerAnalyticsPage();
       renderPartnerRegistry();
     } catch (error) {
       showBanner(getErrorParts(error).message, 'error');
+    }
+  });
+  elements.refreshPartners?.addEventListener('click', async () => {
+    clearBanner();
+    try {
+      await Promise.all([loadCodes(), loadPartners(), loadAdminSettings(), loadSubscriberStats()]);
+      renderOverview();
+      renderCodesTable();
+      renderPartnerAnalyticsPage();
+      renderPartnerRegistry();
+      renderSubscriberFunnelInsights();
+      showBanner('Partner intelligence refreshed.', 'success');
+    } catch (error) {
+      showBanner(getErrorParts(error).message, 'error');
+    }
+  });
+  elements.partnerSearchInput?.addEventListener('input', () => {
+    state.filters.partnerQuery = elements.partnerSearchInput.value;
+    renderPartnerAnalyticsPage();
+  });
+  elements.partnerStatusFilter?.addEventListener('change', () => {
+    state.filters.partnerStatus = elements.partnerStatusFilter.value;
+    renderPartnerAnalyticsPage();
+  });
+  elements.partnerSortSelect?.addEventListener('change', () => {
+    state.filters.partnerSort = elements.partnerSortSelect.value;
+    renderPartnerAnalyticsPage();
+  });
+  elements.partnerList?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-partner-key]');
+    if (!button) return;
+    state.selectedPartnerKey = String(button.dataset.partnerKey || '').trim();
+    renderPartnerAnalyticsPage();
+  });
+  elements.partnerDetail?.addEventListener('click', (event) => {
+    const codeButton = event.target.closest('[data-open-partner-code]');
+    if (codeButton) {
+      const code = normalizeReferralCodeValue(codeButton.dataset.openPartnerCode || '');
+      if (!code) return;
+      const item = (state.codes || []).find((entry) => normalizeReferralCodeValue(entry?.code || '') === code) || null;
+      setAdminPage('codes', { updateUrl: true });
+      resetCodeForm(item || { code });
+      return;
+    }
+
+    const joinButton = event.target.closest('[data-open-partner-join]');
+    if (joinButton) {
+      const code = normalizeReferralCodeValue(joinButton.dataset.openPartnerJoin || '');
+      if (!code) return;
+      const joinUrl = `${window.location.origin}/join/${encodeURIComponent(code)}`;
+      window.open(joinUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    const portalButton = event.target.closest('[data-open-partner-portal]');
+    if (portalButton) {
+      const email = normalizeEmail(portalButton.dataset.openPartnerPortal || '');
+      const portalUrl = email
+        ? `${window.location.origin}/nuria-partner/?view=login&email=${encodeURIComponent(email)}`
+        : `${window.location.origin}/nuria-partner/`;
+      window.open(portalUrl, '_blank', 'noopener,noreferrer');
     }
   });
   elements.codeSearchInput?.addEventListener('input', () => {
@@ -7757,6 +7826,7 @@ function bindEvents() {
     try {
       await Promise.all([loadCodes(), loadPartners()]);
       renderCodesTable();
+      renderPartnerAnalyticsPage();
       renderPartnerRegistry();
     } catch (error) {
       showBanner(getErrorParts(error).message, 'error');
@@ -7781,6 +7851,7 @@ function bindEvents() {
     clearBanner();
     try {
       await loadSubscriberStats();
+      renderPartnerAnalyticsPage();
       renderSubscriberFunnelInsights();
       showBanner('Subscriber data refreshed.', 'success');
     } catch (error) {
@@ -7875,6 +7946,9 @@ function initializeFormDefaults() {
   syncSubscriberInsightControls();
   state.filters.codeQuery = elements.codeSearchInput?.value || '';
   state.filters.codeStatus = elements.codeStatusFilter?.value || '';
+  state.filters.partnerQuery = elements.partnerSearchInput?.value || '';
+  state.filters.partnerStatus = elements.partnerStatusFilter?.value || '';
+  state.filters.partnerSort = elements.partnerSortSelect?.value || 'active-desc';
   state.filters.reportQuery = elements.reportSearchInput?.value || '';
   state.filters.reportStatus = elements.reportStatusFilter?.value || '';
   state.activityLog = readActivityLog();

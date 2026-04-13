@@ -67,6 +67,20 @@ run('subscriber dashboard is wired to affiliate funnel metrics', () => {
   assert(affiliateAdminHtml.includes('First purchases'));
 });
 
+run('partner analytics tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="partners"'));
+  assert(affiliateAdminHtml.includes('adminSectionPartners'));
+  assert(affiliateAdminHtml.includes('adminPartnerList'));
+  assert(affiliateAdminHtml.includes('Partner performance command center'));
+});
+
+run('partner analytics aggregates and renders partner intelligence on the site', () => {
+  assert(affiliateAdminScript.includes('buildPartnerAnalyticsRows'));
+  assert(affiliateAdminScript.includes('renderPartnerAnalyticsPage'));
+  assert(affiliateAdminScript.includes('adminPartnerSearchInput'));
+  assert(affiliateAdminScript.includes('data-open-partner-code'));
+});
+
 if (process.exitCode && process.exitCode !== 0) {
   process.exit(process.exitCode);
 }
