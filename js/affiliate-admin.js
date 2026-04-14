@@ -2203,7 +2203,7 @@ function renderPartnerDetail(item) {
             <span class="admin-tag ${codeItem.status === 'active' ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(codeItem.status)}</span>
           </div>
           <div class="admin-partner-code-card__stats">
-            <span>Entries <strong>${escapeHtml(formatWholeNumber(codeItem.attributedUsers))}</strong></span>
+            <span>Attributed users <strong>${escapeHtml(formatWholeNumber(codeItem.attributedUsers))}</strong></span>
             <span>Purchases <strong>${escapeHtml(formatWholeNumber(codeItem.allTimeInitialPurchases))}</strong></span>
             <span>Active <strong>${escapeHtml(formatWholeNumber(codeItem.activeSubscribers))}</strong></span>
           </div>
@@ -2429,7 +2429,7 @@ function renderPartnerAnalyticsPage() {
       metricValue: formatPercent(topConverter?.conversionRate || 0),
       copy: topConverter
         ? `${formatWholeNumber(topConverter.attributedUsers)} attributed users have translated into ${formatWholeNumber(topConverter.allTimeInitialPurchases)} first purchases.`
-        : 'Waiting for enough code-entry volume to measure conversion properly.',
+        : 'Waiting for enough attributed-user volume to measure conversion properly.',
     });
   }
   if (elements.partnerWatchlist) {
@@ -2495,7 +2495,12 @@ function renderPartnerAnalyticsPage() {
         const active = item.key === state.selectedPartnerKey;
         const rateWidth = clampPercentValue(item.conversionRate * 100);
         return `
-          <button type="button" class="admin-partner-card${active ? ' is-active' : ''}" data-partner-key="${escapeHtml(item.key)}">
+        <button
+          type="button"
+          class="admin-partner-card${active ? ' is-active' : ''}"
+          data-partner-key="${escapeHtml(item.key)}"
+          style="content-visibility:auto;contain:layout paint style;contain-intrinsic-size:220px;"
+        >
             <div class="admin-partner-card__head">
               <div>
                 <span class="admin-partner-card__eyebrow">${escapeHtml(item.affiliateId || item.primaryReferralCode || 'partner')}</span>
@@ -2504,7 +2509,7 @@ function renderPartnerAnalyticsPage() {
               <span class="admin-tag ${item.portalWebAccessEnabled ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(item.portalWebAccessEnabled ? 'portal live' : 'portal off')}</span>
             </div>
             <div class="admin-partner-card__stats">
-              <span>Entries <strong>${escapeHtml(formatWholeNumber(item.attributedUsers))}</strong></span>
+              <span>Attributed users <strong>${escapeHtml(formatWholeNumber(item.attributedUsers))}</strong></span>
               <span>Purchases <strong>${escapeHtml(formatWholeNumber(item.allTimeInitialPurchases))}</strong></span>
               <span>Active <strong>${escapeHtml(formatWholeNumber(item.activeSubscribers))}</strong></span>
             </div>
@@ -5593,7 +5598,7 @@ function renderSubscriberFunnelInsights() {
           <td class="admin-subscriber-metric admin-subscriber-metric--active">
             <span class="admin-subscriber-metric__value">${escapeHtml(formatWholeNumber(item.activeSubscribers))}</span>
             <span class="admin-subscriber-bar" style="--bar-pct:${activeBar}%"></span>
-            <span class="admin-subscriber-metric__meta">${escapeHtml(formatPercent(item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0))} of entries live now</span>
+            <span class="admin-subscriber-metric__meta">${escapeHtml(formatPercent(item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0))} of attributed users live now</span>
           </td>
           <td>${escapeHtml(formatWholeNumber(item.atRiskSubscribers))}</td>
           <td>${escapeHtml(formatWholeNumber(item.inactiveSubscribers))}</td>
@@ -7564,16 +7569,30 @@ function bindAdminTopbarScrollCollapse() {
   const card = elements.topbar;
   if (!card) return;
   const mq = window.matchMedia('(min-width: 769px)');
+  let framePending = false;
+  let lastCollapsedState = null;
   const update = () => {
-    if (!mq.matches) {
-      card.classList.remove('admin-topbar-card--scrolled');
+    framePending = false;
+    const shouldCollapse = mq.matches && window.scrollY > 72;
+    if (shouldCollapse === lastCollapsedState) {
       return;
     }
-    card.classList.toggle('admin-topbar-card--scrolled', window.scrollY > 72);
+    lastCollapsedState = shouldCollapse;
+    card.classList.toggle('admin-topbar-card--scrolled', shouldCollapse);
   };
-  window.addEventListener('scroll', update, { passive: true });
-  mq.addEventListener('change', update);
-  update();
+  const requestUpdate = () => {
+    if (framePending) {
+      return;
+    }
+    framePending = true;
+    window.requestAnimationFrame(update);
+  };
+  window.addEventListener('scroll', requestUpdate, { passive: true });
+  mq.addEventListener('change', () => {
+    lastCollapsedState = null;
+    requestUpdate();
+  });
+  requestUpdate();
 }
 
 function bindEvents() {

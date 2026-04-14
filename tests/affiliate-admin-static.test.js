@@ -94,6 +94,17 @@ run('partner analytics aggregates and renders partner intelligence on the site',
   assert(affiliateAdminScript.includes('data-open-partner-code'));
 });
 
+run('partner analytics copy uses attributed-user language instead of ambiguous entries', () => {
+  assert(!affiliateAdminScript.includes('>Entries <strong>'));
+  assert(affiliateAdminScript.includes('Attributed users <strong>'));
+  assert(affiliateAdminScript.includes('of attributed users live now'));
+});
+
+run('admin topbar scroll collapse is frame-throttled', () => {
+  assert(affiliateAdminScript.includes('window.requestAnimationFrame(update);'));
+  assert(affiliateAdminScript.includes('if (shouldCollapse === lastCollapsedState)'));
+});
+
 run('admin navigation stays visible once the user is signed in', () => {
   assert(affiliateAdminScript.includes('elements.sectionNav.hidden = showLoginOnly;'));
 });
