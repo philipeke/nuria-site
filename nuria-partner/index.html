@@ -285,6 +285,11 @@
           </div>
           <div class="partner-metric-grid">
             <article class="partner-metric-card partner-metric-card--spotlight">
+              <span class="partner-metric-card__label">Code entered</span>
+              <strong class="partner-metric-card__value" id="partnerCodeEnteredUsers">0</strong>
+              <span class="partner-metric-card__hint">Unique people who entered one of your codes</span>
+            </article>
+            <article class="partner-metric-card partner-metric-card--spotlight">
               <span class="partner-metric-card__label">Active subscribers</span>
               <strong class="partner-metric-card__value" id="partnerActiveSubscribers">0</strong>
               <span class="partner-metric-card__hint">Paying subscriptions attributed to you right now</span>
@@ -373,9 +378,13 @@
               </div>
             </div>
 
-            <div class="partner-mini-grid partner-mini-grid--single">
+            <div class="partner-mini-grid">
               <div class="partner-mini-stat">
-                <span>Attributed users</span>
+                <span>Tracked apply events</span>
+                <strong id="partnerCodeEntryEvents">0</strong>
+              </div>
+              <div class="partner-mini-stat">
+                <span>Currently attributed</span>
                 <strong id="partnerAttributedUsers">0</strong>
               </div>
             </div>
@@ -391,6 +400,10 @@
           </div>
 
           <div class="partner-journey-grid">
+            <div class="partner-journey-tile partner-journey-tile--muted">
+              <span class="partner-journey-tile__label">Code entered</span>
+              <strong class="partner-journey-tile__value" id="partnerJourneyEntered">0</strong>
+            </div>
             <div class="partner-journey-tile partner-journey-tile--gold">
               <span class="partner-journey-tile__label">Pending referrals</span>
               <strong class="partner-journey-tile__value" id="partnerJourneyPending">0</strong>

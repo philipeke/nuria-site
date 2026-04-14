@@ -1760,9 +1760,17 @@ function normalizeSubscriberInsightRow(rawValue) {
   const lockedReferrals = normalizeCountValue(
     rawValue.lockedReferrals ?? rawValue.totalCurrent
   );
+  const codeEnteredUsers = normalizeCountValue(
+    rawValue.codeEnteredUsers
+    ?? rawValue.totalHistorical
+    ?? rawValue.attributedUsers
+    ?? (pendingReferrals + lockedReferrals)
+  );
+  const codeEntryEvents = normalizeCountValue(rawValue.codeEntryEvents);
+  const last30DayCodeEnteredUsers = normalizeCountValue(rawValue.last30DayCodeEnteredUsers);
+  const last30DayCodeEntryEvents = normalizeCountValue(rawValue.last30DayCodeEntryEvents);
   const attributedUsers = normalizeCountValue(
     rawValue.attributedUsers
-    ?? rawValue.totalHistorical
     ?? (pendingReferrals + lockedReferrals)
   );
   const activeSubscribers = normalizeCountValue(
@@ -1788,7 +1796,9 @@ function normalizeSubscriberInsightRow(rawValue) {
   const conversionRateValue = Number(rawValue.conversionRate);
   const conversionRate = Number.isFinite(conversionRateValue) && conversionRateValue >= 0
     ? conversionRateValue
-    : (attributedUsers > 0 ? allTimeInitialPurchases / attributedUsers : 0);
+    : ((codeEnteredUsers > 0 ? codeEnteredUsers : attributedUsers) > 0
+      ? allTimeInitialPurchases / (codeEnteredUsers > 0 ? codeEnteredUsers : attributedUsers)
+      : 0);
   const portfolioHealthRate = totalSubscribers > 0
     ? activeSubscribers / totalSubscribers
     : 0;
@@ -1799,6 +1809,10 @@ function normalizeSubscriberInsightRow(rawValue) {
     affiliateId,
     displayName,
     status: normalizePartnerStatusValue(rawValue.status),
+    codeEnteredUsers,
+    codeEntryEvents,
+    last30DayCodeEnteredUsers,
+    last30DayCodeEntryEvents,
     pendingReferrals,
     lockedReferrals,
     attributedUsers,
@@ -1820,7 +1834,7 @@ function normalizeSubscriberInsightRow(rawValue) {
     portfolioHealthRate,
     activeNow: activeSubscribers,
     totalCurrent: lockedReferrals,
-    totalHistorical: attributedUsers,
+    totalHistorical: codeEnteredUsers,
     churned: inactiveSubscribers,
     trialActive: pendingReferrals,
   };
@@ -1852,7 +1866,7 @@ function syncSubscriberInsightControls() {
   if (elements.subscriberSortSelect) {
     const sortOptions = [
       { value: 'active-desc', label: 'Active now (high to low)' },
-      { value: 'entered-desc', label: 'Attributed users (high to low)' },
+      { value: 'entered-desc', label: 'Code entered (high to low)' },
       { value: 'purchases-desc', label: 'First purchases (high to low)' },
       { value: 'pending-desc', label: 'Pending referrals (high to low)' },
       { value: 'code-asc', label: 'Code (A to Z)' },
@@ -1940,6 +1954,10 @@ function buildPartnerAnalyticsRows() {
       profileScore: scorePartnerProfile(seed.profile),
       codeCount: 0,
       activeCodeCount: 0,
+      codeEnteredUsers: 0,
+      codeEntryEvents: 0,
+      last30DayCodeEnteredUsers: 0,
+      last30DayCodeEntryEvents: 0,
       attributedUsers: 0,
       pendingReferrals: 0,
       lockedReferrals: 0,
@@ -2044,6 +2062,8 @@ function buildPartnerAnalyticsRows() {
       revenueShareBps: Number(codeItem?.revenueShareBps ?? 0),
       fixedPayoutMinor: codeItem?.fixedPayoutMinor ?? null,
       currency: String(codeItem?.currency || '').trim().toUpperCase(),
+      codeEnteredUsers: stat?.codeEnteredUsers || 0,
+      codeEntryEvents: stat?.codeEntryEvents || 0,
       attributedUsers: stat?.attributedUsers || 0,
       pendingReferrals: stat?.pendingReferrals || 0,
       lockedReferrals: stat?.lockedReferrals || 0,
@@ -2060,6 +2080,10 @@ function buildPartnerAnalyticsRows() {
     if (codeMetrics.status === 'active') {
       row.activeCodeCount += 1;
     }
+    row.codeEnteredUsers += stat?.codeEnteredUsers || 0;
+    row.codeEntryEvents += stat?.codeEntryEvents || 0;
+    row.last30DayCodeEnteredUsers += stat?.last30DayCodeEnteredUsers || 0;
+    row.last30DayCodeEntryEvents += stat?.last30DayCodeEntryEvents || 0;
     row.attributedUsers += stat?.attributedUsers || 0;
     row.pendingReferrals += stat?.pendingReferrals || 0;
     row.lockedReferrals += stat?.lockedReferrals || 0;
@@ -2112,14 +2136,14 @@ function buildPartnerAnalyticsRows() {
           || (right.allTimeInitialPurchases - left.allTimeInitialPurchases)
           || String(left.code || '').localeCompare(String(right.code || ''));
       });
-      item.conversionRate = item.attributedUsers > 0
-        ? item.allTimeInitialPurchases / item.attributedUsers
+      item.conversionRate = (item.codeEnteredUsers > 0 ? item.codeEnteredUsers : item.attributedUsers) > 0
+        ? item.allTimeInitialPurchases / (item.codeEnteredUsers > 0 ? item.codeEnteredUsers : item.attributedUsers)
         : 0;
       item.portfolioHealthRate = item.totalSubscribers > 0
         ? item.activeSubscribers / item.totalSubscribers
         : 0;
-      item.pendingShare = item.attributedUsers > 0
-        ? item.pendingReferrals / item.attributedUsers
+      item.pendingShare = (item.codeEnteredUsers > 0 ? item.codeEnteredUsers : item.attributedUsers) > 0
+        ? item.pendingReferrals / (item.codeEnteredUsers > 0 ? item.codeEnteredUsers : item.attributedUsers)
         : 0;
       item.payoutReady = Boolean(
         item.contactEmail
@@ -2177,15 +2201,15 @@ function renderPartnerDetail(item) {
   }
 
   const funnelMax = Math.max(
-    item.attributedUsers,
+    item.codeEnteredUsers,
     item.pendingReferrals,
     item.allTimeInitialPurchases,
     item.activeSubscribers,
     1
   );
   const funnelSteps = [
-    ['Attributed users', item.attributedUsers, 'Users currently attributed to one of this partner\'s codes (pending or locked)'],
-    ['Pending', item.pendingReferrals, 'Code entered but not yet converted to a locked referral'],
+    ['Code entered', item.codeEnteredUsers, 'Unique users who entered one of this partner\'s referral codes.'],
+    ['Pending now', item.pendingReferrals, 'Code entered but not yet converted into a first purchase.'],
     ['First purchases', item.allTimeInitialPurchases, 'All-time first subscription purchases'],
     ['Active now', item.activeSubscribers, 'Subscribers currently active on this portfolio'],
   ];
@@ -2203,7 +2227,7 @@ function renderPartnerDetail(item) {
             <span class="admin-tag ${codeItem.status === 'active' ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(codeItem.status)}</span>
           </div>
           <div class="admin-partner-code-card__stats">
-            <span>Attributed users <strong>${escapeHtml(formatWholeNumber(codeItem.attributedUsers))}</strong></span>
+            <span>Code entered <strong>${escapeHtml(formatWholeNumber(codeItem.codeEnteredUsers))}</strong></span>
             <span>Purchases <strong>${escapeHtml(formatWholeNumber(codeItem.allTimeInitialPurchases))}</strong></span>
             <span>Active <strong>${escapeHtml(formatWholeNumber(codeItem.activeSubscribers))}</strong></span>
           </div>
@@ -2256,8 +2280,12 @@ function renderPartnerDetail(item) {
 
       <div class="admin-stat-grid admin-stat-grid--4col admin-partner-detail__stats">
         <div class="admin-stat-card">
-          <span class="admin-stat-card__label">Attributed users</span>
-          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.attributedUsers))}</span>
+          <span class="admin-stat-card__label">Code entered</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.codeEnteredUsers))}</span>
+        </div>
+        <div class="admin-stat-card">
+          <span class="admin-stat-card__label">Pending now</span>
+          <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.pendingReferrals))}</span>
         </div>
         <div class="admin-stat-card">
           <span class="admin-stat-card__label">First purchases</span>
@@ -2274,10 +2302,6 @@ function renderPartnerDetail(item) {
         <div class="admin-stat-card">
           <span class="admin-stat-card__label">Inactive</span>
           <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.inactiveSubscribers))}</span>
-        </div>
-        <div class="admin-stat-card">
-          <span class="admin-stat-card__label">Conversion rate</span>
-          <span class="admin-stat-card__value">${escapeHtml(formatPercent(item.conversionRate))}</span>
         </div>
       </div>
 
@@ -2316,6 +2340,10 @@ function renderPartnerDetail(item) {
             `).join('')}
           </div>
           <div class="admin-stat-grid admin-stat-grid--4col admin-partner-detail__stats admin-partner-detail__stats--compact">
+            <div class="admin-stat-card">
+              <span class="admin-stat-card__label">Apply events</span>
+              <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.codeEntryEvents))}</span>
+            </div>
             <div class="admin-stat-card">
               <span class="admin-stat-card__label">30d first purchases</span>
               <span class="admin-stat-card__value">${escapeHtml(formatWholeNumber(item.last30DayInitialPurchases))}</span>
@@ -2369,7 +2397,8 @@ function renderPartnerAnalyticsPage() {
   const totals = allItems.reduce((acc, item) => {
     acc.partners += 1;
     acc.portalLive += item.portalWebAccessEnabled ? 1 : 0;
-    acc.entries += item.attributedUsers || 0;
+    acc.enteredUsers += item.codeEnteredUsers || 0;
+    acc.entryEvents += item.codeEntryEvents || 0;
     acc.purchases += item.allTimeInitialPurchases || 0;
     acc.active += item.activeSubscribers || 0;
     acc.atRisk += item.atRiskSubscribers || 0;
@@ -2377,7 +2406,8 @@ function renderPartnerAnalyticsPage() {
   }, {
     partners: 0,
     portalLive: 0,
-    entries: 0,
+    enteredUsers: 0,
+    entryEvents: 0,
     purchases: 0,
     active: 0,
     atRisk: 0,
@@ -2387,16 +2417,16 @@ function renderPartnerAnalyticsPage() {
     .slice()
     .sort((left, right) => (right.activeSubscribers - left.activeSubscribers) || (right.allTimeInitialPurchases - left.allTimeInitialPurchases))[0] || null;
   const topConverter = allItems
-    .filter((item) => item.attributedUsers > 0)
+    .filter((item) => item.codeEnteredUsers > 0 || item.attributedUsers > 0)
     .slice()
-    .sort((left, right) => (right.conversionRate - left.conversionRate) || (right.attributedUsers - left.attributedUsers))[0] || null;
+    .sort((left, right) => (right.conversionRate - left.conversionRate) || (right.codeEnteredUsers - left.codeEnteredUsers))[0] || null;
   const watchlist = allItems
     .slice()
     .sort((left, right) => (right.attentionScore - left.attentionScore) || (right.atRiskSubscribers - left.atRiskSubscribers))[0] || null;
 
   if (elements.partnerTotalCount) elements.partnerTotalCount.textContent = formatWholeNumber(totals.partners);
   if (elements.partnerPortalLiveCount) elements.partnerPortalLiveCount.textContent = formatWholeNumber(totals.portalLive);
-  if (elements.partnerEntriesTotal) elements.partnerEntriesTotal.textContent = formatWholeNumber(totals.entries);
+  if (elements.partnerEntriesTotal) elements.partnerEntriesTotal.textContent = formatWholeNumber(totals.enteredUsers);
   if (elements.partnerPurchasesTotal) elements.partnerPurchasesTotal.textContent = formatWholeNumber(totals.purchases);
   if (elements.partnerActiveTotal) elements.partnerActiveTotal.textContent = formatWholeNumber(totals.active);
   if (elements.partnerAtRiskTotal) elements.partnerAtRiskTotal.textContent = formatWholeNumber(totals.atRisk);
@@ -2407,7 +2437,7 @@ function renderPartnerAnalyticsPage() {
   }
   if (elements.partnerSnapshotMeta) {
     elements.partnerSnapshotMeta.textContent = allItems.length
-      ? `Network pulse: ${formatWholeNumber(totals.entries)} attributed users, ${formatWholeNumber(totals.purchases)} first purchases, ${formatWholeNumber(totals.active)} active subscribers across ${formatWholeNumber(totals.partners)} partners.`
+      ? `Network pulse: ${formatWholeNumber(totals.enteredUsers)} users entered a code across ${formatWholeNumber(totals.entryEvents)} tracked apply events, ${formatWholeNumber(totals.purchases)} first purchases, and ${formatWholeNumber(totals.active)} active subscribers across ${formatWholeNumber(totals.partners)} partners.`
       : 'Partner network snapshot will appear here once data has loaded.';
   }
   if (elements.partnerTopActivator) {
@@ -2428,8 +2458,8 @@ function renderPartnerAnalyticsPage() {
       metricLabel: 'Conversion rate',
       metricValue: formatPercent(topConverter?.conversionRate || 0),
       copy: topConverter
-        ? `${formatWholeNumber(topConverter.attributedUsers)} attributed users have translated into ${formatWholeNumber(topConverter.allTimeInitialPurchases)} first purchases.`
-        : 'Waiting for enough attributed-user volume to measure conversion properly.',
+        ? `${formatWholeNumber(topConverter.codeEnteredUsers)} users entered a code and ${formatWholeNumber(topConverter.allTimeInitialPurchases)} turned into first purchases.`
+        : 'Waiting for enough code-entry volume to measure conversion properly.',
     });
   }
   if (elements.partnerWatchlist) {
@@ -2467,7 +2497,7 @@ function renderPartnerAnalyticsPage() {
     active: 'activeSubscribers',
     purchases: 'allTimeInitialPurchases',
     conversion: 'conversionRate',
-    entries: 'attributedUsers',
+    entries: 'codeEnteredUsers',
     name: 'displayName',
   };
   const normalizedSortField = fieldMap[sortField] || 'activeSubscribers';
@@ -2509,7 +2539,7 @@ function renderPartnerAnalyticsPage() {
               <span class="admin-tag ${item.portalWebAccessEnabled ? 'admin-tag--success' : 'admin-tag--warn'}">${escapeHtml(item.portalWebAccessEnabled ? 'portal live' : 'portal off')}</span>
             </div>
             <div class="admin-partner-card__stats">
-              <span>Attributed users <strong>${escapeHtml(formatWholeNumber(item.attributedUsers))}</strong></span>
+              <span>Code entered <strong>${escapeHtml(formatWholeNumber(item.codeEnteredUsers))}</strong></span>
               <span>Purchases <strong>${escapeHtml(formatWholeNumber(item.allTimeInitialPurchases))}</strong></span>
               <span>Active <strong>${escapeHtml(formatWholeNumber(item.activeSubscribers))}</strong></span>
             </div>
@@ -2964,7 +2994,7 @@ function buildOpsSnapshotCsv(snapshot) {
     lines.push([
       csvCell('Code'),
       csvCell('Affiliate'),
-      csvCell('Entered Code'),
+      csvCell('Code Entered'),
       csvCell('Pending Referrals'),
       csvCell('Locked Referrals'),
       csvCell('First Purchases'),
@@ -2979,7 +3009,7 @@ function buildOpsSnapshotCsv(snapshot) {
       lines.push([
         csvCell(row.code),
         csvCell(row.displayName || row.affiliateId || ''),
-        csvCell(row.attributedUsers),
+        csvCell(row.codeEnteredUsers),
         csvCell(row.pendingReferrals),
         csvCell(row.lockedReferrals),
         csvCell(row.allTimeInitialPurchases),
@@ -5526,7 +5556,7 @@ function renderSubscriberFunnelInsights() {
   const dir = sortParts[1] === 'asc' ? 1 : -1;
   const fieldMap = {
     active: 'activeSubscribers',
-    entered: 'attributedUsers',
+    entered: 'codeEnteredUsers',
     purchases: 'allTimeInitialPurchases',
     pending: 'pendingReferrals',
     code: 'code',
@@ -5543,7 +5573,7 @@ function renderSubscriberFunnelInsights() {
   const totals = allItems.reduce(
     (acc, item) => {
       acc.active += item.activeSubscribers || 0;
-      acc.entered += item.attributedUsers || 0;
+      acc.entered += item.codeEnteredUsers || 0;
       acc.pending += item.pendingReferrals || 0;
       acc.purchases += item.allTimeInitialPurchases || 0;
       acc.atRisk += item.atRiskSubscribers || 0;
@@ -5572,7 +5602,7 @@ function renderSubscriberFunnelInsights() {
   }
   if (elements.subscriberSnapshotMeta) {
     elements.subscriberSnapshotMeta.textContent = allItems.length
-      ? `Snapshot: ${formatWholeNumber(totals.purchases)} first purchases, ${formatWholeNumber(totals.active)} active now, ${formatWholeNumber(totals.atRisk)} at risk, ${formatWholeNumber(totals.inactive)} inactive.`
+      ? `Snapshot: ${formatWholeNumber(totals.entered)} users entered a code, ${formatWholeNumber(totals.pending)} are still pending, ${formatWholeNumber(totals.purchases)} reached a first purchase, and ${formatWholeNumber(totals.active)} are active now.`
       : 'Snapshot will appear here once referral code events are tracked.';
   }
 
@@ -5581,7 +5611,7 @@ function renderSubscriberFunnelInsights() {
       .map((item) => {
         const activeBar = Math.min(
           100,
-          Math.round(((item.activeSubscribers || 0) / Math.max(item.attributedUsers || 1, 1)) * 100)
+          Math.round(((item.activeSubscribers || 0) / Math.max(item.codeEnteredUsers || item.attributedUsers || 1, 1)) * 100)
         );
         const affiliateLabel = item.displayName || item.affiliateId || 'Unassigned partner';
         return `
@@ -5592,13 +5622,13 @@ function renderSubscriberFunnelInsights() {
               <span class="admin-subscriber-code-meta">${escapeHtml(affiliateLabel)}</span>
             </div>
           </td>
-          <td>${escapeHtml(formatWholeNumber(item.attributedUsers))}</td>
+          <td>${escapeHtml(formatWholeNumber(item.codeEnteredUsers))}</td>
           <td>${escapeHtml(formatWholeNumber(item.pendingReferrals))}</td>
           <td>${escapeHtml(formatWholeNumber(item.allTimeInitialPurchases))}</td>
           <td class="admin-subscriber-metric admin-subscriber-metric--active">
             <span class="admin-subscriber-metric__value">${escapeHtml(formatWholeNumber(item.activeSubscribers))}</span>
             <span class="admin-subscriber-bar" style="--bar-pct:${activeBar}%"></span>
-            <span class="admin-subscriber-metric__meta">${escapeHtml(formatPercent(item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0))} of attributed users live now</span>
+            <span class="admin-subscriber-metric__meta">${escapeHtml(formatPercent((item.codeEnteredUsers > 0 ? item.activeSubscribers / item.codeEnteredUsers : (item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0)))} of code-entered users live now</span>
           </td>
           <td>${escapeHtml(formatWholeNumber(item.atRiskSubscribers))}</td>
           <td>${escapeHtml(formatWholeNumber(item.inactiveSubscribers))}</td>

@@ -96,13 +96,19 @@ run('partner analytics aggregates and renders partner intelligence on the site',
 
 run('partner analytics copy uses attributed-user language instead of ambiguous entries', () => {
   assert(!affiliateAdminScript.includes('>Entries <strong>'));
-  assert(affiliateAdminScript.includes('Attributed users <strong>'));
-  assert(affiliateAdminScript.includes('of attributed users live now'));
+  assert(affiliateAdminScript.includes('Code entered <strong>'));
+  assert(affiliateAdminScript.includes('of code-entered users live now'));
 });
 
 run('admin topbar scroll collapse is frame-throttled', () => {
   assert(affiliateAdminScript.includes('window.requestAnimationFrame(update);'));
   assert(affiliateAdminScript.includes('if (shouldCollapse === lastCollapsedState)'));
+});
+
+run('partner web portal surfaces code-entered funnel metrics', () => {
+  assert(partnerPortalScript.includes('partnerCodeEnteredUsers'));
+  assert(partnerPortalScript.includes('partnerJourneyEntered'));
+  assert(partnerPortalScript.includes('codeEntryEvents'));
 });
 
 run('admin navigation stays visible once the user is signed in', () => {

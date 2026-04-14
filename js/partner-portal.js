@@ -44,6 +44,7 @@ const elements = {
   heroEmail: document.getElementById('partnerHeroEmail'),
   heroUpdatedAt: document.getElementById('partnerHeroUpdatedAt'),
   generatedAt: document.getElementById('partnerGeneratedAt'),
+  codeEnteredUsers: document.getElementById('partnerCodeEnteredUsers'),
   activeSubscribers: document.getElementById('partnerActiveSubscribers'),
   pendingReferrals: document.getElementById('partnerPendingReferrals'),
   atRiskSubscribers: document.getElementById('partnerAtRiskSubscribers'),
@@ -58,7 +59,9 @@ const elements = {
   activationRateFill: document.getElementById('partnerActivationRateFill'),
   portfolioHealthRate: document.getElementById('partnerPortfolioHealthRate'),
   portfolioHealthFill: document.getElementById('partnerPortfolioHealthFill'),
+  codeEntryEvents: document.getElementById('partnerCodeEntryEvents'),
   attributedUsers: document.getElementById('partnerAttributedUsers'),
+  journeyEntered: document.getElementById('partnerJourneyEntered'),
   journeyPending: document.getElementById('partnerJourneyPending'),
   journeyActive: document.getElementById('partnerJourneyActive'),
   journeyRisk: document.getElementById('partnerJourneyRisk'),
@@ -274,6 +277,7 @@ function toneForCodeStatus(value) {
 
 function toneForActivity(value) {
   const raw = String(value || '').trim().toLowerCase();
+  if (raw === 'referral_applied') return 'info';
   if (raw === 'initial_purchase' || raw === 'renewal') return 'success';
   if (raw === 'refund' || raw === 'revocation') return 'error';
   return 'info';
@@ -302,6 +306,10 @@ function normalizePartnerSnapshot(raw) {
         portalEmail: String(item.portalEmail || '').trim(),
         updatedAtMs: normalizeInt(item.updatedAtMs),
         summary: {
+          codeEnteredUsers: normalizeInt(summary.codeEnteredUsers),
+          codeEntryEvents: normalizeInt(summary.codeEntryEvents),
+          last30DayCodeEnteredUsers: normalizeInt(summary.last30DayCodeEnteredUsers),
+          last30DayCodeEntryEvents: normalizeInt(summary.last30DayCodeEntryEvents),
           pendingReferrals: normalizeInt(summary.pendingReferrals),
           attributedUsers: normalizeInt(summary.attributedUsers),
           totalSubscribers: normalizeInt(summary.totalSubscribers),
@@ -319,8 +327,8 @@ function normalizePartnerSnapshot(raw) {
           allTimeRenewals: normalizeInt(summary.allTimeRenewals),
           allTimeRefunds: normalizeInt(summary.allTimeRefunds),
           allTimeRevocations: normalizeInt(summary.allTimeRevocations),
-          activationRate: Number(summary.attributedUsers) > 0
-            ? normalizeInt(summary.activeSubscribers) / normalizeInt(summary.attributedUsers)
+          activationRate: (Number(summary.codeEnteredUsers) > 0 || Number(summary.attributedUsers) > 0)
+            ? normalizeInt(summary.activeSubscribers) / Math.max(normalizeInt(summary.codeEnteredUsers), normalizeInt(summary.attributedUsers), 1)
             : 0,
           portfolioHealthRate: Number(summary.totalSubscribers) > 0
             ? normalizeInt(summary.activeSubscribers) / normalizeInt(summary.totalSubscribers)
@@ -473,6 +481,7 @@ function renderHero(partner) {
 
 function renderMetrics(partner) {
   const summary = partner.summary;
+  elements.codeEnteredUsers.textContent = formatCount(summary.codeEnteredUsers);
   elements.activeSubscribers.textContent = formatCount(summary.activeSubscribers);
   elements.pendingReferrals.textContent = formatCount(summary.pendingReferrals);
   elements.atRiskSubscribers.textContent = formatCount(summary.atRiskSubscribers);
@@ -481,6 +490,7 @@ function renderMetrics(partner) {
   elements.last30Renewals.textContent = formatCount(summary.last30DayRenewals);
   elements.last30Refunds.textContent = formatCount(summary.last30DayRefunds);
   elements.last30Revocations.textContent = formatCount(summary.last30DayRevocations);
+  elements.codeEntryEvents.textContent = formatCount(summary.codeEntryEvents);
   elements.attributedUsers.textContent = formatCount(summary.attributedUsers);
   elements.activationRate.textContent = formatPercent(summary.activationRate);
   elements.portfolioHealthRate.textContent = formatPercent(summary.portfolioHealthRate);
@@ -501,6 +511,9 @@ function renderMetrics(partner) {
 
 function renderJourney(partner) {
   const summary = partner.summary;
+  if (elements.journeyEntered) {
+    elements.journeyEntered.textContent = formatCount(summary.codeEnteredUsers);
+  }
   if (elements.journeyPending) {
     elements.journeyPending.textContent = formatCount(summary.pendingReferrals);
   }
