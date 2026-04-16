@@ -43,6 +43,7 @@ const ADMIN_PAGE_PATHS = {
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 15000;
+const AUTH_BOOTSTRAP_TIMEOUT_MS = 2500;
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -8067,9 +8068,26 @@ setMobileNavOpen(false);
 bindAdminTopbarScrollCollapse();
 initializeFormDefaults();
 setView('loading-auth');
-waitForAuthPersistenceReady()
-  .catch(() => {})
-  .finally(() => {
-    previousAuthUid = getCurrentUser()?.uid || null;
-    subscribeToAuthState(handleAuthState);
-  });
+let initialAuthStateHandled = false;
+
+function handleInitialAuthState(user) {
+  if (!initialAuthStateHandled) {
+    previousAuthUid = user?.uid || null;
+    initialAuthStateHandled = true;
+  }
+  handleAuthState(user);
+}
+
+subscribeToAuthState(handleInitialAuthState);
+
+window.setTimeout(() => {
+  if (initialAuthStateHandled) {
+    return;
+  }
+  console.warn(
+    `[affiliate-admin] Initial auth state did not arrive within ${AUTH_BOOTSTRAP_TIMEOUT_MS}ms; falling back to currentUser.`
+  );
+  handleInitialAuthState(getCurrentUser());
+}, AUTH_BOOTSTRAP_TIMEOUT_MS);
+
+waitForAuthPersistenceReady().catch(() => {});

@@ -1006,12 +1006,23 @@ function handleAuthState(user) {
 applyLocationHints();
 bindEvents();
 setView('loading-auth');
-waitForAuthPersistenceReady()
-  .catch(() => {})
-  .finally(() => {
-    const user = getCurrentUser();
-    if (user) {
-      handleAuthState(user);
-    }
-    subscribeToAuthState(handleAuthState);
-  });
+let initialAuthStateHandled = false;
+
+function handleInitialAuthState(user) {
+  initialAuthStateHandled = true;
+  handleAuthState(user);
+}
+
+subscribeToAuthState(handleInitialAuthState);
+
+window.setTimeout(() => {
+  if (initialAuthStateHandled) {
+    return;
+  }
+  console.warn(
+    '[partner-portal] Initial auth state did not arrive within 2500ms; falling back to currentUser.'
+  );
+  handleInitialAuthState(getCurrentUser());
+}, 2500);
+
+waitForAuthPersistenceReady().catch(() => {});

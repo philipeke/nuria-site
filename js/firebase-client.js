@@ -54,6 +54,7 @@ const googleProvider = new GoogleAuthProvider();
 const appleProvider = new OAuthProvider('apple.com');
 const complianceMode = String(config.affiliateAdminComplianceMode || 'callable_only').trim().toLowerCase();
 const callableOnlyMode = complianceMode === 'callable_only';
+const AUTH_PERSISTENCE_TIMEOUT_MS = 2500;
 
 googleProvider.setCustomParameters({
   prompt: 'select_account',
@@ -61,7 +62,39 @@ googleProvider.setCustomParameters({
 appleProvider.addScope('email');
 appleProvider.addScope('name');
 
-const authPersistenceReady = setPersistence(auth, browserLocalPersistence).catch(() => {});
+function withTimeout(promise, timeoutMs, onTimeout) {
+  let timeoutId = null;
+  const timeoutPromise = new Promise((resolve) => {
+    timeoutId = window.setTimeout(() => {
+      resolve(onTimeout());
+    }, timeoutMs);
+  });
+
+  return Promise.race([
+    promise.finally(() => {
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    }),
+    timeoutPromise,
+  ]);
+}
+
+const authPersistenceReady = withTimeout(
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => 'local')
+    .catch((error) => {
+      console.warn('[firebase-client] Auth persistence setup failed', error);
+      return 'failed';
+    }),
+  AUTH_PERSISTENCE_TIMEOUT_MS,
+  () => {
+    console.warn(
+      `[firebase-client] Auth persistence setup timed out after ${AUTH_PERSISTENCE_TIMEOUT_MS}ms; continuing without waiting for browserLocalPersistence.`
+    );
+    return 'timed_out';
+  }
+);
 let appCheckReady = Promise.resolve(null);
 
 if (appCheckSiteKey) {

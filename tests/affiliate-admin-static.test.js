@@ -115,6 +115,31 @@ run('admin navigation stays visible once the user is signed in', () => {
   assert(affiliateAdminScript.includes('elements.sectionNav.hidden = showLoginOnly;'));
 });
 
+run('firebase auth bootstrap no longer waits forever on persistence setup', () => {
+  assert(firebaseClientScript.includes('const AUTH_PERSISTENCE_TIMEOUT_MS = 2500;'));
+  assert(firebaseClientScript.includes('function withTimeout('));
+  assert(firebaseClientScript.includes('Promise.race(['));
+  assert(firebaseClientScript.includes('[firebase-client] Auth persistence setup timed out after'));
+});
+
+run('admin auth listener starts immediately with a currentUser fallback', () => {
+  const subscribeIndex = affiliateAdminScript.indexOf('subscribeToAuthState(handleInitialAuthState);');
+  const persistenceIndex = affiliateAdminScript.indexOf('waitForAuthPersistenceReady().catch(() => {});');
+  assert(subscribeIndex >= 0);
+  assert(persistenceIndex >= 0);
+  assert(subscribeIndex < persistenceIndex);
+  assert(affiliateAdminScript.includes('handleInitialAuthState(getCurrentUser());'));
+});
+
+run('partner portal auth listener starts immediately with a currentUser fallback', () => {
+  const subscribeIndex = partnerPortalScript.indexOf('subscribeToAuthState(handleInitialAuthState);');
+  const persistenceIndex = partnerPortalScript.indexOf('waitForAuthPersistenceReady().catch(() => {});');
+  assert(subscribeIndex >= 0);
+  assert(persistenceIndex >= 0);
+  assert(subscribeIndex < persistenceIndex);
+  assert(partnerPortalScript.includes('handleInitialAuthState(getCurrentUser());'));
+});
+
 run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(partnerRouteRedirectHtml.includes('?page=partners'));
   assert(subscriberRouteRedirectHtml.includes('?page=subscribers'));
