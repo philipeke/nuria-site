@@ -11,7 +11,7 @@ import {
   signOutUser,
   subscribeToAuthState,
   waitForAuthPersistenceReady,
-} from './firebase-client.js';
+} from './firebase-client.js?v=20260416-auth-bootstrap';
 
 const site = window.NuriaSite || {};
 const page = document.querySelector('[data-partner-portal-page]');

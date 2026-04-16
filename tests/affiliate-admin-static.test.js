@@ -42,7 +42,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260416-auth-bootstrap'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -129,6 +129,7 @@ run('admin auth listener starts immediately with a currentUser fallback', () => 
   assert(persistenceIndex >= 0);
   assert(subscribeIndex < persistenceIndex);
   assert(affiliateAdminScript.includes('handleInitialAuthState(getCurrentUser());'));
+  assert(affiliateAdminScript.includes("./firebase-client.js?v=20260416-auth-bootstrap"));
 });
 
 run('partner portal auth listener starts immediately with a currentUser fallback', () => {
@@ -138,6 +139,7 @@ run('partner portal auth listener starts immediately with a currentUser fallback
   assert(persistenceIndex >= 0);
   assert(subscribeIndex < persistenceIndex);
   assert(partnerPortalScript.includes('handleInitialAuthState(getCurrentUser());'));
+  assert(partnerPortalScript.includes("./firebase-client.js?v=20260416-auth-bootstrap"));
 });
 
 run('direct admin subroutes redirect into the shared admin shell', () => {
