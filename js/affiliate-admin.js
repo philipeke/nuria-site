@@ -5614,6 +5614,9 @@ function renderSubscriberFunnelInsights() {
           100,
           Math.round(((item.activeSubscribers || 0) / Math.max(item.codeEnteredUsers || item.attributedUsers || 1, 1)) * 100)
         );
+        const activeRatio = item.codeEnteredUsers > 0
+          ? item.activeSubscribers / item.codeEnteredUsers
+          : (item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0);
         const affiliateLabel = item.displayName || item.affiliateId || 'Unassigned partner';
         return `
         <tr>
@@ -5629,7 +5632,7 @@ function renderSubscriberFunnelInsights() {
           <td class="admin-subscriber-metric admin-subscriber-metric--active">
             <span class="admin-subscriber-metric__value">${escapeHtml(formatWholeNumber(item.activeSubscribers))}</span>
             <span class="admin-subscriber-bar" style="--bar-pct:${activeBar}%"></span>
-            <span class="admin-subscriber-metric__meta">${escapeHtml(formatPercent((item.codeEnteredUsers > 0 ? item.activeSubscribers / item.codeEnteredUsers : (item.attributedUsers > 0 ? item.activeSubscribers / item.attributedUsers : 0)))} of code-entered users live now</span>
+            <span class="admin-subscriber-metric__meta">${escapeHtml(`${formatPercent(activeRatio)} of code-entered users live now`)}</span>
           </td>
           <td>${escapeHtml(formatWholeNumber(item.atRiskSubscribers))}</td>
           <td>${escapeHtml(formatWholeNumber(item.inactiveSubscribers))}</td>

@@ -42,7 +42,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260416-auth-bootstrap'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260416-auth-bootstrap-hotfix1'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
