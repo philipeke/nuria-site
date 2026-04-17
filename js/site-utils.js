@@ -93,6 +93,119 @@
     return getCookieConsentStatus() === 'accepted';
   }
 
+  const GA_SCRIPT_ID = 'nuria-google-analytics';
+  let gaBootstrapPromise = null;
+
+  function getMeasurementId() {
+    return String((config.firebase && config.firebase.measurementId) || '').trim();
+  }
+
+  function ensureAnalyticsQueue() {
+    window.dataLayer = window.dataLayer || [];
+    if (typeof window.gtag !== 'function') {
+      window.gtag = function gtag() {
+        window.dataLayer.push(arguments);
+      };
+    }
+  }
+
+  function updateGoogleAnalyticsConsent(isAllowed) {
+    const measurementId = getMeasurementId();
+    if (!measurementId) {
+      return;
+    }
+
+    window[`ga-disable-${measurementId}`] = !isAllowed;
+
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        analytics_storage: isAllowed ? 'granted' : 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      });
+    }
+  }
+
+  function bootstrapGoogleAnalytics() {
+    const measurementId = getMeasurementId();
+    if (!measurementId) {
+      return Promise.resolve(false);
+    }
+
+    if (gaBootstrapPromise) {
+      return gaBootstrapPromise;
+    }
+
+    ensureAnalyticsQueue();
+    updateGoogleAnalyticsConsent(isAnalyticsAllowed());
+
+    window.gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+    });
+    window.gtag('js', new Date());
+    window.gtag('config', measurementId, {
+      send_page_view: true,
+      anonymize_ip: true,
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false,
+      client_storage: 'none',
+      page_title: document.title,
+      page_path: `${window.location.pathname}${window.location.search}`,
+      page_location: window.location.href,
+    });
+
+    const existingScript = document.getElementById(GA_SCRIPT_ID);
+    if (existingScript) {
+      gaBootstrapPromise = Promise.resolve(true);
+      return gaBootstrapPromise;
+    }
+
+    gaBootstrapPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.id = GA_SCRIPT_ID;
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+      script.addEventListener('load', () => resolve(true), { once: true });
+      script.addEventListener('error', () => reject(new Error('ga_load_failed')), { once: true });
+      document.head.appendChild(script);
+    }).catch((error) => {
+      gaBootstrapPromise = null;
+      throw error;
+    });
+
+    return gaBootstrapPromise;
+  }
+
+  function initAnalytics() {
+    updateGoogleAnalyticsConsent(isAnalyticsAllowed());
+
+    if (!isAnalyticsAllowed()) {
+      return;
+    }
+
+    bootstrapGoogleAnalytics().catch(() => {
+      // Ignore analytics bootstrap errors so page UX keeps working.
+    });
+  }
+
+  window.addEventListener('nuria:cookie-consent-changed', function (event) {
+    const status = String(event?.detail?.status || getCookieConsentStatus() || '').trim();
+    const isAllowed = status === 'accepted';
+    updateGoogleAnalyticsConsent(isAllowed);
+
+    if (!isAllowed) {
+      return;
+    }
+
+    bootstrapGoogleAnalytics().catch(() => {
+      // Ignore analytics bootstrap errors so page UX keeps working.
+    });
+  });
+
   function trackEvent(name, params) {
     if (!isAnalyticsAllowed()) {
       return;
@@ -262,4 +375,6 @@
   } else {
     initStoreLinks();
   }
+
+  initAnalytics();
 }());
