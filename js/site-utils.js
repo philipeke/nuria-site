@@ -366,8 +366,27 @@
     lookupAffiliateCode,
   });
 
+  function handleStoreLinkClick(event) {
+    const link = event.target.closest('[data-store-link]');
+    if (!link) {
+      return;
+    }
+
+    const store = String(link.getAttribute('data-store-link') || '').trim();
+    if (!store) {
+      return;
+    }
+
+    trackEvent('site_store_clicked', {
+      store,
+      href: link.href || '',
+      page_path: window.location.pathname || '/',
+    });
+  }
+
   function initStoreLinks() {
     updateStoreLinks(document);
+    document.addEventListener('click', handleStoreLinkClick);
   }
 
   if (document.readyState === 'loading') {

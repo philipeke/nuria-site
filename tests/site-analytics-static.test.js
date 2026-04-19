@@ -44,6 +44,11 @@ run('site utils bootstraps Google Analytics behind consent', () => {
   assert(siteUtilsScript.includes("window.gtag('config', measurementId"));
 });
 
+run('site utils tracks store-link clicks for analytics', () => {
+  assert(siteUtilsScript.includes('[data-store-link]'));
+  assert(siteUtilsScript.includes("trackEvent('site_store_clicked'"));
+});
+
 run('every main website page loads analytics config before main.js', () => {
   pagesRequiringAnalyticsBootstrap.forEach(([relativePath, expectedScripts]) => {
     const html = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
