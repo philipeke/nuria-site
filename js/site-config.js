@@ -20,7 +20,7 @@
       messagingSenderId: '1040440859345',
       projectId: 'nuria-mobile-app',
       storageBucket: 'nuria-mobile-app.firebasestorage.app',
-      measurementId: 'G-5XXBSS2E58',
+      measurementId: 'G-M6WDHFMZS8',
     },
   };
 
