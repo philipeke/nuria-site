@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n-title="pages.sources_title">Våra Källor — Nuria</title>
+  <meta name="description" content="Här beskriver vi i detalj exakt varifrån Nuria hämtar allt sitt innehåll, bönetider, AI-svar och reflektioner." />
+  <meta name="theme-color" content="#050c08" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="icon" type="image/png" href="/assets/favicon-tab.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    /* Custom enhancements for the sources page to make it extremely beautiful */
+    .sources-hero {
+      position: relative;
+      padding: 180px 0 100px;
+      overflow: hidden;
+      text-align: center;
+    }
+    .sources-hero__bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url('../assets/nuria-sources.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.3;
+      z-index: -2;
+    }
+    .sources-hero__overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--bg-primary) 90%);
+      z-index: -1;
+    }
+    .sources-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    @media (min-width: 768px) {
+      .sources-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .source-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    }
+    .source-item:hover {
+      transform: translateY(-5px);
+      border-color: rgba(212, 175, 55, 0.5);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .source-item__icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    .source-item__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .source-item__text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+    .conclusion-box {
+      margin-top: 4rem;
+      padding: 3rem;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(212, 175, 55, 0.05), transparent);
+      border-radius: 16px;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .conclusion-box h3 {
+      font-family: 'Amiri', serif;
+      font-size: 2rem;
+      color: var(--brand-gold);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav" id="nav" role="navigation" data-i18n-aria-label="a11y.nav_main" aria-label="Main navigation">
+    <div class="nav__container">
+      <a href="/" class="nav__logo" data-i18n-aria-label="a11y.nav_home" aria-label="Nuria — Home">
+        <span class="nav__logo-img" aria-hidden="true"></span>
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="/#about"      class="nav__link" data-i18n="nav.about">About</a>
+        <a href="/#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
+        <a href="/#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support"     class="nav__link" data-i18n="nav.support">Support</a>
+      </div>
+      <div class="nav__cta">
+        <a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>
+      </div>
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
+      </div>
+      <button class="nav__hamburger" id="hamburger" data-i18n-aria-label="a11y.open_menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="sources-hero">
+    <div class="sources-hero__bg"></div>
+    <div class="sources-hero__overlay"></div>
+    <div class="container relative">
+      <p class="page-hero__label">Våra Källor & Databaser</p>
+      <h1 class="page-hero__title" style="font-size: 3.5rem; margin-bottom: 24px;">Kunskapens Källa</h1>
+      <p class="page-hero__subtitle" style="max-width: 800px; margin: 0 auto; color: var(--text-secondary); font-size: 1.25rem; line-height: 1.6;">
+        Allt vi förmedlar i Nuria vilar på en trygg och autentisk grund. Det är av yttersta vikt för oss att du vet exakt varifrån vår Qur'an, våra hadither, våra bönetider och våra AI-svar hämtas. Här vilar vi på den islamiska traditionen.
+      </p>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="page-content" style="padding-top: 0;">
+    <div class="container">
+      
+      <div class="sources-grid">
+        
+        <!-- Quran -->
+        <div class="source-item animate-on-scroll">
+          <span class="source-item__icon">📖</span>
+          <h3 class="source-item__title">Koranen &amp; Översättningar</h3>
+          <p class="source-item__text">
+            Den arabiska texten för den Heliga Koranen hämtas direkt från globalt verifierade databaser (såsom Tanzil.net och Quran.coms officiella databaser). Vi säkerställer en oförändrad, exakt 'Uthmani-skrift. Våra över 40 översättningar kommer enbart från erkända auktoriteter och akademiker från hela världen, tillgängliggjorda genom tillförlitliga islamiska arkiv.
+          </p>
+        </div>
+
+        <!-- Duas & Adhkar -->
+        <div class="source-item animate-on-scroll" data-delay="100">
+          <span class="source-item__icon">🤲</span>
+          <h3 class="source-item__title">Duas &amp; Adhkar</h3>
+          <p class="source-item__text">
+            Våra bön- och dhikr-samlingar är exakt återgivna från välkända referensverk såsom <em>Hisnul Muslim</em> (Fortress of the Muslim), vilka i sin tur bygger på autentiska klassiska hadithsamlingar (bland annat Sahih al-Bukhari, Sahih Muslim, och Sunan Abu Dawud).
+          </p>
+        </div>
+
+        <!-- Bönetider & Qibla -->
+        <div class="source-item animate-on-scroll" data-delay="200">
+          <span class="source-item__icon">🕌</span>
+          <h3 class="source-item__title">Bönetider &amp; Qibla</h3>
+          <p class="source-item__text">
+            Dina bönetider beräknas 100 % lokalt och offline, direkt på din enhet, med hjälp av de modernaste högprecisionsformlerna inom astronomi som godkänts av ledande islamiska organ (Muslim World League, ISNA, Umm al-Qura, m.fl.). Qibla-riktningen utgår från enhetens inbyggda kompass mot Kaba, utan att vi någonsin ser din platsdata.
+          </p>
+        </div>
+
+        <!-- Ask Nuria -->
+        <div class="source-item animate-on-scroll" data-delay="300">
+          <span class="source-item__icon">💬</span>
+          <h3 class="source-item__title">Ask Nuria &amp; AI</h3>
+          <p class="source-item__text">
+            Funktionen "Ask Nuria" drivs av en avancerad AI som vi har strikt finjusterat ("promptat"). AI:n får absolut <strong>inte</strong> uppfinna religiösa utlåtanden (fatwor) eller egna teorier. Den är tekniskt inlåst till att svara med stöd från autentisk islamsk lära (Ahl al-Sunnah wal-Jama'ah) och förser dig uteslutande med tröst och visdom rotad i den traditionella läran.
+          </p>
+        </div>
+
+        <!-- Audio -->
+        <div class="source-item animate-on-scroll" data-delay="400">
+          <span class="source-item__icon">🎧</span>
+          <h3 class="source-item__title">Ljuduppläsningar &amp; Audio</h3>
+          <p class="source-item__text">
+            De högkvalitativa recitationerna av Koranen licensieras i samarbete med globala tillhandahållare som EveryAyah, för att erbjuda rösterna av de mest älskade Qaris i världen. Tal, ljudböcker och föreläsningar hämtas direkt från offentliga och verifierade källor som respekterar talarens upphovsrätt.
+          </p>
+        </div>
+
+        <!-- Daily Reflections -->
+        <div class="source-item animate-on-scroll" data-delay="500">
+          <span class="source-item__icon">🌿</span>
+          <h3 class="source-item__title">Dagligen &amp; Reflektioner</h3>
+          <p class="source-item__text">
+            Våra kategoriserade reflektioner (över 15 stycken) är författade av vårt redaktionella team med stöd av experter i det islamiska civilsamhället. De genomsyras av budskap från Riyadh as-Salihin, tafsir, och kända lärdas böcker, för att leverera visdom och styrka som du kan lita på blindt.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="conclusion-box animate-on-scroll" data-delay="600">
+        <h3 lang="ar">وَقُل رَّبِّ زِدْنِي عِلْمًا</h3>
+        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; font-size: 1.1rem;">
+          "Och säg: Herre, utöka min kunskap." (Koranen 20:114)<br><br>
+          Vårt primära mål är att underlätta din vardag med säkerhet. Om du någonsin hittar ett fel i vår app, oavsett om det är en siffra i bönetiderna eller en bokstav i Koranen, ber vi dig att genast höra av dig till oss så korrigerar vi det samma dag.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <span class="footer__logo-wrap"><span class="footer__logo" role="img" aria-label="Nuria"></span></span>
+          <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__bismillah" lang="ar">الله أكبر</p>
+        </div>
+        <nav class="footer__links" data-i18n-aria-label="a11y.footer_nav" aria-label="Footer navigation">
+          
+          <div class="footer__col">
+            <span class="footer__col-title" data-i18n="footer.col1">App</span>
+            <a href="/" data-i18n="footer.home">Home</a>
+            <a href="/#about" data-i18n="footer.about">About</a>
+            <a href="/#pricing" data-i18n="footer.plans">Plans</a>
+            <a href="/sources">Våra Källor</a>
+            <a href="/join" data-i18n="footer.partner">Nuria Partner</a>
+            <a href="/#download" data-i18n="footer.dl">Download</a>
+          </div>
+
+          <div class="footer__col">
+            <span class="footer__col-title" data-i18n="footer.col2">Legal</span>
+            <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a>
+            <a href="/terms" data-i18n="footer.terms">Terms of Service</a>
+            <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
+            <a href="/delete-account" data-i18n="footer.delete">Delete Account</a>
+          </div>
+
+          <div class="footer__col">
+            <span class="footer__col-title" data-i18n="footer.col3">Help</span>
+            <a href="/support" data-i18n="footer.support_center">Support Center</a>
+            <a href="/support#contact" data-i18n="footer.contact">Contact Us</a>
+          </div>
+
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <div class="footer__bottom-links">
+          <a href="/sources">Våra Källor</a>
+          <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
+          <a href="/terms" data-i18n="footer.nav_terms">Terms</a>
+          <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
+          <a href="/support" data-i18n="footer.nav_support">Support</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/site-utils.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>
