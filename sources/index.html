@@ -7,7 +7,7 @@
   <meta
     name="description"
     data-i18n-content="pages.doc_sources_desc"
-    content="See where Nuria's Quran, duas, prayer tools, audio, and AI guidance are grounded, and how we approach accuracy, privacy, and care."
+    content="See the concrete source systems, curated collections, and AI guardrails behind Nuria's Quran, duas, prayer tools, tafsir, and reflections."
   />
   <meta name="theme-color" content="#050c08" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -67,33 +67,11 @@
 
   <header class="page-hero page-hero--sources">
     <div class="container">
-      <div class="sources-hero__copy animate-on-scroll">
-        <p class="page-hero__label" data-i18n="sources.hero_label">How Nuria is built</p>
-        <h1 class="page-hero__title" data-i18n="sources.hero_title">Sources &amp; Standards</h1>
-        <p class="page-hero__subtitle" data-i18n="sources.hero_subtitle">
-          Every verse, dua, prayer tool, and guidance flow in Nuria should rest on a clear foundation.
-          This page explains where the app's core content comes from and how we think about care,
-          privacy, and accuracy.
-        </p>
-        <div class="sources-hero__stats">
-          <div class="sources-hero__stat" data-i18n="sources.hero_stat_auth">Verified texts</div>
-          <div class="sources-hero__stat" data-i18n="sources.hero_stat_privacy">Privacy-first design</div>
-          <div class="sources-hero__stat" data-i18n="sources.hero_stat_review">Human editorial review</div>
-        </div>
-      </div>
-
-      <div class="sources-hero__media animate-on-scroll" data-delay="120" aria-hidden="true">
-        <div class="sources-hero__frame">
-          <img
-            src="../assets/nuria-sources.png"
-            alt=""
-            class="sources-hero__image"
-            width="1024"
-            height="1024"
-            decoding="async"
-          />
-        </div>
-      </div>
+      <p class="page-hero__label" data-i18n="pages.sources_label">Sources</p>
+      <h1 class="page-hero__title" data-i18n="pages.sources_title">Sources &amp; Standards</h1>
+      <p class="page-hero__subtitle page-hero__subtitle--wide" data-i18n="pages.sources_subtitle">
+        This page explains the concrete source systems, curated collections, and AI guardrails behind Nuria's Quran, duas, prayer tools, tafsir, and reflections.
+      </p>
     </div>
   </header>
 
@@ -102,130 +80,107 @@
   ========================================================= -->
   <main class="page-content page-content--sources">
     <div class="container">
-      <section class="sources-overview">
-        <div class="sources-panel sources-panel--intro animate-on-scroll">
-          <p class="sources-panel__eyebrow" data-i18n="sources.intro_eyebrow">A trustworthy foundation</p>
-          <h2 class="sources-panel__title" data-i18n="sources.intro_title">
-            Built on trusted Islamic references, careful product work, and privacy-conscious engineering.
+      <section class="sources-intro">
+        <div class="sources-intro__card animate-on-scroll">
+          <h2 class="sources-intro__title" data-i18n="sources.intro_title">
+            Nuria is built on different kinds of foundations, and we want to be clear about which is which.
           </h2>
-          <p class="sources-panel__text" data-i18n="sources.intro_text">
-            Nuria combines established Islamic texts, editorial review, and on-device calculations where
-            privacy matters. We aim to be transparent about what comes from classical sources, what reflects
-            product guidance, and what depends on device sensors or AI.
+          <p class="sources-intro__text" data-i18n="sources.intro_text">
+            Some parts of the app come from named Quran APIs or curated in-app datasets. Some are calculated on your device. AI features are wrapped in strict instruction and blocking rules. Where precision or rulings matter, the app should support practice, not replace qualified local scholarship.
           </p>
-        </div>
-
-        <div class="sources-principles">
-          <article class="sources-principle animate-on-scroll" data-delay="40">
-            <h3 data-i18n="sources.principle_1_title">Authenticity first</h3>
-            <p data-i18n="sources.principle_1_text">
-              We try to keep sacred texts, supplications, and religious references anchored in established
-              Sunni material rather than vague summaries or trend-driven rewrites.
-            </p>
-          </article>
-          <article class="sources-principle animate-on-scroll" data-delay="80">
-            <h3 data-i18n="sources.principle_2_title">Privacy by default</h3>
-            <p data-i18n="sources.principle_2_text">
-              When a feature can be calculated on your device, we prefer that approach. This is especially
-              important for prayer times, Qibla, and personal spiritual use.
-            </p>
-          </article>
-          <article class="sources-principle animate-on-scroll" data-delay="120">
-            <h3 data-i18n="sources.principle_3_title">Clarity over overclaiming</h3>
-            <p data-i18n="sources.principle_3_text">
-              If something depends on AI, location, or device sensors, we say so clearly and encourage
-              verification with trusted local scholars or mosques when precision matters.
-            </p>
-          </article>
         </div>
       </section>
 
       <section class="sources-grid">
         <article class="source-card animate-on-scroll">
-          <span class="source-card__icon" aria-hidden="true">Q</span>
           <h2 class="source-card__title" data-i18n="sources.card_quran_title">Quran text and translations</h2>
           <p class="source-card__text" data-i18n="sources.card_quran_text">
-            The Arabic Quran text is based on verified Quran datasets such as Tanzil, together with
-            established translation datasets used in trusted Islamic archives. We handle presentation
-            changes carefully and avoid casual edits to the text itself.
+            The Quran reading experience uses Arabic text and surah metadata from api.alquran.cloud. In AlQuran.cloud's own public contributor credits, its Quran text is attributed to Tanzil.net, with Quran Academy credited for edited Uthmanic text. In Nuria, translation editions stay behind a curated trust allowlist; most are fetched via api.alquran.cloud, while selected editions such as Mufti Taqi Usmani are fetched from api.quran.com. New upstream editions are not admitted automatically.
           </p>
+          <ul class="source-card__list">
+            <li data-i18n="sources.card_quran_point_1">Arabic Quran text in Nuria is served via api.alquran.cloud, which publicly credits Tanzil.net for the text and Quran Academy for edited Uthmanic text.</li>
+            <li data-i18n="sources.card_quran_point_2">Translations are not taken from an open feed; Nuria uses a curated trust allowlist, mainly via api.alquran.cloud with selected editions from api.quran.com.</li>
+          </ul>
         </article>
 
-        <article class="source-card animate-on-scroll" data-delay="40">
-          <span class="source-card__icon" aria-hidden="true">D</span>
-          <h2 class="source-card__title" data-i18n="sources.card_dua_title">Duas and adhkar</h2>
-          <p class="source-card__text" data-i18n="sources.card_dua_text">
-            Supplications and remembrance collections are grounded in recognised works such as Hisnul
-            Muslim and classical hadith collections including Sahih al-Bukhari, Sahih Muslim, and
-            Sunan Abu Dawud.
+        <article class="source-card animate-on-scroll" data-delay="60">
+          <h2 class="source-card__title" data-i18n="sources.card_audio_title">Recitation and audio delivery</h2>
+          <p class="source-card__text" data-i18n="sources.card_audio_text">
+            Per-ayah Quran recitation audio is served from everyayah.com. Nuria uses a small curated reciter catalogue rather than an open feed, including reciters such as Mishary Rashid Alafasy, Al-Sudais, Al-Shuraim, Al-Muaiqly, Al-Minshawi, Al-Husary, Abdul Basit, and Hani Ar-Rifai.
           </p>
-        </article>
-
-        <article class="source-card animate-on-scroll" data-delay="80">
-          <span class="source-card__icon" aria-hidden="true">P</span>
-          <h2 class="source-card__title" data-i18n="sources.card_prayer_title">Prayer times and Qibla</h2>
-          <p class="source-card__text" data-i18n="sources.card_prayer_text">
-            Prayer times and Qibla direction are calculated on your device using standard astronomical
-            and geographic formulas, your location, and compass data. For mosque schedules or critical
-            observance, always verify locally.
-          </p>
+          <ul class="source-card__list">
+            <li data-i18n="sources.card_audio_point_1">Per-ayah recitation delivery: everyayah.com.</li>
+            <li data-i18n="sources.card_audio_point_2">Reciters: curated catalogue including Alafasy, Al-Sudais, Al-Shuraim, Al-Muaiqly, Al-Minshawi, Al-Husary, Abdul Basit, and Hani Ar-Rifai.</li>
+          </ul>
         </article>
 
         <article class="source-card animate-on-scroll" data-delay="120">
-          <span class="source-card__icon" aria-hidden="true">AI</span>
-          <h2 class="source-card__title" data-i18n="sources.card_ai_title">Ask Nuria and AI guidance</h2>
+          <h2 class="source-card__title" data-i18n="sources.card_devotional_title">Duas, adhkar, hadith, and ruqyah</h2>
+          <p class="source-card__text" data-i18n="sources.card_devotional_text">
+            Nuria's devotional collections are curated in app data and content storage with a source attached to each item. The cited references include Quran verses and hadith collections such as Sahih al-Bukhari, Sahih Muslim, Jami al-Tirmidhi, Sunan Abi Dawud, and Ibn Majah.
+          </p>
+          <ul class="source-card__list">
+            <li data-i18n="sources.card_devotional_point_1">Each item keeps its own source reference inside Nuria's devotional data or content storage.</li>
+            <li data-i18n="sources.card_devotional_point_2">Cited source families include Quran, Sahih al-Bukhari, Sahih Muslim, Jami al-Tirmidhi, Sunan Abi Dawud, and Ibn Majah.</li>
+          </ul>
+        </article>
+
+        <article class="source-card animate-on-scroll" data-delay="180">
+          <h2 class="source-card__title" data-i18n="sources.card_prayer_title">Prayer times and Qibla</h2>
+          <p class="source-card__text" data-i18n="sources.card_prayer_text">
+            Prayer times are calculated through the adhan library with selectable methods such as Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, Turkey, and Tehran. Qibla is computed from your location toward the Kaaba in Makkah using great-circle bearing and device sensors.
+          </p>
+          <ul class="source-card__list">
+            <li data-i18n="sources.card_prayer_point_1">Prayer calculations: adhan library with selectable regional methods.</li>
+            <li data-i18n="sources.card_prayer_point_2">Qibla: great-circle bearing from device location toward the Kaaba, using device sensors.</li>
+          </ul>
+        </article>
+
+        <article class="source-card animate-on-scroll" data-delay="240">
+          <h2 class="source-card__title" data-i18n="sources.card_tafsir_title">Named tafsir works only</h2>
+          <p class="source-card__text" data-i18n="sources.card_tafsir_text">
+            Tafsir explanations are tied to a named scholar catalogue inside the app. When tafsir is generated, the prompt is source locked to the selected published tafsir work and explicitly treats anonymous websites, social posts, blogs, unattributed API text, and AI summaries as untrusted.
+          </p>
+          <ul class="source-card__list">
+            <li data-i18n="sources.card_tafsir_point_1">Tafsir generation is restricted to named works in the app's scholar catalogue.</li>
+            <li data-i18n="sources.card_tafsir_point_2">Anonymous websites, blogs, social posts, unattributed API text, and AI summaries are treated as untrusted.</li>
+          </ul>
+        </article>
+
+        <article class="source-card source-card--highlight animate-on-scroll" data-delay="300">
+          <h2 class="source-card__title" data-i18n="sources.card_ai_title">Ask Nuria AI guardrails</h2>
           <p class="source-card__text" data-i18n="sources.card_ai_text">
-            Ask Nuria is designed to respond with guidance rooted in the Quran, Hadith, and mainstream
-            Sunni teaching. It is meant to support reflection and comfort, not to invent rulings or
-            replace qualified scholars.
+            Ask Nuria uses a strict system prompt and backend checks. The instruction layer says answers must draw only from the Quran, authenticated hadith, the Companions, and recognised Sunni scholars. The backend blocks medical advice, mental health and self-harm requests, extremism, and fatwa or halal-haram style ruling requests before generation.
           </p>
-        </article>
-
-        <article class="source-card animate-on-scroll" data-delay="160">
-          <span class="source-card__icon" aria-hidden="true">A</span>
-          <h2 class="source-card__title" data-i18n="sources.card_audio_title">Recitations, audio, and talks</h2>
-          <p class="source-card__text" data-i18n="sources.card_audio_text">
-            Quran recitations and selected audio are sourced from licensed, public, or otherwise
-            rights-respecting providers, including sources such as EveryAyah where appropriate.
-          </p>
-        </article>
-
-        <article class="source-card animate-on-scroll" data-delay="200">
-          <span class="source-card__icon" aria-hidden="true">R</span>
-          <h2 class="source-card__title" data-i18n="sources.card_editorial_title">Reflections and editorial content</h2>
-          <p class="source-card__text" data-i18n="sources.card_editorial_text">
-            Daily reflections and learning content are written and reviewed with the Quran, Hadith,
-            tafsir, Riyad as-Salihin, and other classical references as their foundation.
-          </p>
+          <ul class="source-card__list source-card__list--strong">
+            <li data-i18n="sources.card_ai_point_1">Prompt source scope: Quran, authenticated hadith, the Companions, and recognised Sunni scholars.</li>
+            <li data-i18n="sources.card_ai_point_2">Blocked before generation: medical advice, mental health and self-harm, extremism, and fatwa or halal-haram ruling requests.</li>
+            <li data-i18n="sources.card_ai_point_3">Operational controls: App Check is enforced and requests are rate limited before a reply is returned.</li>
+          </ul>
         </article>
       </section>
 
       <section class="sources-footnotes">
         <article class="sources-footnote animate-on-scroll">
-          <h2 data-i18n="sources.note_title">A careful boundary</h2>
+          <h2 data-i18n="sources.note_title">Scope and limits</h2>
           <p data-i18n="sources.note_text">
-            Prayer times, Qibla direction, and AI answers are built to support daily practice, but they
-            do not replace your local mosque, qualified scholars, or formal religious rulings.
+            Nuria uses established upstreams and curated source controls rather than anonymous or user-submitted religious content. Original Arabic text and source references are kept separate from localized supporting translations. For fatwas, urgent health matters, or mosque-specific schedules, rely on qualified scholars, licensed professionals, and local mosques.
           </p>
         </article>
 
         <article class="sources-footnote sources-footnote--highlight animate-on-scroll" data-delay="80">
-          <h2 data-i18n="sources.report_title">See something that looks wrong?</h2>
+          <h2 data-i18n="sources.report_title">Found a source issue?</h2>
           <p data-i18n="sources.report_text">
-            If you notice a typo, source issue, broken reference, or anything that feels off, contact us.
-            We review reports carefully and correct verified issues as quickly as we can.
+            If you spot a broken reference, mistranslation, or anything that looks off, contact us. We would rather correct a problem quickly than leave unclear material in place.
           </p>
           <a href="/support#contact" class="sources-footnote__link" data-i18n="sources.report_link">Contact support</a>
         </article>
       </section>
 
       <section class="sources-closing animate-on-scroll" data-delay="120">
-        <p class="sources-closing__arabic" lang="ar" data-i18n="sources.quote_ar">وَقُل رَّبِّ زِدْنِي عِلْمًا</p>
+        <p class="sources-closing__arabic" lang="ar">وَقُل رَّبِّ زِدْنِي عِلْمًا</p>
         <p class="sources-closing__quote" data-i18n="sources.quote_text">"My Lord, increase me in knowledge."</p>
         <p class="sources-closing__ref" data-i18n="sources.quote_ref">Quran 20:114</p>
-        <p class="sources-closing__note" data-i18n="sources.quote_note">
-          We want Nuria to stay beautiful, useful, and open to correction whenever something can be made more precise.
-        </p>
       </section>
     </div>
   </main>
@@ -247,12 +202,12 @@
             <a href="/" data-i18n="footer.home">Home</a>
             <a href="/#about" data-i18n="footer.about">About</a>
             <a href="/#pricing" data-i18n="footer.plans">Plans</a>
-            <a href="/sources" data-i18n="footer.sources">Sources</a>
             <a href="/join" data-i18n="footer.partner">Nuria Partner</a>
             <a href="/#download" data-i18n="footer.dl">Download</a>
           </div>
           <div class="footer__col">
             <span class="footer__col-title" data-i18n="footer.col2">Legal</span>
+            <a href="/sources" data-i18n="footer.sources">Sources</a>
             <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a>
             <a href="/terms" data-i18n="footer.terms">Terms of Service</a>
             <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
@@ -268,7 +223,6 @@
       <div class="footer__bottom">
         <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
-          <a href="/sources" data-i18n="footer.sources">Sources</a>
           <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
           <a href="/terms" data-i18n="footer.nav_terms">Terms</a>
           <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
@@ -282,6 +236,7 @@
   <script src="../js/site-config.js"></script>
   <script src="../js/site-utils.js"></script>
   <script src="../js/i18n.js"></script>
+  <script src="../js/sources-translations.js"></script>
   <script src="../js/main.js"></script>
 </body>
 </html>

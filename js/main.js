@@ -5,6 +5,53 @@
 
 'use strict';
 
+/* ===== PERFORMANCE MODE ===== */
+(function () {
+  const root = document.documentElement;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function prefersLiteEffects() {
+    return reduceMotion.matches ||
+      window.innerWidth < 1024 ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      (navigator.connection && navigator.connection.saveData);
+  }
+
+  function updatePerformanceMode() {
+    root.classList.toggle('perf-lite', prefersLiteEffects());
+  }
+
+  updatePerformanceMode();
+  window.addEventListener('resize', updatePerformanceMode, { passive: true });
+
+  if (typeof reduceMotion.addEventListener === 'function') {
+    reduceMotion.addEventListener('change', updatePerformanceMode);
+  } else if (typeof reduceMotion.addListener === 'function') {
+    reduceMotion.addListener(updatePerformanceMode);
+  }
+}());
+
+/* ===== SECTION MOTION GATING ===== */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+
+  const root = document.documentElement;
+  const sections = [
+    { el: document.getElementById('hero'), className: 'hero-offscreen' },
+    { el: document.querySelector('.section--download'), className: 'download-offscreen' },
+  ].filter(item => item.el);
+
+  sections.forEach(({ el, className }) => {
+    const observer = new IntersectionObserver(entries => {
+      const entry = entries[0];
+      root.classList.toggle(className, !(entry ? entry.isIntersecting : true));
+    }, { threshold: 0.08 });
+
+    observer.observe(el);
+  });
+}());
+
 /* ===== STARFIELD CANVAS ===== */
 (function () {
   const canvas = document.getElementById('starCanvas');
@@ -20,13 +67,14 @@
 
   function isLowPowerDevice() {
     return window.innerWidth < 1024 ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
       (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
       (navigator.connection && navigator.connection.saveData);
   }
 
   function getStarCount() {
     if (reduceMotion.matches) return 0;
-    if (isLowPowerDevice()) return window.innerWidth < 768 ? 18 : 30;
+    if (isLowPowerDevice()) return window.innerWidth < 768 ? 10 : 18;
     return window.innerWidth < 768 ? 32 : 56;
   }
 
@@ -68,7 +116,7 @@
       return;
     }
 
-    const frameBudget = isLowPowerDevice() ? 50 : 33;
+    const frameBudget = isLowPowerDevice() ? 66 : 33;
     if (now - lastFrame < frameBudget) {
       raf = requestAnimationFrame(draw);
       return;
@@ -335,6 +383,15 @@
   target.style.position = 'relative';
   target.style.overflow = 'hidden';
   target.appendChild(svg);
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      const entry = entries[0];
+      svg.style.animationPlayState = entry && entry.isIntersecting ? 'running' : 'paused';
+    }, { threshold: 0.08 });
+
+    observer.observe(target);
+  }
 }());
 
 /* ===== FAQ ACCORDION ===== */
