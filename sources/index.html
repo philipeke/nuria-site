@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-title="pages.sources_title">Våra Källor — Nuria</title>
-  <meta name="description" content="Här beskriver vi i detalj exakt varifrån Nuria hämtar allt sitt innehåll, bönetider, AI-svar och reflektioner." />
+  <title data-i18n-title="pages.doc_sources_title">Sources &amp; Standards - Nuria</title>
+  <meta
+    name="description"
+    data-i18n-content="pages.doc_sources_desc"
+    content="See where Nuria's Quran, duas, prayer tools, audio, and AI guidance are grounded, and how we approach accuracy, privacy, and care."
+  />
   <meta name="theme-color" content="#050c08" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
@@ -14,99 +18,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
-  <style>
-    /* Custom enhancements for the sources page to make it extremely beautiful */
-    .sources-hero {
-      position: relative;
-      padding: 180px 0 100px;
-      overflow: hidden;
-      text-align: center;
-    }
-    .sources-hero__bg {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-image: url('../assets/nuria-sources.png');
-      background-size: cover;
-      background-position: center;
-      opacity: 0.3;
-      z-index: -2;
-    }
-    .sources-hero__overlay {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(to bottom, transparent, var(--bg-primary) 90%);
-      z-index: -1;
-    }
-    .sources-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-      margin-top: 3rem;
-    }
-    @media (min-width: 768px) {
-      .sources-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    .source-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      border-radius: 12px;
-      padding: 2rem;
-      transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
-    }
-    .source-item:hover {
-      transform: translateY(-5px);
-      border-color: rgba(212, 175, 55, 0.5);
-      background: rgba(255, 255, 255, 0.04);
-    }
-    .source-item__icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      display: inline-block;
-    }
-    .source-item__title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-    .source-item__text {
-      color: var(--text-secondary);
-      line-height: 1.6;
-      font-size: 1.05rem;
-    }
-    .conclusion-box {
-      margin-top: 4rem;
-      padding: 3rem;
-      text-align: center;
-      background: linear-gradient(145deg, rgba(212, 175, 55, 0.05), transparent);
-      border-radius: 16px;
-      border: 1px solid rgba(212, 175, 55, 0.1);
-    }
-    .conclusion-box h3 {
-      font-family: 'Amiri', serif;
-      font-size: 2rem;
-      color: var(--brand-gold);
-      margin-bottom: 1rem;
-    }
-  </style>
 </head>
 <body>
 
-  <!-- NAVIGATION -->
-  <nav class="nav" id="nav" role="navigation" data-i18n-aria-label="a11y.nav_main" aria-label="Main navigation">
+  <!-- =========================================================
+       NAVIGATION
+  ========================================================= -->
+  <nav class="nav scrolled" id="nav" role="navigation" data-i18n-aria-label="a11y.nav_main" aria-label="Main navigation">
     <div class="nav__container">
-      <a href="/" class="nav__logo" data-i18n-aria-label="a11y.nav_home" aria-label="Nuria — Home">
+      <a href="/" class="nav__logo" data-i18n-aria-label="a11y.nav_home" aria-label="Nuria - Home">
         <span class="nav__logo-img" aria-hidden="true"></span>
       </a>
       <div class="nav__links" id="navLinks">
-        <a href="/#about"      class="nav__link" data-i18n="nav.about">About</a>
-        <a href="/#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="/#about" class="nav__link" data-i18n="nav.about">About</a>
+        <a href="/#daily" class="nav__link" data-i18n="nav.daily">Daily</a>
         <a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
-        <a href="/#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>
-        <a href="/support"     class="nav__link" data-i18n="nav.support">Support</a>
+        <a href="/#pricing" class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support" class="nav__link" data-i18n="nav.support">Support</a>
       </div>
       <div class="nav__cta">
         <a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>
@@ -132,113 +60,197 @@
     </div>
   </nav>
 
-  <!-- HERO SECTION -->
-  <header class="sources-hero">
-    <div class="sources-hero__bg"></div>
-    <div class="sources-hero__overlay"></div>
-    <div class="container relative">
-      <p class="page-hero__label">Våra Källor & Databaser</p>
-      <h1 class="page-hero__title" style="font-size: 3.5rem; margin-bottom: 24px;">Kunskapens Källa</h1>
-      <p class="page-hero__subtitle" style="max-width: 800px; margin: 0 auto; color: var(--text-secondary); font-size: 1.25rem; line-height: 1.6;">
-        Allt vi förmedlar i Nuria vilar på en trygg och autentisk grund. Det är av yttersta vikt för oss att du vet exakt varifrån vår Qur'an, våra hadither, våra bönetider och våra AI-svar hämtas. Här vilar vi på den islamiska traditionen.
-      </p>
+  <!-- =========================================================
+       PAGE HERO
+  ========================================================= -->
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <header class="page-hero page-hero--sources">
+    <div class="container">
+      <div class="sources-hero__copy animate-on-scroll">
+        <p class="page-hero__label" data-i18n="sources.hero_label">How Nuria is built</p>
+        <h1 class="page-hero__title" data-i18n="sources.hero_title">Sources &amp; Standards</h1>
+        <p class="page-hero__subtitle" data-i18n="sources.hero_subtitle">
+          Every verse, dua, prayer tool, and guidance flow in Nuria should rest on a clear foundation.
+          This page explains where the app's core content comes from and how we think about care,
+          privacy, and accuracy.
+        </p>
+        <div class="sources-hero__stats">
+          <div class="sources-hero__stat" data-i18n="sources.hero_stat_auth">Verified texts</div>
+          <div class="sources-hero__stat" data-i18n="sources.hero_stat_privacy">Privacy-first design</div>
+          <div class="sources-hero__stat" data-i18n="sources.hero_stat_review">Human editorial review</div>
+        </div>
+      </div>
+
+      <div class="sources-hero__media animate-on-scroll" data-delay="120" aria-hidden="true">
+        <div class="sources-hero__frame">
+          <img
+            src="../assets/nuria-sources.png"
+            alt=""
+            class="sources-hero__image"
+            width="1024"
+            height="1024"
+            decoding="async"
+          />
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- CONTENT -->
-  <main class="page-content" style="padding-top: 0;">
+  <!-- =========================================================
+       CONTENT
+  ========================================================= -->
+  <main class="page-content page-content--sources">
     <div class="container">
-      
-      <div class="sources-grid">
-        
-        <!-- Quran -->
-        <div class="source-item animate-on-scroll">
-          <span class="source-item__icon">📖</span>
-          <h3 class="source-item__title">Koranen &amp; Översättningar</h3>
-          <p class="source-item__text">
-            Den arabiska texten för den Heliga Koranen hämtas direkt från globalt verifierade databaser (såsom Tanzil.net och Quran.coms officiella databaser). Vi säkerställer en oförändrad, exakt 'Uthmani-skrift. Våra över 40 översättningar kommer enbart från erkända auktoriteter och akademiker från hela världen, tillgängliggjorda genom tillförlitliga islamiska arkiv.
+      <section class="sources-overview">
+        <div class="sources-panel sources-panel--intro animate-on-scroll">
+          <p class="sources-panel__eyebrow" data-i18n="sources.intro_eyebrow">A trustworthy foundation</p>
+          <h2 class="sources-panel__title" data-i18n="sources.intro_title">
+            Built on trusted Islamic references, careful product work, and privacy-conscious engineering.
+          </h2>
+          <p class="sources-panel__text" data-i18n="sources.intro_text">
+            Nuria combines established Islamic texts, editorial review, and on-device calculations where
+            privacy matters. We aim to be transparent about what comes from classical sources, what reflects
+            product guidance, and what depends on device sensors or AI.
           </p>
         </div>
 
-        <!-- Duas & Adhkar -->
-        <div class="source-item animate-on-scroll" data-delay="100">
-          <span class="source-item__icon">🤲</span>
-          <h3 class="source-item__title">Duas &amp; Adhkar</h3>
-          <p class="source-item__text">
-            Våra bön- och dhikr-samlingar är exakt återgivna från välkända referensverk såsom <em>Hisnul Muslim</em> (Fortress of the Muslim), vilka i sin tur bygger på autentiska klassiska hadithsamlingar (bland annat Sahih al-Bukhari, Sahih Muslim, och Sunan Abu Dawud).
-          </p>
+        <div class="sources-principles">
+          <article class="sources-principle animate-on-scroll" data-delay="40">
+            <h3 data-i18n="sources.principle_1_title">Authenticity first</h3>
+            <p data-i18n="sources.principle_1_text">
+              We try to keep sacred texts, supplications, and religious references anchored in established
+              Sunni material rather than vague summaries or trend-driven rewrites.
+            </p>
+          </article>
+          <article class="sources-principle animate-on-scroll" data-delay="80">
+            <h3 data-i18n="sources.principle_2_title">Privacy by default</h3>
+            <p data-i18n="sources.principle_2_text">
+              When a feature can be calculated on your device, we prefer that approach. This is especially
+              important for prayer times, Qibla, and personal spiritual use.
+            </p>
+          </article>
+          <article class="sources-principle animate-on-scroll" data-delay="120">
+            <h3 data-i18n="sources.principle_3_title">Clarity over overclaiming</h3>
+            <p data-i18n="sources.principle_3_text">
+              If something depends on AI, location, or device sensors, we say so clearly and encourage
+              verification with trusted local scholars or mosques when precision matters.
+            </p>
+          </article>
         </div>
+      </section>
 
-        <!-- Bönetider & Qibla -->
-        <div class="source-item animate-on-scroll" data-delay="200">
-          <span class="source-item__icon">🕌</span>
-          <h3 class="source-item__title">Bönetider &amp; Qibla</h3>
-          <p class="source-item__text">
-            Dina bönetider beräknas 100 % lokalt och offline, direkt på din enhet, med hjälp av de modernaste högprecisionsformlerna inom astronomi som godkänts av ledande islamiska organ (Muslim World League, ISNA, Umm al-Qura, m.fl.). Qibla-riktningen utgår från enhetens inbyggda kompass mot Kaba, utan att vi någonsin ser din platsdata.
+      <section class="sources-grid">
+        <article class="source-card animate-on-scroll">
+          <span class="source-card__icon" aria-hidden="true">Q</span>
+          <h2 class="source-card__title" data-i18n="sources.card_quran_title">Quran text and translations</h2>
+          <p class="source-card__text" data-i18n="sources.card_quran_text">
+            The Arabic Quran text is based on verified Quran datasets such as Tanzil, together with
+            established translation datasets used in trusted Islamic archives. We handle presentation
+            changes carefully and avoid casual edits to the text itself.
           </p>
-        </div>
+        </article>
 
-        <!-- Ask Nuria -->
-        <div class="source-item animate-on-scroll" data-delay="300">
-          <span class="source-item__icon">💬</span>
-          <h3 class="source-item__title">Ask Nuria &amp; AI</h3>
-          <p class="source-item__text">
-            Funktionen "Ask Nuria" drivs av en avancerad AI som vi har strikt finjusterat ("promptat"). AI:n får absolut <strong>inte</strong> uppfinna religiösa utlåtanden (fatwor) eller egna teorier. Den är tekniskt inlåst till att svara med stöd från autentisk islamsk lära (Ahl al-Sunnah wal-Jama'ah) och förser dig uteslutande med tröst och visdom rotad i den traditionella läran.
+        <article class="source-card animate-on-scroll" data-delay="40">
+          <span class="source-card__icon" aria-hidden="true">D</span>
+          <h2 class="source-card__title" data-i18n="sources.card_dua_title">Duas and adhkar</h2>
+          <p class="source-card__text" data-i18n="sources.card_dua_text">
+            Supplications and remembrance collections are grounded in recognised works such as Hisnul
+            Muslim and classical hadith collections including Sahih al-Bukhari, Sahih Muslim, and
+            Sunan Abu Dawud.
           </p>
-        </div>
+        </article>
 
-        <!-- Audio -->
-        <div class="source-item animate-on-scroll" data-delay="400">
-          <span class="source-item__icon">🎧</span>
-          <h3 class="source-item__title">Ljuduppläsningar &amp; Audio</h3>
-          <p class="source-item__text">
-            De högkvalitativa recitationerna av Koranen licensieras i samarbete med globala tillhandahållare som EveryAyah, för att erbjuda rösterna av de mest älskade Qaris i världen. Tal, ljudböcker och föreläsningar hämtas direkt från offentliga och verifierade källor som respekterar talarens upphovsrätt.
+        <article class="source-card animate-on-scroll" data-delay="80">
+          <span class="source-card__icon" aria-hidden="true">P</span>
+          <h2 class="source-card__title" data-i18n="sources.card_prayer_title">Prayer times and Qibla</h2>
+          <p class="source-card__text" data-i18n="sources.card_prayer_text">
+            Prayer times and Qibla direction are calculated on your device using standard astronomical
+            and geographic formulas, your location, and compass data. For mosque schedules or critical
+            observance, always verify locally.
           </p>
-        </div>
+        </article>
 
-        <!-- Daily Reflections -->
-        <div class="source-item animate-on-scroll" data-delay="500">
-          <span class="source-item__icon">🌿</span>
-          <h3 class="source-item__title">Dagligen &amp; Reflektioner</h3>
-          <p class="source-item__text">
-            Våra kategoriserade reflektioner (över 15 stycken) är författade av vårt redaktionella team med stöd av experter i det islamiska civilsamhället. De genomsyras av budskap från Riyadh as-Salihin, tafsir, och kända lärdas böcker, för att leverera visdom och styrka som du kan lita på blindt.
+        <article class="source-card animate-on-scroll" data-delay="120">
+          <span class="source-card__icon" aria-hidden="true">AI</span>
+          <h2 class="source-card__title" data-i18n="sources.card_ai_title">Ask Nuria and AI guidance</h2>
+          <p class="source-card__text" data-i18n="sources.card_ai_text">
+            Ask Nuria is designed to respond with guidance rooted in the Quran, Hadith, and mainstream
+            Sunni teaching. It is meant to support reflection and comfort, not to invent rulings or
+            replace qualified scholars.
           </p>
-        </div>
+        </article>
 
-      </div>
+        <article class="source-card animate-on-scroll" data-delay="160">
+          <span class="source-card__icon" aria-hidden="true">A</span>
+          <h2 class="source-card__title" data-i18n="sources.card_audio_title">Recitations, audio, and talks</h2>
+          <p class="source-card__text" data-i18n="sources.card_audio_text">
+            Quran recitations and selected audio are sourced from licensed, public, or otherwise
+            rights-respecting providers, including sources such as EveryAyah where appropriate.
+          </p>
+        </article>
 
-      <div class="conclusion-box animate-on-scroll" data-delay="600">
-        <h3 lang="ar">وَقُل رَّبِّ زِدْنِي عِلْمًا</h3>
-        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; font-size: 1.1rem;">
-          "Och säg: Herre, utöka min kunskap." (Koranen 20:114)<br><br>
-          Vårt primära mål är att underlätta din vardag med säkerhet. Om du någonsin hittar ett fel i vår app, oavsett om det är en siffra i bönetiderna eller en bokstav i Koranen, ber vi dig att genast höra av dig till oss så korrigerar vi det samma dag.
+        <article class="source-card animate-on-scroll" data-delay="200">
+          <span class="source-card__icon" aria-hidden="true">R</span>
+          <h2 class="source-card__title" data-i18n="sources.card_editorial_title">Reflections and editorial content</h2>
+          <p class="source-card__text" data-i18n="sources.card_editorial_text">
+            Daily reflections and learning content are written and reviewed with the Quran, Hadith,
+            tafsir, Riyad as-Salihin, and other classical references as their foundation.
+          </p>
+        </article>
+      </section>
+
+      <section class="sources-footnotes">
+        <article class="sources-footnote animate-on-scroll">
+          <h2 data-i18n="sources.note_title">A careful boundary</h2>
+          <p data-i18n="sources.note_text">
+            Prayer times, Qibla direction, and AI answers are built to support daily practice, but they
+            do not replace your local mosque, qualified scholars, or formal religious rulings.
+          </p>
+        </article>
+
+        <article class="sources-footnote sources-footnote--highlight animate-on-scroll" data-delay="80">
+          <h2 data-i18n="sources.report_title">See something that looks wrong?</h2>
+          <p data-i18n="sources.report_text">
+            If you notice a typo, source issue, broken reference, or anything that feels off, contact us.
+            We review reports carefully and correct verified issues as quickly as we can.
+          </p>
+          <a href="/support#contact" class="sources-footnote__link" data-i18n="sources.report_link">Contact support</a>
+        </article>
+      </section>
+
+      <section class="sources-closing animate-on-scroll" data-delay="120">
+        <p class="sources-closing__arabic" lang="ar" data-i18n="sources.quote_ar">وَقُل رَّبِّ زِدْنِي عِلْمًا</p>
+        <p class="sources-closing__quote" data-i18n="sources.quote_text">"My Lord, increase me in knowledge."</p>
+        <p class="sources-closing__ref" data-i18n="sources.quote_ref">Quran 20:114</p>
+        <p class="sources-closing__note" data-i18n="sources.quote_note">
+          We want Nuria to stay beautiful, useful, and open to correction whenever something can be made more precise.
         </p>
-      </div>
-
+      </section>
     </div>
   </main>
 
-  <!-- FOOTER -->
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
   <footer class="footer" role="contentinfo">
     <div class="container">
       <div class="footer__top">
         <div class="footer__brand">
           <span class="footer__logo-wrap"><span class="footer__logo" role="img" aria-label="Nuria"></span></span>
-          <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul - every single day.</p>
           <p class="footer__bismillah" lang="ar">الله أكبر</p>
         </div>
         <nav class="footer__links" data-i18n-aria-label="a11y.footer_nav" aria-label="Footer navigation">
-          
           <div class="footer__col">
             <span class="footer__col-title" data-i18n="footer.col1">App</span>
             <a href="/" data-i18n="footer.home">Home</a>
             <a href="/#about" data-i18n="footer.about">About</a>
             <a href="/#pricing" data-i18n="footer.plans">Plans</a>
-            <a href="/sources">Våra Källor</a>
+            <a href="/sources" data-i18n="footer.sources">Sources</a>
             <a href="/join" data-i18n="footer.partner">Nuria Partner</a>
             <a href="/#download" data-i18n="footer.dl">Download</a>
           </div>
-
           <div class="footer__col">
             <span class="footer__col-title" data-i18n="footer.col2">Legal</span>
             <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a>
@@ -246,23 +258,22 @@
             <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
             <a href="/delete-account" data-i18n="footer.delete">Delete Account</a>
           </div>
-
           <div class="footer__col">
             <span class="footer__col-title" data-i18n="footer.col3">Help</span>
             <a href="/support" data-i18n="footer.support_center">Support Center</a>
             <a href="/support#contact" data-i18n="footer.contact">Contact Us</a>
           </div>
-
         </nav>
       </div>
       <div class="footer__bottom">
         <p data-i18n="footer.copy">© 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
-          <a href="/sources">Våra Källor</a>
+          <a href="/sources" data-i18n="footer.sources">Sources</a>
           <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
           <a href="/terms" data-i18n="footer.nav_terms">Terms</a>
           <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
           <a href="/support" data-i18n="footer.nav_support">Support</a>
+          <a href="/delete-account" data-i18n="footer.nav_delete">Delete Account</a>
         </div>
       </div>
     </div>

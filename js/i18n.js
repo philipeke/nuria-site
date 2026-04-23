@@ -2372,6 +2372,53 @@ const T = {
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+const ARB_CACHE = Object.create(null);
+
+function assignByPath(target, path, value) {
+  const parts = path.split('.');
+  let cursor = target;
+  parts.forEach((part, index) => {
+    if (index === parts.length - 1) {
+      cursor[part] = value;
+      return;
+    }
+    if (!cursor[part] || typeof cursor[part] !== 'object') cursor[part] = {};
+    cursor = cursor[part];
+  });
+}
+
+function loadArbLang(lang) {
+  if (!T[lang]) return Promise.resolve();
+  if (ARB_CACHE[lang]) return ARB_CACHE[lang];
+  if (typeof fetch !== 'function') {
+    ARB_CACHE[lang] = Promise.resolve();
+    return ARB_CACHE[lang];
+  }
+
+  ARB_CACHE[lang] = fetch(`/l10n/site_${lang}.arb`, { cache: 'no-cache' })
+    .then(response => {
+      if (!response.ok) return null;
+      return response.json();
+    })
+    .then(data => {
+      if (!data) return;
+      Object.entries(data).forEach(([key, value]) => {
+        if (key.startsWith('@')) return;
+        assignByPath(T[lang], key, value);
+      });
+    })
+    .catch(() => {});
+
+  return ARB_CACHE[lang];
+}
+
+function ensureLangReady(lang) {
+  return Promise.all([
+    loadArbLang('en'),
+    lang === 'en' ? Promise.resolve() : loadArbLang(lang),
+  ]);
+}
+
 function getVal(lang, path) {
   const parts = path.split('.');
   let obj = T[lang] || T.en;
@@ -2455,7 +2502,9 @@ function applyLang(lang) {
 function setLang(lang) {
   if (!T[lang]) return;
   localStorage.setItem('nuriaLang', lang);
-  applyLang(lang);
+  ensureLangReady(lang).then(() => {
+    applyLang(lang);
+  });
 }
 
 function getLang() {
@@ -2469,7 +2518,10 @@ function getLang() {
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 (function () {
   function boot() {
-    applyLang(getLang());
+    const lang = getLang();
+    ensureLangReady(lang).then(() => {
+      applyLang(lang);
+    });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot, { once: true });
