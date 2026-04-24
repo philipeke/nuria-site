@@ -546,6 +546,7 @@ body::after {
 }
 
 .hero__content {
+  --hero-copy-width: min(470px, 100%);
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -569,30 +570,31 @@ body::after {
   margin-bottom: 1rem;
 }
 /*
- * Desktop: logo must sit in the same 470px band as the copy.
- * With align-self:flex-start, inline-block ignores width:100% and shrinks to the logo — so nothing changed visually.
- * Use a real block + explicit width so margin:auto on .hero__logo centers the mark over the text block.
+ * Desktop: Arabic, logo, and subtitle share one band. The Arabic sits left above the mark,
+ * while the logo and subtitle are centered on the same axis.
  */
 @media (min-width: 1025px) {
   .hero__bismillah {
     align-self: flex-start;
-    width: min(470px, 100%);
+    width: var(--hero-copy-width);
     max-width: 470px;
-    margin-left: -1rem;
+    margin-left: 0;
     text-align: left;
   }
 
   .hero__logo-wrap {
     display: block;
     align-self: flex-start;
-    width: min(470px, 100%);
+    width: var(--hero-copy-width);
     max-width: 470px;
     margin-bottom: 0.55rem;
     flex-shrink: 0;
   }
 
   .hero__subtitle {
+    width: var(--hero-copy-width);
     max-width: 470px;
+    text-align: center;
   }
 }
 /* Soft halo only (no box); logo floats with transparent padding in the PNG */
