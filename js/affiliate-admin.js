@@ -1739,20 +1739,32 @@ async function handlePartnerPortalInviteCreate() {
   const draftItem = getCodeFormDraftItem();
   const code = normalizeReferralCodeValue(draftItem?.code || '');
   if (!code) {
-    showBanner('Enter or select a referral code first.', 'info');
+    const message = 'Enter or select a saved referral code first.';
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent = message;
+    }
+    showBanner(message, 'info');
     return;
   }
 
   const partner = findLinkedPartnerForCode(draftItem) || null;
   const savedPortalUid = String(partner?.portalUid || '').trim();
   if (savedPortalUid) {
-    showBanner('This partner already has a linked Nuria UID. No claim link is needed unless you unlink the old account first.', 'info');
+    const message = 'This partner already has a linked Nuria UID. No claim link is needed unless you unlink the old account first.';
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent = message;
+    }
+    showBanner(message, 'info');
     return;
   }
 
   const affiliateId = String(partner?.affiliateId || draftItem?.affiliateId || '').trim();
   if (!affiliateId) {
-    showBanner('Save the referral code with an affiliate id before creating a claim link.', 'info');
+    const message = 'Save the referral code with an affiliate id before creating a claim link.';
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent = message;
+    }
+    showBanner(message, 'info');
     return;
   }
 
@@ -1777,12 +1789,33 @@ async function handlePartnerPortalInviteCreate() {
       throw new Error('invite_url_missing');
     }
 
-    await copyPlainText(inviteUrl);
+    let copied = false;
+    try {
+      await copyPlainText(inviteUrl);
+      copied = true;
+    } catch (_copyError) {
+      copied = false;
+    }
+
     const recipient = result?.contactEmail || contactEmail || 'the partner';
-    showBanner(`Partner claim link copied. Send it to ${recipient}; after they sign in, their Apple/Firebase UID will be linked automatically.`, 'success');
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent = copied
+        ? `Partner claim link copied. Send it to ${recipient}.`
+        : `Partner claim link created, but the browser blocked clipboard copy. Copy it manually from here: ${inviteUrl}`;
+    }
+    showBanner(
+      copied
+        ? `Partner claim link copied. Send it to ${recipient}; after they sign in, their Apple/Firebase UID will be linked automatically.`
+        : 'Partner claim link created, but clipboard copy was blocked. Copy it manually from the portal status row.',
+      copied ? 'success' : 'info'
+    );
     addActivityLog(`Created partner portal claim link for ${code}.`, 'success');
   } catch (error) {
-    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+    const message = getActionableErrorMessage(error, getErrorParts(error).message);
+    if (elements.partnerPortalAccessStatus) {
+      elements.partnerPortalAccessStatus.textContent = message;
+    }
+    showBanner(message, 'error');
   } finally {
     state.savePortalAccessInFlight = false;
     setButtonBusy(elements.partnerPortalInviteButton, false);

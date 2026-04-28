@@ -46,7 +46,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260428-admin-timeouts-claim2'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260428-admin-timeouts-claim3'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -171,6 +171,7 @@ run('partner portal can claim Apple relay accounts through one-time links', () =
   assert(affiliateAdminScript.includes('createAffiliatePartnerPortalInvite('));
   assert(partnerPortalScript.includes('claimAffiliatePartnerPortalInvite(state.claimToken)'));
   assert(partnerPortalScript.includes("url.searchParams.delete('claim')"));
+  assert(affiliateAdminScript.includes('Copy it manually from here:'));
   assert(partnerPortalHtml.includes('../js/partner-portal.js?v=20260428-partner-claim'));
 });
 
