@@ -110,8 +110,8 @@ if (appCheckSiteKey) {
   }
 }
 
-export function subscribeToAuthState(callback) {
-  return onAuthStateChanged(auth, callback);
+export function subscribeToAuthState(callback, onError) {
+  return onAuthStateChanged(auth, callback, onError);
 }
 
 export async function signInWithGoogle() {

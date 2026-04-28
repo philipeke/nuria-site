@@ -12,7 +12,7 @@ import {
   signOutUser,
   subscribeToAuthState,
   waitForAuthPersistenceReady,
-} from './firebase-client.js?v=20260416-auth-bootstrap';
+} from './firebase-client.js?v=20260428-admin-timeouts';
 
 const site = window.NuriaSite || {};
 const partnerRegistry = globalThis.NuriaAffiliatePartnerRegistry || {};
@@ -44,6 +44,9 @@ const ADMIN_PAGE_PATHS = {
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 15000;
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 2500;
+const AUTH_STUCK_TIMEOUT_MS = 6000;
+const ADMIN_CALL_TIMEOUT_MS = 15000;
+const DASHBOARD_LOAD_TIMEOUT_MS = 25000;
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -305,6 +308,7 @@ const elements = {
 
 const state = {
   initializedViewEvent: false,
+  currentView: 'loading-auth',
   user: null,
   admin: null,
   recentReports: [],
@@ -380,6 +384,8 @@ const state = {
 let loginSuccessSound = null;
 let checklistRemoteSyncTimeoutId = null;
 let previousAuthUid = null;
+let initialAuthStateHandled = false;
+let dashboardLoadToken = 0;
 const dashboardCopyLocaleLabelCache = new Map();
 
 function setChecklistPopoverOpen(open) {
@@ -456,6 +462,7 @@ function track(name, params) {
 }
 
 function setView(name) {
+  state.currentView = name;
   elements.views.forEach((view) => {
     view.hidden = view.dataset.adminView !== name;
   });
@@ -594,6 +601,30 @@ function clearBanner() {
   showBanner('', '');
 }
 
+function createTimeoutError(label, timeoutMs) {
+  const error = new Error(`${label} timed out after ${Math.round(timeoutMs / 1000)} seconds.`);
+  error.code = 'deadline-exceeded';
+  return error;
+}
+
+function withAdminTimeout(label, work, timeoutMs) {
+  let timeoutId = null;
+  const workPromise = Promise.resolve().then(() =>
+    typeof work === 'function' ? work() : work
+  );
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(createTimeoutError(label, timeoutMs));
+    }, timeoutMs);
+  });
+
+  return Promise.race([workPromise, timeoutPromise]).finally(() => {
+    if (timeoutId !== null) {
+      window.clearTimeout(timeoutId);
+    }
+  });
+}
+
 function getErrorParts(error) {
   const code = String(error?.code || '')
     .split('/')
@@ -649,6 +680,13 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (code === 'user-not-found') {
     return 'No Firebase Auth account exists for this email yet.';
+  }
+
+  if (
+    code === 'portal-login-requires-verified-nuria-account'
+    || message.includes('portal_login_requires_verified_nuria_account')
+  ) {
+    return 'Portal login can only be enabled after the email matches a real Nuria login. For Apple users, use the private relay email shown in Nuria Settings, not their personal email.';
   }
 
   if (code === 'invalid-email') {
@@ -1488,7 +1526,7 @@ function renderPartnerLinkStatus(item) {
 
   if (partner?.portalEmail) {
     elements.partnerLinkStatus.textContent =
-      `Partner access is linked by verified email fallback (${partner.portalEmail}). Save again after lookup to store a strict UID when available.`;
+      `Partner email is saved (${partner.portalEmail}), but no UID is linked yet. For Apple Hide My Email, save the private relay address shown in the Nuria app Settings to verify the UID.`;
     return;
   }
 
@@ -1554,7 +1592,7 @@ function renderPartnerPortalAccessRow(item) {
 
   if (!emailForAction || !isValidEmail(emailForAction)) {
     elements.partnerPortalAccessStatus.textContent =
-      'Affiliate portal (/nuria-partner): add a Partner Nuria email, then enable web login for that address.';
+      'Affiliate portal (/nuria-partner): add the exact Nuria login email. Apple users may show a @privaterelay.appleid.com address in the app Settings; use that, not their personal email.';
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
     return;
@@ -1574,7 +1612,7 @@ function renderPartnerPortalAccessRow(item) {
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = false;
   } else {
     elements.partnerPortalAccessStatus.textContent =
-      `Web portal login is OFF. Enable it when ${emailForAction} is correct — partner uses password or Google with that Nuria account.`;
+      `Web portal login is OFF. Enable it only after ${emailForAction} verifies against a real Nuria login. Apple Hide My Email users must use the relay address shown in app Settings.`;
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
   }
@@ -6134,7 +6172,7 @@ async function loadBootstrap() {
 async function runHealthCheck(name, runner) {
   const startedAt = Date.now();
   try {
-    await runner();
+    await withAdminTimeout(name, runner, ADMIN_CALL_TIMEOUT_MS);
     state.healthChecks[name] = {
       ok: true,
       durationMs: Date.now() - startedAt,
@@ -6312,6 +6350,22 @@ async function savePartnerEmailMapping(code, partnerEmail, metadata, profileInpu
     }
   }
 
+  const existingPortalEmail = normalizeEmail(existingPartner?.portalEmail);
+  const existingPortalUid = String(existingPartner?.portalUid || '').trim();
+  const canReuseExistingUid = Boolean(
+    existingPortalUid
+    && normalizedEmail
+    && existingPortalEmail === normalizedEmail
+  );
+  if (
+    accessPatch.portalWebAccessEnabled === true
+    && !(lookup?.found === true || canReuseExistingUid)
+  ) {
+    const error = new Error('portal_login_requires_verified_nuria_account');
+    error.code = 'portal-login-requires-verified-nuria-account';
+    throw error;
+  }
+
   const upsertSettings = {
     codeItem,
     existingPartner,
@@ -6447,6 +6501,8 @@ function handleLoadError(error) {
 }
 
 async function loadDashboard(options) {
+  const loadToken = dashboardLoadToken + 1;
+  dashboardLoadToken = loadToken;
   const settings = Object.assign(
     {
       preserveSelectedReport: true,
@@ -6462,15 +6518,23 @@ async function loadDashboard(options) {
   clearBanner();
 
   try {
-    await Promise.all([
-      runHealthCheck('bootstrap', loadBootstrap),
-      runHealthCheck('codes', loadCodes),
-      runHealthCheck('partners', loadPartners),
-      runHealthCheck('reports', loadReports),
-      runHealthCheck('audit_log', loadBackendAuditLogs),
-      runHealthCheck('admin_settings', loadAdminSettings),
-      runHealthCheck('subscriber_stats', loadSubscriberStats),
-    ]);
+    await withAdminTimeout(
+      'admin dashboard load',
+      () =>
+        Promise.all([
+          runHealthCheck('bootstrap', loadBootstrap),
+          runHealthCheck('codes', loadCodes),
+          runHealthCheck('partners', loadPartners),
+          runHealthCheck('reports', loadReports),
+          runHealthCheck('audit_log', loadBackendAuditLogs),
+          runHealthCheck('admin_settings', loadAdminSettings),
+          runHealthCheck('subscriber_stats', loadSubscriberStats),
+        ]),
+      DASHBOARD_LOAD_TIMEOUT_MS
+    );
+    if (loadToken !== dashboardLoadToken) {
+      return;
+    }
     renderOverview();
     renderCodesTable();
     renderPartnerAnalyticsPage();
@@ -6497,6 +6561,9 @@ async function loadDashboard(options) {
 
     clearSelectedReport();
   } catch (error) {
+    if (loadToken !== dashboardLoadToken) {
+      return;
+    }
     handleLoadError(error);
   }
 }
@@ -8033,7 +8100,7 @@ function initializeFormDefaults() {
   clearSelectedReport();
 }
 
-function handleAuthState(user) {
+function applyAuthState(user) {
   const previousUid = previousAuthUid;
   const nextUid = user?.uid || null;
   const wasLoggedOut = !previousUid;
@@ -8064,6 +8131,20 @@ function handleAuthState(user) {
   loadDashboard();
 }
 
+function handleAuthState(user) {
+  try {
+    applyAuthState(user);
+  } catch (error) {
+    handleAuthStateError(error);
+  }
+}
+
+function handleAuthStateError(error) {
+  initialAuthStateHandled = true;
+  console.error('[affiliate-admin] Auth state check failed', error);
+  handleLoadError(error);
+}
+
 bindEvents();
 updateSpiritSoundControls();
 placeMobileDrawer();
@@ -8071,7 +8152,6 @@ setMobileNavOpen(false);
 bindAdminTopbarScrollCollapse();
 initializeFormDefaults();
 setView('loading-auth');
-let initialAuthStateHandled = false;
 
 function handleInitialAuthState(user) {
   if (!initialAuthStateHandled) {
@@ -8081,7 +8161,7 @@ function handleInitialAuthState(user) {
   handleAuthState(user);
 }
 
-subscribeToAuthState(handleInitialAuthState);
+subscribeToAuthState(handleInitialAuthState, handleAuthStateError);
 
 window.setTimeout(() => {
   if (initialAuthStateHandled) {
@@ -8090,7 +8170,23 @@ window.setTimeout(() => {
   console.warn(
     `[affiliate-admin] Initial auth state did not arrive within ${AUTH_BOOTSTRAP_TIMEOUT_MS}ms; falling back to currentUser.`
   );
-  handleInitialAuthState(getCurrentUser());
+  try {
+    handleInitialAuthState(getCurrentUser());
+  } catch (error) {
+    handleAuthStateError(error);
+  }
 }, AUTH_BOOTSTRAP_TIMEOUT_MS);
+
+window.setTimeout(() => {
+  if (state.currentView !== 'loading-auth') {
+    return;
+  }
+  console.warn('[affiliate-admin] Access check stayed on the loading screen; showing sign-in fallback.');
+  setView('signed-out');
+  if (elements.authError) {
+    elements.authError.textContent = 'Access check timed out. Sign in again or refresh the page.';
+    elements.authError.hidden = false;
+  }
+}, AUTH_STUCK_TIMEOUT_MS);
 
 waitForAuthPersistenceReady().catch(() => {});

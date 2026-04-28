@@ -42,7 +42,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260416-auth-bootstrap-hotfix1'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260428-admin-timeouts-relay'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -64,6 +64,12 @@ run('affiliate code form exposes partner web portal access toggles', () => {
   assert(affiliateAdminHtml.includes('adminPartnerPortalDisableButton'));
   assert(affiliateAdminScript.includes('handlePartnerPortalAccessChange'));
   assert(affiliateAdminScript.includes('portalWebAccessEnabled'));
+});
+
+run('admin copy warns Apple Hide My Email users need their relay login email', () => {
+  assert(affiliateAdminHtml.includes('@privaterelay.appleid.com'));
+  assert(affiliateAdminScript.includes('Apple Hide My Email users must use the relay address shown in app Settings'));
+  assert(affiliateAdminScript.includes('portal_login_requires_verified_nuria_account'));
 });
 
 run('partner portal prefers the dedicated web callable before the app callable', () => {
@@ -123,13 +129,23 @@ run('firebase auth bootstrap no longer waits forever on persistence setup', () =
 });
 
 run('admin auth listener starts immediately with a currentUser fallback', () => {
-  const subscribeIndex = affiliateAdminScript.indexOf('subscribeToAuthState(handleInitialAuthState);');
+  const subscribeIndex = affiliateAdminScript.indexOf('subscribeToAuthState(handleInitialAuthState, handleAuthStateError);');
   const persistenceIndex = affiliateAdminScript.indexOf('waitForAuthPersistenceReady().catch(() => {});');
   assert(subscribeIndex >= 0);
   assert(persistenceIndex >= 0);
   assert(subscribeIndex < persistenceIndex);
   assert(affiliateAdminScript.includes('handleInitialAuthState(getCurrentUser());'));
-  assert(affiliateAdminScript.includes("./firebase-client.js?v=20260416-auth-bootstrap"));
+  assert(firebaseClientScript.includes('onAuthStateChanged(auth, callback, onError)'));
+  assert(affiliateAdminScript.includes("./firebase-client.js?v=20260428-admin-timeouts"));
+});
+
+run('admin access check and dashboard calls stop showing endless spinners', () => {
+  assert(affiliateAdminScript.includes('const AUTH_STUCK_TIMEOUT_MS = 6000;'));
+  assert(affiliateAdminScript.includes('const ADMIN_CALL_TIMEOUT_MS = 15000;'));
+  assert(affiliateAdminScript.includes('function withAdminTimeout('));
+  assert(affiliateAdminScript.includes('Access check timed out. Sign in again or refresh the page.'));
+  assert(affiliateAdminScript.includes('await withAdminTimeout(name, runner, ADMIN_CALL_TIMEOUT_MS);'));
+  assert(affiliateAdminScript.includes("'admin dashboard load'"));
 });
 
 run('partner portal auth listener starts immediately with a currentUser fallback', () => {

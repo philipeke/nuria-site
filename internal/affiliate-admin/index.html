@@ -709,7 +709,8 @@
           <p class="admin-banner admin-banner--info admin-codes-portal-hint">
             <strong>Affiliate web portal</strong> (<code>/nuria-partner</code>): open a code in the form (table row or type a code), fill
             <strong>Partner Nuria email</strong> and partner profile if needed, then scroll to
-            <strong>Enable portal login</strong> (below billing fields).
+            <strong>Enable portal login</strong> (below billing fields). For Apple Hide My Email users, use the
+            <code>@privaterelay.appleid.com</code> address shown inside Nuria Settings, not their personal contact email.
           </p>
 
           <div class="admin-split">
@@ -963,7 +964,7 @@
               <div class="form-group admin-partner-portal-access" id="adminPartnerPortalAccessRow">
                 <p class="form-label">Affiliate web portal (/nuria-partner)</p>
                 <p class="admin-panel__helper admin-partner-portal-access__status" id="adminPartnerPortalAccessStatus">
-                  Web portal login is OFF. Enable it when the partner email is correct.
+                  Web portal login is OFF. Enable it after the Partner Nuria email verifies against a real Nuria login.
                 </p>
                 <div class="admin-partner-portal-access__actions">
                   <button
@@ -1802,6 +1803,6 @@
   <script src="../../js/i18n.js"></script>
   <script src="../../js/main.js"></script>
   <script src="../../js/affiliate-partner-registry.js"></script>
-  <script type="module" src="../../js/affiliate-admin.js?v=20260416-auth-bootstrap-hotfix1"></script>
+  <script type="module" src="../../js/affiliate-admin.js?v=20260428-admin-timeouts-relay"></script>
 </body>
 </html>
