@@ -1,6 +1,7 @@
 import {
   addAffiliateAdminAuditLog,
   callFirebaseFunction,
+  createAffiliatePartnerPortalInvite,
   getAffiliateAdminSettings,
   getCurrentUser,
   getSubscriberStatsByCode,
@@ -12,7 +13,7 @@ import {
   signOutUser,
   subscribeToAuthState,
   waitForAuthPersistenceReady,
-} from './firebase-client.js?v=20260428-admin-timeouts';
+} from './firebase-client.js?v=20260428-partner-claim';
 
 const site = window.NuriaSite || {};
 const partnerRegistry = globalThis.NuriaAffiliatePartnerRegistry || {};
@@ -162,6 +163,7 @@ const elements = {
   partnerPortalAccessStatus: document.getElementById('adminPartnerPortalAccessStatus'),
   partnerPortalEnableButton: document.getElementById('adminPartnerPortalEnableButton'),
   partnerPortalDisableButton: document.getElementById('adminPartnerPortalDisableButton'),
+  partnerPortalInviteButton: document.getElementById('adminPartnerPortalInviteButton'),
   partnerProfileDetails: document.getElementById('adminPartnerProfileDetails'),
   partnerType: document.getElementById('adminPartnerType'),
   partnerMobile: document.getElementById('adminPartnerMobile'),
@@ -680,6 +682,29 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (code === 'user-not-found') {
     return 'No Firebase Auth account exists for this email yet.';
+  }
+
+  if (code === 'not-found') {
+    if (message.includes('affiliate_partner_not_found')) {
+      return 'Partner profile is not saved yet. Save the affiliate code/partner first, then create a claim link.';
+    }
+    if (message.includes('invite_not_found')) {
+      return 'This partner claim link does not exist anymore. Create a new claim link and send that one.';
+    }
+    return 'The requested record was not found.';
+  }
+
+  if (code === 'already-exists') {
+    if (message.includes('affiliate_partner_already_linked')) {
+      return 'This partner is already linked to another Nuria account. Disable/unlink the old portal account before sending a new claim link.';
+    }
+    if (message.includes('invite_already_redeemed')) {
+      return 'This partner claim link has already been used. Create a fresh link if the partner needs to connect again.';
+    }
+  }
+
+  if (message.includes('invite_expired')) {
+    return 'This partner claim link has expired. Create and send a fresh link.';
   }
 
   if (
@@ -1559,12 +1584,14 @@ function renderPartnerPortalAccessRow(item) {
     // Keep buttons clickable so the handler can show banners (disabled buttons swallow clicks).
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+    if (elements.partnerPortalInviteButton) elements.partnerPortalInviteButton.disabled = true;
     return;
   }
 
   if (state.savePortalAccessInFlight) {
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = true;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
+    if (elements.partnerPortalInviteButton) elements.partnerPortalInviteButton.disabled = true;
     return;
   }
 
@@ -1580,6 +1607,10 @@ function renderPartnerPortalAccessRow(item) {
     && (savedPortalUid || savedEmail)
   );
   const portalIdentityLabel = savedEmail || (savedPortalUid ? 'the linked Nuria account' : '');
+  const inviteReady = Boolean(partner?.affiliateId || affiliateId) && !(accessActive && savedPortalUid);
+  if (elements.partnerPortalInviteButton) {
+    elements.partnerPortalInviteButton.disabled = !inviteReady;
+  }
 
   const emailForAction = draftEmail || savedEmail;
   if (accessActive && savedPortalUid && !savedEmail) {
@@ -1699,6 +1730,57 @@ async function handlePartnerPortalAccessChange(enable) {
     showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
   } finally {
     state.savePortalAccessInFlight = false;
+    renderPartnerPortalAccessRow(getCodeFormDraftItem());
+  }
+}
+
+async function handlePartnerPortalInviteCreate() {
+  if (state.savePortalAccessInFlight) return;
+
+  const draftItem = getCodeFormDraftItem();
+  const code = normalizeReferralCodeValue(draftItem?.code || '');
+  if (!code) {
+    showBanner('Enter or select a referral code first.', 'info');
+    return;
+  }
+
+  const partner = findLinkedPartnerForCode(draftItem) || null;
+  const affiliateId = String(partner?.affiliateId || draftItem?.affiliateId || '').trim();
+  if (!affiliateId) {
+    showBanner('Save the referral code with an affiliate id before creating a claim link.', 'info');
+    return;
+  }
+
+  const contactEmail = normalizeEmail(
+    elements.partnerNuriaEmail?.value
+    || partner?.contactEmail
+    || partner?.portalEmail
+    || ''
+  );
+
+  clearBanner();
+  state.savePortalAccessInFlight = true;
+  setButtonBusy(elements.partnerPortalInviteButton, true, 'Creating link...');
+  if (elements.partnerPortalAccessStatus) {
+    elements.partnerPortalAccessStatus.textContent = 'Creating a one-time partner claim link...';
+  }
+
+  try {
+    const result = await createAffiliatePartnerPortalInvite(affiliateId, contactEmail);
+    const inviteUrl = String(result?.inviteUrl || '').trim();
+    if (!inviteUrl) {
+      throw new Error('invite_url_missing');
+    }
+
+    await copyPlainText(inviteUrl);
+    const recipient = result?.contactEmail || contactEmail || 'the partner';
+    showBanner(`Partner claim link copied. Send it to ${recipient}; after they sign in, their Apple/Firebase UID will be linked automatically.`, 'success');
+    addActivityLog(`Created partner portal claim link for ${code}.`, 'success');
+  } catch (error) {
+    showBanner(getActionableErrorMessage(error, getErrorParts(error).message), 'error');
+  } finally {
+    state.savePortalAccessInFlight = false;
+    setButtonBusy(elements.partnerPortalInviteButton, false);
     renderPartnerPortalAccessRow(getCodeFormDraftItem());
   }
 }
@@ -7972,6 +8054,7 @@ function bindEvents() {
   elements.partnerPortalDisableButton?.addEventListener('click', () => {
     handlePartnerPortalAccessChange(false);
   });
+  elements.partnerPortalInviteButton?.addEventListener('click', handlePartnerPortalInviteCreate);
   elements.partnerNuriaEmail?.addEventListener('input', () => {
     renderPartnerPortalAccessRow(getCodeFormDraftItem());
   });

@@ -31,6 +31,10 @@ const affiliateAdminHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'index.html'),
   'utf8'
 );
+const partnerPortalHtml = fs.readFileSync(
+  path.join(repoRoot, 'nuria-partner', 'index.html'),
+  'utf8'
+);
 const partnerRouteRedirectHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'partners', 'index.html'),
   'utf8'
@@ -42,7 +46,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260428-admin-timeouts-relay'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260428-admin-timeouts-claim'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -62,7 +66,9 @@ run('settings copy explains that partner registry is backend-driven', () => {
 run('affiliate code form exposes partner web portal access toggles', () => {
   assert(affiliateAdminHtml.includes('adminPartnerPortalEnableButton'));
   assert(affiliateAdminHtml.includes('adminPartnerPortalDisableButton'));
+  assert(affiliateAdminHtml.includes('adminPartnerPortalInviteButton'));
   assert(affiliateAdminScript.includes('handlePartnerPortalAccessChange'));
+  assert(affiliateAdminScript.includes('handlePartnerPortalInviteCreate'));
   assert(affiliateAdminScript.includes('portalWebAccessEnabled'));
 });
 
@@ -136,7 +142,7 @@ run('admin auth listener starts immediately with a currentUser fallback', () => 
   assert(subscribeIndex < persistenceIndex);
   assert(affiliateAdminScript.includes('handleInitialAuthState(getCurrentUser());'));
   assert(firebaseClientScript.includes('onAuthStateChanged(auth, callback, onError)'));
-  assert(affiliateAdminScript.includes("./firebase-client.js?v=20260428-admin-timeouts"));
+  assert(affiliateAdminScript.includes("./firebase-client.js?v=20260428-partner-claim"));
 });
 
 run('admin access check and dashboard calls stop showing endless spinners', () => {
@@ -155,7 +161,16 @@ run('partner portal auth listener starts immediately with a currentUser fallback
   assert(persistenceIndex >= 0);
   assert(subscribeIndex < persistenceIndex);
   assert(partnerPortalScript.includes('handleInitialAuthState(getCurrentUser());'));
-  assert(partnerPortalScript.includes("./firebase-client.js?v=20260416-auth-bootstrap"));
+  assert(partnerPortalScript.includes("./firebase-client.js?v=20260428-partner-claim"));
+});
+
+run('partner portal can claim Apple relay accounts through one-time links', () => {
+  assert(firebaseClientScript.includes("callFirebaseFunction('createAffiliatePartnerPortalInviteAdmin'"));
+  assert(firebaseClientScript.includes("callFirebaseFunction('claimAffiliatePartnerPortalInvite'"));
+  assert(affiliateAdminScript.includes('createAffiliatePartnerPortalInvite('));
+  assert(partnerPortalScript.includes('claimAffiliatePartnerPortalInvite(state.claimToken)'));
+  assert(partnerPortalScript.includes("url.searchParams.delete('claim')"));
+  assert(partnerPortalHtml.includes('../js/partner-portal.js?v=20260428-partner-claim'));
 });
 
 run('direct admin subroutes redirect into the shared admin shell', () => {

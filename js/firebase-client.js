@@ -374,6 +374,30 @@ export async function lookupNuriaPartnerByEmail(email) {
   };
 }
 
+export async function createAffiliatePartnerPortalInvite(affiliateId, contactEmail) {
+  const normalizedAffiliateId = String(affiliateId || '').trim();
+  if (!normalizedAffiliateId) {
+    throw new Error('affiliate_id_required');
+  }
+
+  return callFirebaseFunction('createAffiliatePartnerPortalInviteAdmin', {
+    affiliateId: normalizedAffiliateId,
+    contactEmail: String(contactEmail || '').trim().toLowerCase() || null,
+    portalBaseUrl: `${window.location.origin}/nuria-partner/`,
+  });
+}
+
+export async function claimAffiliatePartnerPortalInvite(token) {
+  const normalizedToken = String(token || '').trim();
+  if (!normalizedToken) {
+    throw new Error('missing_invite_token');
+  }
+
+  return callFirebaseFunction('claimAffiliatePartnerPortalInvite', {
+    token: normalizedToken,
+  });
+}
+
 export async function getSubscriberStatsByCode() {
   try {
     const data = await callWithCompat(

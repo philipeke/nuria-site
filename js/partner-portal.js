@@ -1,5 +1,6 @@
 import {
   callFirebaseFunction,
+  claimAffiliatePartnerPortalInvite,
   createUserWithEmailPassword,
   fetchAuthSignInMethodsForEmail,
   getCurrentUser,
@@ -11,7 +12,7 @@ import {
   signOutUser,
   subscribeToAuthState,
   waitForAuthPersistenceReady,
-} from './firebase-client.js?v=20260416-auth-bootstrap';
+} from './firebase-client.js?v=20260428-partner-claim';
 
 const site = window.NuriaSite || {};
 const page = document.querySelector('[data-partner-portal-page]');
@@ -85,6 +86,8 @@ const state = {
   selectedIndex: 0,
   loadPromise: null,
   viewName: 'loading-auth',
+  claimToken: String(new URLSearchParams(window.location.search || '').get('claim') || '').trim(),
+  claimRedeemed: false,
 };
 const loginOnly = new URLSearchParams(window.location.search || '').get('view') === 'login';
 
@@ -166,6 +169,13 @@ function showBanner(message, tone) {
 
 function clearBanner() {
   showBanner('', '');
+}
+
+function clearClaimTokenFromUrl() {
+  if (!state.claimToken || !window.history?.replaceState) return;
+  const url = new URL(window.location.href);
+  url.searchParams.delete('claim');
+  window.history.replaceState({}, document.title, url.toString());
 }
 
 function getErrorParts(error) {
@@ -671,6 +681,22 @@ function getActionablePortalErrorMessage(error) {
     return 'No Nuria account exists for that email yet.';
   }
 
+  if (message.includes('invite_expired')) {
+    return 'This partner claim link has expired. Ask Nuria for a fresh link.';
+  }
+
+  if (message.includes('invite_not_found')) {
+    return 'This partner claim link is not valid anymore. Ask Nuria for a fresh link.';
+  }
+
+  if (message.includes('invite_already_redeemed')) {
+    return 'This partner claim link has already been used. Sign in with the linked account or ask Nuria for a fresh link.';
+  }
+
+  if (message.includes('affiliate_partner_already_linked')) {
+    return 'This partner profile is already linked to another Nuria account. Ask Nuria support to unlink the old account first.';
+  }
+
   if (code === 'invalid-email') {
     return 'Email format is invalid.';
   }
@@ -721,6 +747,14 @@ async function loadPartnerPortal(options) {
     setView('loading-portal');
 
     try {
+      if (state.claimToken && !state.claimRedeemed) {
+        await claimAffiliatePartnerPortalInvite(state.claimToken);
+        state.claimRedeemed = true;
+        state.claimToken = '';
+        clearClaimTokenFromUrl();
+        showBanner('Partner portal linked to this Nuria account.', 'success');
+      }
+
       const data = await callPartnerPortalCallable();
       state.snapshot = normalizePartnerSnapshot(data);
       if (!state.snapshot.partners.length || state.snapshot.accessible !== true) {
@@ -995,7 +1029,7 @@ function handleAuthState(user) {
     return;
   }
 
-  if (loginOnly) {
+  if (loginOnly && !state.claimToken) {
     window.location.replace('/nuria-partner/');
     return;
   }
