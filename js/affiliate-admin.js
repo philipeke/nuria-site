@@ -711,7 +711,7 @@ function getActionableErrorMessage(error, fallbackMessage) {
     code === 'portal-login-requires-verified-nuria-account'
     || message.includes('portal_login_requires_verified_nuria_account')
   ) {
-    return 'Portal login can only be enabled after the email matches a real Nuria login. For Apple users, use the private relay email shown in Nuria Settings, not their personal email.';
+    return 'Portal login can only be enabled after the account is verified. For Apple Hide My Email users, use Copy claim link so their UID connects automatically.';
   }
 
   if (code === 'invalid-email') {
@@ -1551,7 +1551,7 @@ function renderPartnerLinkStatus(item) {
 
   if (partner?.portalEmail) {
     elements.partnerLinkStatus.textContent =
-      `Partner email is saved (${partner.portalEmail}), but no UID is linked yet. For Apple Hide My Email, save the private relay address shown in the Nuria app Settings to verify the UID.`;
+      `Partner email is saved (${partner.portalEmail}), but no UID is linked yet. Use Copy claim link so the partner can sign in and connect the real UID.`;
     return;
   }
 
@@ -1580,11 +1580,11 @@ function renderPartnerPortalAccessRow(item) {
   );
   if (!code) {
     elements.partnerPortalAccessStatus.textContent =
-      'Select a code from the table or type a referral code above, then add Partner Nuria email — you can enable web portal login here once a code is set.';
+      'Select a saved code from the table, or type a code and save it first. Then Copy claim link to connect the partner account.';
     // Keep buttons clickable so the handler can show banners (disabled buttons swallow clicks).
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
-    if (elements.partnerPortalInviteButton) elements.partnerPortalInviteButton.disabled = true;
+    if (elements.partnerPortalInviteButton) elements.partnerPortalInviteButton.disabled = false;
     return;
   }
 
@@ -1607,9 +1607,8 @@ function renderPartnerPortalAccessRow(item) {
     && (savedPortalUid || savedEmail)
   );
   const portalIdentityLabel = savedEmail || (savedPortalUid ? 'the linked Nuria account' : '');
-  const inviteReady = Boolean(partner?.affiliateId || affiliateId) && !(accessActive && savedPortalUid);
   if (elements.partnerPortalInviteButton) {
-    elements.partnerPortalInviteButton.disabled = !inviteReady;
+    elements.partnerPortalInviteButton.disabled = false;
   }
 
   const emailForAction = draftEmail || savedEmail;
@@ -1623,7 +1622,7 @@ function renderPartnerPortalAccessRow(item) {
 
   if (!emailForAction || !isValidEmail(emailForAction)) {
     elements.partnerPortalAccessStatus.textContent =
-      'Affiliate portal (/nuria-partner): add the exact Nuria login email. Apple users may show a @privaterelay.appleid.com address in the app Settings; use that, not their personal email.';
+      'Affiliate portal (/nuria-partner): add the partner contact email, save the partner, then Copy claim link so Apple/Google/password login can link the real UID.';
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
     return;
@@ -1643,7 +1642,7 @@ function renderPartnerPortalAccessRow(item) {
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = false;
   } else {
     elements.partnerPortalAccessStatus.textContent =
-      `Web portal login is OFF. Enable it only after ${emailForAction} verifies against a real Nuria login. Apple Hide My Email users must use the relay address shown in app Settings.`;
+      `Web portal login is OFF. For Apple Hide My Email users, send Copy claim link to ${emailForAction}; their UID will connect after they sign in.`;
     if (elements.partnerPortalEnableButton) elements.partnerPortalEnableButton.disabled = false;
     if (elements.partnerPortalDisableButton) elements.partnerPortalDisableButton.disabled = true;
   }
@@ -1745,6 +1744,12 @@ async function handlePartnerPortalInviteCreate() {
   }
 
   const partner = findLinkedPartnerForCode(draftItem) || null;
+  const savedPortalUid = String(partner?.portalUid || '').trim();
+  if (savedPortalUid) {
+    showBanner('This partner already has a linked Nuria UID. No claim link is needed unless you unlink the old account first.', 'info');
+    return;
+  }
+
   const affiliateId = String(partner?.affiliateId || draftItem?.affiliateId || '').trim();
   if (!affiliateId) {
     showBanner('Save the referral code with an affiliate id before creating a claim link.', 'info');

@@ -72,9 +72,10 @@ run('affiliate code form exposes partner web portal access toggles', () => {
   assert(affiliateAdminScript.includes('portalWebAccessEnabled'));
 });
 
-run('admin copy warns Apple Hide My Email users need their relay login email', () => {
-  assert(affiliateAdminHtml.includes('@privaterelay.appleid.com'));
-  assert(affiliateAdminScript.includes('Apple Hide My Email users must use the relay address shown in app Settings'));
+run('admin copy sends Apple Hide My Email users through claim links', () => {
+  assert(affiliateAdminHtml.includes('Copy claim link'));
+  assert(affiliateAdminHtml.includes('keep their normal contact email here'));
+  assert(affiliateAdminScript.includes('use Copy claim link so their UID connects automatically'));
   assert(affiliateAdminScript.includes('portal_login_requires_verified_nuria_account'));
 });
 
