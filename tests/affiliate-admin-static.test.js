@@ -175,6 +175,14 @@ run('partner portal can claim Apple relay accounts through one-time links', () =
   assert(partnerPortalHtml.includes('../js/partner-portal.js?v=20260428-partner-claim'));
 });
 
+run('partner portal link previews use the Nuria logo metadata image', () => {
+  assert(partnerPortalHtml.includes('property="og:image" content="https://nuria.oakdev.app/assets/Nuria%20Logo.png"'));
+  assert(partnerPortalHtml.includes('name="twitter:image" content="https://nuria.oakdev.app/assets/Nuria%20Logo.png"'));
+  assert(partnerPortalHtml.includes('property="og:image:width" content="1600"'));
+  assert(partnerPortalHtml.includes('name="robots" content="noindex, nofollow, noarchive"'));
+  assert(!partnerPortalHtml.includes('nosnippet'));
+});
+
 run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(partnerRouteRedirectHtml.includes('?page=partners'));
   assert(subscriberRouteRedirectHtml.includes('?page=subscribers'));
