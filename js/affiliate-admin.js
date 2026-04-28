@@ -1782,8 +1782,17 @@ async function handlePartnerPortalInviteCreate() {
     elements.partnerPortalAccessStatus.textContent = 'Creating a one-time partner claim link...';
   }
 
+  let keepInviteStatus = false;
   try {
-    const result = await createAffiliatePartnerPortalInvite(affiliateId, contactEmail);
+    const result = await withActionTimeout(
+      createAffiliatePartnerPortalInvite(affiliateId, contactEmail),
+      15000,
+      {
+        code: 'deadline-exceeded',
+        message: 'partner_claim_link_timeout',
+        adminCallable: 'createAffiliatePartnerPortalInviteAdmin',
+      }
+    );
     const inviteUrl = String(result?.inviteUrl || '').trim();
     if (!inviteUrl) {
       throw new Error('invite_url_missing');
@@ -1803,6 +1812,7 @@ async function handlePartnerPortalInviteCreate() {
         ? `Partner claim link copied. Send it to ${recipient}.`
         : `Partner claim link created, but the browser blocked clipboard copy. Copy it manually from here: ${inviteUrl}`;
     }
+    keepInviteStatus = true;
     showBanner(
       copied
         ? `Partner claim link copied. Send it to ${recipient}; after they sign in, their Apple/Firebase UID will be linked automatically.`
@@ -1815,11 +1825,14 @@ async function handlePartnerPortalInviteCreate() {
     if (elements.partnerPortalAccessStatus) {
       elements.partnerPortalAccessStatus.textContent = message;
     }
+    keepInviteStatus = true;
     showBanner(message, 'error');
   } finally {
     state.savePortalAccessInFlight = false;
     setButtonBusy(elements.partnerPortalInviteButton, false);
-    renderPartnerPortalAccessRow(getCodeFormDraftItem());
+    if (!keepInviteStatus) {
+      renderPartnerPortalAccessRow(getCodeFormDraftItem());
+    }
   }
 }
 
