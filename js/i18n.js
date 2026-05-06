@@ -40,7 +40,7 @@ const T = {
       img_phone_screenshot: 'Screenshot of the Nuria app',
       img_showcase_about: 'Nuria on a phone: Quran reading and Islamic guidance',
       img_showcase_daily: 'Nuria app: daily guidance and reflection',
-      img_launcher: 'Nuria app icon',
+      img_launcher: 'Nuria logo',
     },
     site: {
       index_title: 'Nuria 4.0.2 - Free Islamic Quran, Prayer & Barakah Companion',
@@ -447,7 +447,7 @@ const T = {
       img_phone_screenshot: 'لقطة شاشة لتطبيق نوريا',
       img_showcase_about: 'نوريا على الهاتف: قراءة القرآن والإرشاد الإسلامي',
       img_showcase_daily: 'تطبيق نوريا: الإرشاد اليومي والتأمل',
-      img_launcher: 'أيقونة تطبيق نوريا',
+      img_launcher: 'شعار نوريا',
     },
     site: {
       index_title: 'نوريا — تطبيق إرشاد إسلامي مجاني',
@@ -837,7 +837,7 @@ const T = {
       img_phone_screenshot: 'نوریا ایپ کی اسکرین شاٹ',
       img_showcase_about: 'فون پر نوریا: قرآن کی تلاوت اور اسلامی رہنمائی',
       img_showcase_daily: 'نوریا ایپ: روزانہ رہنمائی اور غور و فکر',
-      img_launcher: 'نوریا ایپ آئیکن',
+      img_launcher: 'نوریا لوگو',
     },
     site: {
       index_title: 'نوریا — مفت اسلامی رہنمائی ایپ',
@@ -1228,7 +1228,7 @@ const T = {
       img_phone_screenshot: 'Tangkapan layar aplikasi Nuria',
       img_showcase_about: 'Nuria di ponsel: membaca Al-Qur\'an dan bimbingan Islam',
       img_showcase_daily: 'Aplikasi Nuria: bimbingan harian dan renungan',
-      img_launcher: 'Ikon aplikasi Nuria',
+      img_launcher: 'Logo Nuria',
     },
     site: {
       index_title: 'Nuria — Aplikasi Panduan Islam Gratis',
@@ -1619,7 +1619,7 @@ const T = {
       img_phone_screenshot: 'Capture d\u2019\u00e9cran de l\u2019application Nuria',
       img_showcase_about: 'Nuria sur un t\u00e9l\u00e9phone : lecture du Coran et guidance islamique',
       img_showcase_daily: 'Application Nuria : guidance quotidienne et r\u00e9flexion',
-      img_launcher: 'Ic\u00f4ne de l\u2019application Nuria',
+      img_launcher: 'Logo Nuria',
     },
     site: {
       index_title: 'Nuria — Application de guidance islamique gratuite',
@@ -2010,7 +2010,7 @@ const T = {
       img_phone_screenshot: 'Nuria uygulamasının ekran görüntüsü',
       img_showcase_about: 'Telefonda Nuria: Kuran okuma ve İslami rehberlik',
       img_showcase_daily: 'Nuria uygulaması: günlük rehberlik ve tefekkür',
-      img_launcher: 'Nuria uygulama simgesi',
+      img_launcher: 'Nuria logosu',
     },
     site: {
       index_title: 'Nuria — Ücretsiz İslami Rehberlik Uygulaması',
