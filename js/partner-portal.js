@@ -720,6 +720,14 @@ function getActionablePortalErrorMessage(error) {
   return parts.message;
 }
 
+function isAlreadyRedeemedClaimError(error) {
+  const parts = getErrorParts(error);
+  return (
+    parts.code === 'already-exists'
+    && parts.message.toLowerCase().includes('invite_already_redeemed')
+  );
+}
+
 async function callPartnerPortalCallable() {
   const callableNames = ['getAffiliatePartnerPortalWeb', 'getAffiliatePartnerPortal'];
   let lastError = null;
@@ -748,11 +756,21 @@ async function loadPartnerPortal(options) {
 
     try {
       if (state.claimToken && !state.claimRedeemed) {
-        await claimAffiliatePartnerPortalInvite(state.claimToken);
+        try {
+          await claimAffiliatePartnerPortalInvite(state.claimToken);
+          showBanner('Partner portal linked to this Nuria account.', 'success');
+        } catch (error) {
+          if (!isAlreadyRedeemedClaimError(error)) {
+            throw error;
+          }
+          showBanner(
+            'This claim link was already used. Loading the partner portal for the signed-in account.',
+            'info'
+          );
+        }
         state.claimRedeemed = true;
         state.claimToken = '';
         clearClaimTokenFromUrl();
-        showBanner('Partner portal linked to this Nuria account.', 'success');
       }
 
       const data = await callPartnerPortalCallable();

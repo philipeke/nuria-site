@@ -172,9 +172,10 @@ run('partner portal can claim Apple relay accounts through one-time links', () =
   assert(affiliateAdminScript.includes('partner_claim_link_timeout'));
   assert(affiliateAdminScript.includes('createAffiliatePartnerPortalInviteAdmin'));
   assert(partnerPortalScript.includes('claimAffiliatePartnerPortalInvite(state.claimToken)'));
+  assert(partnerPortalScript.includes('isAlreadyRedeemedClaimError(error)'));
   assert(partnerPortalScript.includes("url.searchParams.delete('claim')"));
   assert(affiliateAdminScript.includes('Copy it manually from here:'));
-  assert(partnerPortalHtml.includes('../js/partner-portal.js?v=20260428-partner-claim'));
+  assert(partnerPortalHtml.includes('../js/partner-portal.js?v=20260429-partner-claim-idempotent'));
 });
 
 run('partner portal link previews use the Nuria logo metadata image', () => {
