@@ -354,6 +354,7 @@
 (function () {
   const target = document.querySelector('.section--daily');
   if (!target) return;
+  if (window.innerWidth < 768) return;
 
   const ns  = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');

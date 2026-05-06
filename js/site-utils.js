@@ -206,6 +206,184 @@
     });
   });
 
+  const SITE_THEME_STORAGE_KEY = 'nuria-site-theme';
+  const SITE_THEME_CLASS = 'theme-luxury-stone';
+  const SITE_THEMES = {
+    classic: {
+      id: 'classic',
+      label: 'Classic',
+      meta: '#050c08',
+    },
+    stone: {
+      id: 'stone',
+      label: 'Luxury Stone',
+      meta: '#efe3c9',
+    },
+  };
+  let themeBooted = false;
+
+  function getStoredSiteTheme() {
+    try {
+      return window.localStorage.getItem(SITE_THEME_STORAGE_KEY) === SITE_THEMES.stone.id
+        ? SITE_THEMES.stone.id
+        : SITE_THEMES.classic.id;
+    } catch (error) {
+      return SITE_THEMES.classic.id;
+    }
+  }
+
+  function setStoredSiteTheme(theme) {
+    try {
+      window.localStorage.setItem(SITE_THEME_STORAGE_KEY, theme);
+    } catch (error) {
+      // Storage can fail in private contexts; visual theme still applies.
+    }
+  }
+
+  function getRequestedSiteTheme() {
+    try {
+      const theme = new URLSearchParams(window.location.search || '').get('theme');
+      if (theme === SITE_THEMES.stone.id || theme === 'barakah' || theme === 'luxury-stone') {
+        return SITE_THEMES.stone.id;
+      }
+      if (theme === SITE_THEMES.classic.id) {
+        return SITE_THEMES.classic.id;
+      }
+    } catch (error) {
+      return '';
+    }
+    return '';
+  }
+
+  function getPageClassName() {
+    const path = window.location.pathname
+      .replace(/\/index\.html$/i, '/')
+      .split('/')
+      .filter(Boolean);
+    const firstSegment = path[0] || 'home';
+    const normalized = firstSegment === '404.html'
+      ? 'notfound'
+      : firstSegment.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+    return `page-${normalized}`;
+  }
+
+  function applySitePageClass() {
+    if (document.body) {
+      document.body.classList.add(getPageClassName());
+    }
+  }
+
+  function applySiteTheme(theme) {
+    const isStone = theme === SITE_THEMES.stone.id;
+    const activeTheme = isStone ? SITE_THEMES.stone : SITE_THEMES.classic;
+    document.documentElement.dataset.theme = activeTheme.id;
+
+    if (document.body) {
+      document.body.classList.toggle(SITE_THEME_CLASS, isStone);
+    }
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', activeTheme.meta);
+    }
+
+    document.querySelectorAll('[data-site-theme-option]').forEach(button => {
+      const active = button.dataset.siteThemeOption === activeTheme.id;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    document.querySelectorAll('.nav__theme-current').forEach(label => {
+      label.textContent = activeTheme.label;
+    });
+
+    document.querySelectorAll('.nav__theme-btn').forEach(button => {
+      button.setAttribute('aria-label', `Theme: ${activeTheme.label}`);
+    });
+  }
+
+  function closeAllThemeMenus() {
+    document.querySelectorAll('.nav__theme.open').forEach(wrapper => {
+      wrapper.classList.remove('open');
+      const button = wrapper.querySelector('.nav__theme-btn');
+      if (button) {
+        button.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  function buildThemeSwitcher(container) {
+    if (!container || container.querySelector('.nav__theme')) {
+      return;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'nav__theme';
+    wrapper.innerHTML = [
+      '<button type="button" class="nav__theme-btn" aria-haspopup="true" aria-expanded="false">',
+      '  <span class="nav__theme-swatch" aria-hidden="true"></span>',
+      '  <span class="nav__theme-current">Classic</span>',
+      '  <span class="nav__theme-chevron" aria-hidden="true">▼</span>',
+      '</button>',
+      '<div class="nav__theme-dropdown" role="group" aria-label="Theme selection">',
+      '  <button type="button" class="nav__theme-option" data-site-theme-option="classic" aria-pressed="false">',
+      '    <span class="nav__theme-dot nav__theme-dot--classic" aria-hidden="true"></span>',
+      '    <span><strong>Classic</strong><small>Deep green and gold</small></span>',
+      '  </button>',
+      '  <button type="button" class="nav__theme-option" data-site-theme-option="stone" aria-pressed="false">',
+      '    <span class="nav__theme-dot nav__theme-dot--stone" aria-hidden="true"></span>',
+      '    <span><strong>Barakah Luxury Stone</strong><small>Warm stone, emerald and gold</small></span>',
+      '  </button>',
+      '</div>',
+    ].join('');
+
+    const navTarget = container.querySelector('.nav__lang') || container.querySelector('.nav__hamburger');
+    if (navTarget) {
+      container.insertBefore(wrapper, navTarget);
+    } else {
+      container.appendChild(wrapper);
+    }
+
+    const button = wrapper.querySelector('.nav__theme-btn');
+    button.addEventListener('click', function (event) {
+      event.stopPropagation();
+      const open = wrapper.classList.toggle('open');
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    wrapper.querySelectorAll('[data-site-theme-option]').forEach(option => {
+      option.addEventListener('click', function (event) {
+        event.stopPropagation();
+        const theme = option.dataset.siteThemeOption === SITE_THEMES.stone.id
+          ? SITE_THEMES.stone.id
+          : SITE_THEMES.classic.id;
+        setStoredSiteTheme(theme);
+        applySiteTheme(theme);
+        closeAllThemeMenus();
+      });
+    });
+
+    wrapper.addEventListener('click', event => event.stopPropagation());
+  }
+
+  function initSiteTheme() {
+    applySitePageClass();
+    document
+      .querySelectorAll('.nav__container, .partner-topbar__actions, .admin-topbar__actions')
+      .forEach(buildThemeSwitcher);
+    const requestedTheme = getRequestedSiteTheme();
+    const activeTheme = requestedTheme || getStoredSiteTheme();
+    if (requestedTheme) {
+      setStoredSiteTheme(requestedTheme);
+    }
+    applySiteTheme(activeTheme);
+
+    if (!themeBooted) {
+      document.addEventListener('click', closeAllThemeMenus);
+      themeBooted = true;
+    }
+  }
+
   function trackEvent(name, params) {
     if (!isAnalyticsAllowed()) {
       return;
@@ -364,6 +542,8 @@
     trackEvent,
     copyText,
     lookupAffiliateCode,
+    applySiteTheme,
+    initSiteTheme,
   });
 
   function handleStoreLinkClick(event) {
@@ -390,9 +570,13 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initStoreLinks, { once: true });
+    document.addEventListener('DOMContentLoaded', function () {
+      initStoreLinks();
+      initSiteTheme();
+    }, { once: true });
   } else {
     initStoreLinks();
+    initSiteTheme();
   }
 
   initAnalytics();
