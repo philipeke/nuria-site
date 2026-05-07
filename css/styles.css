@@ -894,6 +894,8 @@ body.theme-luxury-stone .hero__phone-wrap {
 }
 
 .hero__logo-wrap {
+  --hero-logo-aura-x: -0.08rem;
+  --hero-logo-aura-y: -0.35rem;
   animation: fadeInUp 1s ease 0.3s both;
   position: relative;
   display: inline-block;
@@ -930,22 +932,73 @@ body.theme-luxury-stone .hero__phone-wrap {
   }
 }
 /* Soft halo only (no box); logo floats with transparent padding in the PNG */
-.hero__logo-wrap::before {
+.hero__logo-wrap::before,
+.hero__logo-wrap::after {
   content: '';
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(270px, 74vw, 380px);
   aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background:
-    radial-gradient(circle at 50% 46%, rgba(255, 248, 220, 0.26) 0%, rgba(238, 196, 92, 0.2) 30%, rgba(var(--logo-halo-green-rgb), 0.11) 54%, transparent 76%),
-    radial-gradient(circle at 46% 52%, rgba(255, 255, 255, 0.12) 0%, transparent 54%);
+  transform: translate(
+    calc(-50% + var(--hero-logo-aura-x)),
+    calc(-50% + var(--hero-logo-aura-y))
+  );
   border-radius: 50%;
-  filter: blur(24px);
   animation: breathe 5s ease infinite;
   pointer-events: none;
+}
+
+.hero__logo-wrap::before {
+  width: clamp(248px, 64vw, 350px);
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--logo-halo-deep-rgb), 0.2) 0%,
+    rgba(var(--logo-halo-deep-rgb), 0.1) 42%,
+    transparent 74%
+  );
+  filter: blur(22px);
+  opacity: 0.74;
   z-index: 0;
+}
+
+.hero__logo-wrap::after {
+  width: clamp(232px, 58vw, 326px);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 249, 225, 0.3) 0%,
+    rgba(238, 196, 92, 0.2) 30%,
+    rgba(var(--logo-halo-green-rgb), 0.12) 54%,
+    transparent 76%
+  );
+  filter: blur(16px);
+  opacity: 0.9;
+  z-index: 1;
+}
+
+body.theme-luxury-stone .hero__logo-wrap::before {
+  width: clamp(260px, 67vw, 365px);
+  background: radial-gradient(
+    circle at center,
+    rgba(22, 26, 18, 0.62) 0%,
+    rgba(47, 57, 34, 0.5) 34%,
+    rgba(76, 58, 22, 0.22) 56%,
+    transparent 76%
+  );
+  filter: blur(18px);
+  opacity: 0.94;
+}
+
+body.theme-luxury-stone .hero__logo-wrap::after {
+  width: clamp(232px, 58vw, 326px);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 242, 190, 0.34) 0%,
+    rgba(217, 169, 74, 0.22) 32%,
+    rgba(75, 83, 32, 0.12) 56%,
+    transparent 76%
+  );
+  filter: blur(14px);
+  opacity: 0.8;
 }
 
 /* Gradient fill clipped to logo alpha — transparency around the mark preserved */
@@ -956,7 +1009,7 @@ body.theme-luxury-stone .hero__phone-wrap {
   max-width: 100%;
   margin: 0 auto;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   background: var(--hero-logo-gradient);
   -webkit-mask-image: url("../assets/Nuria%20Logo.png");
   mask-image: url("../assets/Nuria%20Logo.png");
@@ -973,6 +1026,13 @@ body.theme-luxury-stone .hero__phone-wrap {
     drop-shadow(0 4px 16px rgba(40, 30, 10, 0.32))
     drop-shadow(0 0 22px rgba(255, 226, 148, 0.28))
     drop-shadow(0 0 46px rgba(214, 159, 57, 0.16));
+}
+
+body.theme-luxury-stone .hero__logo {
+  filter:
+    drop-shadow(0 4px 10px rgba(18, 21, 15, 0.56))
+    drop-shadow(0 0 18px rgba(32, 38, 24, 0.42))
+    drop-shadow(0 0 30px rgba(217, 169, 74, 0.2));
 }
 
 .hero__subtitle {
@@ -5406,6 +5466,7 @@ address.legal-address strong { color: var(--color-text); }
 }
 
 html.hero-offscreen .hero__logo-wrap::before,
+html.hero-offscreen .hero__logo-wrap::after,
 html.hero-offscreen .hero__phone-wrap::before,
 html.hero-offscreen .phone-frame-float,
 html.hero-offscreen .hero__scroll-line::after {
@@ -5420,6 +5481,7 @@ html.download-offscreen .download__launcher-img {
 html.perf-lite .nav__logo::before,
 html.perf-lite .footer__logo-wrap::before,
 html.perf-lite .hero__logo-wrap::before,
+html.perf-lite .hero__logo-wrap::after,
 html.perf-lite .hero__phone-wrap::before,
 html.perf-lite .phone-frame-float,
 html.perf-lite .hero__scroll-line::after,
@@ -5452,6 +5514,7 @@ html.perf-lite .btn--store {
   .nav__logo::before,
   .footer__logo-wrap::before,
   .hero__logo-wrap::before,
+  .hero__logo-wrap::after,
   .hero__phone-wrap::before,
   .hero__scroll-line::after,
   .download__launcher::before,
