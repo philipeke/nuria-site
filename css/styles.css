@@ -110,6 +110,15 @@ button { font-family: inherit; }
     rgba(201, 168, 76, 0.85) 55%,
     rgba(234, 246, 240, 0.78) 100%
   );
+  --hero-logo-gradient: linear-gradient(
+    145deg,
+    #fffdf7 0%,
+    #fff0bf 20%,
+    #f1cf78 44%,
+    #d9a63f 64%,
+    #fff2bd 84%,
+    #fffaf0 100%
+  );
 }
 
 /* ===== BARAKAH LUXURY STONE THEME ===== */
@@ -158,6 +167,13 @@ body.theme-luxury-stone {
     #4b5320 28%,
     #9b6f22 58%,
     #c99e3d 100%
+  );
+  --hero-logo-gradient: linear-gradient(
+    145deg,
+    #fff9df 0%,
+    #f7df98 28%,
+    #d9a94a 58%,
+    #fff0b8 100%
   );
 
   background-color: #efe3c9;
@@ -374,13 +390,13 @@ body.theme-luxury-stone::after {
   position: absolute;
   inset: var(--brand-logo-halo-inset);
   background: radial-gradient(
-    ellipse at center,
-    rgba(255, 249, 238, 0.1) 0%,
-    rgba(var(--logo-halo-green-rgb), 0.16) 30%,
-    rgba(var(--logo-halo-deep-rgb), 0.09) 54%,
-    transparent 78%
+    circle at center,
+    rgba(255, 249, 238, 0.14) 0%,
+    rgba(245, 211, 126, 0.18) 28%,
+    rgba(var(--logo-halo-green-rgb), 0.1) 50%,
+    transparent 70%
   );
-  border-radius: 999px;
+  border-radius: 50%;
   filter: blur(10px);
   animation: breathe 5s ease infinite;
   pointer-events: none;
@@ -393,7 +409,7 @@ body.theme-luxury-stone::after {
   width: 80px;
   position: relative;
   z-index: 1;
-  background: var(--logo-ring-gradient);
+  background: var(--hero-logo-gradient);
   -webkit-mask-image: url("../assets/Nuria%20Logo.png");
   mask-image: url("../assets/Nuria%20Logo.png");
   -webkit-mask-source-type: alpha;
@@ -406,9 +422,9 @@ body.theme-luxury-stone::after {
   -webkit-mask-position: center;
   mask-position: center;
   filter:
-    drop-shadow(0 3px 14px rgba(0, 0, 0, 0.28))
-    drop-shadow(0 0 14px rgba(244, 230, 196, 0.08))
-    drop-shadow(0 0 22px rgba(201, 168, 76, 0.08));
+    drop-shadow(0 3px 14px rgba(40, 30, 10, 0.26))
+    drop-shadow(0 0 15px rgba(255, 226, 148, 0.22))
+    drop-shadow(0 0 26px rgba(214, 159, 57, 0.14));
   transition: var(--transition);
 }
 .nav__logo-img:hover {
@@ -881,6 +897,8 @@ body.theme-luxury-stone .hero__phone-wrap {
   animation: fadeInUp 1s ease 0.3s both;
   position: relative;
   display: inline-block;
+  isolation: isolate;
+  overflow: visible;
   margin-bottom: 1rem;
 }
 /*
@@ -915,18 +933,19 @@ body.theme-luxury-stone .hero__phone-wrap {
 .hero__logo-wrap::before {
   content: '';
   position: absolute;
-  inset: -74px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(238, 236, 210, 0.1) 0%,
-    rgba(var(--logo-halo-green-rgb), 0.24) 32%,
-    rgba(var(--logo-halo-deep-rgb), 0.12) 56%,
-    transparent 78%
-  );
-  border-radius: 999px;
-  filter: blur(14px);
+  left: 50%;
+  top: 50%;
+  width: clamp(270px, 74vw, 380px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255, 248, 220, 0.26) 0%, rgba(238, 196, 92, 0.2) 30%, rgba(var(--logo-halo-green-rgb), 0.11) 54%, transparent 76%),
+    radial-gradient(circle at 46% 52%, rgba(255, 255, 255, 0.12) 0%, transparent 54%);
+  border-radius: 50%;
+  filter: blur(24px);
   animation: breathe 5s ease infinite;
   pointer-events: none;
+  z-index: 0;
 }
 
 /* Gradient fill clipped to logo alpha — transparency around the mark preserved */
@@ -937,7 +956,8 @@ body.theme-luxury-stone .hero__phone-wrap {
   max-width: 100%;
   margin: 0 auto;
   position: relative;
-  background: var(--logo-ring-gradient);
+  z-index: 1;
+  background: var(--hero-logo-gradient);
   -webkit-mask-image: url("../assets/Nuria%20Logo.png");
   mask-image: url("../assets/Nuria%20Logo.png");
   -webkit-mask-source-type: alpha;
@@ -950,9 +970,9 @@ body.theme-luxury-stone .hero__phone-wrap {
   -webkit-mask-position: center;
   mask-position: center;
   filter:
-    drop-shadow(0 3px 14px rgba(0, 0, 0, 0.28))
-    drop-shadow(0 0 14px rgba(244, 230, 196, 0.08))
-    drop-shadow(0 0 22px rgba(201, 168, 76, 0.08));
+    drop-shadow(0 4px 16px rgba(40, 30, 10, 0.32))
+    drop-shadow(0 0 22px rgba(255, 226, 148, 0.28))
+    drop-shadow(0 0 46px rgba(214, 159, 57, 0.16));
 }
 
 .hero__subtitle {
@@ -2883,7 +2903,7 @@ body.theme-luxury-stone .market-story--ipad .market-story__copy--ipad .market-st
   width: 96px;
   position: relative;
   z-index: 1;
-  background: var(--logo-ring-gradient);
+  background: var(--hero-logo-gradient);
   -webkit-mask-image: url("../assets/Nuria%20Logo.png");
   mask-image: url("../assets/Nuria%20Logo.png");
   -webkit-mask-source-type: alpha;
@@ -2896,9 +2916,9 @@ body.theme-luxury-stone .market-story--ipad .market-story__copy--ipad .market-st
   -webkit-mask-position: center;
   mask-position: center;
   filter:
-    drop-shadow(0 4px 22px rgba(0, 0, 0, 0.35))
-    drop-shadow(0 0 28px rgba(45, 190, 108, 0.28))
-    drop-shadow(0 0 40px rgba(201, 168, 76, 0.15));
+    drop-shadow(0 4px 22px rgba(40, 30, 10, 0.32))
+    drop-shadow(0 0 28px rgba(255, 226, 148, 0.22))
+    drop-shadow(0 0 40px rgba(201, 168, 76, 0.18));
 }
 .footer__tagline {
   font-size: 0.88rem;
@@ -10568,6 +10588,13 @@ body.page-ambassador {
   --logo-halo-deep-rgb: 52, 61, 36;
   --hero-glow-rgb: 95, 105, 53;
   --hero-glow-soft-rgb: 116, 125, 76;
+  --hero-logo-gradient: linear-gradient(
+    145deg,
+    #fff8dc 0%,
+    #f0cf79 34%,
+    #cf9b37 64%,
+    #fff0b8 100%
+  );
   background:
     radial-gradient(ellipse 68% 42% at 64% 8%, rgba(var(--ambassador-moss-rgb), 0.18), transparent 64%),
     linear-gradient(135deg, var(--ambassador-cream) 0%, var(--ambassador-beige) 58%, var(--ambassador-stone) 100%);
@@ -10597,11 +10624,11 @@ body.page-ambassador .nav__logo {
 
 body.page-ambassador .nav__logo::before {
   background: radial-gradient(
-    ellipse at center,
-    rgba(255, 250, 238, 0.16) 0%,
-    rgba(var(--ambassador-glow-rgb), 0.28) 34%,
-    rgba(var(--ambassador-green-rgb), 0.16) 58%,
-    transparent 80%
+    circle at center,
+    rgba(255, 250, 238, 0.18) 0%,
+    rgba(var(--ambassador-gold-rgb), 0.22) 30%,
+    rgba(var(--ambassador-glow-rgb), 0.12) 50%,
+    transparent 68%
   );
   filter: blur(18px);
   opacity: 0.88;
@@ -10609,9 +10636,9 @@ body.page-ambassador .nav__logo::before {
 
 body.page-ambassador .nav__logo-img {
   filter:
-    drop-shadow(0 4px 14px rgba(52, 61, 36, 0.18))
-    drop-shadow(0 0 18px rgba(var(--ambassador-moss-rgb), 0.2))
-    drop-shadow(0 0 34px rgba(var(--ambassador-gold-rgb), 0.08));
+    drop-shadow(0 4px 14px rgba(78, 59, 24, 0.22))
+    drop-shadow(0 0 18px rgba(255, 224, 145, 0.22))
+    drop-shadow(0 0 34px rgba(var(--ambassador-gold-rgb), 0.14));
 }
 
 body.page-ambassador .ambassador-nav {
