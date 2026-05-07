@@ -43,9 +43,9 @@ const T = {
       img_launcher: 'Nuria logo',
     },
     site: {
-      index_title: 'Nuria 4.0.2 - Free Islamic Quran, Prayer & Barakah Companion',
-      index_desc: 'Nuria 4.0.2 is a free Islamic companion with Quran audio and translations, prayer tools, dhikr, duas, Halqa, Qaida, Sunnat, ruqyah, Live Haramain, personalization, and Barakah Luxury Stone.',
-      index_og_title: 'Nuria 4.0.2 - Free Islamic Quran, Prayer & Barakah Companion',
+      index_title: 'Nuria - Free Islamic Quran, Prayer & Barakah Companion',
+      index_desc: 'Nuria is a free Islamic companion with Quran audio and translations, prayer tools, dhikr, duas, Halqa, Qaida, Sunnat, ruqyah, Live Haramain, personalization, and Barakah Luxury Stone.',
+      index_og_title: 'Nuria - Free Islamic Quran, Prayer & Barakah Companion',
       index_og_desc: 'Download Nuria for Quran, prayer, dhikr, duas, Halqa, Qaida, Sunnat, ruqyah, Live Haramain, personalization, and Barakah Luxury Stone.',
     },
     hero: {

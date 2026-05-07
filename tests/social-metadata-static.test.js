@@ -17,18 +17,24 @@ function run(name, fn) {
 const repoRoot = path.resolve(__dirname, '..');
 const logoUrl = 'https://nuria.oakdev.app/assets/Nuria%20Logo.png';
 const publicPreviewPages = [
-  'index.html',
-  'join/index.html',
-  '404.html',
-  'support/index.html',
-  'privacy/index.html',
-  'terms/index.html',
-  'sources/index.html',
-  'cookies/index.html',
-  'delete-account/index.html',
-  'nuria-partner/index.html',
-  'nuria-partner/login/index.html',
-  'nuria-partner/portal/index.html',
+  { page: 'index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'join/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: '404.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'support/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'privacy/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'terms/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'sources/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'cookies/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'delete-account/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'nuria-partner/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'nuria-partner/login/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'nuria-partner/portal/index.html', image: logoUrl, width: '1600', height: '1600' },
+  {
+    page: 'ambassador/index.html',
+    image: 'https://nuria.oakdev.app/assets/ambassador-og.jpg',
+    width: '1200',
+    height: '630',
+  },
 ];
 
 function read(relativePath) {
@@ -41,24 +47,24 @@ function includesMeta(html, name, value) {
   return pattern.test(html);
 }
 
-run('public link previews use the Nuria logo image everywhere', () => {
-  for (const page of publicPreviewPages) {
+run('public link previews declare the expected social image', () => {
+  for (const { page, image, width, height } of publicPreviewPages) {
     const html = read(page);
     assert(
-      includesMeta(html, 'og:image', logoUrl),
-      `${page} is missing og:image with the Nuria logo`
+      includesMeta(html, 'og:image', image),
+      `${page} is missing og:image with the expected preview image`
     );
     assert(
-      includesMeta(html, 'twitter:image', logoUrl),
-      `${page} is missing twitter:image with the Nuria logo`
+      includesMeta(html, 'twitter:image', image),
+      `${page} is missing twitter:image with the expected preview image`
     );
     assert(
-      includesMeta(html, 'og:image:width', '1600'),
-      `${page} should declare the Nuria logo width`
+      includesMeta(html, 'og:image:width', width),
+      `${page} should declare the preview image width`
     );
     assert(
-      includesMeta(html, 'og:image:height', '1600'),
-      `${page} should declare the Nuria logo height`
+      includesMeta(html, 'og:image:height', height),
+      `${page} should declare the preview image height`
     );
   }
 });

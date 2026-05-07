@@ -33,6 +33,7 @@ const pagesRequiringAnalyticsBootstrap = [
   ['support/index.html', ['../js/site-config.js', '../js/site-utils.js', '../js/main.js']],
   ['terms/index.html', ['../js/site-config.js', '../js/site-utils.js', '../js/main.js']],
   ['join/index.html', ['../js/site-config.js', '../js/site-utils.js', '../js/main.js']],
+  ['ambassador/index.html', ['../js/site-config.js', '../js/site-utils.js', '../js/main.js']],
   ['nuria-partner/index.html', ['../js/site-config.js', '../js/site-utils.js']],
   ['internal/affiliate-admin/index.html', ['../../js/site-config.js', '../../js/site-utils.js', '../../js/main.js']],
 ];

@@ -255,6 +255,29 @@
     return '';
   }
 
+  function getDeclaredSiteTheme() {
+    try {
+      const theme = String(
+        (document.body && document.body.getAttribute('data-site-theme')) ||
+        document.documentElement.getAttribute('data-site-theme') ||
+        window.NURIA_SITE_THEME ||
+        ''
+      ).trim();
+
+      if (theme === SITE_THEMES.stone.id || theme === 'barakah' || theme === 'luxury-stone') {
+        return SITE_THEMES.stone.id;
+      }
+
+      if (theme === SITE_THEMES.classic.id) {
+        return SITE_THEMES.classic.id;
+      }
+    } catch (error) {
+      return '';
+    }
+
+    return '';
+  }
+
   function getPageClassName() {
     const path = window.location.pathname
       .replace(/\/index\.html$/i, '/')
@@ -332,7 +355,7 @@
       '  </button>',
       '  <button type="button" class="nav__theme-option" data-site-theme-option="stone" aria-pressed="false">',
       '    <span class="nav__theme-dot nav__theme-dot--stone" aria-hidden="true"></span>',
-      '    <span><strong>Barakah Luxury Stone</strong><small>Warm stone, emerald and gold</small></span>',
+      '    <span><strong>Barakah Luxury Stone</strong><small>Warm stone, olive and gold</small></span>',
       '  </button>',
       '</div>',
     ].join('');
@@ -372,7 +395,8 @@
       .querySelectorAll('.nav__container, .partner-topbar__actions, .admin-topbar__actions')
       .forEach(buildThemeSwitcher);
     const requestedTheme = getRequestedSiteTheme();
-    const activeTheme = requestedTheme || getStoredSiteTheme();
+    const declaredTheme = getDeclaredSiteTheme();
+    const activeTheme = requestedTheme || declaredTheme || getStoredSiteTheme();
     if (requestedTheme) {
       setStoredSiteTheme(requestedTheme);
     }
