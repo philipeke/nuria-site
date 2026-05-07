@@ -186,7 +186,7 @@ body::before {
   inset: 0;
   background:
     radial-gradient(ellipse 100% 50% at 50% -5%,  rgba(45, 190, 108, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 80%  55% at 18% 38%,  rgba(45, 190, 108, 0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 56%  42% at 18% 38%,  rgba(45, 190, 108, 0.07) 0%, transparent 58%),
     radial-gradient(ellipse 55%  45% at 82% 80%,  rgba(201, 168, 76, 0.12) 0%, transparent 50%),
     radial-gradient(ellipse 70%  50% at 55% 55%,  rgba(45, 190, 108, 0.08) 0%, transparent 55%);
   pointer-events: none;
@@ -894,8 +894,8 @@ body.theme-luxury-stone .hero__phone-wrap {
 }
 
 .hero__logo-wrap {
-  --hero-logo-aura-x: -0.08rem;
-  --hero-logo-aura-y: -0.35rem;
+  --hero-logo-aura-x: 0.06rem;
+  --hero-logo-aura-y: -0.55rem;
   animation: fadeInUp 1s ease 0.3s both;
   position: relative;
   display: inline-block;
@@ -949,56 +949,56 @@ body.theme-luxury-stone .hero__phone-wrap {
 }
 
 .hero__logo-wrap::before {
-  width: clamp(248px, 64vw, 350px);
+  width: clamp(230px, 57vw, 318px);
   background: radial-gradient(
     circle at center,
-    rgba(var(--logo-halo-deep-rgb), 0.2) 0%,
-    rgba(var(--logo-halo-deep-rgb), 0.1) 42%,
-    transparent 74%
+    rgba(var(--logo-halo-deep-rgb), 0.34) 0%,
+    rgba(var(--logo-halo-deep-rgb), 0.18) 38%,
+    transparent 70%
   );
-  filter: blur(22px);
-  opacity: 0.74;
+  filter: blur(18px);
+  opacity: 0.82;
   z-index: 0;
 }
 
 .hero__logo-wrap::after {
-  width: clamp(232px, 58vw, 326px);
+  width: clamp(214px, 53vw, 300px);
   background: radial-gradient(
     circle at center,
-    rgba(255, 249, 225, 0.3) 0%,
-    rgba(238, 196, 92, 0.2) 30%,
-    rgba(var(--logo-halo-green-rgb), 0.12) 54%,
-    transparent 76%
+    rgba(255, 250, 222, 0.46) 0%,
+    rgba(238, 196, 92, 0.34) 28%,
+    rgba(var(--logo-halo-green-rgb), 0.18) 50%,
+    transparent 72%
   );
-  filter: blur(16px);
-  opacity: 0.9;
+  filter: blur(12px);
+  opacity: 1;
   z-index: 1;
 }
 
 body.theme-luxury-stone .hero__logo-wrap::before {
-  width: clamp(260px, 67vw, 365px);
+  width: clamp(238px, 59vw, 330px);
   background: radial-gradient(
     circle at center,
-    rgba(22, 26, 18, 0.62) 0%,
-    rgba(47, 57, 34, 0.5) 34%,
-    rgba(76, 58, 22, 0.22) 56%,
-    transparent 76%
+    rgba(13, 18, 12, 0.82) 0%,
+    rgba(32, 39, 24, 0.68) 34%,
+    rgba(76, 58, 22, 0.34) 55%,
+    transparent 74%
   );
-  filter: blur(18px);
-  opacity: 0.94;
+  filter: blur(14px);
+  opacity: 1;
 }
 
 body.theme-luxury-stone .hero__logo-wrap::after {
-  width: clamp(232px, 58vw, 326px);
+  width: clamp(206px, 52vw, 292px);
   background: radial-gradient(
     circle at center,
-    rgba(255, 242, 190, 0.34) 0%,
-    rgba(217, 169, 74, 0.22) 32%,
-    rgba(75, 83, 32, 0.12) 56%,
-    transparent 76%
+    rgba(255, 242, 190, 0.42) 0%,
+    rgba(217, 169, 74, 0.28) 30%,
+    rgba(75, 83, 32, 0.14) 52%,
+    transparent 72%
   );
-  filter: blur(14px);
-  opacity: 0.8;
+  filter: blur(10px);
+  opacity: 0.92;
 }
 
 /* Gradient fill clipped to logo alpha — transparency around the mark preserved */
