@@ -10706,18 +10706,18 @@ body.page-ambassador .ambassador-hero__media::before {
 
 body.page-ambassador .ambassador-hero__media img {
   position: absolute;
-  right: clamp(2rem, 7vw, 7rem);
+  right: clamp(1.5rem, 6vw, 6.5rem);
   top: 50%;
-  width: min(34vw, 420px);
+  width: min(36vw, 460px);
   max-width: none;
+  border: 1px solid rgba(var(--ambassador-gold-rgb), 0.46);
   border-radius: 8px;
-  transform: translateY(-47%) rotate(4deg);
+  background: var(--ambassador-cream);
+  transform: translateY(-47%) rotate(1.2deg);
   filter:
-    saturate(0.86)
-    sepia(0.08)
     drop-shadow(0 28px 58px rgba(52, 61, 36, 0.24))
     drop-shadow(0 0 42px rgba(var(--ambassador-moss-rgb), 0.22));
-  opacity: 0.82;
+  opacity: 1;
 }
 
 body.page-ambassador .ambassador-hero__inner {

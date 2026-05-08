@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nuria Ambassador Program | Nuria</title>
-  <meta name="description" content="Join the Nuria Ambassador Program by OakDev & AI AB. Share Nuria, earn 50% of net subscription revenue, and download the program flyer and terms." />
+  <title data-i18n-title="ambassador.meta_title">Nuria Ambassador Program | Nuria</title>
+  <meta name="description" data-i18n-content="ambassador.meta_desc" content="Join the Nuria Ambassador Program by OakDev & AI AB. Share Nuria, verify your code on the join page, and track stats in the Affiliate Portal." />
   <meta name="theme-color" content="#efe3c9" />
   <link rel="canonical" href="https://nuria.oakdev.app/ambassador" />
 
-  <meta property="og:title" content="Nuria Ambassador Program" />
-  <meta property="og:description" content="Share Nuria with sincerity. Earn 50% of net subscription revenue while your referrals renew." />
+  <meta property="og:title" data-i18n-content="ambassador.meta_og_title" content="Nuria Ambassador Program" />
+  <meta property="og:description" data-i18n-content="ambassador.meta_og_desc" content="Share Nuria with sincerity. Verify your code on the join page and track stats, codes, and payouts in the Affiliate Portal." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://nuria.oakdev.app/ambassador" />
   <meta property="og:site_name" content="Nuria" />
-  <meta property="og:image" content="https://nuria.oakdev.app/assets/ambassador-og.jpg?v=d491c46" />
-  <meta property="og:image:secure_url" content="https://nuria.oakdev.app/assets/ambassador-og.jpg?v=d491c46" />
+  <meta property="og:image" content="https://nuria.oakdev.app/assets/ambassador-og.jpg" />
+  <meta property="og:image:secure_url" content="https://nuria.oakdev.app/assets/ambassador-og.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Nuria Ambassador Program flyer preview" />
+  <meta property="og:image:alt" data-i18n-content="ambassador.meta_og_alt" content="Nuria Ambassador Program flyer preview" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Nuria Ambassador Program" />
-  <meta name="twitter:description" content="Share Nuria with sincerity. Earn 50% of net subscription revenue while your referrals renew." />
-  <meta name="twitter:image" content="https://nuria.oakdev.app/assets/ambassador-og.jpg?v=d491c46" />
-  <meta name="twitter:image:alt" content="Nuria Ambassador Program flyer preview" />
+  <meta name="twitter:title" data-i18n-content="ambassador.meta_og_title" content="Nuria Ambassador Program" />
+  <meta name="twitter:description" data-i18n-content="ambassador.meta_og_desc" content="Share Nuria with sincerity. Verify your code on the join page and track stats, codes, and payouts in the Affiliate Portal." />
+  <meta name="twitter:image" content="https://nuria.oakdev.app/assets/ambassador-og.jpg" />
+  <meta name="twitter:image:alt" data-i18n-content="ambassador.meta_og_alt" content="Nuria Ambassador Program flyer preview" />
 
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
@@ -32,63 +32,81 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
-  <link rel="preload" as="image" href="/assets/ambassador-cover.jpg?v=d491c46" />
-  <link rel="preload" as="image" href="/assets/ambassador-og.jpg?v=d491c46" />
-  <link rel="stylesheet" href="../css/styles.css?v=ambassador-d491c46" />
+  <link rel="preload" as="image" href="/assets/ambassador-cover.jpg?v=20260508-flyer" />
+  <link rel="preload" as="image" href="/assets/ambassador-og.jpg?v=20260508-flyer" />
+  <link rel="stylesheet" href="../css/styles.css?v=ambassador-20260508-flyer" />
 </head>
 <body class="theme-luxury-stone page-ambassador" data-site-theme="stone">
 
-  <nav class="nav ambassador-nav scrolled" id="nav" role="navigation" aria-label="Ambassador navigation">
+  <nav class="nav ambassador-nav scrolled" id="nav" role="navigation" data-i18n-aria-label="ambassador.nav_aria" aria-label="Ambassador navigation">
     <div class="nav__container ambassador-nav__inner">
-      <a href="/" class="nav__logo ambassador-nav__logo" aria-label="Nuria home">
+      <a href="/" class="nav__logo ambassador-nav__logo" data-i18n-aria-label="a11y.nav_home" aria-label="Nuria home">
         <span class="nav__logo-img" aria-hidden="true"></span>
       </a>
-      <div class="ambassador-nav__links" aria-label="Page sections">
-        <a href="#how" class="nav__link">How it works</a>
-        <a href="#reward" class="nav__link">Reward</a>
-        <a href="#downloads" class="nav__link">Downloads</a>
-        <a href="#terms" class="nav__link">Terms</a>
+      <div class="ambassador-nav__links" data-i18n-aria-label="ambassador.nav_sections_aria" aria-label="Page sections">
+        <a href="#how" class="nav__link" data-i18n="ambassador.nav_how">How it works</a>
+        <a href="#portal" class="nav__link" data-i18n="ambassador.nav_portal">Code &amp; portal</a>
+        <a href="#reward" class="nav__link" data-i18n="ambassador.nav_reward">Reward</a>
+        <a href="#downloads" class="nav__link" data-i18n="ambassador.nav_downloads">Downloads</a>
+        <a href="#terms" class="nav__link" data-i18n="ambassador.nav_terms">Terms</a>
+      </div>
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" data-i18n-aria-label="ambassador.language_btn_aria" aria-label="Choose language">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
       </div>
       <a href="#downloads" class="btn btn--gold ambassador-nav__cta" data-download-both>
         <svg class="ambassador-btn-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
         </svg>
-        Download PDFs
+        <span data-i18n="ambassador.download_pdfs">Download PDFs</span>
       </a>
     </div>
   </nav>
 
   <header class="ambassador-hero">
     <div class="ambassador-hero__media" aria-hidden="true">
-      <img src="/assets/ambassador-cover.jpg?v=d491c46" alt="" width="595" height="842" />
+      <img src="/assets/ambassador-cover.jpg?v=20260508-flyer" alt="" width="849" height="1200" />
     </div>
     <div class="container ambassador-hero__inner">
-      <p class="ambassador-eyebrow">OakDev &amp; AI AB - Sweden</p>
-      <h1>Nuria Ambassador Program</h1>
-      <p class="ambassador-hero__lead">
+      <p class="ambassador-eyebrow" data-i18n="ambassador.hero_eyebrow">OakDev &amp; AI AB - Sweden</p>
+      <h1 data-i18n="ambassador.hero_title">Nuria Ambassador Program</h1>
+      <p class="ambassador-hero__lead" data-i18n="ambassador.hero_lead">
         Share Nuria with sincerity. Earn 50% of net subscription revenue for every referred subscriber while they renew.
       </p>
-      <div class="ambassador-hero__actions" aria-label="Ambassador actions">
-        <a class="btn btn--gold" href="/assets/Nuria_Ambassador_Program.pdf?v=d491c46" download="Nuria_Ambassador_Program.pdf" data-download-both>
+      <div class="ambassador-hero__actions" data-i18n-aria-label="ambassador.hero_actions_aria" aria-label="Ambassador actions">
+        <a class="btn btn--gold" href="/assets/Nuria_Ambassador_Program.pdf?v=20260508-flyer" download="Nuria_Ambassador_Program.pdf" data-download-both>
           <svg class="ambassador-btn-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
           </svg>
-          Download both PDFs
+          <span data-i18n="ambassador.download_both">Download both PDFs</span>
         </a>
-        <a class="btn btn--outline" href="mailto:hello@oakdev.app?subject=Nuria%20Ambassador%20Program">Request code</a>
+        <a class="btn btn--outline" href="mailto:hello@oakdev.app?subject=Nuria%20Ambassador%20Program" data-i18n="ambassador.request_code">Request code</a>
+        <a class="btn btn--outline" href="https://nuria.oakdev.app/join/" data-i18n="ambassador.verify_code">Verify code</a>
+        <a class="btn btn--outline" href="/nuria-partner/login" data-i18n="ambassador.affiliate_portal">Affiliate Portal</a>
       </div>
-      <div class="ambassador-hero__proof" aria-label="Program highlights">
+      <div class="ambassador-hero__proof" data-i18n-aria-label="ambassador.proof_aria" aria-label="Program highlights">
         <div>
           <strong>50%</strong>
-          <span>of Net Revenue</span>
+          <span data-i18n="ambassador.proof_net_revenue">of Net Revenue</span>
         </div>
         <div>
           <strong>EUR 100</strong>
-          <span>payout threshold</span>
+          <span data-i18n="ambassador.proof_threshold">payout threshold</span>
         </div>
         <div>
-          <strong>Recurring</strong>
-          <span>monthly rewards</span>
+          <strong data-i18n="ambassador.proof_recurring">Recurring</strong>
+          <span data-i18n="ambassador.proof_rewards">monthly rewards</span>
         </div>
       </div>
     </div>
@@ -98,29 +116,57 @@
     <section class="ambassador-section ambassador-section--intro" id="how" aria-labelledby="ambassador-how">
       <div class="container ambassador-section__split">
         <div class="ambassador-section__head">
-          <p class="ambassador-eyebrow">The path</p>
-          <h2 id="ambassador-how">A clean referral flow from first share to recurring payout.</h2>
+          <p class="ambassador-eyebrow" data-i18n="ambassador.path_label">The path</p>
+          <h2 id="ambassador-how" data-i18n="ambassador.how_title">A clean referral flow from first code to recurring payout.</h2>
         </div>
         <div class="ambassador-step-grid">
           <article class="ambassador-step">
             <span>01</span>
-            <h3>Request a code</h3>
-            <p>Email hello@oakdev.app and we create a unique code tied to your ambassador profile.</p>
+            <h3 data-i18n="ambassador.step1_title">Request a code</h3>
+            <p data-i18n="ambassador.step1_text">Email hello@oakdev.app and we create a unique code tied to your ambassador profile.</p>
           </article>
           <article class="ambassador-step">
             <span>02</span>
-            <h3>Share Nuria</h3>
-            <p>Introduce the app in your community, with your audience, or through trusted one-to-one recommendations.</p>
+            <h3 data-i18n="ambassador.step2_title">Verify it on /join</h3>
+            <p data-i18n="ambassador.step2_text">When you have received your code, open the join page and verify that the code is active before you start sharing it.</p>
           </article>
           <article class="ambassador-step">
             <span>03</span>
-            <h3>Earn 50%</h3>
-            <p>When a referred subscriber renews, your share is calculated from verified Net Revenue.</p>
+            <h3 data-i18n="ambassador.step3_title">Share Nuria</h3>
+            <p data-i18n="ambassador.step3_text">Introduce the app in your community, with your audience, or through trusted one-to-one recommendations.</p>
           </article>
           <article class="ambassador-step">
             <span>04</span>
-            <h3>Track payouts</h3>
-            <p>Balances carry forward until the EUR 100 threshold is reached, then payment is initiated.</p>
+            <h3 data-i18n="ambassador.step4_title">Track in the portal</h3>
+            <p data-i18n="ambassador.step4_text">Use the Affiliate Portal to see your referral statistics, codes, payout progress, and recent activity.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="ambassador-section ambassador-section--portal" id="portal" aria-labelledby="ambassador-portal">
+      <div class="container ambassador-section__split">
+        <div class="ambassador-section__head">
+          <p class="ambassador-eyebrow" data-i18n="ambassador.portal_label">Code &amp; portal</p>
+          <h2 id="ambassador-portal" data-i18n="ambassador.portal_title">Verify the code first. Track the results after.</h2>
+          <p data-i18n="ambassador.portal_text">
+            Once your ambassador code has been issued, use the /join page to confirm it is valid. After that, the Affiliate Portal is where you follow statistics, referral codes, payout progress, and account activity.
+          </p>
+          <div class="ambassador-hero__actions">
+            <a class="btn btn--gold" href="https://nuria.oakdev.app/join/" data-i18n="ambassador.join_cta">Verify on /join</a>
+            <a class="btn btn--outline" href="/nuria-partner/login" data-i18n="ambassador.portal_cta">Open Affiliate Portal</a>
+          </div>
+        </div>
+        <div class="ambassador-step-grid">
+          <article class="ambassador-step">
+            <span>01</span>
+            <h3 data-i18n="ambassador.portal_card1_title">Join page</h3>
+            <p data-i18n="ambassador.portal_card1_text">Paste the code on https://nuria.oakdev.app/join/ to verify that it is live and ready to use.</p>
+          </article>
+          <article class="ambassador-step">
+            <span>02</span>
+            <h3 data-i18n="ambassador.portal_card2_title">Affiliate Portal</h3>
+            <p data-i18n="ambassador.portal_card2_text">Sign in to review your ambassador profile, active codes, referred subscriber activity, and payout status.</p>
           </article>
         </div>
       </div>
@@ -129,28 +175,28 @@
     <section class="ambassador-section ambassador-section--reward" id="reward" aria-labelledby="ambassador-reward">
       <div class="container ambassador-reward">
         <div class="ambassador-section__head">
-          <p class="ambassador-eyebrow">Reward structure</p>
-          <h2 id="ambassador-reward">Transparent economics, no hidden math.</h2>
-          <p>
+          <p class="ambassador-eyebrow" data-i18n="ambassador.reward_label">Reward structure</p>
+          <h2 id="ambassador-reward" data-i18n="ambassador.reward_title">Transparent economics, no hidden math.</h2>
+          <p data-i18n="ambassador.reward_text">
             Net Revenue means the amount Nuria receives after Apple or Google platform fees. The ambassador share is calculated after that deduction.
           </p>
         </div>
-        <dl class="ambassador-example" aria-label="Worked reward example">
+        <dl class="ambassador-example" data-i18n-aria-label="ambassador.example_aria" aria-label="Worked reward example">
           <div>
-            <dt>Subscriber pays</dt>
+            <dt data-i18n="ambassador.example_subscriber_pays">Subscriber pays</dt>
             <dd>EUR 9.99</dd>
           </div>
           <div>
-            <dt>Platform fee, approx. 30%</dt>
+            <dt data-i18n="ambassador.example_platform_fee">Platform fee, approx. 30%</dt>
             <dd>- EUR 3.00</dd>
           </div>
           <div>
-            <dt>Net Revenue to Nuria</dt>
+            <dt data-i18n="ambassador.example_net_revenue">Net Revenue to Nuria</dt>
             <dd>EUR 6.99</dd>
           </div>
           <div class="ambassador-example__total">
-            <dt>Your share, 50%</dt>
-            <dd>EUR 3.50 / month</dd>
+            <dt data-i18n="ambassador.example_your_share">Your share, 50%</dt>
+            <dd data-i18n="ambassador.example_month">EUR 3.50 / month</dd>
           </div>
         </dl>
       </div>
@@ -159,39 +205,39 @@
     <section class="ambassador-section ambassador-section--downloads" id="downloads" aria-labelledby="ambassador-downloads">
       <div class="container ambassador-downloads">
         <div class="ambassador-section__head">
-          <p class="ambassador-eyebrow">Downloads</p>
-          <h2 id="ambassador-downloads">One click. Both PDFs.</h2>
-          <p>
+          <p class="ambassador-eyebrow" data-i18n="ambassador.downloads_label">Downloads</p>
+          <h2 id="ambassador-downloads" data-i18n="ambassador.downloads_title">One click. Both PDFs.</h2>
+          <p data-i18n="ambassador.downloads_text">
             The program flyer is built for sharing. The terms document is the controlling agreement for eligibility, attribution, payouts, conduct, and Swedish governing law.
           </p>
-          <a class="btn btn--gold ambassador-downloads__primary" href="/assets/Nuria_Ambassador_Program.pdf?v=d491c46" download="Nuria_Ambassador_Program.pdf" data-download-both>
+          <a class="btn btn--gold ambassador-downloads__primary" href="/assets/Nuria_Ambassador_Program.pdf?v=20260508-flyer" download="Nuria_Ambassador_Program.pdf" data-download-both>
             <svg class="ambassador-btn-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
             </svg>
-            Download both PDFs
+            <span data-i18n="ambassador.download_both">Download both PDFs</span>
           </a>
         </div>
         <div class="ambassador-doc-grid">
           <article class="ambassador-doc-card">
-            <span class="ambassador-doc-card__type">Marketing PDF</span>
-            <h3>Nuria Ambassador Program</h3>
-            <p>Four-page presentation with the program promise, share flow, reward example, and getting-started details.</p>
+            <span class="ambassador-doc-card__type" data-i18n="ambassador.doc_program_type">Marketing PDF</span>
+            <h3 data-i18n="ambassador.doc_program_title">Nuria Ambassador Program</h3>
+            <p data-i18n="ambassador.doc_program_text">Four-page presentation with the program promise, share flow, reward example, and getting-started details.</p>
             <div class="ambassador-doc-card__meta">
-              <span>4 pages</span>
+              <span data-i18n="ambassador.doc_pages">4 pages</span>
               <span>211 KB</span>
             </div>
-            <a href="/assets/Nuria_Ambassador_Program.pdf?v=d491c46" download="Nuria_Ambassador_Program.pdf">Download program only</a>
+            <a href="/assets/Nuria_Ambassador_Program.pdf?v=20260508-flyer" download="Nuria_Ambassador_Program.pdf" data-i18n="ambassador.doc_program_download">Download program only</a>
           </article>
 
           <article class="ambassador-doc-card">
-            <span class="ambassador-doc-card__type">Legal PDF</span>
-            <h3>Ambassador Terms</h3>
-            <p>Four-page terms covering OakDev &amp; AI AB, attribution, Net Revenue, payouts, taxes, conduct, and termination.</p>
+            <span class="ambassador-doc-card__type" data-i18n="ambassador.doc_terms_type">Legal PDF</span>
+            <h3 data-i18n="ambassador.doc_terms_title">Ambassador Terms</h3>
+            <p data-i18n="ambassador.doc_terms_text">Four-page terms covering OakDev &amp; AI AB, attribution, Net Revenue, payouts, taxes, conduct, and termination.</p>
             <div class="ambassador-doc-card__meta">
-              <span>4 pages</span>
+              <span data-i18n="ambassador.doc_pages">4 pages</span>
               <span>67 KB</span>
             </div>
-            <a href="/assets/Nuria_Ambassador_Terms.pdf?v=d491c46" download="Nuria_Ambassador_Terms.pdf">Download terms only</a>
+            <a href="/assets/Nuria_Ambassador_Terms.pdf?v=20260508-flyer" download="Nuria_Ambassador_Terms.pdf" data-i18n="ambassador.doc_terms_download">Download terms only</a>
           </article>
         </div>
       </div>
@@ -200,25 +246,25 @@
     <section class="ambassador-section ambassador-section--terms" id="terms" aria-labelledby="ambassador-terms">
       <div class="container ambassador-terms-layout">
         <div class="ambassador-section__head">
-          <p class="ambassador-eyebrow">Key terms</p>
-          <h2 id="ambassador-terms">Clear boundaries before anyone starts promoting.</h2>
+          <p class="ambassador-eyebrow" data-i18n="ambassador.terms_label">Key terms</p>
+          <h2 id="ambassador-terms" data-i18n="ambassador.terms_title">Clear boundaries before anyone starts promoting.</h2>
         </div>
         <div class="ambassador-terms-list">
           <article>
-            <h3>Operated in Sweden</h3>
-            <p>The program is operated by OakDev &amp; AI AB, the Swedish company behind Nuria.</p>
+            <h3 data-i18n="ambassador.terms1_title">Operated in Sweden</h3>
+            <p data-i18n="ambassador.terms1_text">The program is operated by OakDev &amp; AI AB, the Swedish company behind Nuria.</p>
           </article>
           <article>
-            <h3>Verified attribution</h3>
-            <p>Referral status follows store and Nuria backend records, with fraud and refund adjustments applied when needed.</p>
+            <h3 data-i18n="ambassador.terms2_title">Verified attribution</h3>
+            <p data-i18n="ambassador.terms2_text">Referral status follows store and Nuria backend records, with fraud and refund adjustments applied when needed.</p>
           </article>
           <article>
-            <h3>Fees at cost</h3>
-            <p>Bank, SWIFT, PayPal, Wise, or processor fees may be passed through at cost on the payout statement.</p>
+            <h3 data-i18n="ambassador.terms3_title">Fees at cost</h3>
+            <p data-i18n="ambassador.terms3_text">Bank, SWIFT, PayPal, Wise, or processor fees may be passed through at cost on the payout statement.</p>
           </article>
           <article>
-            <h3>Independent taxes</h3>
-            <p>Ambassadors are independent contractors and handle tax reporting in their own jurisdiction.</p>
+            <h3 data-i18n="ambassador.terms4_title">Independent taxes</h3>
+            <p data-i18n="ambassador.terms4_text">Ambassadors are independent contractors and handle tax reporting in their own jurisdiction.</p>
           </article>
         </div>
       </div>
@@ -226,30 +272,31 @@
 
     <section class="ambassador-section ambassador-section--final" aria-labelledby="ambassador-start">
       <div class="container ambassador-final">
-        <p class="ambassador-eyebrow">Become an ambassador</p>
-        <h2 id="ambassador-start">Ready to share Nuria with people who will value it?</h2>
-        <p>Send your name, country, payout preference, and where you plan to share Nuria. We aim to reply within 48 hours.</p>
+        <p class="ambassador-eyebrow" data-i18n="ambassador.final_label">Become an ambassador</p>
+        <h2 id="ambassador-start" data-i18n="ambassador.final_title">Ready to share Nuria with people who will value it?</h2>
+        <p data-i18n="ambassador.final_text">Send your name, country, payout preference, and where you plan to share Nuria. We aim to reply within 48 hours.</p>
         <div class="ambassador-hero__actions">
-          <a class="btn btn--gold" href="mailto:hello@oakdev.app?subject=Nuria%20Ambassador%20Program">Email hello@oakdev.app</a>
-          <a class="btn btn--outline" href="/nuria-partner/login">Partner Portal</a>
+          <a class="btn btn--gold" href="mailto:hello@oakdev.app?subject=Nuria%20Ambassador%20Program" data-i18n="ambassador.email_cta">Email hello@oakdev.app</a>
+          <a class="btn btn--outline" href="https://nuria.oakdev.app/join/" data-i18n="ambassador.join_cta">Verify on /join</a>
+          <a class="btn btn--outline" href="/nuria-partner/login" data-i18n="ambassador.portal_cta">Open Affiliate Portal</a>
         </div>
-        <div class="ambassador-app-downloads" aria-label="Download Nuria app">
-          <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store btn--store-lg" data-store-link="app-store" aria-label="Download Nuria on the App Store" target="_blank" rel="noopener noreferrer">
+        <div class="ambassador-app-downloads" data-i18n-aria-label="ambassador.app_downloads_aria" aria-label="Download Nuria app">
+          <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store btn--store-lg" data-store-link="app-store" data-i18n-aria-label="a11y.store_apple" aria-label="Download Nuria on the App Store" target="_blank" rel="noopener noreferrer">
             <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
             </svg>
             <span>
-              <small>Download on the</small>
-              <span>App Store</span>
+              <small data-i18n="hero.appstore_small">Download on the</small>
+              <span data-i18n="hero.appstore">App Store</span>
             </span>
           </a>
-          <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="btn btn--store btn--store-lg" data-store-link="google-play" aria-label="Get Nuria on Google Play" target="_blank" rel="noopener noreferrer">
+          <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="btn btn--store btn--store-lg" data-store-link="google-play" data-i18n-aria-label="a11y.store_google" aria-label="Get Nuria on Google Play" target="_blank" rel="noopener noreferrer">
             <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M3.18 23.77a2 2 0 001.1-.32l12.54-7.21-2.76-2.76L3.18 23.77zM20.77 9.6L17.4 7.67l-3.07 3.07 3.07 3.07 3.4-1.95a1.66 1.66 0 000-2.26zM3 .23a1.9 1.9 0 00-.82 1.6v20.36a1.9 1.9 0 00.82 1.6l.1.08 11.4-11.4v-.27L3.1.15zM14.06 13.4L3.18.23l.08.07 10.9 10.9-3.07 3.07 3.07 3.07-10.9 10.9-.08.07z"/>
             </svg>
             <span>
-              <small>Get it on</small>
-              <span>Google Play</span>
+              <small data-i18n="hero.googleplay_small">Get it on</small>
+              <span data-i18n="hero.googleplay">Google Play</span>
             </span>
           </a>
         </div>
@@ -260,11 +307,11 @@
   <footer class="footer ambassador-footer" role="contentinfo">
     <div class="container">
       <div class="footer__bottom">
-        <p>&copy; 2026 OakDev &amp; AI AB. All rights reserved.</p>
+        <p data-i18n="footer.copy">&copy; 2026 OakDev &amp; AI AB. All rights reserved.</p>
         <div class="footer__bottom-links">
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
-          <a href="/support">Support</a>
+          <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
+          <a href="/terms" data-i18n="footer.nav_terms">Terms</a>
+          <a href="/support" data-i18n="footer.nav_support">Support</a>
         </div>
       </div>
     </div>
@@ -277,8 +324,8 @@
   <script>
     (() => {
       const files = [
-        { href: '/assets/Nuria_Ambassador_Program.pdf?v=d491c46', name: 'Nuria_Ambassador_Program.pdf' },
-        { href: '/assets/Nuria_Ambassador_Terms.pdf?v=d491c46', name: 'Nuria_Ambassador_Terms.pdf' },
+        { href: '/assets/Nuria_Ambassador_Program.pdf?v=20260508-flyer', name: 'Nuria_Ambassador_Program.pdf' },
+        { href: '/assets/Nuria_Ambassador_Terms.pdf?v=20260508-flyer', name: 'Nuria_Ambassador_Terms.pdf' },
       ];
 
       document.querySelectorAll('[data-download-both]').forEach((trigger) => {
