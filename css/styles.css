@@ -895,8 +895,6 @@ body.theme-luxury-stone .hero__phone-wrap {
 
 .hero__logo-wrap {
   --hero-logo-size: clamp(200px, 88vw, 270px);
-  --hero-logo-halo-size: clamp(150px, 42vw, 198px);
-  --hero-logo-halo-top: clamp(82px, 36vw, 111px);
   animation: fadeInUp 1s ease 0.3s both;
   position: relative;
   display: inline-block;
@@ -935,72 +933,7 @@ body.theme-luxury-stone .hero__phone-wrap {
 /* Soft halo only (no box); logo floats with transparent padding in the PNG */
 .hero__logo-wrap::before,
 .hero__logo-wrap::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: var(--hero-logo-halo-top);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  animation: breathe 5s ease infinite;
-  pointer-events: none;
-}
-
-.hero__logo-wrap::before {
-  width: calc(var(--hero-logo-halo-size) * 1.08);
-  background: radial-gradient(
-    circle at center,
-    rgba(var(--logo-halo-deep-rgb), 0.16) 0%,
-    rgba(var(--logo-halo-deep-rgb), 0.08) 42%,
-    transparent 72%
-  );
-  filter: blur(14px);
-  opacity: 0.58;
-  z-index: 0;
-}
-
-.hero__logo-wrap::after {
-  width: var(--hero-logo-halo-size);
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 250, 224, 0.4) 0%,
-    rgba(238, 196, 92, 0.28) 32%,
-    rgba(var(--logo-halo-green-rgb), 0.1) 56%,
-    transparent 76%
-  );
-  filter: blur(12px);
-  opacity: 0.86;
-  z-index: 1;
-}
-
-body.theme-luxury-stone .hero__logo-wrap {
-  --hero-logo-halo-size: clamp(142px, 39vw, 188px);
-}
-
-body.theme-luxury-stone .hero__logo-wrap::before {
-  width: calc(var(--hero-logo-halo-size) * 1.08);
-  background: radial-gradient(
-    circle at center,
-    rgba(36, 43, 27, 0.26) 0%,
-    rgba(36, 43, 27, 0.16) 42%,
-    rgba(76, 58, 22, 0.08) 60%,
-    transparent 76%
-  );
-  filter: blur(12px);
-  opacity: 0.54;
-}
-
-body.theme-luxury-stone .hero__logo-wrap::after {
-  width: var(--hero-logo-halo-size);
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 244, 202, 0.38) 0%,
-    rgba(217, 169, 74, 0.24) 34%,
-    rgba(75, 83, 32, 0.08) 58%,
-    transparent 78%
-  );
-  filter: blur(10px);
-  opacity: 0.8;
+  content: none;
 }
 
 /* Gradient fill clipped to logo alpha — transparency around the mark preserved */
@@ -1025,16 +958,16 @@ body.theme-luxury-stone .hero__logo-wrap::after {
   -webkit-mask-position: center;
   mask-position: center;
   filter:
-    drop-shadow(0 4px 16px rgba(40, 30, 10, 0.32))
-    drop-shadow(0 0 22px rgba(255, 226, 148, 0.28))
-    drop-shadow(0 0 46px rgba(214, 159, 57, 0.16));
+    drop-shadow(0 3px 8px rgba(20, 12, 4, 0.22))
+    drop-shadow(0 0 12px rgba(255, 236, 176, 0.4))
+    drop-shadow(0 0 24px rgba(238, 196, 92, 0.28));
 }
 
 body.theme-luxury-stone .hero__logo {
   filter:
-    drop-shadow(0 4px 10px rgba(18, 21, 15, 0.56))
-    drop-shadow(0 0 18px rgba(32, 38, 24, 0.42))
-    drop-shadow(0 0 30px rgba(217, 169, 74, 0.2));
+    drop-shadow(0 3px 7px rgba(36, 43, 27, 0.26))
+    drop-shadow(0 0 10px rgba(255, 244, 202, 0.34))
+    drop-shadow(0 0 20px rgba(217, 169, 74, 0.24));
 }
 
 .hero__subtitle {
