@@ -10932,6 +10932,18 @@ body.page-ambassador .ambassador-final p {
   color: rgba(248, 241, 223, 0.82);
 }
 
+body.page-ambassador .ambassador-app-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.35rem;
+}
+
+body.page-ambassador .ambassador-app-downloads .btn--store {
+  min-width: 178px;
+  justify-content: flex-start;
+}
+
 body.page-ambassador .ambassador-footer {
   background: transparent;
   color: var(--ambassador-muted);
@@ -10993,6 +11005,16 @@ body.page-ambassador .ambassador-footer {
   body.page-ambassador .ambassador-downloads,
   body.page-ambassador .ambassador-terms-layout {
     grid-template-columns: 1fr;
+  }
+
+  body.page-ambassador .ambassador-app-downloads {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.page-ambassador .ambassador-app-downloads .btn--store {
+    justify-content: center;
+    width: 100%;
   }
 
   body.page-ambassador .ambassador-section__split .ambassador-step-grid,

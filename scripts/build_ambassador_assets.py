@@ -20,6 +20,9 @@ PROGRAM_PDF = ASSETS / "Nuria_Ambassador_Program.pdf"
 TERMS_PDF = ASSETS / "Nuria_Ambassador_Terms.pdf"
 COVER_JPG = ASSETS / "ambassador-cover.jpg"
 OG_JPG = ASSETS / "ambassador-og.jpg"
+BLESSING_PNG = ASSETS / "ambassador-blessing.png"
+APP_STORE_BADGE_PNG = ASSETS / "ambassador-app-store-badge.png"
+GOOGLE_PLAY_BADGE_PNG = ASSETS / "ambassador-google-play-badge.png"
 
 APP_STORE_URL = "https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913"
 GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv"
@@ -41,6 +44,15 @@ GOLD_LIGHT = HexColor("#d3b46b")
 INK = HexColor("#1a1a15")
 MUTED = HexColor("#4e3b18")
 WHITE = HexColor("#fffaf0")
+
+LOGO_GRADIENT_STOPS = [
+    (0.0, (255, 253, 247)),
+    (0.20, (255, 240, 191)),
+    (0.44, (241, 207, 120)),
+    (0.64, (217, 166, 63)),
+    (0.84, (255, 242, 189)),
+    (1.0, (255, 250, 240)),
+]
 
 
 def register_fonts():
@@ -95,6 +107,44 @@ def line_top(c, x1, top1, x2, top2, color=GOLD, width=1):
 def set_fill_alpha(c, alpha):
     if hasattr(c, "setFillAlpha"):
         c.setFillAlpha(alpha)
+
+
+def gradient_color(stops, ratio):
+    ratio = max(0.0, min(1.0, ratio))
+    for index, (stop, color) in enumerate(stops[1:], start=1):
+        prev_stop, prev_color = stops[index - 1]
+        if ratio > stop:
+            continue
+        span = stop - prev_stop
+        local = 0 if span == 0 else (ratio - prev_stop) / span
+        return tuple(
+            int(round(prev_color[channel] + (color[channel] - prev_color[channel]) * local))
+            for channel in range(3)
+        )
+    return stops[-1][1]
+
+
+def build_light_logo_image():
+    logo_path = ASSETS / "Nuria Logo.png"
+    if not logo_path.exists():
+        return None
+    source = Image.open(logo_path).convert("RGBA")
+    alpha = source.getchannel("A")
+    bbox = alpha.getbbox()
+    if not bbox:
+        return None
+    alpha = alpha.crop(bbox)
+    width, height = alpha.size
+    denom = max(1, width + height - 2)
+    pixels = []
+    for row in range(height):
+        for col in range(width):
+            ratio = (col + row) / denom
+            pixels.append((*gradient_color(LOGO_GRADIENT_STOPS, ratio), 255))
+    logo = Image.new("RGBA", (width, height))
+    logo.putdata(pixels)
+    logo.putalpha(alpha)
+    return logo
 
 
 def soft_ellipse_top(c, x, top, w, h, color, alpha):
@@ -210,15 +260,17 @@ def draw_cover_footer(c):
 
 
 def draw_logo(c, x, top, size):
-    logo_path = ASSETS / "Nuria Logo.png"
-    if not logo_path.exists():
+    logo = build_light_logo_image()
+    if logo is None:
         return
-    center_x = x + size / 2
-    center_top = top + size / 2
-    soft_ellipse_top(c, center_x - size * 0.86, center_top - size * 0.86, size * 1.72, size * 1.72, HexColor("#747d4c"), 0.18)
-    soft_ellipse_top(c, center_x - size * 0.68, center_top - size * 0.68, size * 1.36, size * 1.36, MILITARY, 0.16)
-    soft_ellipse_top(c, center_x - size * 0.54, center_top - size * 0.54, size * 1.08, size * 1.08, WHITE, 0.18)
-    c.drawImage(ImageReader(str(logo_path)), x, y(top + size), size, size, preserveAspectRatio=True, mask="auto")
+    c.drawImage(ImageReader(logo), x, y(top + size), size, size, preserveAspectRatio=True, mask="auto")
+
+
+def draw_asset_image(c, path, x, top, w, h):
+    if not path.exists():
+        return False
+    c.drawImage(ImageReader(str(path)), x, y(top + h), w, h, preserveAspectRatio=True, mask="auto")
+    return True
 
 
 def draw_qr(c, url, x, top, size):
@@ -244,7 +296,7 @@ def build_program_pdf():
     draw_background(c)
     rect_top(c, 0, 0, 164, PAGE_H, fill=GREEN)
     rect_top(c, 164, 0, 5, PAGE_H, fill=GOLD)
-    draw_logo(c, 46, 74, 76)
+    draw_logo(c, 36, 64, 96)
     text_top(c, "Ambassador", 205, 92, "Bahnschrift", 44, GREEN)
     text_top(c, "Program", 205, 142, "Bahnschrift", 44, GREEN)
     line_top(c, 205, 210, PAGE_W - MARGIN, 210, GOLD, 1.2)
@@ -273,8 +325,7 @@ def build_program_pdf():
     rect_top(c, 205, 520, 320, 114, fill=HexColor("#35482c"), stroke=GOLD, radius=8, line_width=0.9)
     section_label(c, "Edition 2026", 227, 546, GOLD_LIGHT)
     paragraph(c, f"Request your ambassador code through {CONTACT_EMAIL}. We aim to reply within 48 hours.", 227, 570, 270, "Segoe", 11.2, 15.6, CREAM)
-    text_top(c, "Khayran katheeran", 46, 680, "SegoeBold", 12, CREAM)
-    paragraph(c, "May abundant good come of it.", 46, 704, 82, "SegoeItalic", 8.4, 11, HexColor("#eadfbf"))
+    draw_asset_image(c, BLESSING_PNG, 39, 643.8, 122, 89.5)
     draw_cover_footer(c)
     c.showPage()
 
@@ -386,17 +437,17 @@ def build_program_pdf():
     )
     tile_w = 236
     tile_h = 300
-    for i, (title, subtitle, url) in enumerate([
-        ("App Store", "iOS", APP_STORE_URL),
-        ("Google Play", "Android", GOOGLE_PLAY_URL),
+    for i, (title, badge_path, badge_w, url, description) in enumerate([
+        ("App Store", APP_STORE_BADGE_PNG, 137.3, APP_STORE_URL, "Scan to open Nuria on the App Store."),
+        ("Google Play", GOOGLE_PLAY_BADGE_PNG, 154, GOOGLE_PLAY_URL, "Scan to open Nuria on Google Play."),
     ]):
         x = MARGIN + i * (tile_w + 38)
         top = 278
         rect_top(c, x, top, tile_w, tile_h, fill=HexColor("#f8f1df"), stroke=GOLD_LIGHT, radius=8)
-        text_top(c, title, x + 22, top + 24, "SegoeBold", 20, GREEN)
-        text_top(c, subtitle, x + 22, top + 55, "Segoe", 9, GOLD, tracking=1.2)
+        if not draw_asset_image(c, badge_path, x + (tile_w - badge_w) / 2, top + 27, badge_w, 47):
+            text_top(c, title, x + 22, top + 24, "SegoeBold", 20, GREEN)
         draw_qr(c, url, x + 48, top + 92, 140)
-        paragraph(c, "Scan the code or use the direct app-store link from the website.", x + 22, top + 254, tile_w - 44, "Segoe", 8.5, 11.5, MUTED)
+        paragraph(c, description, x + 18, top + 254, tile_w - 36, "Segoe", 8.5, 11.5, MUTED)
     rect_top(c, MARGIN, 630, PAGE_W - MARGIN * 2, 86, fill=HexColor("#f8f1df"), stroke=GOLD_LIGHT, radius=8)
     section_label(c, "Become an ambassador", MARGIN + 22, 654)
     text_top(c, "Request your code today", MARGIN + 22, 682, "SegoeBold", 19, GREEN)
