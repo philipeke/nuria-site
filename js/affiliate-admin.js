@@ -40,10 +40,12 @@ const ADMIN_PAGE_PATHS = {
   subscribers: '/internal/affiliate-admin/subscribers/',
   reports: '/internal/affiliate-admin/reports/',
   'report-detail': '/internal/affiliate-admin/report-detail/',
+  'live-notifications': '/internal/affiliate-admin/live-notifications/',
   'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 15000;
+const LIVE_NOTIFICATION_CALL_TIMEOUT_MS = 30000;
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 2500;
 const AUTH_STUCK_TIMEOUT_MS = 6000;
 const ADMIN_CALL_TIMEOUT_MS = 15000;
@@ -252,6 +254,25 @@ const elements = {
   dashboardCopyPreviewBody: document.getElementById('adminDashboardCopyPreviewBody'),
   dashboardCopyPreviewEmpty: document.getElementById('adminDashboardCopyPreviewEmpty'),
   dashboardCopyMetadata: document.getElementById('adminDashboardCopyMetadata'),
+  liveNotificationForm: document.getElementById('adminLiveNotificationForm'),
+  liveNotificationTitle: document.getElementById('adminLiveNotificationTitle'),
+  liveNotificationTitleMeta: document.getElementById('adminLiveNotificationTitleMeta'),
+  liveNotificationBody: document.getElementById('adminLiveNotificationBody'),
+  liveNotificationBodyMeta: document.getElementById('adminLiveNotificationBodyMeta'),
+  liveNotificationAllLocales: document.getElementById('adminLiveNotificationAllLocales'),
+  liveNotificationLocalesGroup: document.getElementById('adminLiveNotificationLocalesGroup'),
+  liveNotificationLocales: document.getElementById('adminLiveNotificationLocales'),
+  liveNotificationRequireMarketing: document.getElementById('adminLiveNotificationRequireMarketing'),
+  liveNotificationMatched: document.getElementById('adminLiveNotificationMatched'),
+  liveNotificationUpdatesOptIn: document.getElementById('adminLiveNotificationUpdatesOptIn'),
+  liveNotificationLocaleMatch: document.getElementById('adminLiveNotificationLocaleMatch'),
+  liveNotificationMarketingMatch: document.getElementById('adminLiveNotificationMarketingMatch'),
+  liveNotificationAudienceMeta: document.getElementById('adminLiveNotificationAudienceMeta'),
+  liveNotificationHistory: document.getElementById('adminLiveNotificationHistory'),
+  refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
+  estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
+  sendLiveNotificationButton: document.getElementById('adminSendLiveNotificationButton'),
+  liveNotificationFormError: document.getElementById('adminLiveNotificationFormError'),
   recipientForm: document.getElementById('adminRecipientForm'),
   recipientEmail: document.getElementById('adminRecipientEmail'),
   addRecipientButton: document.getElementById('adminAddRecipientButton'),
@@ -382,6 +403,11 @@ const state = {
   dashboardCopyLocaleSearch: '',
   dashboardCopyPreviewLocale: '',
   dashboardCopyPreviewTouched: false,
+  liveNotificationSummary: null,
+  liveNotificationCampaigns: [],
+  liveNotificationLoading: false,
+  liveNotificationSending: false,
+  liveNotificationError: '',
 };
 let loginSuccessSound = null;
 let checklistRemoteSyncTimeoutId = null;
@@ -585,6 +611,15 @@ function setAdminPage(pageKey, options) {
       });
     }
   }
+
+  if (next === 'live-notifications' && state.user) {
+    ensureLiveNotificationsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('live_notifications_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
 }
 
 function showBanner(message, tone) {
@@ -648,10 +683,19 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (code === 'deadline-exceeded' || message.includes('timed out') || message.includes('timeout')) {
     if (error?.adminCallable === 'getDashboardTopPlaceholderAdmin') {
-      return 'Dashboard copy load timed out. Try again. If it keeps hanging, verify the backend callable is deployed and that Firebase App Check or reCAPTCHA is not blocking this site.';
+      return 'Placeholder load timed out. Try again. If it keeps hanging, verify the backend callable is deployed and that Firebase App Check or reCAPTCHA is not blocking this site.';
     }
     if (error?.adminCallable === 'upsertDashboardTopPlaceholderAdmin') {
-      return 'Dashboard copy save timed out. The backend may be slow or blocked by App Check. Wait a moment and try again.';
+      return 'Placeholder save timed out. The backend may be slow or blocked by App Check. Wait a moment and try again.';
+    }
+    if (error?.adminCallable === 'estimateAdminPushAudience') {
+      return 'Live Notification recipient count timed out. Try Refresh recipient count again.';
+    }
+    if (error?.adminCallable === 'listAdminPushCampaigns') {
+      return 'Live Notification history timed out. You can still write and send a notification.';
+    }
+    if (error?.adminCallable === 'sendAdminPushNotification') {
+      return 'Live Notification send timed out. Check recent sends before sending again.';
     }
     return 'This request timed out before the backend responded. Try again.';
   }
@@ -716,6 +760,15 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (code === 'invalid-email') {
     return 'Email format is invalid.';
+  }
+
+  if (code === 'failed-precondition') {
+    if (message.includes('push_audience_empty')) {
+      return 'No opted-in users match this Live Notification target.';
+    }
+    if (message.includes('push_audience_too_large')) {
+      return 'This Live Notification audience is too large. Narrow it by language first.';
+    }
   }
 
   if (code === 'too-many-requests') {
@@ -5012,6 +5065,301 @@ function renderDashboardCopyPublishedSnapshot() {
     .join('');
 }
 
+function formatAdminNumber(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return '-';
+  try {
+    return new Intl.NumberFormat(undefined).format(number);
+  } catch (error) {
+    return String(number);
+  }
+}
+
+function getLiveNotificationTarget() {
+  const allLocales = elements.liveNotificationAllLocales?.checked !== false;
+  const rawLocales = String(elements.liveNotificationLocales?.value || '');
+  const targetLocales = allLocales
+    ? []
+    : Array.from(
+        new Set(
+          rawLocales
+            .split(/,|;|\s+/)
+            .map((item) => item.trim().replace(/-/g, '_').toLowerCase())
+            .filter(Boolean)
+        )
+      );
+
+  return {
+    allLocales,
+    targetLocales,
+    requireMarketingConsent: elements.liveNotificationRequireMarketing?.checked === true,
+  };
+}
+
+function setLiveNotificationFormError(message) {
+  if (!elements.liveNotificationFormError) return;
+  elements.liveNotificationFormError.hidden = !message;
+  elements.liveNotificationFormError.textContent = message || '';
+}
+
+function renderLiveNotificationFieldMeta() {
+  const titleLength = String(elements.liveNotificationTitle?.value || '').trim().length;
+  const bodyLength = String(elements.liveNotificationBody?.value || '').trim().length;
+
+  if (elements.liveNotificationTitleMeta) {
+    elements.liveNotificationTitleMeta.textContent = `${titleLength} / 80 characters`;
+  }
+  if (elements.liveNotificationBodyMeta) {
+    elements.liveNotificationBodyMeta.textContent = `${bodyLength} / 240 characters`;
+  }
+}
+
+function renderLiveNotificationAudience() {
+  const summary = state.liveNotificationSummary || {};
+  const target = getLiveNotificationTarget();
+
+  if (elements.liveNotificationMatched) {
+    elements.liveNotificationMatched.textContent = formatAdminNumber(summary.matchedUsers);
+  }
+  if (elements.liveNotificationUpdatesOptIn) {
+    elements.liveNotificationUpdatesOptIn.textContent = formatAdminNumber(summary.updatesOptInUsers);
+  }
+  if (elements.liveNotificationLocaleMatch) {
+    elements.liveNotificationLocaleMatch.textContent = formatAdminNumber(summary.localeMatchedUsers);
+  }
+  if (elements.liveNotificationMarketingMatch) {
+    elements.liveNotificationMarketingMatch.textContent = formatAdminNumber(summary.marketingMatchedUsers);
+  }
+  if (elements.liveNotificationAudienceMeta) {
+    const languageCopy = target.allLocales
+      ? 'Target: all languages.'
+      : `Target languages: ${target.targetLocales.join(', ') || 'none selected'}.`;
+    const marketingCopy = target.requireMarketingConsent
+      ? ' Marketing consent is required.'
+      : ' Marketing consent is not required.';
+    const totalCopy = summary.totalTokenUsers != null
+      ? ` Saved FCM tokens: ${formatAdminNumber(summary.totalTokenUsers)}.`
+      : '';
+    elements.liveNotificationAudienceMeta.textContent = `${languageCopy}${marketingCopy}${totalCopy}`;
+  }
+}
+
+function renderLiveNotificationHistory() {
+  if (!elements.liveNotificationHistory) return;
+  const items = Array.isArray(state.liveNotificationCampaigns)
+    ? state.liveNotificationCampaigns.slice(0, 8)
+    : [];
+
+  if (!items.length) {
+    elements.liveNotificationHistory.innerHTML =
+      '<p class="admin-empty admin-empty--inline">No Live Notifications sent yet.</p>';
+    return;
+  }
+
+  elements.liveNotificationHistory.innerHTML = items
+    .map((item) => {
+      const target = Array.isArray(item.targetLocales) && item.targetLocales.length
+        ? item.targetLocales.join(', ')
+        : 'All languages';
+      const sentAt = item.sentAt?.iso || item.createdAt?.iso;
+      return `
+        <div class="admin-mini-item">
+          <span class="admin-mini-item__title">${escapeHtml(item.title || 'Live Notification')}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(item.body || '')}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(formatAdminNumber(item.sentCount || 0))} sent &middot; ${escapeHtml(target)}${item.requireMarketingConsent ? ' &middot; Marketing consent' : ''}${sentAt ? ` &middot; ${escapeHtml(formatTimestamp({ iso: sentAt }))}` : ''}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function syncLiveNotificationTargetControls() {
+  const allLocales = elements.liveNotificationAllLocales?.checked !== false;
+  if (elements.liveNotificationLocalesGroup) {
+    elements.liveNotificationLocalesGroup.hidden = allLocales;
+  }
+  if (elements.liveNotificationLocales) {
+    elements.liveNotificationLocales.disabled = allLocales;
+  }
+}
+
+function renderLiveNotifications() {
+  syncLiveNotificationTargetControls();
+  renderLiveNotificationFieldMeta();
+  renderLiveNotificationAudience();
+  renderLiveNotificationHistory();
+  setButtonBusy(elements.refreshLiveNotificationAudience, state.liveNotificationLoading, 'Counting');
+  setButtonBusy(elements.estimateLiveNotification, state.liveNotificationLoading, 'Counting');
+  setButtonBusy(elements.sendLiveNotificationButton, state.liveNotificationSending, 'Sending');
+}
+
+function resetLiveNotificationAudiencePreview() {
+  state.liveNotificationSummary = null;
+  state.liveNotificationError = '';
+  renderLiveNotifications();
+}
+
+function resetLiveNotificationState() {
+  state.liveNotificationSummary = null;
+  state.liveNotificationCampaigns = [];
+  state.liveNotificationLoading = false;
+  state.liveNotificationSending = false;
+  state.liveNotificationError = '';
+  setLiveNotificationFormError('');
+  if (elements.liveNotificationTitle) {
+    elements.liveNotificationTitle.value = '';
+  }
+  if (elements.liveNotificationBody) {
+    elements.liveNotificationBody.value = '';
+  }
+  renderLiveNotifications();
+}
+
+async function estimateLiveNotificationAudience(options) {
+  const settings = Object.assign({ silent: false }, options || {});
+  const target = getLiveNotificationTarget();
+  if (!target.allLocales && !target.targetLocales.length) {
+    const message = 'Choose at least one language code, or tick Send to all languages.';
+    state.liveNotificationSummary = null;
+    state.liveNotificationError = message;
+    setLiveNotificationFormError(message);
+    renderLiveNotifications();
+    if (!settings.silent) showBanner(message, 'error');
+    throw new Error('live_notification_target_locales_required');
+  }
+
+  state.liveNotificationLoading = true;
+  state.liveNotificationError = '';
+  setLiveNotificationFormError('');
+  renderLiveNotifications();
+
+  try {
+    const data = await withActionTimeout(
+      callFirebaseFunction('estimateAdminPushAudience', {
+        targetLocales: target.targetLocales,
+        requireMarketingConsent: target.requireMarketingConsent,
+      }),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'estimateAdminPushAudience',
+        message: 'live_notification_audience_timeout',
+      }
+    );
+    state.liveNotificationSummary = data?.summary || null;
+    return state.liveNotificationSummary;
+  } catch (error) {
+    const message = getActionableErrorMessage(error, 'Live Notification recipient count could not be loaded.');
+    state.liveNotificationError = message;
+    setLiveNotificationFormError(message);
+    if (!settings.silent) showBanner(message, 'error');
+    throw error;
+  } finally {
+    state.liveNotificationLoading = false;
+    renderLiveNotifications();
+  }
+}
+
+async function loadLiveNotificationCampaigns(options) {
+  const settings = Object.assign({ silent: false }, options || {});
+  try {
+    const data = await withActionTimeout(
+      callFirebaseFunction('listAdminPushCampaigns'),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'listAdminPushCampaigns',
+        message: 'live_notification_history_timeout',
+      }
+    );
+    state.liveNotificationCampaigns = Array.isArray(data?.items) ? data.items : [];
+    renderLiveNotificationHistory();
+  } catch (error) {
+    if (!settings.silent) {
+      const message = getActionableErrorMessage(error, 'Live Notification history could not be loaded.');
+      showBanner(message, 'error');
+    }
+  }
+}
+
+async function ensureLiveNotificationsLoaded(options) {
+  const settings = Object.assign({ silent: false }, options || {});
+  await Promise.allSettled([
+    estimateLiveNotificationAudience(settings),
+    loadLiveNotificationCampaigns(settings),
+  ]);
+}
+
+async function handleLiveNotificationSend(event) {
+  event.preventDefault();
+  if (state.liveNotificationSending) return;
+
+  clearBanner();
+  setLiveNotificationFormError('');
+  const title = String(elements.liveNotificationTitle?.value || '').trim();
+  const body = String(elements.liveNotificationBody?.value || '').trim();
+
+  if (!title || !body) {
+    setLiveNotificationFormError('Write both Notification title and Notification message first.');
+    return;
+  }
+
+  let summary = null;
+  try {
+    summary = await estimateLiveNotificationAudience({ silent: true });
+  } catch (error) {
+    return;
+  }
+
+  if (!summary || Number(summary.matchedUsers || 0) <= 0) {
+    setLiveNotificationFormError('No opted-in users match this Live Notification target.');
+    return;
+  }
+
+  const target = getLiveNotificationTarget();
+  const confirmed = window.confirm(
+    `Send this Live Notification now to ${formatAdminNumber(summary.matchedUsers)} users?\n\nThis sends a real push notification.`
+  );
+  if (!confirmed) return;
+
+  state.liveNotificationSending = true;
+  renderLiveNotifications();
+
+  try {
+    const data = await withActionTimeout(
+      callFirebaseFunction('sendAdminPushNotification', {
+        title,
+        body,
+        targetLocales: target.targetLocales,
+        requireMarketingConsent: target.requireMarketingConsent,
+      }),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'sendAdminPushNotification',
+        message: 'live_notification_send_timeout',
+      }
+    );
+    if (data?.item) {
+      state.liveNotificationCampaigns = [data.item].concat(state.liveNotificationCampaigns || []).slice(0, 20);
+    }
+    elements.liveNotificationTitle.value = '';
+    elements.liveNotificationBody.value = '';
+    renderLiveNotifications();
+    showBanner(`Live Notification sent to ${formatAdminNumber(data?.item?.sentCount || 0)} users.`, 'success');
+    addActivityLog('Sent Live Notification.', 'success');
+    track('live_notification_sent', {
+      sent_count: Number(data?.item?.sentCount || 0),
+      require_marketing_consent: target.requireMarketingConsent,
+    });
+    estimateLiveNotificationAudience({ silent: true }).catch(() => {});
+  } catch (error) {
+    const message = getActionableErrorMessage(error, 'Live Notification could not be sent.');
+    setLiveNotificationFormError(message);
+    showBanner(message, 'error');
+  } finally {
+    state.liveNotificationSending = false;
+    renderLiveNotifications();
+  }
+}
+
 function renderDashboardCopy() {
   const hasDraft = Boolean(state.dashboardCopyDraft);
 
@@ -5023,11 +5371,11 @@ function renderDashboardCopy() {
   }
 
   if (elements.dashboardCopyErrorState) {
-    elements.dashboardCopyErrorState.hidden = !(state.dashboardCopyError && !hasDraft);
+    elements.dashboardCopyErrorState.hidden = !(state.dashboardCopyError && !hasDraft && !state.dashboardCopyLoading);
   }
 
   if (elements.dashboardCopyErrorCopy) {
-    elements.dashboardCopyErrorCopy.textContent = state.dashboardCopyError || 'Dashboard copy could not be loaded.';
+    elements.dashboardCopyErrorCopy.textContent = state.dashboardCopyError || 'Placeholder could not be loaded.';
   }
 
   if (elements.dashboardCopyReady) {
@@ -5103,7 +5451,7 @@ async function ensureDashboardCopyLoaded(options) {
       }
       return item;
     } catch (error) {
-      const message = getActionableErrorMessage(error, 'Dashboard copy could not be loaded.');
+      const message = getActionableErrorMessage(error, 'Placeholder could not be loaded.');
       state.dashboardCopyError = message;
       if (!settings.silent) {
         showBanner(message, 'error');
@@ -5227,14 +5575,14 @@ async function handleDashboardCopySave(event) {
     state.dashboardCopyError = '';
     setDashboardCopyFormError('');
     renderDashboardCopy();
-    showBanner('Dashboard copy saved.', 'success');
+    showBanner('Placeholder saved.', 'success');
     addActivityLog('Updated dashboard top placeholder copy.', 'success');
     track('dashboard_copy_saved', {
       enabled: item.enabled,
       translated_locales: getDashboardCopyStoredLocaleCount(item.translations),
     });
   } catch (error) {
-    const message = getActionableErrorMessage(error, 'Dashboard copy could not be saved.');
+    const message = getActionableErrorMessage(error, 'Placeholder could not be saved.');
     setDashboardCopyFormError(message);
     showBanner(message, 'error');
   } finally {
@@ -8188,6 +8536,46 @@ function bindEvents() {
   elements.dashboardCopyLocaleSearch?.addEventListener('input', handleDashboardCopyLocaleSearchInput);
   elements.dashboardCopyTranslationsList?.addEventListener('input', handleDashboardCopyTranslationInput);
   elements.dashboardCopyPreviewLocale?.addEventListener('change', handleDashboardCopyPreviewLocaleChange);
+  elements.refreshLiveNotificationAudience?.addEventListener('click', () => {
+    clearBanner();
+    estimateLiveNotificationAudience({ silent: false }).catch(() => {});
+  });
+  elements.estimateLiveNotification?.addEventListener('click', () => {
+    clearBanner();
+    estimateLiveNotificationAudience({ silent: false }).catch(() => {});
+  });
+  elements.liveNotificationForm?.addEventListener('submit', handleLiveNotificationSend);
+  elements.liveNotificationTitle?.addEventListener('input', () => {
+    setLiveNotificationFormError('');
+    renderLiveNotificationFieldMeta();
+  });
+  elements.liveNotificationBody?.addEventListener('input', () => {
+    setLiveNotificationFormError('');
+    renderLiveNotificationFieldMeta();
+  });
+  elements.liveNotificationAllLocales?.addEventListener('change', () => {
+    clearBanner();
+    setLiveNotificationFormError('');
+    syncLiveNotificationTargetControls();
+    resetLiveNotificationAudiencePreview();
+    if (elements.liveNotificationAllLocales.checked) {
+      estimateLiveNotificationAudience({ silent: true }).catch(() => {});
+    }
+  });
+  elements.liveNotificationLocales?.addEventListener('input', () => {
+    clearBanner();
+    setLiveNotificationFormError('');
+    resetLiveNotificationAudiencePreview();
+  });
+  elements.liveNotificationRequireMarketing?.addEventListener('change', () => {
+    clearBanner();
+    setLiveNotificationFormError('');
+    const target = getLiveNotificationTarget();
+    resetLiveNotificationAudiencePreview();
+    if (target.allLocales || target.targetLocales.length) {
+      estimateLiveNotificationAudience({ silent: true }).catch(() => {});
+    }
+  });
   elements.recipientForm?.addEventListener('submit', handleRecipientAdd);
   elements.settingsForm?.addEventListener('submit', handleSaveSettings);
   elements.partnerType?.addEventListener('change', syncPartnerTypeFields);
@@ -8230,6 +8618,7 @@ function initializeFormDefaults() {
   resetCodeForm(null);
   resetDashboardCopyState({ preservePreviewLocale: false });
   renderDashboardCopy();
+  resetLiveNotificationState();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
@@ -8248,6 +8637,7 @@ function applyAuthState(user) {
   if (!user) {
     resetDashboardCopyState({ preservePreviewLocale: false });
     renderDashboardCopy();
+    resetLiveNotificationState();
     stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
@@ -8257,6 +8647,7 @@ function applyAuthState(user) {
   if (!previousUid || previousUid !== nextUid) {
     resetDashboardCopyState({ preservePreviewLocale: true });
     renderDashboardCopy();
+    resetLiveNotificationState();
   }
 
   if (wasLoggedOut) {

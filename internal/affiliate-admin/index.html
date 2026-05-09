@@ -128,7 +128,8 @@
                 <a href="/internal/affiliate-admin/subscribers/" class="admin-section-nav__link" data-admin-page-link="subscribers">Funnel insights</a>
                 <a href="/internal/affiliate-admin/reports/" class="admin-section-nav__link" data-admin-page-link="reports">Payout reports</a>
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
-                <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-section-nav__link" data-admin-page-link="dashboard-copy">Dashboard copy</a>
+                <a href="/internal/affiliate-admin/live-notifications/" class="admin-section-nav__link" data-admin-page-link="live-notifications">Live Notifications</a>
+                <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-section-nav__link" data-admin-page-link="dashboard-copy">Placeholder</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
               </div>
 
@@ -336,9 +337,13 @@
             <div class="admin-nav-group">
               <h3 class="admin-nav-group__title">App content</h3>
               <div class="admin-nav-group__cards">
+                <a href="/internal/affiliate-admin/live-notifications/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="live-notifications">
+                  <span class="admin-mini-item__title">Live Notifications</span>
+                  <span class="admin-mini-item__meta">Write and send push notifications live</span>
+                </a>
                 <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="dashboard-copy">
-                  <span class="admin-mini-item__title">Dashboard copy</span>
-                  <span class="admin-mini-item__meta">Manage the translated placeholder card shown at the top of the app dashboard</span>
+                  <span class="admin-mini-item__title">Placeholder</span>
+                  <span class="admin-mini-item__meta">Write the text shown inside the app dashboard</span>
                 </a>
               </div>
             </div>
@@ -1451,11 +1456,129 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionLiveNotifications" data-admin-page="live-notifications" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Send push</p>
+              <h2 class="admin-panel__title">Live Notifications</h2>
+            </div>
+            <button type="button" class="btn btn--outline" id="adminRefreshLiveNotificationAudience">
+              Refresh recipient count
+            </button>
+          </div>
+
+          <p class="admin-panel__helper">
+            Write here when you want to send a push notification now. This is the live phone notification. Placeholder text is below in the Placeholder tab.
+          </p>
+
+          <div class="admin-detail-section">
+            <form class="admin-form" id="adminLiveNotificationForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title">1. Write the Live Notification</h3>
+                <p class="admin-panel__helper">
+                  These two fields are exactly what users see on their phone notification.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminLiveNotificationTitle">Notification title</label>
+                <input
+                  class="form-input"
+                  id="adminLiveNotificationTitle"
+                  name="title"
+                  type="text"
+                  maxlength="80"
+                  placeholder="Example: New in Nuria"
+                />
+                <p class="admin-panel__helper" id="adminLiveNotificationTitleMeta">0 / 80 characters</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminLiveNotificationBody">Notification message</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminLiveNotificationBody"
+                  name="body"
+                  rows="4"
+                  maxlength="240"
+                  placeholder="Example: A new app update is ready for you."
+                ></textarea>
+                <p class="admin-panel__helper" id="adminLiveNotificationBodyMeta">0 / 240 characters</p>
+              </div>
+
+              <div class="admin-detail-section">
+                <h3 class="admin-section-title">2. Choose who receives it</h3>
+                <label class="admin-checkbox">
+                  <input type="checkbox" id="adminLiveNotificationAllLocales" checked />
+                  <span>Send to all languages</span>
+                </label>
+                <div class="form-group" id="adminLiveNotificationLocalesGroup" hidden>
+                  <label class="form-label" for="adminLiveNotificationLocales">Language codes</label>
+                  <input
+                    class="form-input"
+                    id="adminLiveNotificationLocales"
+                    type="text"
+                    placeholder="sv, en, ar"
+                  />
+                  <p class="admin-panel__helper">
+                    Use comma-separated app language codes. Example: sv, en, ar.
+                  </p>
+                </div>
+                <label class="admin-checkbox">
+                  <input type="checkbox" id="adminLiveNotificationRequireMarketing" />
+                  <span>Only send to users who accepted marketing messages</span>
+                </label>
+              </div>
+
+              <div class="admin-detail-section">
+                <div class="admin-stat-grid admin-stat-grid--4col">
+                  <div class="admin-stat-card">
+                    <span class="admin-stat-card__label">Will receive</span>
+                    <strong class="admin-stat-card__value" id="adminLiveNotificationMatched">-</strong>
+                  </div>
+                  <div class="admin-stat-card">
+                    <span class="admin-stat-card__label">Nuria updates on</span>
+                    <strong class="admin-stat-card__value" id="adminLiveNotificationUpdatesOptIn">-</strong>
+                  </div>
+                  <div class="admin-stat-card">
+                    <span class="admin-stat-card__label">Language match</span>
+                    <strong class="admin-stat-card__value" id="adminLiveNotificationLocaleMatch">-</strong>
+                  </div>
+                  <div class="admin-stat-card">
+                    <span class="admin-stat-card__label">Marketing accepted</span>
+                    <strong class="admin-stat-card__value" id="adminLiveNotificationMarketingMatch">-</strong>
+                  </div>
+                </div>
+                <p class="admin-panel__helper" id="adminLiveNotificationAudienceMeta">
+                  Recipient count loads when you open this tab.
+                </p>
+              </div>
+
+              <div class="admin-form__actions">
+                <button type="button" class="btn btn--outline" id="adminEstimateLiveNotification">
+                  Refresh recipient count
+                </button>
+                <button type="submit" class="btn btn--gold" id="adminSendLiveNotificationButton">
+                  Send Live Notification
+                </button>
+              </div>
+              <p class="admin-form-error" id="adminLiveNotificationFormError" hidden></p>
+            </form>
+          </div>
+
+          <div class="admin-detail-section">
+            <h3 class="admin-section-title">Recently sent Live Notifications</h3>
+            <div class="admin-mini-list" id="adminLiveNotificationHistory">
+              <p class="admin-empty admin-empty--inline">No Live Notifications sent yet.</p>
+            </div>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionDashboardCopy" data-admin-page="dashboard-copy" hidden>
           <div class="admin-panel__header">
             <div>
               <p class="admin-panel__eyebrow">App content</p>
-              <h2 class="admin-panel__title">Dashboard copy</h2>
+              <h2 class="admin-panel__title">Placeholder</h2>
             </div>
             <button type="button" class="btn btn--outline" id="adminRefreshDashboardCopy">
               Refresh
@@ -1463,16 +1586,16 @@
           </div>
 
           <p class="admin-panel__helper">
-            Manage the translated placeholder card shown near the top of the Nuria app dashboard. English is the source copy; missing locales can be generated server-side when auto-translate is enabled.
+            Write here when you want to change the Placeholder text inside the app dashboard. This does not send a push notification.
           </p>
 
           <div class="admin-detail-section admin-dashboard-copy__state" id="adminDashboardCopyLoadingState" hidden>
             <div class="referral-loading">
               <div class="referral-spinner" aria-hidden="true"></div>
               <div>
-                <h3 class="admin-section-title">Loading dashboard copy</h3>
+                <h3 class="admin-section-title">Loading Placeholder</h3>
                 <p class="admin-panel__helper">
-                  Fetching the current placeholder document and supported locale list.
+                  Fetching the current Placeholder text.
                 </p>
               </div>
             </div>
@@ -1480,7 +1603,7 @@
 
           <div class="admin-detail-section admin-dashboard-copy__state" id="adminDashboardCopyErrorState" hidden>
             <p class="admin-empty admin-empty--inline" id="adminDashboardCopyErrorCopy">
-              Dashboard copy could not be loaded.
+              Placeholder could not be loaded.
             </p>
             <div class="admin-form__actions">
               <button type="button" class="btn btn--outline" id="adminDashboardCopyRetry">
@@ -1495,24 +1618,24 @@
                 <div class="admin-form__header">
                   <h3 class="admin-section-title">Editor</h3>
                   <p class="admin-panel__helper">
-                    The app resolves copy as full locale tag, then base language, then English. Save once to publish updated fallback and translated text.
+                    These fields change the Placeholder shown inside the app. Saving here never sends a Live Notification.
                   </p>
                 </div>
 
                 <label class="admin-checkbox">
                   <input type="checkbox" id="adminDashboardCopyEnabled" name="enabled" />
-                  <span>Show the dashboard placeholder in the app</span>
+                  <span>Show Placeholder in the app</span>
                 </label>
 
                 <div class="form-group">
-                  <label class="form-label" for="adminDashboardCopyTitleEn">English title</label>
+                  <label class="form-label" for="adminDashboardCopyTitleEn">Placeholder title</label>
                   <input
                     class="form-input"
                     id="adminDashboardCopyTitleEn"
                     name="titleEn"
                     type="text"
                     maxlength="180"
-                    placeholder="English headline shown in the dashboard card"
+                    placeholder="Title shown inside the app dashboard"
                   />
                   <p class="admin-panel__helper admin-dashboard-copy__field-meta" id="adminDashboardCopyTitleMeta">
                     0 / 180 characters. Short, calm headlines work best here.
@@ -1520,13 +1643,13 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="adminDashboardCopyBodyEn">English body</label>
+                  <label class="form-label" for="adminDashboardCopyBodyEn">Placeholder message</label>
                   <textarea
                     class="form-input form-textarea"
                     id="adminDashboardCopyBodyEn"
                     name="bodyEn"
                     rows="5"
-                    placeholder="English body copy shown below the headline"
+                    placeholder="Message shown inside the app dashboard"
                   ></textarea>
                   <p class="admin-panel__helper admin-dashboard-copy__field-meta" id="adminDashboardCopyBodyMeta">
                     0 characters. Keep it concise so it still reads well on smaller phones.
@@ -1546,7 +1669,7 @@
 
                 <div class="admin-form__actions">
                   <button type="submit" class="btn btn--gold" id="adminSaveDashboardCopyButton">
-                    Save dashboard copy
+                    Save Placeholder
                   </button>
                 </div>
                 <p class="admin-form-error" id="adminDashboardCopyFormError" hidden></p>
@@ -1765,8 +1888,8 @@
           <p>Review discrepancy alerts, missing affiliate mappings, and recipient bounce issues.</p>
         </div>
         <div class="admin-onboarding-step" data-onboarding-step="4" hidden>
-          <h3>Dashboard copy and snapshot</h3>
-          <p>Use Dashboard copy for the app placeholder card. Check Last published snapshot first, compare live vs draft, preview at least one non-English locale, then save when ready.</p>
+          <h3>Placeholder and Live Notifications</h3>
+          <p>Use Placeholder for the text inside the app. Use Live Notifications only when you want to send a real push notification to phones.</p>
         </div>
         <div class="admin-onboarding-step" data-onboarding-step="5" hidden>
           <h3>Health dashboard</h3>
