@@ -19,6 +19,10 @@ const affiliateAdminScript = fs.readFileSync(
   path.join(repoRoot, 'js', 'affiliate-admin.js'),
   'utf8'
 );
+const siteStyles = fs.readFileSync(
+  path.join(repoRoot, 'css', 'styles.css'),
+  'utf8'
+);
 const firebaseClientScript = fs.readFileSync(
   path.join(repoRoot, 'js', 'firebase-client.js'),
   'utf8'
@@ -46,7 +50,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260428-admin-timeouts-claim4'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260509-admin-resilience-theme'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -149,10 +153,29 @@ run('admin auth listener starts immediately with a currentUser fallback', () => 
 run('admin access check and dashboard calls stop showing endless spinners', () => {
   assert(affiliateAdminScript.includes('const AUTH_STUCK_TIMEOUT_MS = 6000;'));
   assert(affiliateAdminScript.includes('const ADMIN_CALL_TIMEOUT_MS = 15000;'));
+  assert(affiliateAdminScript.includes('const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;'));
+  assert(affiliateAdminScript.includes('const DASHBOARD_COPY_FAILSAFE_TIMEOUT_MS = DASHBOARD_COPY_CALL_TIMEOUT_MS + 2000;'));
   assert(affiliateAdminScript.includes('function withAdminTimeout('));
+  assert(affiliateAdminScript.includes('function startDashboardCopyFailSafeTimer('));
+  assert(affiliateAdminScript.includes('function ensureDashboardCopyFallbackDraft('));
+  assert(affiliateAdminScript.includes('function applyDashboardCopyLoadFailure('));
   assert(affiliateAdminScript.includes('Access check timed out. Sign in again or refresh the page.'));
   assert(affiliateAdminScript.includes('await withAdminTimeout(name, runner, ADMIN_CALL_TIMEOUT_MS);'));
   assert(affiliateAdminScript.includes("'admin dashboard load'"));
+});
+
+run('admin root route always resolves to the landing page', () => {
+  assert(affiliateAdminScript.includes('function isAdminRootPath('));
+  assert(affiliateAdminScript.includes("return normalizedPath === '/internal/affiliate-admin';"));
+  assert(affiliateAdminScript.includes("if (isAdminRootPath(path)) return 'landing';"));
+});
+
+run('luxury stone admin keeps placeholder copy readable and theme menu clickable', () => {
+  assert(siteStyles.includes('body.theme-luxury-stone .admin-dashboard-copy-checklist__copy strong'));
+  assert(siteStyles.includes('body.theme-luxury-stone .admin-dashboard-copy-checklist__copy span'));
+  assert(siteStyles.includes('body.theme-luxury-stone .admin-dashboard-copy-checklist__item.is-complete'));
+  assert(siteStyles.includes('.admin-topbar__actions .nav__theme'));
+  assert(siteStyles.includes('overflow: visible;'));
 });
 
 run('partner portal auth listener starts immediately with a currentUser fallback', () => {

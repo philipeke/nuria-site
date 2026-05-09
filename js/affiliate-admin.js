@@ -44,7 +44,8 @@ const ADMIN_PAGE_PATHS = {
   'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
   settings: '/internal/affiliate-admin/settings/',
 };
-const DASHBOARD_COPY_CALL_TIMEOUT_MS = 15000;
+const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;
+const DASHBOARD_COPY_FAILSAFE_TIMEOUT_MS = DASHBOARD_COPY_CALL_TIMEOUT_MS + 2000;
 const LIVE_NOTIFICATION_CALL_TIMEOUT_MS = 30000;
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 2500;
 const AUTH_STUCK_TIMEOUT_MS = 6000;
@@ -399,6 +400,7 @@ const state = {
   dashboardCopyLoading: false,
   dashboardCopyLoadPromise: null,
   dashboardCopyError: '',
+  dashboardCopyDraftDirty: false,
   dashboardCopySaveInFlight: false,
   dashboardCopyLocaleSearch: '',
   dashboardCopyPreviewLocale: '',
@@ -414,6 +416,8 @@ let checklistRemoteSyncTimeoutId = null;
 let previousAuthUid = null;
 let initialAuthStateHandled = false;
 let dashboardLoadToken = 0;
+let dashboardCopyLoadToken = 0;
+let dashboardCopyFailSafeTimerId = null;
 const dashboardCopyLocaleLabelCache = new Map();
 
 function setChecklistPopoverOpen(open) {
@@ -532,11 +536,23 @@ function getAdminPageFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const queryPage = normalizeAdminPageKey(String(params.get('page') || '').trim().toLowerCase());
   if (queryPage) return queryPage;
-  const path = String(window.location.pathname || '').toLowerCase();
+  const path = getNormalizedAdminPath();
+  if (isAdminRootPath(path)) return 'landing';
   const normalizedBase = '/internal/affiliate-admin/';
   if (!path.startsWith(normalizedBase)) return '';
   const tail = path.slice(normalizedBase.length).replace(/^\/+|\/+$/g, '');
   return normalizeAdminPageKey(tail || 'landing');
+}
+
+function getNormalizedAdminPath() {
+  return String(window.location.pathname || '')
+    .toLowerCase()
+    .replace(/\/index\.html$/i, '/');
+}
+
+function isAdminRootPath(path) {
+  const normalizedPath = String(path || '').replace(/\/+$/g, '');
+  return normalizedPath === '/internal/affiliate-admin';
 }
 
 function normalizeAdminPageKey(pageKey) {
@@ -1086,6 +1102,8 @@ function buildPartnerRegistryEntries() {
 function resetDashboardCopyState(options) {
   const settings = Object.assign({ preservePreviewLocale: true }, options || {});
   const previewLocale = settings.preservePreviewLocale ? state.dashboardCopyPreviewLocale : '';
+  dashboardCopyLoadToken += 1;
+  clearDashboardCopyFailSafeTimer();
   state.dashboardCopyAdmin = null;
   state.dashboardCopyItem = null;
   state.dashboardCopyDraft = null;
@@ -1093,10 +1111,84 @@ function resetDashboardCopyState(options) {
   state.dashboardCopyLoading = false;
   state.dashboardCopyLoadPromise = null;
   state.dashboardCopyError = '';
+  state.dashboardCopyDraftDirty = false;
   state.dashboardCopySaveInFlight = false;
   state.dashboardCopyLocaleSearch = '';
   state.dashboardCopyPreviewLocale = previewLocale || '';
   state.dashboardCopyPreviewTouched = false;
+}
+
+function clearDashboardCopyFailSafeTimer() {
+  if (dashboardCopyFailSafeTimerId != null) {
+    window.clearTimeout(dashboardCopyFailSafeTimerId);
+    dashboardCopyFailSafeTimerId = null;
+  }
+}
+
+function createDashboardCopyLoadTimeoutError() {
+  const error = new Error('dashboard_copy_load_timeout');
+  error.code = 'deadline-exceeded';
+  error.adminCallable = 'getDashboardTopPlaceholderAdmin';
+  return error;
+}
+
+function startDashboardCopyFailSafeTimer(loadToken, settings) {
+  clearDashboardCopyFailSafeTimer();
+  dashboardCopyFailSafeTimerId = window.setTimeout(() => {
+    if (
+      loadToken !== dashboardCopyLoadToken
+      || !state.dashboardCopyLoading
+      || state.dashboardCopyLoaded
+    ) {
+      dashboardCopyFailSafeTimerId = null;
+      return;
+    }
+
+    dashboardCopyFailSafeTimerId = null;
+    dashboardCopyLoadToken += 1;
+    const message = getActionableErrorMessage(
+      createDashboardCopyLoadTimeoutError(),
+      'Placeholder could not be loaded.'
+    );
+    state.dashboardCopyLoading = false;
+    state.dashboardCopyLoadPromise = null;
+    applyDashboardCopyLoadFailure(message);
+    renderDashboardCopy();
+
+    if (!settings.silent) {
+      showBanner(message, 'error');
+    }
+  }, DASHBOARD_COPY_FAILSAFE_TIMEOUT_MS);
+}
+
+function ensureDashboardCopyFallbackDraft() {
+  if (state.dashboardCopyDraft && state.dashboardCopyItem) {
+    return;
+  }
+
+  const fallbackItem = normalizeDashboardCopyItem({
+    copyId: state.dashboardCopyItem?.copyId || 'dashboard_top_placeholder',
+    enabled: false,
+    titleEn: state.dashboardCopyItem?.titleEn || '',
+    bodyEn: state.dashboardCopyItem?.bodyEn || '',
+    translations: state.dashboardCopyItem?.translations || {},
+    supportedLocales: state.dashboardCopyItem?.supportedLocales || [],
+    createdAt: state.dashboardCopyItem?.createdAt || { ms: null, iso: null },
+    updatedAt: state.dashboardCopyItem?.updatedAt || { ms: null, iso: null },
+    updatedByUid: state.dashboardCopyItem?.updatedByUid || null,
+    updatedByEmail: state.dashboardCopyItem?.updatedByEmail || null,
+  });
+
+  state.dashboardCopyItem = fallbackItem;
+  state.dashboardCopyDraft = createDashboardCopyDraft(fallbackItem);
+  state.dashboardCopyDraftDirty = false;
+}
+
+function applyDashboardCopyLoadFailure(message) {
+  ensureDashboardCopyFallbackDraft();
+  state.dashboardCopyLoaded = false;
+  state.dashboardCopyError = message;
+  setDashboardCopyFormError(message);
 }
 
 function cloneDashboardCopyTranslations(translations) {
@@ -4609,6 +4701,25 @@ function withActionTimeout(promise, timeoutMs, meta) {
   });
 }
 
+async function callAdminFunction(name, data, options) {
+  const settings = Object.assign(
+    {
+      timeoutMs: ADMIN_CALL_TIMEOUT_MS,
+      message: `${name}_timeout`,
+    },
+    options || {}
+  );
+
+  return withActionTimeout(
+    callFirebaseFunction(name, data),
+    settings.timeoutMs,
+    {
+      adminCallable: name,
+      message: settings.message,
+    }
+  );
+}
+
 function setCodeFormError(message) {
   if (!elements.codeFormError) {
     return;
@@ -5364,7 +5475,11 @@ function renderDashboardCopy() {
   const hasDraft = Boolean(state.dashboardCopyDraft);
 
   setButtonBusy(elements.refreshDashboardCopy, state.dashboardCopyLoading, 'Refreshing');
-  setButtonBusy(elements.saveDashboardCopyButton, state.dashboardCopySaveInFlight, 'Saving');
+  setButtonBusy(
+    elements.saveDashboardCopyButton,
+    state.dashboardCopySaveInFlight || (state.dashboardCopyLoading && !state.dashboardCopyLoaded),
+    state.dashboardCopySaveInFlight ? 'Saving' : 'Loading'
+  );
 
   if (elements.dashboardCopyLoadingState) {
     elements.dashboardCopyLoadingState.hidden = !(state.dashboardCopyLoading && !hasDraft);
@@ -5423,44 +5538,55 @@ async function ensureDashboardCopyLoaded(options) {
     return state.dashboardCopyItem;
   }
 
+  const loadToken = dashboardCopyLoadToken + 1;
+  dashboardCopyLoadToken = loadToken;
+
   const task = (async () => {
     state.dashboardCopyLoading = true;
-    if (!state.dashboardCopyDraft) {
-      state.dashboardCopyError = '';
-    }
+    ensureDashboardCopyFallbackDraft();
+    state.dashboardCopyError = '';
     setDashboardCopyFormError('');
     renderDashboardCopy();
+    startDashboardCopyFailSafeTimer(loadToken, settings);
 
     try {
-      const data = await withActionTimeout(
-        callFirebaseFunction('getDashboardTopPlaceholderAdmin'),
-        DASHBOARD_COPY_CALL_TIMEOUT_MS,
-        {
-          adminCallable: 'getDashboardTopPlaceholderAdmin',
-          message: 'dashboard_copy_load_timeout',
-        }
-      );
+      const data = await callAdminFunction('getDashboardTopPlaceholderAdmin', null, {
+        timeoutMs: DASHBOARD_COPY_CALL_TIMEOUT_MS,
+        message: 'dashboard_copy_load_timeout',
+      });
+      if (loadToken !== dashboardCopyLoadToken) {
+        return state.dashboardCopyItem;
+      }
       const item = normalizeDashboardCopyItem(data?.item);
       state.dashboardCopyAdmin = data?.admin || null;
       state.dashboardCopyItem = item;
-      state.dashboardCopyDraft = createDashboardCopyDraft(item);
+      if (!state.dashboardCopyDraftDirty) {
+        state.dashboardCopyDraft = createDashboardCopyDraft(item);
+      }
       state.dashboardCopyLoaded = true;
       state.dashboardCopyError = '';
+      setDashboardCopyFormError('');
       if (!state.dashboardCopyPreviewLocale || !['en'].concat(item.supportedLocales).includes(state.dashboardCopyPreviewLocale)) {
         state.dashboardCopyPreviewLocale = getPreferredDashboardCopyPreviewLocale(item.supportedLocales);
       }
       return item;
     } catch (error) {
+      if (loadToken !== dashboardCopyLoadToken) {
+        return state.dashboardCopyItem;
+      }
       const message = getActionableErrorMessage(error, 'Placeholder could not be loaded.');
-      state.dashboardCopyError = message;
+      applyDashboardCopyLoadFailure(message);
       if (!settings.silent) {
         showBanner(message, 'error');
       }
       throw error;
     } finally {
-      state.dashboardCopyLoading = false;
-      state.dashboardCopyLoadPromise = null;
-      renderDashboardCopy();
+      if (loadToken === dashboardCopyLoadToken) {
+        clearDashboardCopyFailSafeTimer();
+        state.dashboardCopyLoading = false;
+        state.dashboardCopyLoadPromise = null;
+        renderDashboardCopy();
+      }
     }
   })();
 
@@ -5478,6 +5604,7 @@ function handleDashboardCopyBaseFieldsInput() {
   state.dashboardCopyDraft.bodyEn = String(elements.dashboardCopyBodyEn?.value || '');
   state.dashboardCopyDraft.autoTranslate = elements.dashboardCopyAutoTranslate?.checked !== false;
   state.dashboardCopyDraft.forceTranslate = elements.dashboardCopyForceTranslate?.checked === true;
+  state.dashboardCopyDraftDirty = true;
 
   syncDashboardCopyToggleState();
   setDashboardCopyFormError('');
@@ -5508,6 +5635,7 @@ function handleDashboardCopyTranslationInput(event) {
   } else {
     state.dashboardCopyDraft.translations[locale] = nextBundle;
   }
+  state.dashboardCopyDraftDirty = true;
 
   setDashboardCopyFormError('');
   renderDashboardCopyChecklist();
@@ -5560,19 +5688,16 @@ async function handleDashboardCopySave(event) {
   renderDashboardCopy();
 
   try {
-    const data = await withActionTimeout(
-      callFirebaseFunction('upsertDashboardTopPlaceholderAdmin', payload),
-      DASHBOARD_COPY_CALL_TIMEOUT_MS,
-      {
-        adminCallable: 'upsertDashboardTopPlaceholderAdmin',
-        message: 'dashboard_copy_save_timeout',
-      }
-    );
+    const data = await callAdminFunction('upsertDashboardTopPlaceholderAdmin', payload, {
+      timeoutMs: DASHBOARD_COPY_CALL_TIMEOUT_MS,
+      message: 'dashboard_copy_save_timeout',
+    });
     const item = normalizeDashboardCopyItem(data?.item);
     state.dashboardCopyItem = item;
     state.dashboardCopyDraft = createDashboardCopyDraft(item);
     state.dashboardCopyLoaded = true;
     state.dashboardCopyError = '';
+    state.dashboardCopyDraftDirty = false;
     setDashboardCopyFormError('');
     renderDashboardCopy();
     showBanner('Placeholder saved.', 'success');

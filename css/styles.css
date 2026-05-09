@@ -4115,6 +4115,43 @@ body.theme-luxury-stone .partner-metric-card--spotlight {
   color: #343d24;
 }
 
+body.theme-luxury-stone .admin-dashboard-copy__snapshot,
+body.theme-luxury-stone .admin-dashboard-copy-compare__card,
+body.theme-luxury-stone .admin-dashboard-copy-checklist__item {
+  background: rgba(244, 232, 196, 0.58);
+  border-color: rgba(155, 111, 34, 0.24);
+}
+
+body.theme-luxury-stone .admin-dashboard-copy-compare__card.is-draft,
+body.theme-luxury-stone .admin-dashboard-copy-checklist__item.is-complete {
+  background: rgba(52, 61, 36, 0.09);
+  border-color: rgba(52, 61, 36, 0.22);
+}
+
+body.theme-luxury-stone .admin-dashboard-copy-checklist__mark {
+  background: rgba(155, 111, 34, 0.12);
+  border-color: rgba(155, 111, 34, 0.28);
+  color: #7e5616;
+}
+
+body.theme-luxury-stone .admin-dashboard-copy-checklist__item.is-complete .admin-dashboard-copy-checklist__mark {
+  background: rgba(52, 61, 36, 0.14);
+  border-color: rgba(52, 61, 36, 0.30);
+  color: #343d24;
+}
+
+body.theme-luxury-stone .admin-dashboard-copy-checklist__copy strong,
+body.theme-luxury-stone .admin-dashboard-copy-compare__head strong,
+body.theme-luxury-stone .admin-dashboard-copy-compare__row strong {
+  color: #343d24;
+}
+
+body.theme-luxury-stone .admin-dashboard-copy-checklist__copy span,
+body.theme-luxury-stone .admin-dashboard-copy-compare__meta,
+body.theme-luxury-stone .admin-dashboard-copy-compare__row span {
+  color: #4e3b18;
+}
+
 /* ===== SOURCES PAGE ===== */
 .page-hero--sources {
   padding-bottom: 72px;
@@ -6129,6 +6166,10 @@ body.theme-luxury-stone .cookie-consent__text a:hover {
   flex-wrap: wrap;
 }
 
+.admin-topbar__actions .nav__theme {
+  z-index: 35;
+}
+
 .admin-topbar__identity {
   padding: 0.55rem 0.85rem;
   border-radius: 999px;
@@ -7868,7 +7909,7 @@ code {
     max-height: 12rem;
     opacity: 1;
     transition: max-height 0.35s ease, opacity 0.28s ease, margin 0.28s ease;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .admin-topbar-card--scrolled {
@@ -7884,6 +7925,7 @@ code {
     padding: 0 !important;
     pointer-events: none;
     border: none;
+    overflow: hidden;
   }
 
   .admin-section-nav {
