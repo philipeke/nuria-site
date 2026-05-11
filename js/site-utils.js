@@ -76,6 +76,14 @@
     return `${config.appScheme}://join?ref=${encodeURIComponent(normalizedCode)}`;
   }
 
+  function getSubscribeUrl() {
+    return `${config.siteOrigin}/subscribe`;
+  }
+
+  function getSubscribeSchemeUrl() {
+    return `${config.appScheme}://subscribe`;
+  }
+
   const COOKIE_CONSENT_KEY = 'nuria_cookie_consent_v1';
 
   function getCookieConsentStatus() {
@@ -563,6 +571,8 @@
     updateStoreLinks,
     getReferralJoinUrl,
     getReferralSchemeUrl,
+    getSubscribeUrl,
+    getSubscribeSchemeUrl,
     trackEvent,
     copyText,
     lookupAffiliateCode,

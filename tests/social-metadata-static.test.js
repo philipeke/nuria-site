@@ -19,6 +19,7 @@ const logoUrl = 'https://nuria.one/assets/Nuria%20Logo.png';
 const publicPreviewPages = [
   { page: 'index.html', image: logoUrl, width: '1600', height: '1600' },
   { page: 'join/index.html', image: logoUrl, width: '1600', height: '1600' },
+  { page: 'subscribe/index.html', image: logoUrl, width: '1600', height: '1600' },
   { page: '404.html', image: logoUrl, width: '1600', height: '1600' },
   { page: 'support/index.html', image: logoUrl, width: '1600', height: '1600' },
   { page: 'privacy/index.html', image: logoUrl, width: '1600', height: '1600' },
