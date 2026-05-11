@@ -88,7 +88,7 @@ Output:
       "id": "abc123",
       "message": "Generated payout report 2026-03",
       "kind": "success",
-      "actor": "admin@oakdev.app",
+      "actor": "admin@nuria.one",
       "actorUid": "uid123",
       "periodMonth": "2026-03",
       "reportId": "report_2026_03",
@@ -136,7 +136,7 @@ Document: `internal_admin/affiliate_admin_settings`
   "schedulerEnabled": true,
   "schedulerTimezone": "UTC",
   "updatedAt": "<serverTimestamp>",
-  "updatedBy": "admin@oakdev.app"
+  "updatedBy": "admin@nuria.one"
 }
 ```
 

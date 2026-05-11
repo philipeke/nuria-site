@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /internal/
 
-Sitemap: https://nuria.oakdev.app/sitemap.xml
+Sitemap: https://nuria.one/sitemap.xml

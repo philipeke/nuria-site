@@ -202,8 +202,8 @@ run('partner portal can claim Apple relay accounts through one-time links', () =
 });
 
 run('partner portal link previews use the Nuria logo metadata image', () => {
-  assert(partnerPortalHtml.includes('property="og:image" content="https://nuria.oakdev.app/assets/Nuria%20Logo.png"'));
-  assert(partnerPortalHtml.includes('name="twitter:image" content="https://nuria.oakdev.app/assets/Nuria%20Logo.png"'));
+  assert(partnerPortalHtml.includes('property="og:image" content="https://nuria.one/assets/Nuria%20Logo.png"'));
+  assert(partnerPortalHtml.includes('name="twitter:image" content="https://nuria.one/assets/Nuria%20Logo.png"'));
   assert(partnerPortalHtml.includes('property="og:image:width" content="1600"'));
   assert(partnerPortalHtml.includes('name="robots" content="noindex, nofollow, noarchive"'));
   assert(!partnerPortalHtml.includes('nosnippet'));

@@ -59,7 +59,7 @@ const EXPORT_PUBLISHER = {
   vatId: 'SE559431678701',
   addressLine1: 'Kristevik 633',
   postalCity: '451 96 Uddevalla, Sweden',
-  email: 'hello@oakdev.app',
+  email: 'hello@nuria.one',
   phone: '+46 70 810 57 66',
 };
 

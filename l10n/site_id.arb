@@ -69,7 +69,7 @@
   "ambassador.path_label": "Alurnya",
   "ambassador.how_title": "Alur referral yang jelas dari kode pertama hingga pembayaran berulang.",
   "ambassador.step1_title": "Minta kode",
-  "ambassador.step1_text": "Email hello@oakdev.app dan kami akan membuat kode unik yang terhubung ke profil ambassador Anda.",
+  "ambassador.step1_text": "Email hello@nuria.one dan kami akan membuat kode unik yang terhubung ke profil ambassador Anda.",
   "ambassador.step2_title": "Verifikasi di /join",
   "ambassador.step2_text": "Setelah menerima kode, buka halaman join dan pastikan kode aktif sebelum mulai membagikannya.",
   "ambassador.step3_title": "Bagikan Nuria",
@@ -82,7 +82,7 @@
   "ambassador.join_cta": "Verifikasi di /join",
   "ambassador.portal_cta": "Buka Affiliate Portal",
   "ambassador.portal_card1_title": "Halaman join",
-  "ambassador.portal_card1_text": "Tempel kode di https://nuria.oakdev.app/join/ untuk memastikan kode tersebut aktif dan siap digunakan.",
+  "ambassador.portal_card1_text": "Tempel kode di https://nuria.one/join/ untuk memastikan kode tersebut aktif dan siap digunakan.",
   "ambassador.portal_card2_title": "Affiliate Portal",
   "ambassador.portal_card2_text": "Masuk untuk meninjau profil ambassador, kode aktif, aktivitas pelanggan rujukan, dan status pembayaran.",
   "ambassador.reward_label": "Struktur reward",
@@ -119,6 +119,6 @@
   "ambassador.final_label": "Jadi ambassador",
   "ambassador.final_title": "Siap membagikan Nuria kepada orang yang akan menghargainya?",
   "ambassador.final_text": "Kirim nama, negara, preferensi pembayaran, dan di mana Anda berencana membagikan Nuria. Kami berupaya membalas dalam 48 jam.",
-  "ambassador.email_cta": "Email hello@oakdev.app",
+  "ambassador.email_cta": "Email hello@nuria.one",
   "ambassador.app_downloads_aria": "Unduh aplikasi Nuria"
 }

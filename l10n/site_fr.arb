@@ -69,7 +69,7 @@
   "ambassador.path_label": "Le parcours",
   "ambassador.how_title": "Un flux de parrainage clair, du premier code au paiement récurrent.",
   "ambassador.step1_title": "Demander un code",
-  "ambassador.step1_text": "Écrivez à hello@oakdev.app et nous créons un code unique lié à votre profil ambassador.",
+  "ambassador.step1_text": "Écrivez à hello@nuria.one et nous créons un code unique lié à votre profil ambassador.",
   "ambassador.step2_title": "Le vérifier sur /join",
   "ambassador.step2_text": "Lorsque vous avez reçu votre code, ouvrez la page join et vérifiez que le code est actif avant de commencer à le partager.",
   "ambassador.step3_title": "Partager Nuria",
@@ -82,7 +82,7 @@
   "ambassador.join_cta": "Vérifier sur /join",
   "ambassador.portal_cta": "Ouvrir l'Affiliate Portal",
   "ambassador.portal_card1_title": "Page join",
-  "ambassador.portal_card1_text": "Collez le code sur https://nuria.oakdev.app/join/ pour vérifier qu'il est actif et prêt à être utilisé.",
+  "ambassador.portal_card1_text": "Collez le code sur https://nuria.one/join/ pour vérifier qu'il est actif et prêt à être utilisé.",
   "ambassador.portal_card2_title": "Affiliate Portal",
   "ambassador.portal_card2_text": "Connectez-vous pour consulter votre profil ambassador, les codes actifs, l'activité des abonnés parrainés et le statut des paiements.",
   "ambassador.reward_label": "Structure de récompense",
@@ -119,6 +119,6 @@
   "ambassador.final_label": "Devenir ambassador",
   "ambassador.final_title": "Prêt à partager Nuria avec des personnes qui l'apprécieront ?",
   "ambassador.final_text": "Envoyez votre nom, pays, préférence de paiement et l'endroit où vous prévoyez de partager Nuria. Nous visons une réponse sous 48 heures.",
-  "ambassador.email_cta": "Envoyer un e-mail à hello@oakdev.app",
+  "ambassador.email_cta": "Envoyer un e-mail à hello@nuria.one",
   "ambassador.app_downloads_aria": "Télécharger l'application Nuria"
 }

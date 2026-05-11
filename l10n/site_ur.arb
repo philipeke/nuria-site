@@ -69,7 +69,7 @@
   "ambassador.path_label": "راستہ",
   "ambassador.how_title": "پہلے کوڈ سے بار بار ادائیگی تک ایک صاف ریفرل فلو۔",
   "ambassador.step1_title": "کوڈ کی درخواست کریں",
-  "ambassador.step1_text": "hello@oakdev.app پر ای میل کریں اور ہم آپ کے ایمبیسیڈر پروفائل سے منسلک ایک منفرد کوڈ بناتے ہیں۔",
+  "ambassador.step1_text": "hello@nuria.one پر ای میل کریں اور ہم آپ کے ایمبیسیڈر پروفائل سے منسلک ایک منفرد کوڈ بناتے ہیں۔",
   "ambassador.step2_title": "اسے /join پر تصدیق کریں",
   "ambassador.step2_text": "جب آپ کو اپنا کوڈ مل جائے تو جوائن صفحہ کھولیں اور شیئر کرنے سے پہلے تصدیق کریں کہ کوڈ فعال ہے۔",
   "ambassador.step3_title": "نوریا شیئر کریں",
@@ -82,7 +82,7 @@
   "ambassador.join_cta": "/join پر تصدیق کریں",
   "ambassador.portal_cta": "افیلیٹ پورٹل کھولیں",
   "ambassador.portal_card1_title": "جوائن صفحہ",
-  "ambassador.portal_card1_text": "https://nuria.oakdev.app/join/ پر کوڈ پیسٹ کریں تاکہ تصدیق ہو جائے کہ یہ فعال اور استعمال کے لیے تیار ہے۔",
+  "ambassador.portal_card1_text": "https://nuria.one/join/ پر کوڈ پیسٹ کریں تاکہ تصدیق ہو جائے کہ یہ فعال اور استعمال کے لیے تیار ہے۔",
   "ambassador.portal_card2_title": "افیلیٹ پورٹل",
   "ambassador.portal_card2_text": "اپنا ایمبیسیڈر پروفائل، فعال کوڈز، ریفر کیے گئے سبسکرائبر کی سرگرمی اور ادائیگی کی حیثیت دیکھنے کے لیے سائن اِن کریں۔",
   "ambassador.reward_label": "انعام کا ڈھانچہ",
@@ -119,6 +119,6 @@
   "ambassador.final_label": "ایمبیسیڈر بنیں",
   "ambassador.final_title": "کیا آپ نوریا ان لوگوں کے ساتھ شیئر کرنے کے لیے تیار ہیں جو اسے قدر دیں گے؟",
   "ambassador.final_text": "اپنا نام، ملک، ادائیگی کی ترجیح اور یہ بتائیں کہ آپ نوریا کہاں شیئر کرنا چاہتے ہیں۔ ہم 48 گھنٹوں میں جواب دینے کی کوشش کرتے ہیں۔",
-  "ambassador.email_cta": "hello@oakdev.app پر ای میل کریں",
+  "ambassador.email_cta": "hello@nuria.one پر ای میل کریں",
   "ambassador.app_downloads_aria": "نوریا ایپ ڈاؤن لوڈ کریں"
 }

@@ -69,7 +69,7 @@
   "ambassador.path_label": "Yol",
   "ambassador.how_title": "İlk koddan tekrarlayan ödemeye kadar temiz bir referral akışı.",
   "ambassador.step1_title": "Kod iste",
-  "ambassador.step1_text": "hello@oakdev.app adresine e-posta gönderin; ambassador profilinize bağlı benzersiz bir kod oluşturalım.",
+  "ambassador.step1_text": "hello@nuria.one adresine e-posta gönderin; ambassador profilinize bağlı benzersiz bir kod oluşturalım.",
   "ambassador.step2_title": "/join üzerinde doğrula",
   "ambassador.step2_text": "Kodunuzu aldıktan sonra join sayfasını açın ve paylaşmaya başlamadan önce kodun aktif olduğunu doğrulayın.",
   "ambassador.step3_title": "Nuria'yı paylaş",
@@ -82,7 +82,7 @@
   "ambassador.join_cta": "/join üzerinde doğrula",
   "ambassador.portal_cta": "Affiliate Portal'ı aç",
   "ambassador.portal_card1_title": "Join sayfası",
-  "ambassador.portal_card1_text": "Kodun aktif ve kullanıma hazır olduğunu doğrulamak için https://nuria.oakdev.app/join/ adresine yapıştırın.",
+  "ambassador.portal_card1_text": "Kodun aktif ve kullanıma hazır olduğunu doğrulamak için https://nuria.one/join/ adresine yapıştırın.",
   "ambassador.portal_card2_title": "Affiliate Portal",
   "ambassador.portal_card2_text": "Ambassador profilinizi, aktif kodları, yönlendirilen abone etkinliğini ve ödeme durumunu incelemek için giriş yapın.",
   "ambassador.reward_label": "Ödül yapısı",
@@ -119,6 +119,6 @@
   "ambassador.final_label": "Ambassador olun",
   "ambassador.final_title": "Nuria'yı değerini anlayacak kişilerle paylaşmaya hazır mısınız?",
   "ambassador.final_text": "Adınızı, ülkenizi, ödeme tercihinizi ve Nuria'yı nerede paylaşmayı planladığınızı gönderin. 48 saat içinde yanıtlamayı hedefliyoruz.",
-  "ambassador.email_cta": "hello@oakdev.app adresine e-posta gönder",
+  "ambassador.email_cta": "hello@nuria.one adresine e-posta gönder",
   "ambassador.app_downloads_aria": "Nuria uygulamasını indir"
 }

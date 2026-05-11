@@ -3,7 +3,7 @@
 (function () {
   const defaults = {
     appName: 'Nuria',
-    siteOrigin: 'https://nuria.oakdev.app',
+    siteOrigin: 'https://nuria.one',
     appScheme: 'nuria',
     iosBundleId: 'com.oakdev.nuria',
     androidPackage: 'com.oakdev.nuria',

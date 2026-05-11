@@ -456,7 +456,7 @@
     if (reason) msg += `\nReason: ${reason}`;
     if (note)   msg += `\nAdditional notes: ${note}`;
     msg += '\n\nThank you.';
-    const mailto = `mailto:hello@oakdev.app?subject=Account%20Deletion%20Request&body=${encodeURIComponent(msg)}`;
+    const mailto = `mailto:hello@nuria.one?subject=Account%20Deletion%20Request&body=${encodeURIComponent(msg)}`;
     window.location.href = mailto;
   });
 }());
@@ -609,7 +609,7 @@
     const files = sanitizeAttachments();
     const mailSubject = `[Nuria Support] ${subject}`;
     const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-    const mailto = `mailto:hello@oakdev.app?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
+    const mailto = `mailto:hello@nuria.one?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
 
     if (files.length && navigator.share && navigator.canShare && navigator.canShare({ files })) {
       try {

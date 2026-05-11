@@ -15,7 +15,7 @@ function run(name, fn) {
 }
 
 const repoRoot = path.resolve(__dirname, '..');
-const logoUrl = 'https://nuria.oakdev.app/assets/Nuria%20Logo.png';
+const logoUrl = 'https://nuria.one/assets/Nuria%20Logo.png';
 const publicPreviewPages = [
   { page: 'index.html', image: logoUrl, width: '1600', height: '1600' },
   { page: 'join/index.html', image: logoUrl, width: '1600', height: '1600' },
@@ -31,7 +31,7 @@ const publicPreviewPages = [
   { page: 'nuria-partner/portal/index.html', image: logoUrl, width: '1600', height: '1600' },
   {
     page: 'ambassador/index.html',
-    image: 'https://nuria.oakdev.app/assets/ambassador-og.jpg',
+    image: 'https://nuria.one/assets/ambassador-og.jpg',
     width: '1200',
     height: '630',
   },

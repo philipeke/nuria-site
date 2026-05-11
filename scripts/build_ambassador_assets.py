@@ -26,8 +26,8 @@ GOOGLE_PLAY_BADGE_PNG = ASSETS / "ambassador-google-play-badge.png"
 
 APP_STORE_URL = "https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913"
 GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv"
-CONTACT_EMAIL = "hello@oakdev.app"
-SITE_URL = "nuria.oakdev.app/ambassador"
+CONTACT_EMAIL = "hello@nuria.one"
+SITE_URL = "nuria.one/ambassador"
 COMPANY_NAME = "OakDev & AI AB"
 COMPANY_LOCATION = "Uddevalla, Sweden"
 

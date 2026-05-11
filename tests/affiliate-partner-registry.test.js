@@ -197,7 +197,7 @@ run('builds merged registry rows from partner docs and legacy billing profile da
         primaryReferralCode: 'MASJIDSTHLM',
         portalEmail: 'partner@example.com',
         portalUid: 'uid_123',
-        updatedByEmail: 'admin@oakdev.app',
+        updatedByEmail: 'admin@nuria.one',
         updatedAt: { iso: '2026-04-06T10:00:00.000Z', ms: 1775469600000 },
       },
     ],
@@ -215,7 +215,7 @@ run('builds merged registry rows from partner docs and legacy billing profile da
   assert.strictEqual(items[0].email, 'partner@example.com');
   assert.strictEqual(items[0].partnerType, 'company');
   assert.strictEqual(items[0].country, 'SE');
-  assert.strictEqual(items[0].updatedByEmail, 'admin@oakdev.app');
+  assert.strictEqual(items[0].updatedByEmail, 'admin@nuria.one');
 });
 
 run('includes standalone partner docs even before a code row is present', () => {

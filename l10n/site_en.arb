@@ -69,7 +69,7 @@
   "ambassador.path_label": "The path",
   "ambassador.how_title": "A clean referral flow from first code to recurring payout.",
   "ambassador.step1_title": "Request a code",
-  "ambassador.step1_text": "Email hello@oakdev.app and we create a unique code tied to your ambassador profile.",
+  "ambassador.step1_text": "Email hello@nuria.one and we create a unique code tied to your ambassador profile.",
   "ambassador.step2_title": "Verify it on /join",
   "ambassador.step2_text": "When you have received your code, open the join page and verify that the code is active before you start sharing it.",
   "ambassador.step3_title": "Share Nuria",
@@ -82,7 +82,7 @@
   "ambassador.join_cta": "Verify on /join",
   "ambassador.portal_cta": "Open Affiliate Portal",
   "ambassador.portal_card1_title": "Join page",
-  "ambassador.portal_card1_text": "Paste the code on https://nuria.oakdev.app/join/ to verify that it is live and ready to use.",
+  "ambassador.portal_card1_text": "Paste the code on https://nuria.one/join/ to verify that it is live and ready to use.",
   "ambassador.portal_card2_title": "Affiliate Portal",
   "ambassador.portal_card2_text": "Sign in to review your ambassador profile, active codes, referred subscriber activity, and payout status.",
   "ambassador.reward_label": "Reward structure",
@@ -119,6 +119,6 @@
   "ambassador.final_label": "Become an ambassador",
   "ambassador.final_title": "Ready to share Nuria with people who will value it?",
   "ambassador.final_text": "Send your name, country, payout preference, and where you plan to share Nuria. We aim to reply within 48 hours.",
-  "ambassador.email_cta": "Email hello@oakdev.app",
+  "ambassador.email_cta": "Email hello@nuria.one",
   "ambassador.app_downloads_aria": "Download Nuria app"
 }

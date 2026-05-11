@@ -69,7 +69,7 @@
   "ambassador.path_label": "المسار",
   "ambassador.how_title": "مسار إحالة واضح من أول رمز إلى دفع متكرر.",
   "ambassador.step1_title": "اطلب رمزاً",
-  "ambassador.step1_text": "راسل hello@oakdev.app وسننشىء رمزاً فريداً مرتبطاً بملفك كسفير.",
+  "ambassador.step1_text": "راسل hello@nuria.one وسننشىء رمزاً فريداً مرتبطاً بملفك كسفير.",
   "ambassador.step2_title": "تحقق منه في /join",
   "ambassador.step2_text": "عندما تتلقى رمزك، افتح صفحة الانضمام وتأكد أن الرمز نشط قبل أن تبدأ بمشاركته.",
   "ambassador.step3_title": "شارك نوريا",
@@ -82,7 +82,7 @@
   "ambassador.join_cta": "تحقق في /join",
   "ambassador.portal_cta": "افتح بوابة الأفلييت",
   "ambassador.portal_card1_title": "صفحة الانضمام",
-  "ambassador.portal_card1_text": "ألصق الرمز في https://nuria.oakdev.app/join/ للتحقق من أنه نشط وجاهز للاستخدام.",
+  "ambassador.portal_card1_text": "ألصق الرمز في https://nuria.one/join/ للتحقق من أنه نشط وجاهز للاستخدام.",
   "ambassador.portal_card2_title": "بوابة الأفلييت",
   "ambassador.portal_card2_text": "سجّل الدخول لمراجعة ملف السفير الخاص بك والرموز النشطة ونشاط المشتركين المحالين وحالة الدفع.",
   "ambassador.reward_label": "هيكل المكافأة",
@@ -119,6 +119,6 @@
   "ambassador.final_label": "كن سفيراً",
   "ambassador.final_title": "هل أنت مستعد لمشاركة نوريا مع من سيقدرونها؟",
   "ambassador.final_text": "أرسل اسمك وبلدك وتفضيل الدفع وأين تخطط لمشاركة نوريا. نسعى للرد خلال 48 ساعة.",
-  "ambassador.email_cta": "راسل hello@oakdev.app",
+  "ambassador.email_cta": "راسل hello@nuria.one",
   "ambassador.app_downloads_aria": "تنزيل تطبيق نوريا"
 }
