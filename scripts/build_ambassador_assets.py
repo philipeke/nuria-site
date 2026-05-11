@@ -28,7 +28,7 @@ APP_STORE_URL = "https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id
 GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv"
 CONTACT_EMAIL = "hello@nuria.one"
 SITE_URL = "nuria.one/ambassador"
-COMPANY_NAME = "OakDev & AI AB"
+COMPANY_NAME = "Nuria"
 COMPANY_LOCATION = "Uddevalla, Sweden"
 
 PAGE_W, PAGE_H = A4
@@ -461,7 +461,7 @@ TERM_SECTIONS = [
     (
         "1",
         "Parties and operator",
-        f"The Nuria Ambassador Program is operated by {COMPANY_NAME}, a Swedish software company based in {COMPANY_LOCATION}. References to Nuria, we, us, or our mean {COMPANY_NAME} acting as the operator of the Nuria mobile app, website, partner portal, and related program materials. Ambassador means the individual, organisation, creator, community, or business accepted into the Program and issued a unique ambassador code.",
+        f"The Nuria Ambassador Program is operated by {COMPANY_NAME} from {COMPANY_LOCATION}. References to Nuria, we, us, or our mean the operator of the Nuria mobile app, website, partner portal, and related program materials. Ambassador means the individual, organisation, creator, community, or business accepted into the Program and issued a unique ambassador code.",
     ),
     (
         "2",
@@ -576,7 +576,7 @@ def build_terms_pdf():
         if page_index == 1:
             paragraph(
                 c,
-                f"These terms set out how ambassador earnings are calculated, paid, promoted, adjusted, and governed. The Program is operated by {COMPANY_NAME} in Sweden. By requesting or using a Nuria ambassador code, the Ambassador accepts these terms in full.",
+                f"These terms set out how ambassador earnings are calculated, paid, promoted, adjusted, and governed. The Program is operated by {COMPANY_NAME} from Sweden. By requesting or using a Nuria ambassador code, the Ambassador accepts these terms in full.",
                 MARGIN,
                 152,
                 480,

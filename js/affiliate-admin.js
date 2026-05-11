@@ -54,9 +54,7 @@ const DASHBOARD_LOAD_TIMEOUT_MS = 25000;
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
-  legalName: 'OakDev & AI AB',
-  orgNumber: '559431-6787',
-  vatId: 'SE559431678701',
+  legalName: 'Nuria',
   addressLine1: 'Kristevik 633',
   postalCity: '451 96 Uddevalla, Sweden',
   email: 'hello@nuria.one',
@@ -3234,8 +3232,6 @@ function getOpsSnapshot() {
     _version: '2.0',
     publisher: {
       name: EXPORT_PUBLISHER.legalName,
-      orgNumber: EXPORT_PUBLISHER.orgNumber,
-      vatId: EXPORT_PUBLISHER.vatId,
     },
     generatedAt: new Date().toISOString(),
     actor: getActivityActor(),
@@ -3280,7 +3276,7 @@ function buildOpsSnapshotCsv(snapshot) {
   const lines = [];
   lines.push('# Nuria Affiliate Admin — Ops Snapshot');
   lines.push(`# Generated: ${snapshot.generatedAt}`);
-  lines.push(`# Publisher: ${pub.legalName} (${pub.orgNumber})`);
+  lines.push(`# Publisher: ${pub.legalName}`);
   lines.push('');
 
   lines.push([csvCell('Actor'), csvCell('Month'), csvCell('Report ID')].join(','));
@@ -3742,7 +3738,7 @@ function buildCsvExport(detail) {
   lines.push('# Nuria Affiliate Payout Report');
   lines.push('#');
   lines.push(`# Generated: ${generatedAt}`);
-  lines.push(`# Publisher: ${pub.legalName} (${pub.orgNumber})`);
+  lines.push(`# Publisher: ${pub.legalName}`);
   lines.push('');
 
   lines.push([
@@ -3845,11 +3841,9 @@ function fetchAssetAsDataUrl(url) {
 
 async function loadExportBrandingDataUrls() {
   const base = window.location.origin;
-  const [nuriaDataUrl, oakdevDataUrl] = await Promise.all([
-    fetchAssetAsDataUrl(`${base}/assets/nuria-admin.png`),
-    fetchAssetAsDataUrl(`${base}/assets/oakdev-logo.png`),
-  ]);
-  return { nuriaDataUrl, oakdevDataUrl };
+  const nuriaDataUrl = await fetchAssetAsDataUrl(`${base}/assets/nuria-admin.png`);
+  const publisherDataUrl = nuriaDataUrl;
+  return { nuriaDataUrl, publisherDataUrl };
 }
 
 async function downloadStyledExcelForDetail(detail) {
@@ -3888,9 +3882,9 @@ function buildStyledExcelHtml(detail, options) {
     ? `<img src="${branding.nuriaDataUrl}" alt="Nuria" style="height:56px;width:auto;vertical-align:middle;" />`
     : `<span style="font-size:18pt;font-weight:700;color:${titleColor};font-family:${fontStack};letter-spacing:-0.02em;">Nuria</span>`;
 
-  const oakFooter = branding?.oakdevDataUrl
-    ? `<img src="${branding.oakdevDataUrl}" alt="OakDev" style="height:28px;width:auto;" />`
-    : `<span style="font-size:10pt;font-weight:600;color:${titleColor};">OakDev &amp; AI AB</span>`;
+  const publisherFooter = branding?.publisherDataUrl
+    ? `<img src="${branding.publisherDataUrl}" alt="Nuria" style="height:28px;width:auto;" />`
+    : `<span style="font-size:10pt;font-weight:600;color:${titleColor};">Nuria</span>`;
 
   const totalCommission = affiliates.reduce((sum, item) => sum + (item.knownCommissionTotalMinor || 0), 0);
   const totalPayout = affiliates.reduce((sum, item) => sum + (item.payoutReadyRowCount || 0), 0);
@@ -4026,10 +4020,9 @@ function buildStyledExcelHtml(detail, options) {
     <td style="border-top:3px solid ${accentGold};padding-top:16px;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td valign="top" style="width:150px;padding-right:12px;">${oakFooter}</td>
+          <td valign="top" style="width:150px;padding-right:12px;">${publisherFooter}</td>
           <td valign="top" style="font-size:8pt;color:#4a6355;line-height:1.6;">
             <strong style="font-size:9pt;color:${titleColor};">${escapeHtml(pub.legalName)}</strong><br />
-            Org.nr. ${escapeHtml(pub.orgNumber)} &middot; VAT ${escapeHtml(pub.vatId)}<br />
             ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)}<br />
             ${escapeHtml(pub.email)} &middot; ${escapeHtml(pub.phone)}
           </td>
@@ -4319,7 +4312,7 @@ function buildPrintableHtml(detail, options) {
       gap: 20px;
       flex-wrap: wrap;
     }
-    .print-footer__oakdev {
+    .print-footer__brand {
       height: 26px;
       width: auto;
       object-fit: contain;
@@ -4468,9 +4461,9 @@ function buildPrintableHtml(detail, options) {
 
   <footer class="print-footer">
     <div class="print-footer__inner">
-      <img class="print-footer__oakdev" src="${origin}/assets/oakdev-logo.png" alt="${escapeHtml(pub.legalName)}" />
+      <img class="print-footer__brand" src="${origin}/assets/nuria-admin.png" alt="${escapeHtml(pub.legalName)}" />
       <div class="print-footer__legal">
-        <strong>${escapeHtml(pub.legalName)}</strong> · Org.nr. ${escapeHtml(pub.orgNumber)} · VAT ${escapeHtml(pub.vatId)}<br />
+        <strong>${escapeHtml(pub.legalName)}</strong><br />
         ${escapeHtml(pub.addressLine1)}, ${escapeHtml(pub.postalCity)} · ${escapeHtml(pub.email)}
       </div>
       <div class="print-footer__stats">

@@ -1,7 +1,7 @@
 /* ============================================================
    NURIA — Daily Islamic Guidance & Reflection App
    Website Stylesheet
-   OakDev & AI AB © 2026
+   Nuria © 2026
    ============================================================ */
 
 /* ===== RESET ===== */
@@ -7401,7 +7401,7 @@ body.theme-luxury-stone .cookie-consent__text a:hover {
   border-top: 1px solid rgba(201, 168, 76, 0.2);
 }
 
-.admin-export-branding__oakdev {
+.admin-export-branding__brand {
   width: auto;
   height: 24px;
   object-fit: contain;
@@ -7537,7 +7537,7 @@ body.theme-luxury-stone .cookie-consent__text a:hover {
   border-top: 1px solid rgba(201, 168, 76, 0.22);
 }
 
-.admin-modal__oakdev {
+.admin-modal__brand {
   width: auto;
   height: 26px;
   object-fit: contain;
