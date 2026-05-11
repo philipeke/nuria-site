@@ -4,7 +4,14 @@
     "details": [
       {
         "appID": "7BYCW8LYYQ.com.oakdev.nuria",
-        "paths": ["/join", "/r/*"]
+        "paths": [
+          "/join",
+          "/join/*",
+          "/r/*",
+          "/family/*",
+          "/subscribe",
+          "/subscribe/*"
+        ]
       }
     ]
   }

@@ -18,6 +18,9 @@ const repoRoot = path.resolve(__dirname, '..');
 const subscribeHtml = fs.readFileSync(path.join(repoRoot, 'subscribe', 'index.html'), 'utf8');
 const subscribeScript = fs.readFileSync(path.join(repoRoot, 'js', 'subscribe.js'), 'utf8');
 const siteUtilsScript = fs.readFileSync(path.join(repoRoot, 'js', 'site-utils.js'), 'utf8');
+const appleAppSiteAssociation = JSON.parse(
+  fs.readFileSync(path.join(repoRoot, '.well-known', 'apple-app-site-association'), 'utf8'),
+);
 
 run('subscribe campaign page exposes the app deep link and web fallback', () => {
   assert(subscribeHtml.includes('https://nuria.one/subscribe'));
@@ -40,6 +43,12 @@ run('site utils exposes subscribe link helpers', () => {
   assert(siteUtilsScript.includes('function getSubscribeSchemeUrl()'));
   assert(siteUtilsScript.includes('getSubscribeUrl,'));
   assert(siteUtilsScript.includes('getSubscribeSchemeUrl,'));
+});
+
+run('apple app site association includes subscribe campaign paths', () => {
+  const paths = appleAppSiteAssociation.applinks.details[0].paths;
+  assert(paths.includes('/subscribe'));
+  assert(paths.includes('/subscribe/*'));
 });
 
 if (process.exitCode && process.exitCode !== 0) {
