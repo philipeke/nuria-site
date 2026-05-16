@@ -268,6 +268,7 @@ const elements = {
   liveNotificationLocaleMatch: document.getElementById('adminLiveNotificationLocaleMatch'),
   liveNotificationMarketingMatch: document.getElementById('adminLiveNotificationMarketingMatch'),
   liveNotificationAudienceMeta: document.getElementById('adminLiveNotificationAudienceMeta'),
+  liveNotificationByLocale: document.getElementById('adminLiveNotificationByLocale'),
   liveNotificationHistory: document.getElementById('adminLiveNotificationHistory'),
   refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
   estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
@@ -5328,6 +5329,43 @@ function renderLiveNotificationAudience() {
       : '';
     elements.liveNotificationAudienceMeta.textContent = `${languageCopy}${marketingCopy}${totalCopy}`;
   }
+
+  renderLiveNotificationByLocale(summary);
+}
+
+function renderLiveNotificationByLocale(summary) {
+  if (!elements.liveNotificationByLocale) return;
+  const breakdown = summary && summary.byLocale && typeof summary.byLocale === 'object'
+    ? summary.byLocale
+    : null;
+  if (!breakdown) {
+    elements.liveNotificationByLocale.hidden = true;
+    elements.liveNotificationByLocale.innerHTML = '';
+    return;
+  }
+
+  const entries = Object.entries(breakdown)
+    .filter(([, count]) => Number(count) > 0)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+
+  if (!entries.length) {
+    elements.liveNotificationByLocale.hidden = true;
+    elements.liveNotificationByLocale.innerHTML = '';
+    return;
+  }
+
+  elements.liveNotificationByLocale.hidden = false;
+  elements.liveNotificationByLocale.innerHTML = entries
+    .map(([locale, count]) => {
+      const label = locale === 'unknown' ? '— no locale set' : locale.replace(/_/g, '-');
+      return `
+        <span class="admin-chip admin-chip--neutral">
+          <strong>${escapeHtml(label)}</strong>
+          <span>&middot; ${escapeHtml(formatAdminNumber(count))}</span>
+        </span>
+      `;
+    })
+    .join('');
 }
 
 function renderLiveNotificationHistory() {
