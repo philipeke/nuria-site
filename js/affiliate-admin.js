@@ -272,6 +272,7 @@ const elements = {
   refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
   estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
   sendLiveNotificationButton: document.getElementById('adminSendLiveNotificationButton'),
+  testLiveNotificationButton: document.getElementById('adminTestLiveNotification'),
   liveNotificationFormError: document.getElementById('adminLiveNotificationFormError'),
   recipientForm: document.getElementById('adminRecipientForm'),
   recipientEmail: document.getElementById('adminRecipientEmail'),
@@ -711,6 +712,9 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (error?.adminCallable === 'sendAdminPushNotification') {
       return 'Live Notification send timed out. Check recent sends before sending again.';
+    }
+    if (error?.adminCallable === 'sendAdminPushTest') {
+      return 'Test push timed out. Check the function logs and try again.';
     }
     return 'This request timed out before the backend responded. Try again.';
   }
@@ -5478,6 +5482,53 @@ async function ensureLiveNotificationsLoaded(options) {
   ]);
 }
 
+async function handleLiveNotificationTestSend() {
+  if (state.liveNotificationSending) return;
+
+  clearBanner();
+  setLiveNotificationFormError('');
+  const title = String(elements.liveNotificationTitle?.value || '').trim();
+  const body = String(elements.liveNotificationBody?.value || '').trim();
+
+  if (!title || !body) {
+    setLiveNotificationFormError('Write both Notification title and Notification message first.');
+    return;
+  }
+
+  const target = getLiveNotificationTarget();
+  setButtonBusy(elements.testLiveNotificationButton, true, 'Sending test');
+
+  try {
+    await withActionTimeout(
+      callFirebaseFunction('sendAdminPushTest', {
+        title,
+        body,
+        targetScreen: target.targetScreen,
+        requireMarketingConsent: target.requireMarketingConsent,
+      }),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'sendAdminPushTest',
+        message: 'live_notification_test_timeout',
+      },
+    );
+    showBanner('Test push sent to your device. Check your phone.', 'success');
+    track('live_notification_test_sent', {
+      target_screen: target.targetScreen,
+    });
+  } catch (error) {
+    const parts = getErrorParts(error);
+    let message = getActionableErrorMessage(error, 'Test push could not be sent.');
+    if (parts.message.includes('push_admin_token_missing')) {
+      message = 'No FCM token is stored for this admin account. Open the Nuria app on your phone with this same Google sign-in, then try again.';
+    }
+    setLiveNotificationFormError(message);
+    showBanner(message, 'error');
+  } finally {
+    setButtonBusy(elements.testLiveNotificationButton, false, 'Sending test');
+  }
+}
+
 async function handleLiveNotificationSend(event) {
   event.preventDefault();
   if (state.liveNotificationSending) return;
@@ -8750,6 +8801,9 @@ function bindEvents() {
     estimateLiveNotificationAudience({ silent: false }).catch(() => {});
   });
   elements.liveNotificationForm?.addEventListener('submit', handleLiveNotificationSend);
+  elements.testLiveNotificationButton?.addEventListener('click', () => {
+    handleLiveNotificationTestSend().catch(() => {});
+  });
   elements.liveNotificationTitle?.addEventListener('input', () => {
     setLiveNotificationFormError('');
     renderLiveNotificationFieldMeta();
