@@ -5206,15 +5206,77 @@ function setLiveNotificationFormError(message) {
   elements.liveNotificationFormError.textContent = message || '';
 }
 
+// Grapheme-aware counter: 😀 = 1, 👨‍👩‍👧 = 1, "abc" = 3.
+// Falls back to code points (Array.from) on browsers without Intl.Segmenter.
+const LIVE_NOTIFICATION_GRAPHEME_SEGMENTER = (() => {
+  try {
+    if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+      return new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+    }
+  } catch (error) {
+    /* swallow — fall back below */
+  }
+  return null;
+})();
+
+function graphemesOf(text) {
+  if (!text) return [];
+  if (LIVE_NOTIFICATION_GRAPHEME_SEGMENTER) {
+    const out = [];
+    for (const seg of LIVE_NOTIFICATION_GRAPHEME_SEGMENTER.segment(text)) {
+      out.push(seg.segment);
+    }
+    return out;
+  }
+  return Array.from(text);
+}
+
+function clampGraphemes(text, maxGraphemes) {
+  const graphemes = graphemesOf(text);
+  if (graphemes.length <= maxGraphemes) return text;
+  return graphemes.slice(0, maxGraphemes).join('');
+}
+
+function enforceGraphemeLimit(field) {
+  if (!field) return;
+  const max = Number(field.dataset?.maxGraphemes || 0);
+  if (!max) return;
+  const value = field.value || '';
+  const clamped = clampGraphemes(value, max);
+  if (clamped !== value) {
+    const selectionStart = field.selectionStart;
+    field.value = clamped;
+    // Restore caret near where the user was typing so the experience is
+    // smooth even when we shave off a trailing emoji.
+    if (typeof selectionStart === 'number') {
+      const next = Math.min(selectionStart, clamped.length);
+      try {
+        field.setSelectionRange(next, next);
+      } catch (error) {
+        /* some inputs don't support setSelectionRange */
+      }
+    }
+  }
+}
+
 function renderLiveNotificationFieldMeta() {
-  const titleLength = String(elements.liveNotificationTitle?.value || '').trim().length;
-  const bodyLength = String(elements.liveNotificationBody?.value || '').trim().length;
+  enforceGraphemeLimit(elements.liveNotificationTitle);
+  enforceGraphemeLimit(elements.liveNotificationBody);
+
+  const titleCount = graphemesOf(
+    String(elements.liveNotificationTitle?.value || '').trim(),
+  ).length;
+  const bodyCount = graphemesOf(
+    String(elements.liveNotificationBody?.value || '').trim(),
+  ).length;
+  const titleMax = Number(elements.liveNotificationTitle?.dataset?.maxGraphemes || 80);
+  const bodyMax = Number(elements.liveNotificationBody?.dataset?.maxGraphemes || 240);
 
   if (elements.liveNotificationTitleMeta) {
-    elements.liveNotificationTitleMeta.textContent = `${titleLength} / 80 characters`;
+    elements.liveNotificationTitleMeta.textContent = `${titleCount} / ${titleMax} characters`;
   }
   if (elements.liveNotificationBodyMeta) {
-    elements.liveNotificationBodyMeta.textContent = `${bodyLength} / 240 characters`;
+    elements.liveNotificationBodyMeta.textContent = `${bodyCount} / ${bodyMax} characters`;
   }
 }
 
