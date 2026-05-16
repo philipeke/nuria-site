@@ -269,6 +269,11 @@ const elements = {
   liveNotificationMarketingMatch: document.getElementById('adminLiveNotificationMarketingMatch'),
   liveNotificationAudienceMeta: document.getElementById('adminLiveNotificationAudienceMeta'),
   liveNotificationByLocale: document.getElementById('adminLiveNotificationByLocale'),
+  liveNotificationPreviewIosTitle: document.getElementById('adminLiveNotificationPreviewIosTitle'),
+  liveNotificationPreviewIosBody: document.getElementById('adminLiveNotificationPreviewIosBody'),
+  liveNotificationPreviewAndroidTitle: document.getElementById('adminLiveNotificationPreviewAndroidTitle'),
+  liveNotificationPreviewAndroidBody: document.getElementById('adminLiveNotificationPreviewAndroidBody'),
+  liveNotificationPreviewAndroidTarget: document.getElementById('adminLiveNotificationPreviewAndroidTarget'),
   liveNotificationHistory: document.getElementById('adminLiveNotificationHistory'),
   refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
   estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
@@ -5415,9 +5420,47 @@ function syncLiveNotificationTargetControls() {
   }
 }
 
+const LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS = {
+  dashboard: 'Opens app',
+  quran: 'Opens Quran',
+  halqa: 'Opens Halqa',
+  legacy: 'Opens Legacy',
+};
+
+function renderLiveNotificationPreview() {
+  const title = String(elements.liveNotificationTitle?.value || '').trim();
+  const body = String(elements.liveNotificationBody?.value || '').trim();
+  const target = normalizeLiveNotificationTargetScreen(
+    elements.liveNotificationTargetScreen?.value,
+  );
+  const targetLabel =
+    LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS[target] ||
+    LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS.dashboard;
+
+  const titleFallback = 'Notification title';
+  const bodyFallback = 'Notification message will appear here.';
+
+  if (elements.liveNotificationPreviewIosTitle) {
+    elements.liveNotificationPreviewIosTitle.textContent = title || titleFallback;
+  }
+  if (elements.liveNotificationPreviewIosBody) {
+    elements.liveNotificationPreviewIosBody.textContent = body || bodyFallback;
+  }
+  if (elements.liveNotificationPreviewAndroidTitle) {
+    elements.liveNotificationPreviewAndroidTitle.textContent = title || titleFallback;
+  }
+  if (elements.liveNotificationPreviewAndroidBody) {
+    elements.liveNotificationPreviewAndroidBody.textContent = body || bodyFallback;
+  }
+  if (elements.liveNotificationPreviewAndroidTarget) {
+    elements.liveNotificationPreviewAndroidTarget.textContent = targetLabel;
+  }
+}
+
 function renderLiveNotifications() {
   syncLiveNotificationTargetControls();
   renderLiveNotificationFieldMeta();
+  renderLiveNotificationPreview();
   renderLiveNotificationAudience();
   renderLiveNotificationHistory();
   setButtonBusy(elements.refreshLiveNotificationAudience, state.liveNotificationLoading, 'Counting');
@@ -8841,6 +8884,9 @@ function bindEvents() {
   elements.liveNotificationForm?.addEventListener('submit', handleLiveNotificationSend);
   elements.testLiveNotificationButton?.addEventListener('click', () => {
     handleLiveNotificationTestSend().catch(() => {});
+  });
+  elements.liveNotificationTargetScreen?.addEventListener('change', () => {
+    renderLiveNotificationPreview();
   });
   elements.liveNotificationTitle?.addEventListener('input', () => {
     setLiveNotificationFormError('');

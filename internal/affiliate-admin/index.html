@@ -1471,6 +1471,46 @@
             Write here when you want to send a push notification now. This is the live phone notification. Placeholder text is below in the Placeholder tab.
           </p>
 
+          <div class="admin-detail-section admin-push-preview" id="adminLiveNotificationPreview">
+            <h3 class="admin-section-title admin-push-preview__title">Live preview</h3>
+            <p class="admin-panel__helper">
+              Updates as you type. Mirrors how the notification will appear on the user's lock screen.
+            </p>
+            <div class="admin-push-preview__grid">
+              <article class="admin-push-preview__card admin-push-preview__card--ios" aria-label="iOS preview">
+                <header class="admin-push-preview__os-header">
+                  <span class="admin-push-preview__os-label">iOS · Lock screen</span>
+                </header>
+                <div class="admin-push-preview__ios-bubble">
+                  <img class="admin-push-preview__ios-icon" src="/assets/apple-touch-icon.png" alt="" />
+                  <div class="admin-push-preview__ios-body">
+                    <div class="admin-push-preview__ios-meta">
+                      <span class="admin-push-preview__app-name">NURIA</span>
+                      <span class="admin-push-preview__ios-time">now</span>
+                    </div>
+                    <div class="admin-push-preview__ios-title" id="adminLiveNotificationPreviewIosTitle">Notification title</div>
+                    <div class="admin-push-preview__ios-bodytext" id="adminLiveNotificationPreviewIosBody">Notification message will appear here.</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="admin-push-preview__card admin-push-preview__card--android" aria-label="Android preview">
+                <header class="admin-push-preview__os-header">
+                  <span class="admin-push-preview__os-label">Android · Lock screen</span>
+                </header>
+                <div class="admin-push-preview__android-bubble">
+                  <div class="admin-push-preview__android-header">
+                    <img class="admin-push-preview__android-icon" src="/assets/favicon-48.png" alt="" />
+                    <span class="admin-push-preview__app-name">Nuria · Nuria Updates · now</span>
+                  </div>
+                  <div class="admin-push-preview__android-title" id="adminLiveNotificationPreviewAndroidTitle">Notification title</div>
+                  <div class="admin-push-preview__android-bodytext" id="adminLiveNotificationPreviewAndroidBody">Notification message will appear here.</div>
+                  <div class="admin-push-preview__android-target" id="adminLiveNotificationPreviewAndroidTarget">Opens app</div>
+                </div>
+              </article>
+            </div>
+          </div>
+
           <div class="admin-detail-section">
             <form class="admin-form" id="adminLiveNotificationForm">
               <div class="admin-form__header">
