@@ -5857,7 +5857,10 @@ async function sendChosenTestPush() {
     } else if (parts.message.includes('push_test_device_token_missing')) {
       message = 'No FCM token for that device. Ask the user to open the app on it once.';
     } else if (parts.message.includes('push_test_device_token_stale')) {
-      message = 'That device token has expired. Ask the user to re-open the app, or pick another device.';
+      message = 'That device token has expired (auto-cleaned). Ask the user to re-open the app, or pick another device.';
+    } else if (parts.message.includes('push_test_send_failed:')) {
+      const fcmCode = parts.message.split(':').pop() || 'unknown';
+      message = `FCM rejected the send (${fcmCode}). Check Functions logs for details.`;
     }
     setTestPushError(message);
   } finally {
