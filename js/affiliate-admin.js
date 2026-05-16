@@ -274,6 +274,10 @@ const elements = {
   liveNotificationPreviewAndroidTitle: document.getElementById('adminLiveNotificationPreviewAndroidTitle'),
   liveNotificationPreviewAndroidBody: document.getElementById('adminLiveNotificationPreviewAndroidBody'),
   liveNotificationPreviewAndroidTarget: document.getElementById('adminLiveNotificationPreviewAndroidTarget'),
+  liveNotificationPreviewAndroidImage: document.getElementById('adminLiveNotificationPreviewAndroidImage'),
+  liveNotificationPreviewIosImage: document.getElementById('adminLiveNotificationPreviewIosImage'),
+  liveNotificationImageUrl: document.getElementById('adminLiveNotificationImageUrl'),
+  liveNotificationImageUrlError: document.getElementById('adminLiveNotificationImageUrlError'),
   liveNotificationHistory: document.getElementById('adminLiveNotificationHistory'),
   refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
   estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
@@ -5202,6 +5206,18 @@ function normalizeLiveNotificationTargetScreen(raw) {
     : LIVE_NOTIFICATION_DEFAULT_SCREEN;
 }
 
+function normalizeLiveNotificationImageUrl(raw) {
+  const value = String(raw || '').trim();
+  if (!value) return '';
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== 'https:') return '';
+    return parsed.toString();
+  } catch (error) {
+    return '';
+  }
+}
+
 function getLiveNotificationTarget() {
   const allLocales = elements.liveNotificationAllLocales?.checked !== false;
   const rawLocales = String(elements.liveNotificationLocales?.value || '');
@@ -5222,6 +5238,9 @@ function getLiveNotificationTarget() {
     requireMarketingConsent: elements.liveNotificationRequireMarketing?.checked === true,
     targetScreen: normalizeLiveNotificationTargetScreen(
       elements.liveNotificationTargetScreen?.value,
+    ),
+    imageUrl: normalizeLiveNotificationImageUrl(
+      elements.liveNotificationImageUrl?.value,
     ),
   };
 }
@@ -5430,6 +5449,8 @@ const LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS = {
 function renderLiveNotificationPreview() {
   const title = String(elements.liveNotificationTitle?.value || '').trim();
   const body = String(elements.liveNotificationBody?.value || '').trim();
+  const rawImageUrl = String(elements.liveNotificationImageUrl?.value || '').trim();
+  const imageUrl = normalizeLiveNotificationImageUrl(rawImageUrl);
   const target = normalizeLiveNotificationTargetScreen(
     elements.liveNotificationTargetScreen?.value,
   );
@@ -5454,6 +5475,33 @@ function renderLiveNotificationPreview() {
   }
   if (elements.liveNotificationPreviewAndroidTarget) {
     elements.liveNotificationPreviewAndroidTarget.textContent = targetLabel;
+  }
+
+  if (elements.liveNotificationPreviewAndroidImage) {
+    if (imageUrl) {
+      elements.liveNotificationPreviewAndroidImage.src = imageUrl;
+      elements.liveNotificationPreviewAndroidImage.hidden = false;
+    } else {
+      elements.liveNotificationPreviewAndroidImage.hidden = true;
+      elements.liveNotificationPreviewAndroidImage.removeAttribute('src');
+    }
+  }
+  if (elements.liveNotificationPreviewIosImage) {
+    if (imageUrl) {
+      elements.liveNotificationPreviewIosImage.src = imageUrl;
+      elements.liveNotificationPreviewIosImage.hidden = false;
+    } else {
+      elements.liveNotificationPreviewIosImage.hidden = true;
+      elements.liveNotificationPreviewIosImage.removeAttribute('src');
+    }
+  }
+
+  if (elements.liveNotificationImageUrlError) {
+    const showError = Boolean(rawImageUrl) && !imageUrl;
+    elements.liveNotificationImageUrlError.hidden = !showError;
+    elements.liveNotificationImageUrlError.textContent = showError
+      ? 'Image URL must be a valid https:// link.'
+      : '';
   }
 }
 
@@ -5586,6 +5634,7 @@ async function handleLiveNotificationTestSend() {
         body,
         targetScreen: target.targetScreen,
         requireMarketingConsent: target.requireMarketingConsent,
+        imageUrl: target.imageUrl,
       }),
       LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
       {
@@ -5653,6 +5702,7 @@ async function handleLiveNotificationSend(event) {
         targetLocales: target.targetLocales,
         requireMarketingConsent: target.requireMarketingConsent,
         targetScreen: target.targetScreen,
+        imageUrl: target.imageUrl,
       }),
       LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
       {
@@ -5665,6 +5715,9 @@ async function handleLiveNotificationSend(event) {
     }
     elements.liveNotificationTitle.value = '';
     elements.liveNotificationBody.value = '';
+    if (elements.liveNotificationImageUrl) {
+      elements.liveNotificationImageUrl.value = '';
+    }
     renderLiveNotifications();
     showBanner(`Live Notification sent to ${formatAdminNumber(data?.item?.sentCount || 0)} users.`, 'success');
     addActivityLog('Sent Live Notification.', 'success');
@@ -8886,6 +8939,9 @@ function bindEvents() {
     handleLiveNotificationTestSend().catch(() => {});
   });
   elements.liveNotificationTargetScreen?.addEventListener('change', () => {
+    renderLiveNotificationPreview();
+  });
+  elements.liveNotificationImageUrl?.addEventListener('input', () => {
     renderLiveNotificationPreview();
   });
   elements.liveNotificationTitle?.addEventListener('input', () => {
