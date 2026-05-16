@@ -281,6 +281,15 @@ const elements = {
   liveNotificationScheduleEnabled: document.getElementById('adminLiveNotificationScheduleEnabled'),
   liveNotificationScheduleGroup: document.getElementById('adminLiveNotificationScheduleGroup'),
   liveNotificationScheduleAt: document.getElementById('adminLiveNotificationScheduleAt'),
+  testPushModal: document.getElementById('adminTestPushModal'),
+  testPushModalBackdrop: document.getElementById('adminTestPushModalBackdrop'),
+  testPushModalClose: document.getElementById('adminTestPushModalClose'),
+  testPushModalCancel: document.getElementById('adminTestPushCancel'),
+  testPushQuery: document.getElementById('adminTestPushQuery'),
+  testPushQueryMeta: document.getElementById('adminTestPushQueryMeta'),
+  testPushResults: document.getElementById('adminTestPushResults'),
+  testPushError: document.getElementById('adminTestPushError'),
+  testPushSend: document.getElementById('adminTestPushSend'),
   liveNotificationHistory: document.getElementById('adminLiveNotificationHistory'),
   refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
   estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
@@ -423,6 +432,8 @@ const state = {
   liveNotificationLoading: false,
   liveNotificationSending: false,
   liveNotificationError: '',
+  testPushResults: [],
+  testPushSelection: null,
 };
 let loginSuccessSound = null;
 let checklistRemoteSyncTimeoutId = null;
@@ -728,6 +739,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (error?.adminCallable === 'sendAdminPushTest') {
       return 'Test push timed out. Check the function logs and try again.';
+    }
+    if (error?.adminCallable === 'sendAdminPushTestToUser') {
+      return 'Test push timed out. Check the function logs and try again.';
+    }
+    if (error?.adminCallable === 'findUsersForPushTest') {
+      return 'User search timed out. Try a more specific query.';
     }
     return 'This request timed out before the backend responded. Try again.';
   }
@@ -5638,51 +5655,213 @@ async function ensureLiveNotificationsLoaded(options) {
   ]);
 }
 
-async function handleLiveNotificationTestSend() {
-  if (state.liveNotificationSending) return;
+// ── Test-push picker modal ───────────────────────────────────────────────
 
+let testPushQueryTimer = null;
+let testPushQueryToken = 0;
+
+function setTestPushError(message) {
+  if (!elements.testPushError) return;
+  elements.testPushError.hidden = !message;
+  elements.testPushError.textContent = message || '';
+}
+
+function setTestPushSendEnabled(enabled) {
+  if (!elements.testPushSend) return;
+  elements.testPushSend.disabled = !enabled;
+}
+
+function renderTestPushResults(items) {
+  if (!elements.testPushResults) return;
+  if (!Array.isArray(items) || !items.length) {
+    elements.testPushResults.innerHTML =
+      '<p class="admin-test-push-empty">No matching Nuria users with a registered device. The recipient must have opened the app at least once.</p>';
+    setTestPushSendEnabled(false);
+    return;
+  }
+
+  const selectedKey = state.testPushSelection
+    ? `${state.testPushSelection.uid}::${state.testPushSelection.deviceId}`
+    : null;
+
+  elements.testPushResults.innerHTML = items
+    .map((user) => {
+      const devicesHtml = (user.devices || [])
+        .map((device) => {
+          const key = `${user.uid}::${device.deviceId}`;
+          const checked = key === selectedKey ? 'checked' : '';
+          const lastSeen = device.lastSeenAt?.iso
+            ? formatTimestamp({ iso: device.lastSeenAt.iso })
+            : '—';
+          const platform = device.platform || 'unknown';
+          const tokenHint = device.tokenPreview
+            ? ` · ${escapeHtml(device.tokenPreview)}`
+            : '';
+          return `
+            <label class="admin-test-push-device${checked ? ' admin-test-push-device--selected' : ''}">
+              <input type="radio" name="admin-test-push-device" value="${escapeHtml(key)}" data-uid="${escapeHtml(user.uid)}" data-device-id="${escapeHtml(device.deviceId)}" data-email="${escapeHtml(user.email || '')}" ${checked} />
+              <span class="admin-test-push-device__label">
+                <span class="admin-test-push-device__name">${escapeHtml(device.label || device.deviceId)}</span>
+                <span class="admin-test-push-device__meta">${escapeHtml(platform)} ${escapeHtml(device.osVersion || '')} · last seen ${escapeHtml(lastSeen)}${tokenHint}</span>
+              </span>
+            </label>
+          `;
+        })
+        .join('');
+
+      return `
+        <div class="admin-test-push-user">
+          <div class="admin-test-push-user__head">
+            <span class="admin-test-push-user__email">${escapeHtml(user.email || '(no email)')}</span>
+            <span class="admin-test-push-user__meta">${escapeHtml(user.locale || '—')}</span>
+          </div>
+          <div class="admin-test-push-devices">${devicesHtml}</div>
+        </div>
+      `;
+    })
+    .join('');
+
+  setTestPushSendEnabled(Boolean(state.testPushSelection));
+}
+
+async function runTestPushSearch(query) {
+  if (!query || query.length < 2) {
+    state.testPushResults = [];
+    renderTestPushResults([]);
+    if (elements.testPushQueryMeta) {
+      elements.testPushQueryMeta.textContent = 'Type at least 2 characters to search.';
+    }
+    return;
+  }
+  const myToken = ++testPushQueryToken;
+  if (elements.testPushQueryMeta) {
+    elements.testPushQueryMeta.textContent = 'Searching…';
+  }
+  setTestPushError('');
+  try {
+    const data = await withActionTimeout(
+      callFirebaseFunction('findUsersForPushTest', { query }),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'findUsersForPushTest',
+        message: 'live_notification_lookup_timeout',
+      },
+    );
+    if (myToken !== testPushQueryToken) return; // stale result
+    const items = Array.isArray(data?.items) ? data.items : [];
+    state.testPushResults = items;
+    renderTestPushResults(items);
+    if (elements.testPushQueryMeta) {
+      elements.testPushQueryMeta.textContent = items.length
+        ? `${items.length} match${items.length === 1 ? '' : 'es'}.`
+        : 'No matches.';
+    }
+  } catch (error) {
+    if (myToken !== testPushQueryToken) return;
+    const message = getActionableErrorMessage(error, 'User search failed.');
+    setTestPushError(message);
+    if (elements.testPushQueryMeta) {
+      elements.testPushQueryMeta.textContent = '';
+    }
+  }
+}
+
+function openTestPushModal() {
   clearBanner();
   setLiveNotificationFormError('');
   const title = String(elements.liveNotificationTitle?.value || '').trim();
   const body = String(elements.liveNotificationBody?.value || '').trim();
-
   if (!title || !body) {
     setLiveNotificationFormError('Write both Notification title and Notification message first.');
     return;
   }
 
+  state.testPushSelection = null;
+  state.testPushResults = [];
+  setTestPushError('');
+  setTestPushSendEnabled(false);
+  if (elements.testPushQuery) {
+    elements.testPushQuery.value = state.user?.email || '';
+  }
+  renderTestPushResults([]);
+  if (elements.testPushModal) {
+    elements.testPushModal.hidden = false;
+    elements.testPushModal.setAttribute('aria-hidden', 'false');
+  }
+  // Kick off an initial search using the prefilled email so admin's own
+  // devices show up immediately.
+  const seed = String(elements.testPushQuery?.value || '').trim().toLowerCase();
+  if (seed.length >= 2) {
+    runTestPushSearch(seed).catch(() => {});
+  } else if (elements.testPushQueryMeta) {
+    elements.testPushQueryMeta.textContent = 'Type at least 2 characters to search.';
+  }
+  if (elements.testPushQuery) {
+    elements.testPushQuery.focus();
+    elements.testPushQuery.select?.();
+  }
+}
+
+function closeTestPushModal() {
+  if (testPushQueryTimer) {
+    window.clearTimeout(testPushQueryTimer);
+    testPushQueryTimer = null;
+  }
+  if (elements.testPushModal) {
+    elements.testPushModal.hidden = true;
+    elements.testPushModal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+async function sendChosenTestPush() {
+  if (!state.testPushSelection) return;
+
+  const title = String(elements.liveNotificationTitle?.value || '').trim();
+  const body = String(elements.liveNotificationBody?.value || '').trim();
+  if (!title || !body) {
+    setTestPushError('Write a title and body in the main composer first.');
+    return;
+  }
+
   const target = getLiveNotificationTarget();
-  setButtonBusy(elements.testLiveNotificationButton, true, 'Sending test');
+  setButtonBusy(elements.testPushSend, true, 'Sending');
 
   try {
-    await withActionTimeout(
-      callFirebaseFunction('sendAdminPushTest', {
+    const data = await withActionTimeout(
+      callFirebaseFunction('sendAdminPushTestToUser', {
+        uid: state.testPushSelection.uid,
+        deviceId: state.testPushSelection.deviceId,
         title,
         body,
+        imageUrl: target.imageUrl,
         targetScreen: target.targetScreen,
         requireMarketingConsent: target.requireMarketingConsent,
-        imageUrl: target.imageUrl,
       }),
       LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
       {
-        adminCallable: 'sendAdminPushTest',
+        adminCallable: 'sendAdminPushTestToUser',
         message: 'live_notification_test_timeout',
       },
     );
-    showBanner('Test push sent to your device. Check your phone.', 'success');
+    closeTestPushModal();
+    showBanner(`Test push sent to ${data?.email || 'selected device'}.`, 'success');
     track('live_notification_test_sent', {
       target_screen: target.targetScreen,
+      device_id: state.testPushSelection.deviceId,
     });
   } catch (error) {
     const parts = getErrorParts(error);
     let message = getActionableErrorMessage(error, 'Test push could not be sent.');
-    if (parts.message.includes('push_admin_token_missing')) {
-      message = 'No FCM token is stored for this admin account. Open the Nuria app on your phone with this same Google sign-in, then try again.';
+    if (parts.message.includes('push_test_user_not_found')) {
+      message = 'That user no longer exists in Firestore.';
+    } else if (parts.message.includes('push_test_device_token_missing')) {
+      message = 'No FCM token for that device. Ask the user to open the app on it once.';
+    } else if (parts.message.includes('push_test_device_token_stale')) {
+      message = 'That device token has expired. Ask the user to re-open the app, or pick another device.';
     }
-    setLiveNotificationFormError(message);
-    showBanner(message, 'error');
+    setTestPushError(message);
   } finally {
-    setButtonBusy(elements.testLiveNotificationButton, false, 'Sending test');
+    setButtonBusy(elements.testPushSend, false, 'Sending');
   }
 }
 
@@ -9067,7 +9246,35 @@ function bindEvents() {
   });
   elements.liveNotificationForm?.addEventListener('submit', handleLiveNotificationSend);
   elements.testLiveNotificationButton?.addEventListener('click', () => {
-    handleLiveNotificationTestSend().catch(() => {});
+    openTestPushModal();
+  });
+  elements.testPushModalClose?.addEventListener('click', () => closeTestPushModal());
+  elements.testPushModalBackdrop?.addEventListener('click', () => closeTestPushModal());
+  elements.testPushModalCancel?.addEventListener('click', () => closeTestPushModal());
+  elements.testPushSend?.addEventListener('click', () => {
+    sendChosenTestPush().catch(() => {});
+  });
+  elements.testPushQuery?.addEventListener('input', (event) => {
+    if (testPushQueryTimer) window.clearTimeout(testPushQueryTimer);
+    const value = String(event.target.value || '').trim().toLowerCase();
+    testPushQueryTimer = window.setTimeout(() => {
+      runTestPushSearch(value).catch(() => {});
+    }, 220);
+  });
+  elements.testPushResults?.addEventListener('change', (event) => {
+    const radio = event.target.closest('input[type="radio"][name="admin-test-push-device"]');
+    if (!radio) return;
+    state.testPushSelection = {
+      uid: radio.dataset.uid,
+      deviceId: radio.dataset.deviceId,
+      email: radio.dataset.email,
+    };
+    renderTestPushResults(state.testPushResults || []);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && elements.testPushModal && !elements.testPushModal.hidden) {
+      closeTestPushModal();
+    }
   });
   elements.liveNotificationTargetScreen?.addEventListener('change', () => {
     renderLiveNotificationPreview();

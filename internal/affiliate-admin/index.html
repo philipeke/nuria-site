@@ -1653,7 +1653,7 @@
                   Refresh recipient count
                 </button>
                 <button type="button" class="btn btn--outline" id="adminTestLiveNotification">
-                  🧪 Send test to myself
+                  🧪 Send test push…
                 </button>
                 <button type="submit" class="btn btn--gold" id="adminSendLiveNotificationButton">
                   Send Live Notification
@@ -1670,6 +1670,47 @@
             <h3 class="admin-section-title">Recently sent Live Notifications</h3>
             <div class="admin-mini-list" id="adminLiveNotificationHistory">
               <p class="admin-empty admin-empty--inline">No Live Notifications sent yet.</p>
+            </div>
+          </div>
+
+          <div class="admin-modal" id="adminTestPushModal" hidden role="dialog" aria-labelledby="adminTestPushModalTitle" aria-hidden="true">
+            <button type="button" class="admin-modal__backdrop" id="adminTestPushModalBackdrop" tabindex="-1" aria-label="Close test push picker"></button>
+            <div class="admin-modal__panel" role="document">
+              <header class="admin-modal__header">
+                <div>
+                  <p class="admin-panel__eyebrow">Send test push</p>
+                  <h3 class="admin-section-title" id="adminTestPushModalTitle">Pick a Nuria account + device</h3>
+                </div>
+                <button type="button" class="admin-modal__close" id="adminTestPushModalClose" aria-label="Close">×</button>
+              </header>
+
+              <p class="admin-panel__helper">
+                Test pushes use the title, body, image and tap target you've written above. The recipient sees "🧪 TEST · " prefixed to the title so they can never confuse it with a live announcement.
+              </p>
+
+              <div class="form-group">
+                <label class="form-label" for="adminTestPushQuery">Find user by email</label>
+                <input
+                  class="form-input"
+                  id="adminTestPushQuery"
+                  type="search"
+                  inputmode="email"
+                  placeholder="Type at least 2 characters of an email"
+                  autocomplete="off"
+                />
+                <p class="admin-panel__helper" id="adminTestPushQueryMeta">Start typing to search.</p>
+              </div>
+
+              <div class="admin-test-push-results" id="adminTestPushResults"></div>
+
+              <p class="admin-form-error" id="adminTestPushError" hidden></p>
+
+              <footer class="admin-modal__footer">
+                <button type="button" class="btn btn--outline" id="adminTestPushCancel">Cancel</button>
+                <button type="button" class="btn btn--gold" id="adminTestPushSend" disabled>
+                  Send test push
+                </button>
+              </footer>
             </div>
           </div>
         </article>
