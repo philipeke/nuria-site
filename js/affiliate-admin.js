@@ -262,6 +262,7 @@ const elements = {
   liveNotificationLocalesGroup: document.getElementById('adminLiveNotificationLocalesGroup'),
   liveNotificationLocales: document.getElementById('adminLiveNotificationLocales'),
   liveNotificationRequireMarketing: document.getElementById('adminLiveNotificationRequireMarketing'),
+  liveNotificationTargetScreen: document.getElementById('adminLiveNotificationTargetScreen'),
   liveNotificationMatched: document.getElementById('adminLiveNotificationMatched'),
   liveNotificationUpdatesOptIn: document.getElementById('adminLiveNotificationUpdatesOptIn'),
   liveNotificationLocaleMatch: document.getElementById('adminLiveNotificationLocaleMatch'),
@@ -5179,6 +5180,18 @@ function formatAdminNumber(value) {
   }
 }
 
+// Must stay in sync with SUPPORTED_TARGET_SCREENS in
+// functions/src/notifications/adminPushCampaigns.ts.
+const LIVE_NOTIFICATION_TARGET_SCREENS = ['dashboard', 'quran', 'halqa', 'legacy'];
+const LIVE_NOTIFICATION_DEFAULT_SCREEN = 'dashboard';
+
+function normalizeLiveNotificationTargetScreen(raw) {
+  const value = String(raw || '').trim().toLowerCase();
+  return LIVE_NOTIFICATION_TARGET_SCREENS.includes(value)
+    ? value
+    : LIVE_NOTIFICATION_DEFAULT_SCREEN;
+}
+
 function getLiveNotificationTarget() {
   const allLocales = elements.liveNotificationAllLocales?.checked !== false;
   const rawLocales = String(elements.liveNotificationLocales?.value || '');
@@ -5197,6 +5210,9 @@ function getLiveNotificationTarget() {
     allLocales,
     targetLocales,
     requireMarketingConsent: elements.liveNotificationRequireMarketing?.checked === true,
+    targetScreen: normalizeLiveNotificationTargetScreen(
+      elements.liveNotificationTargetScreen?.value,
+    ),
   };
 }
 
@@ -5322,17 +5338,25 @@ function renderLiveNotificationHistory() {
     return;
   }
 
+  const screenLabels = {
+    dashboard: 'Opens app',
+    quran: 'Opens Quran',
+    halqa: 'Opens Halqa',
+    legacy: 'Opens Legacy',
+  };
+
   elements.liveNotificationHistory.innerHTML = items
     .map((item) => {
       const target = Array.isArray(item.targetLocales) && item.targetLocales.length
         ? item.targetLocales.join(', ')
         : 'All languages';
       const sentAt = item.sentAt?.iso || item.createdAt?.iso;
+      const screenLabel = screenLabels[item.targetScreen] || screenLabels.dashboard;
       return `
         <div class="admin-mini-item">
           <span class="admin-mini-item__title">${escapeHtml(item.title || 'Live Notification')}</span>
           <span class="admin-mini-item__meta">${escapeHtml(item.body || '')}</span>
-          <span class="admin-mini-item__meta">${escapeHtml(formatAdminNumber(item.sentCount || 0))} sent &middot; ${escapeHtml(target)}${item.requireMarketingConsent ? ' &middot; Marketing consent' : ''}${sentAt ? ` &middot; ${escapeHtml(formatTimestamp({ iso: sentAt }))}` : ''}</span>
+          <span class="admin-mini-item__meta">${escapeHtml(formatAdminNumber(item.sentCount || 0))} sent &middot; ${escapeHtml(target)} &middot; ${escapeHtml(screenLabel)}${item.requireMarketingConsent ? ' &middot; Marketing consent' : ''}${sentAt ? ` &middot; ${escapeHtml(formatTimestamp({ iso: sentAt }))}` : ''}</span>
         </div>
       `;
     })
@@ -5496,6 +5520,7 @@ async function handleLiveNotificationSend(event) {
         body,
         targetLocales: target.targetLocales,
         requireMarketingConsent: target.requireMarketingConsent,
+        targetScreen: target.targetScreen,
       }),
       LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
       {

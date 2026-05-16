@@ -1531,6 +1531,22 @@
               </div>
 
               <div class="admin-detail-section">
+                <h3 class="admin-section-title">3. Where should the tap go?</h3>
+                <div class="form-group">
+                  <label class="form-label" for="adminLiveNotificationTargetScreen">When the user taps the notification, open</label>
+                  <select class="form-input" id="adminLiveNotificationTargetScreen">
+                    <option value="dashboard" selected>Just open the app (Dashboard)</option>
+                    <option value="quran">Quran — Surah list</option>
+                    <option value="halqa">Halqa</option>
+                    <option value="legacy">Legacy Hub</option>
+                  </select>
+                  <p class="admin-panel__helper">
+                    The tap target is part of the push payload and routes the user when they tap the notification.
+                  </p>
+                </div>
+              </div>
+
+              <div class="admin-detail-section">
                 <div class="admin-stat-grid admin-stat-grid--4col">
                   <div class="admin-stat-card">
                     <span class="admin-stat-card__label">Will receive</span>
