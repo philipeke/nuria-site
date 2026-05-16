@@ -278,6 +278,9 @@ const elements = {
   liveNotificationPreviewIosImage: document.getElementById('adminLiveNotificationPreviewIosImage'),
   liveNotificationImageUrl: document.getElementById('adminLiveNotificationImageUrl'),
   liveNotificationImageUrlError: document.getElementById('adminLiveNotificationImageUrlError'),
+  liveNotificationScheduleEnabled: document.getElementById('adminLiveNotificationScheduleEnabled'),
+  liveNotificationScheduleGroup: document.getElementById('adminLiveNotificationScheduleGroup'),
+  liveNotificationScheduleAt: document.getElementById('adminLiveNotificationScheduleAt'),
   liveNotificationHistory: document.getElementById('adminLiveNotificationHistory'),
   refreshLiveNotificationAudience: document.getElementById('adminRefreshLiveNotificationAudience'),
   estimateLiveNotification: document.getElementById('adminEstimateLiveNotification'),
@@ -5411,18 +5414,42 @@ function renderLiveNotificationHistory() {
     legacy: 'Opens Legacy',
   };
 
+  const statusLabels = {
+    scheduled: '📅 Scheduled',
+    processing: 'Sending…',
+    sending: 'Sending…',
+    sent: 'Sent',
+    cancelled: 'Cancelled',
+    failed: 'Failed',
+  };
+
   elements.liveNotificationHistory.innerHTML = items
     .map((item) => {
       const target = Array.isArray(item.targetLocales) && item.targetLocales.length
         ? item.targetLocales.join(', ')
         : 'All languages';
       const sentAt = item.sentAt?.iso || item.createdAt?.iso;
+      const scheduleAt = item.scheduleAt?.iso;
       const screenLabel = screenLabels[item.targetScreen] || screenLabels.dashboard;
+      const status = String(item.status || 'sent').toLowerCase();
+      const statusLabel = statusLabels[status] || statusLabels.sent;
+      const timestampSuffix = status === 'scheduled' && scheduleAt
+        ? ` &middot; for ${escapeHtml(formatTimestamp({ iso: scheduleAt }))}`
+        : sentAt
+          ? ` &middot; ${escapeHtml(formatTimestamp({ iso: sentAt }))}`
+          : '';
+      const cancelButton = status === 'scheduled' && item.campaignId
+        ? `<button type="button" class="admin-mini-item__action" data-cancel-campaign-id="${escapeHtml(item.campaignId)}">Cancel</button>`
+        : '';
+      const countCopy = status === 'scheduled'
+        ? 'Audience evaluated at dispatch'
+        : `${escapeHtml(formatAdminNumber(item.sentCount || 0))} sent`;
       return `
         <div class="admin-mini-item">
-          <span class="admin-mini-item__title">${escapeHtml(item.title || 'Live Notification')}</span>
+          <span class="admin-mini-item__title">${escapeHtml(item.title || 'Live Notification')} <span class="admin-mini-item__badge admin-mini-item__badge--${escapeHtml(status)}">${escapeHtml(statusLabel)}</span></span>
           <span class="admin-mini-item__meta">${escapeHtml(item.body || '')}</span>
-          <span class="admin-mini-item__meta">${escapeHtml(formatAdminNumber(item.sentCount || 0))} sent &middot; ${escapeHtml(target)} &middot; ${escapeHtml(screenLabel)}${item.requireMarketingConsent ? ' &middot; Marketing consent' : ''}${sentAt ? ` &middot; ${escapeHtml(formatTimestamp({ iso: sentAt }))}` : ''}</span>
+          <span class="admin-mini-item__meta">${countCopy} &middot; ${escapeHtml(target)} &middot; ${escapeHtml(screenLabel)}${item.requireMarketingConsent ? ' &middot; Marketing consent' : ''}${timestampSuffix}</span>
+          ${cancelButton}
         </div>
       `;
     })
@@ -5659,6 +5686,107 @@ async function handleLiveNotificationTestSend() {
   }
 }
 
+function getLiveNotificationScheduleAt() {
+  if (elements.liveNotificationScheduleEnabled?.checked !== true) return null;
+  const raw = String(elements.liveNotificationScheduleAt?.value || '').trim();
+  if (!raw) return null;
+  // datetime-local has no timezone — interpret as the admin's local clock,
+  // then ship as ISO so the backend reads a real instant.
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return parsed.toISOString();
+}
+
+async function handleLiveNotificationSchedule(target, title, body) {
+  const scheduleAt = getLiveNotificationScheduleAt();
+  if (!scheduleAt) {
+    setLiveNotificationFormError('Pick a valid date and time to schedule the notification.');
+    return;
+  }
+
+  state.liveNotificationSending = true;
+  renderLiveNotifications();
+
+  try {
+    const data = await withActionTimeout(
+      callFirebaseFunction('scheduleAdminPushCampaign', {
+        title,
+        body,
+        scheduleAt,
+        targetLocales: target.targetLocales,
+        requireMarketingConsent: target.requireMarketingConsent,
+        targetScreen: target.targetScreen,
+        imageUrl: target.imageUrl,
+      }),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'scheduleAdminPushCampaign',
+        message: 'live_notification_schedule_timeout',
+      },
+    );
+    if (data?.item) {
+      state.liveNotificationCampaigns = [data.item].concat(state.liveNotificationCampaigns || []).slice(0, 20);
+    }
+    elements.liveNotificationTitle.value = '';
+    elements.liveNotificationBody.value = '';
+    if (elements.liveNotificationImageUrl) {
+      elements.liveNotificationImageUrl.value = '';
+    }
+    if (elements.liveNotificationScheduleAt) {
+      elements.liveNotificationScheduleAt.value = '';
+    }
+    if (elements.liveNotificationScheduleEnabled) {
+      elements.liveNotificationScheduleEnabled.checked = false;
+    }
+    renderLiveNotifications();
+    showBanner('Live Notification scheduled.', 'success');
+    track('live_notification_scheduled', {
+      schedule_at: scheduleAt,
+    });
+  } catch (error) {
+    const parts = getErrorParts(error);
+    let message = getActionableErrorMessage(error, 'Live Notification could not be scheduled.');
+    if (parts.message.includes('push_schedule_at_too_soon')) {
+      message = 'Schedule time must be at least 1 minute from now.';
+    } else if (parts.message.includes('push_schedule_at_too_far')) {
+      message = 'Schedule time can be at most 60 days ahead.';
+    } else if (parts.message.includes('push_schedule_at_invalid')) {
+      message = 'Schedule date could not be parsed. Pick a real date and time.';
+    }
+    setLiveNotificationFormError(message);
+    showBanner(message, 'error');
+  } finally {
+    state.liveNotificationSending = false;
+    renderLiveNotifications();
+  }
+}
+
+async function handleLiveNotificationCancelScheduled(campaignId) {
+  if (!campaignId) return;
+  if (!window.confirm('Cancel this scheduled Live Notification?')) return;
+
+  try {
+    await withActionTimeout(
+      callFirebaseFunction('cancelScheduledPushCampaign', {campaignId}),
+      LIVE_NOTIFICATION_CALL_TIMEOUT_MS,
+      {
+        adminCallable: 'cancelScheduledPushCampaign',
+        message: 'live_notification_cancel_timeout',
+      },
+    );
+    showBanner('Scheduled Live Notification cancelled.', 'success');
+    state.liveNotificationCampaigns = (state.liveNotificationCampaigns || []).map((item) =>
+      item.campaignId === campaignId
+        ? Object.assign({}, item, { status: 'cancelled' })
+        : item,
+    );
+    renderLiveNotificationHistory();
+  } catch (error) {
+    const message = getActionableErrorMessage(error, 'Cancel failed.');
+    showBanner(message, 'error');
+  }
+}
+
 async function handleLiveNotificationSend(event) {
   event.preventDefault();
   if (state.liveNotificationSending) return;
@@ -5673,6 +5801,11 @@ async function handleLiveNotificationSend(event) {
     return;
   }
 
+  const target = getLiveNotificationTarget();
+  if (elements.liveNotificationScheduleEnabled?.checked === true) {
+    return handleLiveNotificationSchedule(target, title, body);
+  }
+
   let summary = null;
   try {
     summary = await estimateLiveNotificationAudience({ silent: true });
@@ -5684,8 +5817,6 @@ async function handleLiveNotificationSend(event) {
     setLiveNotificationFormError('No opted-in users match this Live Notification target.');
     return;
   }
-
-  const target = getLiveNotificationTarget();
   const confirmed = window.confirm(
     `Send this Live Notification now to ${formatAdminNumber(summary.matchedUsers)} users?\n\nThis sends a real push notification.`
   );
@@ -8943,6 +9074,24 @@ function bindEvents() {
   });
   elements.liveNotificationImageUrl?.addEventListener('input', () => {
     renderLiveNotificationPreview();
+  });
+  elements.liveNotificationScheduleEnabled?.addEventListener('change', () => {
+    if (elements.liveNotificationScheduleGroup) {
+      elements.liveNotificationScheduleGroup.hidden =
+        elements.liveNotificationScheduleEnabled.checked !== true;
+    }
+    if (elements.sendLiveNotificationButton) {
+      elements.sendLiveNotificationButton.textContent =
+        elements.liveNotificationScheduleEnabled.checked === true
+          ? 'Schedule Live Notification'
+          : 'Send Live Notification';
+    }
+  });
+  elements.liveNotificationHistory?.addEventListener('click', (event) => {
+    const target = event.target.closest('[data-cancel-campaign-id]');
+    if (!target) return;
+    const campaignId = target.getAttribute('data-cancel-campaign-id');
+    handleLiveNotificationCancelScheduled(campaignId).catch(() => {});
   });
   elements.liveNotificationTitle?.addEventListener('input', () => {
     setLiveNotificationFormError('');

@@ -1629,6 +1629,25 @@
                 <div class="admin-mini-list admin-mini-list--inline" id="adminLiveNotificationByLocale" hidden></div>
               </div>
 
+              <div class="admin-detail-section">
+                <h3 class="admin-section-title">4. When should it send?</h3>
+                <label class="admin-checkbox">
+                  <input type="checkbox" id="adminLiveNotificationScheduleEnabled" />
+                  <span>📅 Schedule for later instead of sending now</span>
+                </label>
+                <div class="form-group" id="adminLiveNotificationScheduleGroup" hidden>
+                  <label class="form-label" for="adminLiveNotificationScheduleAt">Send at (your local time)</label>
+                  <input
+                    class="form-input"
+                    id="adminLiveNotificationScheduleAt"
+                    type="datetime-local"
+                  />
+                  <p class="admin-panel__helper">
+                    Must be at least 1 minute from now and at most 60 days ahead. The cron picks it up within 1 minute of the scheduled time. The audience is re-evaluated at dispatch so opt-ins between now and then are respected.
+                  </p>
+                </div>
+              </div>
+
               <div class="admin-form__actions">
                 <button type="button" class="btn btn--outline" id="adminEstimateLiveNotification">
                   Refresh recipient count
