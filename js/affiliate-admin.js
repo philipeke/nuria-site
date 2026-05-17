@@ -9511,10 +9511,12 @@ function bindEvents() {
   elements.liveNotificationTitle?.addEventListener('input', () => {
     setLiveNotificationFormError('');
     renderLiveNotificationFieldMeta();
+    renderLiveNotificationPreview();
   });
   elements.liveNotificationBody?.addEventListener('input', () => {
     setLiveNotificationFormError('');
     renderLiveNotificationFieldMeta();
+    renderLiveNotificationPreview();
   });
   elements.liveNotificationAllLocales?.addEventListener('change', () => {
     clearBanner();
