@@ -5617,7 +5617,14 @@ function renderEmojiGrid() {
 function positionEmojiPopover(triggerBtn) {
   if (!elements.emojiPopover || !triggerBtn) return;
   const popover = elements.emojiPopover;
-  // Reset, show off-screen so we can measure without flicker.
+
+  // Portal the popover to <body> the first time we open it so no ancestor
+  // with backdrop-filter / transform / overflow:hidden can clip or
+  // re-anchor it. position:fixed math then works against the viewport.
+  if (popover.parentElement !== document.body) {
+    document.body.appendChild(popover);
+  }
+
   popover.hidden = false;
   popover.style.visibility = 'hidden';
   popover.style.position = 'fixed';
@@ -5628,20 +5635,16 @@ function positionEmojiPopover(triggerBtn) {
   const popRect = popover.getBoundingClientRect();
   const margin = 8;
 
-  // Default: below the trigger, right-aligned to it.
   let top = rect.bottom + margin;
   let left = rect.right - popRect.width;
 
-  // Flip above if it overflows the bottom of the viewport.
   if (top + popRect.height > window.innerHeight - margin) {
     top = rect.top - popRect.height - margin;
   }
-  // Keep inside viewport horizontally.
   if (left < margin) left = margin;
   if (left + popRect.width > window.innerWidth - margin) {
     left = window.innerWidth - popRect.width - margin;
   }
-  // If still off-screen vertically (small viewport), pin to top of viewport.
   if (top < margin) top = margin;
 
   popover.style.top = `${top}px`;
