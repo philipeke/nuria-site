@@ -1524,27 +1524,33 @@
 
               <div class="form-group">
                 <label class="form-label" for="adminLiveNotificationTitle">Notification title</label>
-                <input
-                  class="form-input"
-                  id="adminLiveNotificationTitle"
-                  name="title"
-                  type="text"
-                  data-max-graphemes="80"
-                  placeholder="Example: New in Nuria 🌙"
-                />
+                <div class="admin-input-with-emoji">
+                  <input
+                    class="form-input"
+                    id="adminLiveNotificationTitle"
+                    name="title"
+                    type="text"
+                    data-max-graphemes="80"
+                    placeholder="Example: New in Nuria 🌙"
+                  />
+                  <button type="button" class="admin-emoji-trigger" data-emoji-target="adminLiveNotificationTitle" aria-label="Insert emoji into title">😀</button>
+                </div>
                 <p class="admin-panel__helper" id="adminLiveNotificationTitleMeta">0 / 80 characters</p>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="adminLiveNotificationBody">Notification message</label>
-                <textarea
-                  class="form-input form-textarea"
-                  id="adminLiveNotificationBody"
-                  name="body"
-                  rows="4"
-                  data-max-graphemes="240"
-                  placeholder="Example: A new app update is ready for you ✨"
-                ></textarea>
+                <div class="admin-input-with-emoji admin-input-with-emoji--textarea">
+                  <textarea
+                    class="form-input form-textarea"
+                    id="adminLiveNotificationBody"
+                    name="body"
+                    rows="4"
+                    data-max-graphemes="240"
+                    placeholder="Example: A new app update is ready for you ✨"
+                  ></textarea>
+                  <button type="button" class="admin-emoji-trigger admin-emoji-trigger--textarea" data-emoji-target="adminLiveNotificationBody" aria-label="Insert emoji into message">😀</button>
+                </div>
                 <p class="admin-panel__helper" id="adminLiveNotificationBodyMeta">0 / 240 characters</p>
               </div>
 
@@ -1670,6 +1676,15 @@
             <h3 class="admin-section-title">Recently sent Live Notifications</h3>
             <div class="admin-mini-list" id="adminLiveNotificationHistory">
               <p class="admin-empty admin-empty--inline">No Live Notifications sent yet.</p>
+            </div>
+          </div>
+
+          <div class="admin-emoji-popover" id="adminEmojiPopover" hidden role="dialog" aria-label="Emoji picker">
+            <div class="admin-emoji-popover__tabs" id="adminEmojiPopoverTabs"></div>
+            <div class="admin-emoji-popover__grid" id="adminEmojiPopoverGrid"></div>
+            <div class="admin-emoji-popover__footer">
+              <span class="admin-emoji-popover__hint">Click to insert</span>
+              <button type="button" class="admin-emoji-popover__close" id="adminEmojiPopoverClose">Close</button>
             </div>
           </div>
 

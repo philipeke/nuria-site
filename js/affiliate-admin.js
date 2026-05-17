@@ -281,6 +281,10 @@ const elements = {
   liveNotificationScheduleEnabled: document.getElementById('adminLiveNotificationScheduleEnabled'),
   liveNotificationScheduleGroup: document.getElementById('adminLiveNotificationScheduleGroup'),
   liveNotificationScheduleAt: document.getElementById('adminLiveNotificationScheduleAt'),
+  emojiPopover: document.getElementById('adminEmojiPopover'),
+  emojiPopoverTabs: document.getElementById('adminEmojiPopoverTabs'),
+  emojiPopoverGrid: document.getElementById('adminEmojiPopoverGrid'),
+  emojiPopoverClose: document.getElementById('adminEmojiPopoverClose'),
   testPushModal: document.getElementById('adminTestPushModal'),
   testPushModalBackdrop: document.getElementById('adminTestPushModalBackdrop'),
   testPushModalClose: document.getElementById('adminTestPushModalClose'),
@@ -5549,6 +5553,146 @@ function renderLiveNotificationPreview() {
   }
 }
 
+// ── Emoji picker ─────────────────────────────────────────────────────────
+
+const EMOJI_CATEGORIES = [
+  {
+    id: 'faith',
+    label: 'Faith',
+    emojis: ['🤲', '🌙', '☪️', '🕌', '📿', '📖', '✨', '🌟', '⭐', '💫', '🕋', '🧕', '☄️', '🌠', '🪔', '🌅', '🌄'],
+  },
+  {
+    id: 'reactions',
+    label: 'Reactions',
+    emojis: ['😀', '😊', '😍', '🥰', '😎', '🤗', '🤩', '😇', '🙌', '🙏', '👍', '👏', '🫶', '💪', '✌️', '👋', '🤝', '❤️', '💚', '💛', '🧡', '💜', '💙', '🤍', '💖', '💕', '💝', '💯'],
+  },
+  {
+    id: 'time',
+    label: 'Time',
+    emojis: ['🌅', '☀️', '🌤️', '⛅', '🌥️', '🌦️', '🌧️', '⛈️', '🌩️', '🌨️', '❄️', '🌬️', '🌫️', '🌪️', '🌈', '🌤️', '🌇', '🌆', '🌃', '🌌', '🌜', '🌛', '🌙', '🕐', '⏰', '⏳', '⌛'],
+  },
+  {
+    id: 'community',
+    label: 'Family',
+    emojis: ['👨‍👩‍👧', '👨‍👩‍👦', '👨‍👩‍👧‍👦', '👪', '👨‍👨‍👧', '👩‍👩‍👧', '👨‍👧', '👩‍👧', '👨‍👦', '👩‍👦', '🧑‍🤝‍🧑', '👫', '👭', '👬', '🫂', '🤱', '🤰', '🧒', '👶', '🧓', '🧔'],
+  },
+  {
+    id: 'objects',
+    label: 'Highlights',
+    emojis: ['🎁', '🎉', '🎊', '🎈', '🏆', '🥇', '🥈', '🥉', '🏅', '🎖️', '💎', '👑', '🔔', '📣', '📢', '🎯', '🎪', '🪄', '✅', '☑️', '🆕', '🔥', '💥', '🌹', '🌷', '🌸', '🌺', '🌻', '🪷'],
+  },
+  {
+    id: 'communication',
+    label: 'Action',
+    emojis: ['📲', '📱', '💌', '✉️', '📩', '📧', '📨', '📤', '📥', '🔗', '👉', '👇', '👆', '👀', '🔎', '🔍', '⚡', '🚀', '⭐', '💡', '📝', '✏️', '📚', '📅', '🗓️', '⏰', '🛎️'],
+  },
+  {
+    id: 'flags',
+    label: 'Flags',
+    emojis: ['🇸🇪', '🇳🇴', '🇩🇰', '🇫🇮', '🇬🇧', '🇺🇸', '🇩🇪', '🇫🇷', '🇪🇸', '🇮🇹', '🇳🇱', '🇹🇷', '🇸🇦', '🇦🇪', '🇪🇬', '🇲🇦', '🇮🇩', '🇲🇾', '🇵🇰', '🇧🇩', '🇮🇳', '🇮🇷', '🇮🇶', '🇸🇾', '🇯🇴', '🇶🇦', '🇰🇼', '🇧🇭', '🇴🇲', '🇾🇪', '🇩🇿', '🇹🇳', '🇱🇾'],
+  },
+];
+
+let emojiActiveCategory = EMOJI_CATEGORIES[0].id;
+let emojiActiveTargetId = null;
+
+function renderEmojiTabs() {
+  if (!elements.emojiPopoverTabs) return;
+  elements.emojiPopoverTabs.innerHTML = EMOJI_CATEGORIES
+    .map((cat) => {
+      const active = cat.id === emojiActiveCategory ? ' admin-emoji-popover__tab--active' : '';
+      return `<button type="button" class="admin-emoji-popover__tab${active}" data-emoji-cat="${escapeHtml(cat.id)}">${escapeHtml(cat.label)}</button>`;
+    })
+    .join('');
+}
+
+function renderEmojiGrid() {
+  if (!elements.emojiPopoverGrid) return;
+  const cat = EMOJI_CATEGORIES.find((c) => c.id === emojiActiveCategory) || EMOJI_CATEGORIES[0];
+  elements.emojiPopoverGrid.innerHTML = cat.emojis
+    .map((e) => `<button type="button" class="admin-emoji-popover__cell" data-emoji="${escapeHtml(e)}">${e}</button>`)
+    .join('');
+}
+
+function positionEmojiPopover(triggerBtn) {
+  if (!elements.emojiPopover || !triggerBtn) return;
+  const rect = triggerBtn.getBoundingClientRect();
+  const popover = elements.emojiPopover;
+  // Show first so we can measure size.
+  popover.hidden = false;
+  popover.style.visibility = 'hidden';
+  popover.style.position = 'absolute';
+  popover.style.top = '0';
+  popover.style.left = '0';
+  const popRect = popover.getBoundingClientRect();
+  const margin = 8;
+
+  let top = rect.bottom + window.scrollY + margin;
+  let left = rect.right + window.scrollX - popRect.width;
+  // Keep inside viewport.
+  if (left < 8 + window.scrollX) left = 8 + window.scrollX;
+  if (top + popRect.height > window.innerHeight + window.scrollY - 8) {
+    top = rect.top + window.scrollY - popRect.height - margin;
+  }
+  popover.style.top = `${top}px`;
+  popover.style.left = `${left}px`;
+  popover.style.visibility = 'visible';
+}
+
+function openEmojiPopover(triggerBtn) {
+  const targetId = triggerBtn.getAttribute('data-emoji-target');
+  emojiActiveTargetId = targetId;
+  renderEmojiTabs();
+  renderEmojiGrid();
+  positionEmojiPopover(triggerBtn);
+}
+
+function closeEmojiPopover() {
+  if (!elements.emojiPopover) return;
+  elements.emojiPopover.hidden = true;
+  emojiActiveTargetId = null;
+}
+
+function insertEmojiAtCaret(field, emoji) {
+  if (!field) return;
+  const start = typeof field.selectionStart === 'number' ? field.selectionStart : field.value.length;
+  const end = typeof field.selectionEnd === 'number' ? field.selectionEnd : field.value.length;
+  const before = field.value.slice(0, start);
+  const after = field.value.slice(end);
+  field.value = `${before}${emoji}${after}`;
+  const newCaret = start + emoji.length;
+  try {
+    field.setSelectionRange(newCaret, newCaret);
+  } catch (_) {
+    /* some inputs don't support setSelectionRange */
+  }
+  field.focus();
+  // Fire input event so any listeners (character counter, preview) update.
+  field.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function handleEmojiPopoverClick(event) {
+  const tab = event.target.closest('[data-emoji-cat]');
+  if (tab) {
+    emojiActiveCategory = tab.getAttribute('data-emoji-cat');
+    renderEmojiTabs();
+    renderEmojiGrid();
+    return;
+  }
+  const cell = event.target.closest('[data-emoji]');
+  if (cell && emojiActiveTargetId) {
+    const field = document.getElementById(emojiActiveTargetId);
+    insertEmojiAtCaret(field, cell.getAttribute('data-emoji'));
+  }
+}
+
+function handleEmojiOutsideClick(event) {
+  if (!elements.emojiPopover || elements.emojiPopover.hidden) return;
+  if (elements.emojiPopover.contains(event.target)) return;
+  if (event.target.closest('[data-emoji-target]')) return;
+  closeEmojiPopover();
+}
+
 function renderLiveNotifications() {
   syncLiveNotificationTargetControls();
   renderLiveNotificationFieldMeta();
@@ -9286,6 +9430,32 @@ function bindEvents() {
   });
   elements.liveNotificationImageUrl?.addEventListener('input', () => {
     renderLiveNotificationPreview();
+  });
+  document.querySelectorAll('[data-emoji-target]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (
+        !elements.emojiPopover?.hidden &&
+        emojiActiveTargetId === btn.getAttribute('data-emoji-target')
+      ) {
+        closeEmojiPopover();
+        return;
+      }
+      openEmojiPopover(btn);
+    });
+  });
+  elements.emojiPopover?.addEventListener('click', handleEmojiPopoverClick);
+  elements.emojiPopoverClose?.addEventListener('click', closeEmojiPopover);
+  document.addEventListener('click', handleEmojiOutsideClick);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && elements.emojiPopover && !elements.emojiPopover.hidden) {
+      closeEmojiPopover();
+    }
+  });
+  window.addEventListener('resize', () => {
+    if (elements.emojiPopover && !elements.emojiPopover.hidden) {
+      closeEmojiPopover();
+    }
   });
   elements.liveNotificationScheduleEnabled?.addEventListener('change', () => {
     if (elements.liveNotificationScheduleGroup) {
