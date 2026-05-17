@@ -261,7 +261,8 @@ const elements = {
   liveNotificationAllLocales: document.getElementById('adminLiveNotificationAllLocales'),
   liveNotificationLocalesGroup: document.getElementById('adminLiveNotificationLocalesGroup'),
   liveNotificationLocales: document.getElementById('adminLiveNotificationLocales'),
-  liveNotificationRequireMarketing: document.getElementById('adminLiveNotificationRequireMarketing'),
+  // Marketing-consent checkbox has been removed from the UI; left as a
+  // no-op lookup so any stray reference falls back to null without throwing.
   liveNotificationTargetScreen: document.getElementById('adminLiveNotificationTargetScreen'),
   liveNotificationMatched: document.getElementById('adminLiveNotificationMatched'),
   liveNotificationUpdatesOptIn: document.getElementById('adminLiveNotificationUpdatesOptIn'),
@@ -5292,7 +5293,12 @@ function getLiveNotificationTarget() {
   return {
     allLocales,
     targetLocales,
-    requireMarketingConsent: elements.liveNotificationRequireMarketing?.checked === true,
+    // Marketing-consent gate has been removed from broadcast filtering.
+    // Always pass false so the backend treats every send as a product/
+    // content push reachable by any user with OS-level notification
+    // permission. Kept in the object shape for backward compat with the
+    // existing send-handler payloads.
+    requireMarketingConsent: false,
     targetScreen: normalizeLiveNotificationTargetScreen(
       elements.liveNotificationTargetScreen?.value,
     ),
@@ -5395,20 +5401,19 @@ function renderLiveNotificationAudience() {
   if (elements.liveNotificationLocaleMatch) {
     elements.liveNotificationLocaleMatch.textContent = formatAdminNumber(summary.localeMatchedUsers);
   }
+  // Repurposed "Marketing accepted" card → "Total tokens" so the admin
+  // sees the size of the full pool the audience was drawn from.
   if (elements.liveNotificationMarketingMatch) {
-    elements.liveNotificationMarketingMatch.textContent = formatAdminNumber(summary.marketingMatchedUsers);
+    elements.liveNotificationMarketingMatch.textContent = formatAdminNumber(summary.totalTokenUsers);
   }
   if (elements.liveNotificationAudienceMeta) {
     const languageCopy = target.allLocales
       ? 'Target: all languages.'
       : `Target languages: ${target.targetLocales.join(', ') || 'none selected'}.`;
-    const marketingCopy = target.requireMarketingConsent
-      ? ' Marketing consent is required.'
-      : ' Marketing consent is not required.';
     const totalCopy = summary.totalTokenUsers != null
       ? ` Saved FCM tokens: ${formatAdminNumber(summary.totalTokenUsers)}.`
       : '';
-    elements.liveNotificationAudienceMeta.textContent = `${languageCopy}${marketingCopy}${totalCopy}`;
+    elements.liveNotificationAudienceMeta.textContent = `${languageCopy}${totalCopy}`;
   }
 
   renderLiveNotificationByLocale(summary);
@@ -5497,7 +5502,7 @@ function renderLiveNotificationHistory() {
         <div class="admin-mini-item">
           <span class="admin-mini-item__title">${escapeHtml(item.title || 'Live Notification')} <span class="admin-mini-item__badge admin-mini-item__badge--${escapeHtml(status)}">${escapeHtml(statusLabel)}</span></span>
           <span class="admin-mini-item__meta">${escapeHtml(item.body || '')}</span>
-          <span class="admin-mini-item__meta">${countCopy} &middot; ${escapeHtml(target)} &middot; ${escapeHtml(screenLabel)}${item.requireMarketingConsent ? ' &middot; Marketing consent' : ''}${timestampSuffix}</span>
+          <span class="admin-mini-item__meta">${countCopy} &middot; ${escapeHtml(target)} &middot; ${escapeHtml(screenLabel)}${timestampSuffix}</span>
           ${cancelButton}
         </div>
       `;
@@ -9552,15 +9557,6 @@ function bindEvents() {
     clearBanner();
     setLiveNotificationFormError('');
     resetLiveNotificationAudiencePreview();
-  });
-  elements.liveNotificationRequireMarketing?.addEventListener('change', () => {
-    clearBanner();
-    setLiveNotificationFormError('');
-    const target = getLiveNotificationTarget();
-    resetLiveNotificationAudiencePreview();
-    if (target.allLocales || target.targetLocales.length) {
-      estimateLiveNotificationAudience({ silent: true }).catch(() => {});
-    }
   });
   elements.recipientForm?.addEventListener('submit', handleRecipientAdd);
   elements.settingsForm?.addEventListener('submit', handleSaveSettings);
