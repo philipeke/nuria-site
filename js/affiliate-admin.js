@@ -5616,24 +5616,34 @@ function renderEmojiGrid() {
 
 function positionEmojiPopover(triggerBtn) {
   if (!elements.emojiPopover || !triggerBtn) return;
-  const rect = triggerBtn.getBoundingClientRect();
   const popover = elements.emojiPopover;
-  // Show first so we can measure size.
+  // Reset, show off-screen so we can measure without flicker.
   popover.hidden = false;
   popover.style.visibility = 'hidden';
-  popover.style.position = 'absolute';
+  popover.style.position = 'fixed';
   popover.style.top = '0';
   popover.style.left = '0';
+
+  const rect = triggerBtn.getBoundingClientRect();
   const popRect = popover.getBoundingClientRect();
   const margin = 8;
 
-  let top = rect.bottom + window.scrollY + margin;
-  let left = rect.right + window.scrollX - popRect.width;
-  // Keep inside viewport.
-  if (left < 8 + window.scrollX) left = 8 + window.scrollX;
-  if (top + popRect.height > window.innerHeight + window.scrollY - 8) {
-    top = rect.top + window.scrollY - popRect.height - margin;
+  // Default: below the trigger, right-aligned to it.
+  let top = rect.bottom + margin;
+  let left = rect.right - popRect.width;
+
+  // Flip above if it overflows the bottom of the viewport.
+  if (top + popRect.height > window.innerHeight - margin) {
+    top = rect.top - popRect.height - margin;
   }
+  // Keep inside viewport horizontally.
+  if (left < margin) left = margin;
+  if (left + popRect.width > window.innerWidth - margin) {
+    left = window.innerWidth - popRect.width - margin;
+  }
+  // If still off-screen vertically (small viewport), pin to top of viewport.
+  if (top < margin) top = margin;
+
   popover.style.top = `${top}px`;
   popover.style.left = `${left}px`;
   popover.style.visibility = 'visible';
@@ -5672,6 +5682,12 @@ function insertEmojiAtCaret(field, emoji) {
 }
 
 function handleEmojiPopoverClick(event) {
+  // Always stop propagation so the document-level outside-click handler
+  // never fires for clicks landing inside the popover. Without this the
+  // re-render of tabs/grid detaches event.target from the DOM and the
+  // outside-click guard sees a node that is no longer "inside" the popover.
+  event.stopPropagation();
+
   const tab = event.target.closest('[data-emoji-cat]');
   if (tab) {
     emojiActiveCategory = tab.getAttribute('data-emoji-cat');
@@ -5683,12 +5699,15 @@ function handleEmojiPopoverClick(event) {
   if (cell && emojiActiveTargetId) {
     const field = document.getElementById(emojiActiveTargetId);
     insertEmojiAtCaret(field, cell.getAttribute('data-emoji'));
+    // Stay open so admin can pile on multiple emojis 🤲🌙✨ in one go.
   }
 }
 
 function handleEmojiOutsideClick(event) {
   if (!elements.emojiPopover || elements.emojiPopover.hidden) return;
-  if (elements.emojiPopover.contains(event.target)) return;
+  // Explicit "inside the popover" check via closest() rather than contains()
+  // — contains() returns false for nodes detached by an in-flight re-render.
+  if (event.target.closest('#adminEmojiPopover')) return;
   if (event.target.closest('[data-emoji-target]')) return;
   closeEmojiPopover();
 }
@@ -9452,11 +9471,22 @@ function bindEvents() {
       closeEmojiPopover();
     }
   });
-  window.addEventListener('resize', () => {
-    if (elements.emojiPopover && !elements.emojiPopover.hidden) {
-      closeEmojiPopover();
-    }
-  });
+  // Reposition (don't close) on resize / scroll so the popover stays
+  // anchored to its trigger button as the page shifts under it.
+  let emojiRepositionTimer = null;
+  const repositionEmojiSoon = () => {
+    if (emojiRepositionTimer) window.clearTimeout(emojiRepositionTimer);
+    emojiRepositionTimer = window.setTimeout(() => {
+      if (!elements.emojiPopover || elements.emojiPopover.hidden) return;
+      if (!emojiActiveTargetId) return;
+      const trigger = document.querySelector(
+        `[data-emoji-target="${emojiActiveTargetId}"]`,
+      );
+      if (trigger) positionEmojiPopover(trigger);
+    }, 50);
+  };
+  window.addEventListener('resize', repositionEmojiSoon);
+  window.addEventListener('scroll', repositionEmojiSoon, true);
   elements.liveNotificationScheduleEnabled?.addEventListener('change', () => {
     if (elements.liveNotificationScheduleGroup) {
       elements.liveNotificationScheduleGroup.hidden =

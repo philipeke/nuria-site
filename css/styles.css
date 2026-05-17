@@ -7164,8 +7164,8 @@ body.theme-luxury-stone .cookie-consent__text a:hover {
 }
 
 .admin-emoji-popover {
-  position: absolute;
-  z-index: 950;
+  position: fixed;
+  z-index: 1100;
   width: min(360px, calc(100vw - 2rem));
   background: linear-gradient(160deg, #0e1f15, #050c08);
   border: 1px solid rgba(196, 154, 60, 0.28);
