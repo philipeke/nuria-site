@@ -7116,6 +7116,28 @@ body.theme-luxury-stone .cookie-consent__text a:hover {
 
 /* ─── Emoji picker ────────────────────────────────────────────────── */
 
+/* Dark color-scheme tells browsers to render native <select> dropdown
+   menus with dark surfaces and light text. Without this, the options
+   in the dropdown render with the OS-default white background while
+   the surrounding admin theme is dark — making text appear invisible
+   until you hover/highlight a row. */
+.form-input--dropdown {
+  color-scheme: dark;
+}
+
+/* Belt-and-braces explicit option styling for browsers (mostly older
+   Firefox) that don't honor color-scheme on dropdown popups. */
+.form-input--dropdown option,
+.form-input--dropdown optgroup {
+  background-color: #0d1f15;
+  color: #f5f5f7;
+}
+
+.form-input--dropdown optgroup {
+  color: #f5dfa0;
+  font-style: italic;
+}
+
 .admin-input-with-emoji {
   position: relative;
   display: flex;

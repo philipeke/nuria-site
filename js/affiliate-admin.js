@@ -5219,9 +5219,42 @@ function formatAdminNumber(value) {
 }
 
 // Must stay in sync with SUPPORTED_TARGET_SCREENS in
-// functions/src/notifications/adminPushCampaigns.ts.
-const LIVE_NOTIFICATION_TARGET_SCREENS = ['dashboard', 'quran', 'halqa', 'legacy'];
+// functions/src/notifications/adminPushCampaigns.ts and _routableScreens
+// in lib/core/services/fcm_service.dart.
+const LIVE_NOTIFICATION_TARGET_SCREENS = [
+  'dashboard',
+  'quran', 'juz', 'ayah_for_you',
+  'prayer', 'qibla', 'dhikr', 'adhkar', 'duas', 'sunnat',
+  'ramadan', 'shahada', 'zakat', 'calendar',
+  'hajj', 'umrah', 'live_haramain',
+  'halqa', 'legacy', 'companions', 'muhasaba', 'mosque_finder',
+];
 const LIVE_NOTIFICATION_DEFAULT_SCREEN = 'dashboard';
+
+const LIVE_NOTIFICATION_SCREEN_LABELS = {
+  dashboard: 'Opens app',
+  quran: 'Opens Quran',
+  juz: 'Opens Juz tracker',
+  ayah_for_you: 'Opens Ayah for you',
+  prayer: 'Opens Prayer times',
+  qibla: 'Opens Qibla',
+  dhikr: 'Opens Dhikr',
+  adhkar: 'Opens Adhkar',
+  duas: 'Opens Duas',
+  sunnat: 'Opens Sunnah',
+  ramadan: 'Opens Ramadan',
+  shahada: 'Opens Shahada',
+  zakat: 'Opens Zakat',
+  calendar: 'Opens Calendar',
+  hajj: 'Opens Hajj guide',
+  umrah: 'Opens Umrah guide',
+  live_haramain: 'Opens Live Haramain',
+  halqa: 'Opens Halqa',
+  legacy: 'Opens Legacy',
+  companions: 'Opens Companions',
+  muhasaba: 'Opens Muhasaba',
+  mosque_finder: 'Opens Find mosque',
+};
 
 function normalizeLiveNotificationTargetScreen(raw) {
   const value = String(raw || '').trim().toLowerCase();
@@ -5428,12 +5461,7 @@ function renderLiveNotificationHistory() {
     return;
   }
 
-  const screenLabels = {
-    dashboard: 'Opens app',
-    quran: 'Opens Quran',
-    halqa: 'Opens Halqa',
-    legacy: 'Opens Legacy',
-  };
+  const screenLabels = LIVE_NOTIFICATION_SCREEN_LABELS;
 
   const statusLabels = {
     scheduled: '📅 Scheduled',
@@ -5487,13 +5515,6 @@ function syncLiveNotificationTargetControls() {
   }
 }
 
-const LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS = {
-  dashboard: 'Opens app',
-  quran: 'Opens Quran',
-  halqa: 'Opens Halqa',
-  legacy: 'Opens Legacy',
-};
-
 function renderLiveNotificationPreview() {
   const title = String(elements.liveNotificationTitle?.value || '').trim();
   const body = String(elements.liveNotificationBody?.value || '').trim();
@@ -5503,8 +5524,8 @@ function renderLiveNotificationPreview() {
     elements.liveNotificationTargetScreen?.value,
   );
   const targetLabel =
-    LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS[target] ||
-    LIVE_NOTIFICATION_PREVIEW_TARGET_LABELS.dashboard;
+    LIVE_NOTIFICATION_SCREEN_LABELS[target] ||
+    LIVE_NOTIFICATION_SCREEN_LABELS.dashboard;
 
   const titleFallback = 'Notification title';
   const bodyFallback = 'Notification message will appear here.';

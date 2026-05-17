@@ -1598,14 +1598,42 @@
                 <h3 class="admin-section-title">3. Where should the tap go?</h3>
                 <div class="form-group">
                   <label class="form-label" for="adminLiveNotificationTargetScreen">When the user taps the notification, open</label>
-                  <select class="form-input" id="adminLiveNotificationTargetScreen">
-                    <option value="dashboard" selected>Just open the app (Dashboard)</option>
-                    <option value="quran">Quran — Surah list</option>
-                    <option value="halqa">Halqa</option>
-                    <option value="legacy">Legacy Hub</option>
+                  <select class="form-input form-input--dropdown" id="adminLiveNotificationTargetScreen">
+                    <option value="dashboard" selected>📱 Just open the app (Dashboard)</option>
+                    <optgroup label="Quran & study">
+                      <option value="quran">📖 Quran — Surah list</option>
+                      <option value="juz">🔢 Juz tracker</option>
+                      <option value="ayah_for_you">✨ Ayah for you</option>
+                    </optgroup>
+                    <optgroup label="Prayer & worship">
+                      <option value="prayer">🕌 Prayer times</option>
+                      <option value="qibla">🧭 Qibla compass</option>
+                      <option value="dhikr">📿 Dhikr / Wirdh</option>
+                      <option value="adhkar">🌅 Morning &amp; evening adhkar</option>
+                      <option value="duas">🤲 Duas</option>
+                      <option value="sunnat">⭐ Sunnah practices</option>
+                    </optgroup>
+                    <optgroup label="Seasons & milestones">
+                      <option value="ramadan">🌙 Ramadan companion</option>
+                      <option value="shahada">☪️ Shahada</option>
+                      <option value="zakat">💎 Zakat calculator</option>
+                      <option value="calendar">📅 Islamic calendar</option>
+                    </optgroup>
+                    <optgroup label="Pilgrimage">
+                      <option value="hajj">🕋 Hajj guide</option>
+                      <option value="umrah">🚶 Umrah guide</option>
+                      <option value="live_haramain">📺 Live from Haramain</option>
+                    </optgroup>
+                    <optgroup label="Community & growth">
+                      <option value="halqa">🔔 Halqa</option>
+                      <option value="legacy">📜 Legacy Hub</option>
+                      <option value="companions">👥 Sahaba / Companions</option>
+                      <option value="muhasaba">📓 Muhasaba (self-accountability)</option>
+                      <option value="mosque_finder">📍 Find mosque</option>
+                    </optgroup>
                   </select>
                   <p class="admin-panel__helper">
-                    The tap target is part of the push payload and routes the user when they tap the notification.
+                    The tap target is part of the push payload and routes the user when they tap the notification. Falls back to opening the app for users on older app versions that don't recognize the screen key.
                   </p>
                 </div>
               </div>
