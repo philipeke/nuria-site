@@ -61,8 +61,9 @@ run('every main website page loads analytics config before main.js', () => {
 });
 
 run('privacy page reflects optional Google Analytics usage', () => {
-  assert(privacyHtml.includes('Optional visitor analytics are activated only if you explicitly accept them through the cookie banner.'));
+  assert(privacyHtml.includes('If you accept optional analytics through the cookie banner on this website'));
   assert(privacyHtml.includes('Google Analytics 4'));
+  assert(privacyHtml.includes('We do not activate Google Analytics unless you opt in.'));
   assert(!privacyHtml.includes('We do not use Google Analytics or any other visitor analytics tool on this website.'));
 });
 

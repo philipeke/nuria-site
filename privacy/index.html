@@ -95,7 +95,7 @@
     <div class="container">
       <div class="page-content__card">
 
-        <p><strong>Effective date:</strong> 26 May 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 26 May 2026</p>
+        <p><strong>Effective date:</strong> 9 June 2026 &nbsp;&middot;&nbsp; <strong>Last updated:</strong> 9 June 2026</p>
 
         <p>This Privacy Policy describes how <strong>Nuria</strong>, operated by <strong>OakDev</strong> ("we", "us", or "our") collects, uses, stores, and protects your personal data when you use the Nuria mobile application (the "App", distributed as <code>com.oakdev.nuria</code> on iOS and <code>com.oakdev.nuria.android</code> on Android) and this website. We are established in Sweden and are subject to the General Data Protection Regulation (EU) 2016/679 ("GDPR") and the Swedish Data Protection Act (<em>Lag (2018:218) med kompletterande bestämmelser till EU:s dataskyddsförordning</em>).</p>
 
@@ -145,51 +145,55 @@
         <h2 id="priv-2" data-i18n="privacy.section_2_title">2. What Data We Collect and Why</h2>
 
         <h3 id="priv-2-1">2.1 Account Data</h3>
-        <p>When you create an account we collect your <strong>email address</strong> and, optionally, a display name. This is required to provide you with the App, associate your reflection balance, subscription entitlements, and settings with your account, and communicate with you regarding your account. Without a valid email address you cannot create a Nuria account.</p>
+        <p>When you create an account we collect your <strong>email address</strong> and, optionally, a display name. This is required to provide you with the App, associate your reflection balance, purchase entitlements (including ad-free status), and settings with your account, and communicate with you regarding your account. Without a valid email address you cannot create a Nuria account.</p>
 
-        <h3 id="priv-2-2">2.2 Subscription, Trial, and Purchase Data</h3>
-        <p>Nuria is a subscription-based service. Access to substantive App features begins with a <strong>7-day free trial</strong>, after which a recurring subscription is charged by Apple or Google unless you cancel before the trial ends. All payments — trial conversions, paid subscriptions, plan changes, gifts, and one-time purchases — are processed <strong>exclusively</strong> by <strong>Apple Inc.</strong> (App Store) or <strong>Google LLC</strong> (Google Play). <strong>Nuria does not receive, store, or process your payment card details, bank account information, or any other financial instrument data at any point.</strong></p>
+        <h3 id="priv-2-2">2.2 In-App Purchases, Entitlements, and the Ad-Supported Model</h3>
+        <p>Nuria is <strong>free to download and free to use</strong> with advertising. Core App features are available without a subscription. Monetisation is provided through (a) third-party advertising displayed in the App, (b) optional one-time purchases that permanently remove ads, and (c) optional consumable purchases (reflection top-ups and donations). All payments are processed <strong>exclusively</strong> by <strong>Apple Inc.</strong> (App Store) or <strong>Google LLC</strong> (Google Play). <strong>Nuria does not receive, store, or process your payment card details, bank account information, or any other financial instrument data at any point.</strong></p>
 
-        <h4 id="priv-2-2-a">2.2(a) The 7-day free trial and paywall onboarding</h4>
-        <p>On first launch a paywall presents a "<em>Start 7-day free trial</em>" action. When you accept, Apple's or Google's introductory free-trial offer is applied to the selected subscription product. During the 7 days you receive <strong>15 reflections</strong> attributable to your account. On day 8, the store automatically charges you the full subscription price unless you cancel through the App Store or Google Play before the trial period ends. There is no permanent free tier and no starter credit balance outside of the trial.</p>
+        <h4 id="priv-2-2-a">2.2(a) Free access with advertising</h4>
+        <p>Unless you purchase an ad-removal product (Section 2.2(b)) or hold a grandfathered entitlement (Section 2.2(c)), the App displays third-party advertisements — including banner, native, interstitial, and rewarded formats — to support the free service. Advertising is described in detail in Section 2.19. You may dismiss the optional one-time offer screen and continue using Nuria with ads at no charge.</p>
 
-        <h4 id="priv-2-2-b">2.2(b) Subscription products and tiers</h4>
-        <p>Nuria offers two tiers within the same Apple subscription group (and the parallel Google Play subscriptions):</p>
+        <h4 id="priv-2-2-b">2.2(b) One-time ad-removal purchases (current primary paid products)</h4>
+        <p>Nuria offers two non-consumable, one-time in-app purchases that permanently remove advertising:</p>
+        <ul>
+          <li><strong>Nuria Serene</strong> (<code>nuria_serene</code>): permanently removes all in-App advertisements.</li>
+          <li><strong>Nuria Noor</strong> (<code>nuria_noor</code>): permanently removes all in-App advertisements, unlocks the <strong>Luxury Stone</strong> premium appearance theme, and grants <strong>300 bonus reflections</strong> at the time of purchase.</li>
+        </ul>
+        <p>These purchases do not auto-renew. Ad-free status is stored on your Nuria account (<code>users/{uid}.adFree</code>) and in <code>iap_entitlements/{uid}</code> after server-side receipt verification. Rewarded advertisements that grant bonus reflections (Section 2.19) remain available even to ad-free users who choose to watch them.</p>
+
+        <h4 id="priv-2-2-c">2.2(c) Legacy subscriptions and grandfathered entitlements</h4>
+        <p>Nuria previously sold recurring <strong>Standard</strong> and <strong>Barakah</strong> subscriptions with an introductory 7-day free trial. <strong>New users are no longer required to subscribe</strong> and these subscription products are no longer offered as the primary access path in the App. However, we continue to honour active legacy subscriptions and process renewals, refunds, and restorations for existing subscribers through Apple and Google:</p>
         <ul>
           <li><strong>Standard tier:</strong> <code>nuria_standard_monthly</code> (monthly) and <code>nuria_standard_yearly</code> (annual).</li>
           <li><strong>Barakah tier:</strong> <code>nuria_membership_monthly</code> (iOS monthly) / <code>nuria_supporter_monthly</code> (Android monthly), and <code>nuria_membership_yearly</code> (annual on both platforms).</li>
         </ul>
-        <p>Plan changes between tiers and between billing cadences (Standard ↔ Barakah, monthly ↔ yearly) are handled natively by <strong>Apple StoreKit subscription groups</strong> and by <strong>Google Play Billing</strong> using <code>IMMEDIATE_WITH_TIME_PRORATION</code>. The store credits unused time automatically; Nuria does not perform billing calculations on its servers.</p>
+        <p>Legacy subscribers and users grandfathered from earlier premium purchases receive ad-free access and any tier-specific benefits that were active at the time of their purchase. Plan changes between legacy tiers are handled natively by <strong>Apple StoreKit subscription groups</strong> and <strong>Google Play Billing</strong> using <code>IMMEDIATE_WITH_TIME_PRORATION</code> where applicable.</p>
+        <p>The legacy one-time product <code>com.oakdev.nuria.premium</code> is retained for restore only; existing purchasers are grandfathered.</p>
 
-        <h4 id="priv-2-2-c">2.2(c) Reflections allocation</h4>
-        <p>"Reflections" are the consumable unit of personalised content (including category-based reflections and Ask Nuria exchanges). The catalog quantity granted per paid renewal is:</p>
+        <h4 id="priv-2-2-d">2.2(d) Reflection top-ups, donations, and starter reflections</h4>
+        <p>"Reflections" are digital units used to request personalised spiritual content (category reflections and Ask Nuria exchanges). Free users receive a <strong>one-time starter grant of 15 reflections</strong> per device (see Section 2.3). Additional reflections may be obtained through:</p>
         <ul>
-          <li><strong>Standard monthly:</strong> 100 reflections per month.</li>
-          <li><strong>Standard yearly:</strong> 1,200 reflections per year.</li>
-          <li><strong>Barakah monthly:</strong> 200 reflections per month.</li>
-          <li><strong>Barakah yearly:</strong> 2,400 reflections per year.</li>
-          <li><strong>Trial:</strong> 15 reflections during the 7-day trial. On the first paid renewal the catalog amount for your selected plan is <strong>added on top</strong> of any remaining trial reflections.</li>
+          <li><strong>Consumable top-ups:</strong> <code>nuria_reflections_100</code>, <code>nuria_reflections_200</code>, and <code>nuria_reflections_400</code> (availability may vary by region).</li>
+          <li><strong>Rewarded advertisements:</strong> watching a rewarded ad grants bonus reflections credited server-side after AdMob server-side verification (Section 2.19).</li>
+          <li><strong>Legacy subscription renewals:</strong> Standard monthly +100 / yearly +1,200; Barakah monthly +200 / yearly +2,400 per paid renewal for active legacy subscribers.</li>
+          <li><strong>Nuria Noor purchase:</strong> +300 reflections on purchase (Section 2.2(b)).</li>
         </ul>
+        <p>Donation products (<code>nuria_donation_small</code>, <code>nuria_donation_medium</code>, <code>nuria_donation_large</code>) are consumable purchases that support Nuria development; they do not grant reflections or entitlements.</p>
 
-        <h4 id="priv-2-2-d">2.2(d) Receipt metadata and entitlement state we receive and store</h4>
-        <p>From the platform payment processor we receive a <strong>purchase receipt token</strong>, a <strong>transaction or order identifier</strong>, the <strong>product identifier</strong> purchased, and the <strong>purchase or renewal timestamp</strong>. Our verifier additionally reads the following fields directly from the signed receipt to determine trial-versus-paid status and renewal timing:</p>
-        <ul>
-          <li><strong>Apple:</strong> the JWS <code>signedTransactionInfo</code> fields <code>offerType</code>, <code>offerDiscountType</code>, and <code>expiresDate</code>.</li>
-          <li><strong>Google Play:</strong> the SubscriptionsV2 <code>paymentState</code> (<code>0</code> = pending, <code>1</code> = paid, <code>2</code> = free trial) and <code>expiryTime</code>.</li>
-        </ul>
-        <p>We store the resulting entitlement state on a Firestore document at <code>iap_entitlements/{uid}</code>, with fields including <code>subscriptionTier</code> (<code>"standard"</code> or <code>"barakah"</code>), <code>subscriptionPeriod</code> (<code>"monthly"</code> or <code>"yearly"</code>), <code>paidPlan</code>, <code>isTrialPeriod</code>, <code>trialEndsAt</code>, <code>currentPeriodEndsAt</code>, and <code>trialDeviceHash</code> (see Section 2.3 for the fingerprint mechanism). We also maintain an <code>iap_transactions</code> record of historic store transactions for fraud prevention and accounting.</p>
+        <h4 id="priv-2-2-e">2.2(e) Receipt metadata and entitlement state we receive and store</h4>
+        <p>From the platform payment processor we receive a <strong>purchase receipt token</strong>, a <strong>transaction or order identifier</strong>, the <strong>product identifier</strong> purchased, and the <strong>purchase or renewal timestamp</strong>. For legacy subscriptions our verifier additionally reads signed receipt fields (Apple JWS <code>expiresDate</code>; Google Play SubscriptionsV2 <code>paymentState</code> and <code>expiryTime</code>) to determine active status and renewal timing.</p>
+        <p>We store the resulting entitlement state on a Firestore document at <code>iap_entitlements/{uid}</code>, including <code>adFree</code>, <code>subscriptionTier</code>, <code>subscriptionPeriod</code>, <code>paidPlan</code>, <code>isTrialPeriod</code>, <code>trialEndsAt</code>, <code>currentPeriodEndsAt</code>, and related fields for legacy subscriptions. We also maintain an <code>iap_transactions</code> record of historic store transactions for fraud prevention and accounting.</p>
         <p>We use this metadata solely to:</p>
         <ul>
           <li>Verify that a purchase is valid and has not been used fraudulently.</li>
-          <li>Determine whether your subscription is currently in a trial or paid state.</li>
-          <li>Grant the correct catalog reflections allotment on each renewal.</li>
-          <li>Enable or disable subscription-gated features (including the Ask Nuria feature) based on whether your entitlement is active.</li>
+          <li>Apply ad-free status, Luxury Stone theme eligibility, and reflection grants for one-time purchases.</li>
+          <li>Maintain legacy subscription entitlements, trial state, and renewal reflection grants for existing subscribers.</li>
           <li>Detect and investigate suspected fraudulent, duplicate, or refunded purchase claims.</li>
           <li>Maintain accounting records required by Swedish law.</li>
         </ul>
-        <p>Apple and Google act as independent controllers of your payment data; their respective privacy policies govern that processing: <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple Privacy Policy</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a>. In-app purchases are also subject to each platform's terms, including Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">standard Licensed Application End User License Agreement (EULA)</a> where applicable, and the <a href="https://play.google.com/about/play-terms/" target="_blank" rel="noopener">Google Play Terms of Service</a> on Android.</p>
+        <p>Apple and Google act as independent controllers of your payment data; their respective privacy policies govern that processing: <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple Privacy Policy</a> · <a href="https://policies.google.com/privacy/" target="_blank" rel="noopener">Google Privacy Policy</a>. In-app purchases are also subject to each platform's terms, including Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">standard Licensed Application End User License Agreement (EULA)</a> where applicable, and the <a href="https://play.google.com/about/play-terms/" target="_blank" rel="noopener">Google Play Terms of Service</a> on Android.</p>
 
-        <h4 id="priv-2-2-e">2.2(e) Hiba gifts (one-year Barakah gift)</h4>
+        <h4 id="priv-2-2-f">2.2(f) Hiba gifts (one-year Barakah gift)</h4>
         <p>The one-time in-app purchase <code>nuria_hiba_yearly_gift</code> allows a buyer to gift one year of Barakah to a recipient identified by their Nuria code or by the email address registered to their Nuria account. Privacy implications:</p>
         <ul>
           <li><strong>Recipient identifier:</strong> The recipient email address or Nuria code is transmitted to our backend so we can verify, server-side, that the gift target exists and is eligible to receive the gift, before the purchase is finalised with Apple or Google.</li>
@@ -197,16 +201,16 @@
           <li><strong>Minimisation:</strong> We process the recipient identifier solely for gift validation, delivery, and customer support relating to that specific gift; we do not add the recipient to marketing lists or use the identifier for any other purpose.</li>
         </ul>
 
-        <h3 id="priv-2-3">2.3 Anti-abuse device fingerprint (trial eligibility)</h3>
-        <p>To prevent a single physical device from claiming repeat free trials across multiple Apple or Google accounts, the App computes a salted, irreversible <strong>device fingerprint hash</strong> and sends it to a Cloud Function (<code>checkTrialEligibility</code>) prior to enrolling you in the trial.</p>
+        <h3 id="priv-2-3">2.3 Anti-abuse device binding (starter reflections and legacy trial checks)</h3>
+        <p>To prevent a single physical device from claiming repeated starter reflection grants or abusing legacy free-trial mechanics across multiple accounts, the App uses device-binding records and, for legacy trial flows, a salted irreversible <strong>device fingerprint hash</strong>.</p>
         <ul>
-          <li><strong>How it is computed:</strong> The client computes <code>SHA-256(salt || platformId)</code> where <code>platformId</code> is, on iOS, <code>identifierForVendor</code> combined with the device model string from <code>utsname.machine</code>, and on Android, <code>Settings.Secure.ANDROID_ID</code> combined with the device model. The raw <code>platformId</code> <strong>never leaves your device</strong>.</li>
-          <li><strong>What is stored:</strong> Only the salted hash is transmitted and stored, at <code>device_fingerprints/{hash}</code>, with fields such as <code>firstTrialAt</code>, <code>firstTrialUid</code>, <code>firstTrialProductId</code>, <code>latestTrialUid</code>, <code>trialAttemptCount</code>, and a <code>uids</code> array of accounts that have attempted a trial from this device.</li>
-          <li><strong>Purpose:</strong> One free trial per device per 365 days. The fingerprint is used <strong>solely</strong> to evaluate trial eligibility and to investigate anti-abuse signals.</li>
-          <li><strong>Irreversibility:</strong> The hash cannot be reversed to identify the underlying device. It does not on its own personally identify you.</li>
-          <li><strong>Persistence by design:</strong> The fingerprint record intentionally survives the deletion of a Nuria account so that the anti-abuse signal remains effective. The fingerprint record is automatically purged 365 days after the most recent trial attempt.</li>
-          <li><strong>Right to erasure of the fingerprint record:</strong> You may request earlier deletion of your fingerprint record by writing to <a href="mailto:hello@nuria.one">hello@nuria.one</a>. We will assess and honour valid erasure requests in accordance with Section 9 and Section 8.</li>
-          <li><strong>Legal basis:</strong> Legitimate interests (Art. 6(1)(f) GDPR) in preventing fraud and abuse of the free-trial offer, balanced against the minimal privacy impact of a one-way hash with no reverse lookup capability and a 365-day rolling retention window.</li>
+          <li><strong>Starter reflections:</strong> The one-time <strong>15 reflection starter grant</strong> for free users is tracked per device binding in <code>device_starters/{bindingId}</code> so reinstalling the App or creating additional accounts on the same device cannot obtain multiple starter grants.</li>
+          <li><strong>Legacy trial fingerprint (where still applicable):</strong> For legacy subscription trial enrolment, the client computes <code>SHA-256(salt || platformId)</code> where <code>platformId</code> is derived from on-device identifiers combined with the device model. The raw <code>platformId</code> <strong>never leaves your device</strong>; only the hash is stored at <code>device_fingerprints/{hash}</code>.</li>
+          <li><strong>Purpose:</strong> Prevent fraud and abuse of free starter credits and legacy trial offers. These records are used <strong>solely</strong> for anti-abuse evaluation and investigation.</li>
+          <li><strong>Irreversibility:</strong> Fingerprint hashes cannot be reversed to identify the underlying device and do not on their own personally identify you.</li>
+          <li><strong>Persistence by design:</strong> Anti-abuse records intentionally survive account deletion so the signal remains effective. Fingerprint records are automatically purged 365 days after the most recent relevant attempt.</li>
+          <li><strong>Right to erasure:</strong> You may request earlier deletion of a fingerprint or starter-binding record by writing to <a href="mailto:hello@nuria.one">hello@nuria.one</a>. We will assess and honour valid erasure requests in accordance with Sections 9 and 8.</li>
+          <li><strong>Legal basis:</strong> Legitimate interests (Art. 6(1)(f) GDPR) in preventing fraud and abuse, balanced against the minimal privacy impact of one-way hashes and device-binding records with limited retention.</li>
         </ul>
 
         <h3 id="priv-2-4">2.4 Push Notification Token</h3>
@@ -222,7 +226,7 @@
         <p>The personalised reflections you request and receive through the App — whether a category-based reflection or an Ask Nuria exchange — are stored server-side and linked to your account so you can review them within the App and so we can manage your reflections balance accurately. This content may reflect your chosen category (for example Gratitude, Strength, Evening Reflection, or Iman &amp; Trust) but does not include any additional personal profiling beyond what you explicitly request.</p>
 
         <h3 id="priv-2-6">2.6 Usage Data</h3>
-        <p>We collect anonymised and pseudonymised data about how you interact with the App — such as which features are accessed, session frequency, which reflection categories are selected, and which sections of the App are opened. This data is aggregated and is used exclusively to understand usage patterns and improve the product. It is not used to build individual user profiles, is not linked to personally identifiable information, and is never used for advertising.</p>
+        <p>We collect anonymised and pseudonymised data about how you interact with the App — such as which features are accessed, session frequency, which reflection categories are selected, and which sections of the App are opened. This data is aggregated and is used primarily to understand usage patterns and improve the product. It is not used by Nuria to build individual advertising profiles or sold to data brokers. Third-party ad networks may separately collect interaction data when ads are displayed (Section 2.19).</p>
 
         <h3 id="priv-2-7">2.7 Device and Technical Data</h3>
         <p>We collect your device type (e.g. iPhone, Android phone), operating system version, app version, and a resettable app-instance identifier. This information is necessary for app functionality, security, feature compatibility testing, and resolving technical issues reported by users.</p>
@@ -269,7 +273,7 @@
         </ul>
 
         <h3 id="priv-2-15">2.15 Ask Nuria — Free-Form Questions (Nuria guidance)</h3>
-        <p>The <strong>Ask Nuria</strong> feature — also referred to in the App as <strong>Nuria guidance</strong> — is available to any user with an active subscription, including users on the Standard tier, the Barakah tier, and users currently in the 7-day trial. When you submit a question you type a free-form prompt and receive a personalised response rooted in authentic Islamic teaching. Regarding this data:</p>
+        <p>The <strong>Ask Nuria</strong> feature — also referred to in the App as <strong>Nuria guidance</strong> — is available to <strong>all Nuria users</strong> whose reflection balance permits a request (see Section 2.2(d)). Subscription status does not gate access to Ask Nuria in the current ad-supported model. When you submit a question you type a free-form prompt and receive a personalised response rooted in authentic Islamic teaching. Regarding this data:</p>
         <ul>
           <li><strong>What is collected:</strong> The exact text of the question you submit and the response returned to you are both stored on our servers and linked to your account.</li>
           <li><strong>How Nuria guidance is generated:</strong> Your question text is transmitted to our enterprise AI service provider (see Section 6) to generate a response. The provider acts as a data processor on our documented instructions under a binding data processing agreement.</li>
@@ -307,7 +311,7 @@
         <h3 id="priv-2-17">2.17 Feature settings: Luxury Stone, Qaida, Sunnat, Live Haramain, scholar path, ruqyah audio, and achievements</h3>
         <p>Several features create settings, progress data, or usage records. The following clarifies how those features are handled:</p>
         <ul>
-          <li><strong>Barakah Luxury Stone:</strong> The selected appearance theme is stored as a preference so the App can restore your chosen look. The theme itself does not change what religious content you receive and does not require us to collect additional sensitive data.</li>
+          <li><strong>Luxury Stone theme:</strong> The selected appearance theme is stored as a preference so the App can restore your chosen look. Luxury Stone is unlocked by Nuria Noor, legacy Barakah subscribers, and grandfathered premium users. The theme itself does not change what religious content you receive and does not require us to collect additional sensitive data.</li>
           <li><strong>Nuria Qaida:</strong> Qaida may store lesson completion, XP, streaks, archive-review state, Nuria Points, selected learner mode (adult or child), and achievement status. These records are used to show progress, resume lessons, and unlock rewards or badges. Voice or speech practice, where available, is used only for the active practice interaction and is not used for ambient listening.</li>
           <li><strong>Sunnat practices:</strong> Search terms, selected categories, opened practices, and daily-practice interactions may be processed as ordinary usage data to improve navigation and content quality. The underlying Sunnat content is seeded and curated separately from your account data.</li>
           <li><strong>Live Haramain:</strong> Opening a live stream may send you to YouTube or another third-party streaming provider in your browser or native app. Those providers act under their own privacy notices. Nuria does not host the stream, does not receive your watch history from those providers, and may only process the fact that you tapped a Live Haramain action as aggregate or pseudonymous usage data.</li>
@@ -318,8 +322,23 @@
           <li><strong>Bosnian script and language handling:</strong> Where the App normalises Bosnian Latin/Cyrillic display or repairs locale text quality, this is presentation logic. It does not infer ethnicity or nationality and is not used for profiling.</li>
         </ul>
 
+        <h3 id="priv-2-19">2.19 Advertising (Google AdMob and partners)</h3>
+        <p>Unless you are ad-free (Section 2.2(b) or a grandfathered subscriber), the App displays third-party advertisements to fund the free service. We use <strong>Google AdMob</strong> (<code>google_mobile_ads</code>) as our primary ad network, with mediation infrastructure prepared for additional networks. Ad formats include <strong>adaptive banners</strong>, <strong>native in-content ads</strong>, <strong>interstitial</strong> full-screen ads (frequency-capped), and <strong>rewarded</strong> ads that optionally grant bonus reflections.</p>
+        <p><strong>What may be processed for advertising:</strong> When ads are shown, Google and its advertising partners may collect and process device and usage data — such as advertising identifiers (IDFA on iOS when permitted, Android Advertising ID), IP address, device type, operating system version, app version, ad interaction events, and coarse location inferred from IP — to deliver, measure, and (where you consent) personalise advertisements. Nuria does not receive your payment data through advertising and does not sell your Nuria account email or reflection history to advertisers.</p>
+        <p><strong>Consent and controls:</strong></p>
+        <ul>
+          <li><strong>EU/UK (GDPR / ePrivacy):</strong> Before personalised ads are enabled, the App presents Google's <strong>User Messaging Platform (UMP)</strong> consent flow where required by law. You may accept or decline personalised advertising and revisit your choice through in-App settings or device settings where available.</li>
+          <li><strong>iOS App Tracking Transparency (ATT):</strong> On iOS, the App requests tracking authorisation before using the IDFA for personalised ads. If you decline, ads may still be shown but will be less personalised.</li>
+          <li><strong>Ad-free users:</strong> Purchasers of Nuria Serene or Nuria Noor, and grandfathered premium/subscriber accounts, do not see banner, native, or interstitial ads. Rewarded ads remain optional for earning bonus reflections.</li>
+          <li><strong>Remote kill-switch:</strong> We can disable all ad rendering remotely via Firestore <code>app_config/ads</code> without requiring an App update.</li>
+        </ul>
+        <p><strong>Rewarded ad server verification:</strong> When you complete a rewarded advertisement to earn reflections, Google AdMob sends a server-side verification (SSV) callback to our Cloud Function <code>grantRewardedReflections</code>. We verify the cryptographic signature, match the callback to your authenticated Nuria account, and credit reflections server-side. We store a minimal transaction record for fraud prevention.</p>
+        <p><strong>Third-party policies:</strong> Google's processing is governed by <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a> and <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">How Google uses information from sites or apps that use our services</a>. You can manage Google's ad personalisation at <a href="https://adssettings.google.com" target="_blank" rel="noopener">adssettings.google.com</a> and, on iOS, through Settings &rarr; Privacy &amp; Security &rarr; Tracking / Apple Advertising.</p>
+        <p><strong>Website:</strong> <strong>nuria.one</strong> does not display third-party advertising. Our <code>app-ads.txt</code> file at <a href="https://nuria.one/app-ads.txt">nuria.one/app-ads.txt</a> authorises our AdMob publisher account for the mobile App only.</p>
+        <p><strong>Legal basis:</strong> For non-personalised ads and strictly necessary ad delivery, legitimate interests (Art. 6(1)(f) GDPR) in funding the free App. For personalised advertising and storage/access of advertising identifiers where consent is required, <strong>consent</strong> (Art. 6(1)(a) GDPR) obtained through UMP and/or ATT. You may withdraw consent at any time without affecting the lawfulness of processing based on consent before its withdrawal.</p>
+
         <h3 id="priv-2-18">2.18 What We Do Not Collect (and limited exceptions)</h3>
-        <p>We do <strong>not</strong> collect contacts from your address book, routine camera rolls, or biometric templates. We do <strong>not</strong> transmit or store your GPS location on our servers (Section 2.14). We do <strong>not</strong> build advertising profiles, participate in real-time bidding networks, or sell your personal data to any third party, ever, under any circumstances.</p>
+        <p>We do <strong>not</strong> collect contacts from your address book, routine camera rolls, or biometric templates. We do <strong>not</strong> transmit or store your GPS location on our servers (Section 2.14). We do <strong>not</strong> sell your personal data to data brokers or unrelated third parties. We do <strong>not</strong> use your reflection history, Ask Nuria questions, or special-category religious data to build our own advertising profiles or to target ads — however, <strong>third-party ad partners may process device and usage data for advertising as described in Section 2.19</strong>, subject to your consent choices where required by law.</p>
         <p><strong>Microphone and camera — limited use:</strong> The App does <strong>not</strong> access your microphone or camera in the background. The microphone may be used <strong>only when you actively initiate recording</strong> (for example a voice legacy bequest or a voice note flow in Nuria Legacy), and only for the duration of that action. We do not use your microphone for ambient listening or analytics.</p>
 
         <!-- ─── SECTION 3 ─────────────────────────────────────────── -->
@@ -360,13 +379,28 @@
               <td>—</td>
             </tr>
             <tr>
-              <td>Verifying in-app purchases, the 7-day trial enrolment, and applying subscription entitlements (Standard or Barakah, monthly or yearly)</td>
+              <td>Verifying in-app purchases and applying entitlements (Serene/Noor ad-free, reflection top-ups, donations, legacy subscriptions)</td>
               <td>Performance of a contract (Art. 6(1)(b))</td>
               <td>—</td>
             </tr>
             <tr>
-              <td>Computing and storing the salted device fingerprint hash for trial eligibility (anti-abuse)</td>
-              <td>Legitimate interests (Art. 6(1)(f)) — preventing fraud and abuse of the free-trial offer</td>
+              <td>Displaying third-party advertisements via Google AdMob (non-personalised / contextual)</td>
+              <td>Legitimate interests (Art. 6(1)(f)) — funding the free App</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Personalised advertising, advertising identifiers (IDFA / GAID), UMP consent storage</td>
+              <td>Consent (Art. 6(1)(a)) — UMP and/or ATT where required</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Rewarded ad server verification and reflection grants (<code>grantRewardedReflections</code>)</td>
+              <td>Performance of a contract (Art. 6(1)(b)); Legitimate interests (Art. 6(1)(f))</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Device binding and fingerprint records for starter-grant and legacy-trial anti-abuse</td>
+              <td>Legitimate interests (Art. 6(1)(f)) — preventing fraud and abuse</td>
               <td>—</td>
             </tr>
             <tr>
@@ -482,9 +516,11 @@
         <p>Specifically, we use your personal data to:</p>
         <ul>
           <li>Create, authenticate, and maintain your Nuria account and ensure it remains secure.</li>
-          <li>Enrol you in the 7-day free trial, evaluate trial eligibility through the irreversible device fingerprint, and grant 15 reflections for the trial period.</li>
-          <li>Verify purchases made through Apple App Store or Google Play, transition you between trial and paid status, apply Standard or Barakah subscription entitlements, and grant the catalog reflections allotment on each renewal.</li>
-          <li>Handle subscription plan changes (Standard ↔ Barakah, monthly ↔ yearly) natively through Apple StoreKit subscription groups and Google Play Billing's <code>IMMEDIATE_WITH_TIME_PRORATION</code> mode.</li>
+          <li>Grant the one-time starter reflection allocation (15 reflections) to eligible free users, subject to device-binding anti-abuse checks.</li>
+          <li>Display third-party advertisements to fund the free App, subject to your consent choices for personalised ads (Section 2.19).</li>
+          <li>Verify purchases made through Apple App Store or Google Play, apply Nuria Serene / Nuria Noor ad-free entitlements, reflection top-ups, and donations, and maintain legacy Standard or Barakah subscription entitlements for existing subscribers.</li>
+          <li>Credit bonus reflections after verified rewarded-ad completions via AdMob server-side verification.</li>
+          <li>Handle legacy subscription plan changes (Standard ↔ Barakah, monthly ↔ yearly) natively through Apple StoreKit subscription groups and Google Play Billing's <code>IMMEDIATE_WITH_TIME_PRORATION</code> mode where applicable.</li>
           <li>Validate Hiba gift recipients server-side before authorising payment, and deliver the gifted year of Barakah to the recipient's Nuria account.</li>
           <li>Generate and deliver personalised spiritual reflections based on your chosen category, consuming one reflection per request from your balance.</li>
           <li>Process free-form questions submitted via Ask Nuria (Nuria guidance) by transmitting them to our AI processor, generate responses rooted in authentic Islamic teaching, and return those responses to you.</li>
@@ -502,7 +538,7 @@
           <li>Detect, investigate, and prevent fraud, abuse, and security incidents — including trial abuse via repeat-trial fingerprint signals.</li>
           <li>Comply with applicable legal and regulatory obligations, including tax and accounting requirements under Swedish law.</li>
         </ul>
-        <p>We will never use your data for targeted advertising, behavioural profiling for commercial purposes, or any purpose incompatible with the above list.</p>
+        <p>We will not use your Nuria account content (reflection history, Ask Nuria questions, or special-category religious data) for our own targeted advertising or behavioural profiling. Third-party advertising partners may process device and usage data as described in Section 2.19, subject to your consent where required by law. We will not use your data for any purpose incompatible with the above list.</p>
 
         <!-- ─── SECTION 6 ─────────────────────────────────────────── -->
         <h2 id="priv-6" data-i18n="privacy.section_6_title">6. Third-Party Processors and Sharing</h2>
@@ -510,13 +546,13 @@
 
         <h3 id="priv-6-1">6.1 Apple Inc. (App Store)</h3>
         <p><strong>Role:</strong> Payment processor and app distribution platform (independent controller for payment data).<br />
-        <strong>What is shared:</strong> Apple processes all in-app purchases, trial enrolments, Standard and Barakah subscription payments, plan changes within the subscription group, and one-time IAPs (including <code>nuria_hiba_yearly_gift</code>) made on iOS devices. We receive only purchase receipt metadata (see Section 2.2). Apple's privacy policy governs their processing of your payment and account data: <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">www.apple.com/legal/privacy</a>. Purchases may also be subject to Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">standard EULA for App Store apps</a>.<br />
+        <strong>What is shared:</strong> Apple processes all in-app purchases made on iOS devices — including Nuria Serene, Nuria Noor, reflection top-ups, donations, legacy Standard and Barakah subscription payments, and one-time IAPs (including <code>nuria_hiba_yearly_gift</code>). We receive only purchase receipt metadata (see Section 2.2). Apple's privacy policy governs their processing of your payment and account data: <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">www.apple.com/legal/privacy</a>. Purchases may also be subject to Apple's <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">standard EULA for App Store apps</a>.<br />
         <strong>Server-to-server signalling:</strong> Apple notifies our <code>appleStoreNotifications</code> Cloud Function (App Store Server Notifications v2) of renewals, refunds, billing failures, and other lifecycle events.<br />
         <strong>Transfer mechanism:</strong> Apple Inc. is a US company; data transfers are covered by Apple's standard contractual commitments and applicable adequacy mechanisms.</p>
 
         <h3 id="priv-6-2">6.2 Google LLC (Google Play)</h3>
         <p><strong>Role:</strong> Payment processor and app distribution platform (independent controller for payment data).<br />
-        <strong>What is shared:</strong> Google processes all in-app purchases, trial enrolments, Standard and Barakah subscription payments, plan changes, and one-time IAPs made on Android devices. We receive only purchase receipt metadata (see Section 2.2). Google's privacy policy governs their processing of your payment and account data: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>. Google Play purchases are also subject to the <a href="https://play.google.com/about/play-terms/" target="_blank" rel="noopener">Google Play Terms of Service</a>.<br />
+        <strong>What is shared:</strong> Google processes all in-app purchases made on Android devices — including Nuria Serene, Nuria Noor, reflection top-ups, donations, legacy subscription payments, and one-time IAPs. We receive only purchase receipt metadata (see Section 2.2). Google's privacy policy governs their processing of your payment and account data: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>. Google Play purchases are also subject to the <a href="https://play.google.com/about/play-terms/" target="_blank" rel="noopener">Google Play Terms of Service</a>.<br />
         <strong>Server-to-server signalling:</strong> Google delivers Real-Time Developer Notifications (RTDN) via Pub/Sub to our <code>googlePlayRtdn</code> Cloud Function, which our <code>storeEventProcessor</code> consumes for renewals, refunds, and revocations.<br />
         <strong>Transfer mechanism:</strong> Google LLC is a US company; transfers rely on standard contractual clauses (SCCs) and Google's participation in applicable data transfer frameworks.</p>
 
@@ -527,7 +563,7 @@
         <ul>
           <li><strong>Firebase Authentication:</strong> Manages secure user account creation and sign-in using your email address.</li>
           <li><strong>Cloud Firestore:</strong> Stores your account data, reflections balance, subscription state (<code>iap_entitlements/{uid}</code>), transaction log (<code>iap_transactions</code>), device fingerprint records (<code>device_fingerprints/{hash}</code>), reflection history, Family Deen Tree documents and member subcollections, Halqa circle documents, legacy bequest items, and restricted administrative configuration for the Partner Programme.</li>
-          <li><strong>Firebase Cloud Functions (us-central1):</strong> Executes server-side logic including: <code>iapAcknowledgeAndGrant</code> (purchase receipt verification with Apple/Google and entitlement write), <code>checkTrialEligibility</code> (reads the device fingerprint to decide trial eligibility), <code>grantSubscriptionRenewals</code> (scheduled monthly grant for monthly subscribers; yearly handled by webhook only), <code>appleStoreNotifications</code> (Apple Server Notifications v2 webhook), <code>googlePlayRtdn</code> (Google Play RTDN via Pub/Sub), <code>storeEventProcessor</code> (processes both webhook flows, handles trial → paid conversion, refunds, and revocations), <code>restoreDevicePurchases</code>, and <code>restoreAccountPurchases</code>; plus family-tree invitation emails, passing-related workflows, and legacy-bequest release.</li>
+          <li><strong>Firebase Cloud Functions (us-central1):</strong> Executes server-side logic including: <code>iapAcknowledgeAndGrant</code> (purchase receipt verification with Apple/Google and entitlement write), <code>checkTrialEligibility</code> (legacy trial anti-abuse), <code>grantRewardedReflections</code> (AdMob rewarded-ad SSV verification), <code>grantSubscriptionRenewals</code> (legacy monthly subscriber grants), <code>appleStoreNotifications</code> (Apple Server Notifications v2 webhook), <code>googlePlayRtdn</code> (Google Play RTDN via Pub/Sub), <code>storeEventProcessor</code> (renewals, refunds, revocations), <code>restoreDevicePurchases</code>, and <code>restoreAccountPurchases</code>; plus family-tree invitation emails, passing-related workflows, and legacy-bequest release.</li>
           <li><strong>Firebase Cloud Storage:</strong> Stores audio files for voice legacy bequests under access rules tied to your account.</li>
           <li><strong>Firebase Cloud Messaging (FCM):</strong> Routes push notification delivery to Android devices using your FCM device token.</li>
           <li><strong>Firebase Crashlytics:</strong> Collects anonymised crash reports and diagnostic data to help us identify and resolve bugs.</li>
@@ -541,18 +577,25 @@
         <strong>What is shared:</strong> Your APNs device token is transmitted to Apple's notification infrastructure solely to route prayer-time and other App push notifications to your iOS device. Apple does not have access to the content of notifications beyond what is required for routing and delivery.<br />
         <strong>Transfer mechanism:</strong> Standard contractual clauses and Apple's developer programme agreements.</p>
 
-        <h3 id="priv-6-5">6.5 AI Service Provider (Ask Nuria / Nuria guidance back-end)</h3>
+        <h3 id="priv-6-5">6.5 Google LLC — Google AdMob (Advertising)</h3>
+        <p><strong>Role:</strong> Advertising network and, where you consent, ad personalisation partner (independent controller for its advertising processing; processor for certain technical integrations).<br />
+        <strong>What is shared:</strong> When ads are displayed in the App, Google AdMob and its advertising partners may receive device and usage data as described in Section 2.19 — including advertising identifiers (where permitted), IP address, device type, OS version, app version, ad interaction events, and coarse location inferred from IP. Nuria configures AdMob through the Google Mobile Ads SDK and may use mediation adapters (for example AppLovin MAX, when enabled). Rewarded-ad completion callbacks are verified server-side via <code>grantRewardedReflections</code>.<br />
+        <strong>Consent:</strong> Personalised ads require consent through Google's User Messaging Platform (UMP) where mandated, and on iOS may additionally require App Tracking Transparency authorisation for IDFA access.<br />
+        <strong>Policies:</strong> <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy</a> · <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">Google partner sites policy</a> · <a href="https://support.google.com/admob/answer/6128543" target="_blank" rel="noopener">AdMob &amp; user data</a>.<br />
+        <strong>Transfer mechanism:</strong> Standard contractual clauses and Google's participation in applicable data transfer frameworks.</p>
+
+        <h3 id="priv-6-6-ai">6.6 AI Service Provider (Ask Nuria / Nuria guidance back-end)</h3>
         <p><strong>Role:</strong> AI language model provider and data processor for Ask Nuria.<br />
         <strong>What is shared:</strong> When you submit a question via Ask Nuria, the text of your question is transmitted to our AI service provider to generate a response. The provider may include system-level prompts that instruct the model to respond within authentic Islamic teaching; those prompts do not contain your personal data. The provider acts as our data processor under a binding DPA and is contractually prohibited from using your question data to train its models or for any purpose beyond delivering the API response.<br />
         <strong>Data minimisation:</strong> Only the text of your submitted question (and necessary session-level metadata for API security) is transmitted. Your account email address and personal identifiers are not shared with the AI provider.<br />
         <strong>Provider:</strong> We use a leading enterprise AI API provider. The current provider is subject to change; material changes to the AI provider will be communicated in accordance with Section 13. For the current provider name, contact us at <a href="mailto:hello@nuria.one">hello@nuria.one</a>.<br />
         <strong>Transfer mechanism:</strong> Standard contractual clauses or applicable adequacy decisions.</p>
 
-        <h3 id="priv-6-6">6.6 Legal and Regulatory Authorities</h3>
+        <h3 id="priv-6-7-legal">6.7 Legal and Regulatory Authorities</h3>
         <p>Where we are required by applicable law, a binding court order, or a lawful request by a competent supervisory or law enforcement authority to disclose personal data, we will comply with that obligation. We will notify you of any such disclosure to the maximum extent legally permitted and will challenge any request we believe to be unlawfully broad.</p>
 
-        <h3 id="priv-6-7">6.7 No Other Sharing</h3>
-        <p>No personal data is shared with marketing companies, advertising networks, data brokers, social media platforms, or any other third party not listed in this Section 6. Aggregate and anonymised data that cannot be used to identify any individual may be shared or published freely (for example, in product reports or press materials).</p>
+        <h3 id="priv-6-8">6.8 No Other Sharing</h3>
+        <p>Apart from the advertising partners described in Sections 2.19 and 6.5 (which process data under their own policies and your consent choices), we do not share Nuria account content with marketing companies, data brokers, or social media platforms for their independent commercial use. Aggregate and anonymised data that cannot be used to identify any individual may be shared or published freely (for example, in product reports or press materials).</p>
 
         <!-- ─── SECTION 7 ─────────────────────────────────────────── -->
         <h2 id="priv-7" data-i18n="privacy.section_7_title">7. International Data Transfers</h2>
@@ -680,8 +723,8 @@
           <li><strong>Firebase App Check:</strong> We require attestation via Apple App Attest on iOS and Play Integrity on Android, so that anonymous calls from non-legitimate clients are rejected at the gateway.</li>
           <li><strong>Role-based access controls:</strong> Only authorised personnel can access personal data, and only to the extent necessary for their role. Administrative access to production Cloud Functions and Firestore is gated by least-privilege IAM roles and protected by multi-factor authentication.</li>
           <li><strong>Audit logging:</strong> Administrative access to the production project and to sensitive operations (for example refund processing, fingerprint inspection) is logged in Google Cloud audit logs.</li>
-          <li><strong>Server-side receipt verification:</strong> All subscription claims are validated against Apple and Google receipts server-side; no client can self-grant an entitlement.</li>
-          <li><strong>Anti-abuse fingerprint:</strong> The salted irreversible device hash described in Section 2.3 limits free-trial fraud without exposing the underlying device identifier.</li>
+          <li><strong>Server-side receipt verification:</strong> All purchase and legacy subscription claims are validated against Apple and Google receipts server-side; no client can self-grant an entitlement or ad-free status.</li>
+          <li><strong>Anti-abuse binding:</strong> Device-binding and fingerprint records described in Section 2.3 limit repeated starter-grant and legacy-trial abuse without exposing raw device identifiers.</li>
           <li><strong>Incident response:</strong> Procedures for personal data breaches, including risk assessment and mandatory notification to the supervisory authority within 72 hours and to affected individuals without undue delay, as required by GDPR Articles 33–34.</li>
           <li><strong>Periodic review:</strong> Regular review of our security posture, processor agreements, and access lists.</li>
         </ul>
@@ -695,7 +738,7 @@
 
         <!-- ─── SECTION 12 ─────────────────────────────────────────── -->
         <h2 id="priv-12" data-i18n="privacy.section_12_title">12. Cookies and This Website</h2>
-        <p>This website (<strong>nuria.one</strong>) is a largely static informational site. We do not use advertising cookies, tracking pixels, cross-site tracking technologies, or session replay tools. The Nuria mobile App does not use web cookies.</p>
+        <p>This website (<strong>nuria.one</strong>) is a largely static informational site. We do not use advertising cookies, tracking pixels, cross-site tracking technologies, or session replay tools on the website. The Nuria mobile App does not use web cookies; it displays third-party in-App advertising through Google AdMob as described in Section 2.19.</p>
         <p>This website loads <strong>Google Fonts</strong> by default so that pages render with the intended typography; your browser fetches the font files directly from Google. If you accept optional analytics through the cookie banner on this website, the site additionally loads <strong>Google Analytics 4</strong> in a privacy-conscious configuration (with <code>analytics_storage</code> set to <code>denied</code> by default, IP anonymisation, and no advertising features). These third-party requests may result in Google processing your IP address and basic browser/device metadata under Google's terms. We do not activate Google Analytics unless you opt in.</p>
         <p>No personal data is collected through this website beyond what you voluntarily submit via our contact forms (in which case the data is used solely to respond to your enquiry and is governed by this Privacy Policy).</p>
         <p>For details about specific cookies set on this website and your choices, see our separate <a href="/cookies">Cookie Policy</a>.</p>
@@ -732,26 +775,27 @@
         <h3 id="priv-15-1">15.1 Nuria guidance (Ask Nuria responses)</h3>
         <p>The <strong>Ask Nuria</strong> feature uses automated natural-language processing to generate suggested responses to your questions. The generation is performed <em>solely</em> by an algorithm — no human reviews each response in real time before it is shown to you. However, the generation of a guidance text has <strong>no legal effect</strong> and <strong>no similarly significant effect</strong> on you within the meaning of Article 22(1) GDPR: the output is informational, you remain free to act on it or not, and it does not affect contractual, civil, or administrative rights. We therefore consider Article 22 not to be triggered. Notwithstanding that, we disclose the use of automation here so that you can decide whether to use the feature, and you may stop using it at any time.</p>
 
-        <h3 id="priv-15-2">15.2 Catalog-based reflections grants and subscription entitlements</h3>
-        <p>Subscription entitlements (Standard or Barakah, monthly or yearly), reflection allocations on each renewal, trial enrolment outcomes, and refund/revocation handling are determined by <strong>deterministic rules</strong> applied to the verified receipt from Apple or Google and to the device-fingerprint anti-abuse check (Section 2.3). These rules produce a contract-related outcome (entitlement on/off, number of reflections granted) and may therefore involve Article 22 GDPR. We rely on the Article 22(2)(a) exception — the decision is <strong>necessary for entering into or performing a contract</strong> between you and us — and we provide the following safeguards:</p>
+        <h3 id="priv-15-2">15.2 Catalog-based entitlements, starter grants, and rewarded-ad credits</h3>
+        <p>Ad-free entitlements (Serene/Noor), reflection top-ups, legacy subscription renewals, starter reflection grants, and rewarded-ad reflection credits are determined by <strong>deterministic rules</strong> applied to verified Apple/Google receipts, AdMob server-side verification callbacks, and device-binding anti-abuse checks (Section 2.3). These rules produce contract-related outcomes (entitlement on/off, reflections credited) and may involve Article 22 GDPR. We rely on the Article 22(2)(a) exception — the decision is <strong>necessary for entering into or performing a contract</strong> between you and us — and we provide the following safeguards:</p>
         <ul>
-          <li><strong>Human review on request:</strong> You may obtain human review of an unfavourable automated outcome (for example a trial denial) by emailing <a href="mailto:hello@nuria.one">hello@nuria.one</a>.</li>
+          <li><strong>Human review on request:</strong> You may obtain human review of an unfavourable automated outcome (for example a denied starter grant or purchase verification failure) by emailing <a href="mailto:hello@nuria.one">hello@nuria.one</a>.</li>
           <li><strong>Right to contest:</strong> You may contest an outcome and provide additional information; we will reassess.</li>
-          <li><strong>Meaningful information:</strong> The logic is summarised in this policy (subscription receipt verification + one-trial-per-device-365-days fingerprint check + catalog mapping of product ID → reflections).</li>
+          <li><strong>Meaningful information:</strong> The logic is summarised in this policy (receipt verification + device-binding anti-abuse + catalog mapping of product ID → entitlements/reflections + AdMob SSV verification for rewarded ads).</li>
         </ul>
 
-        <h3 id="priv-15-3">15.3 No profiling for advertising or behavioural targeting</h3>
-        <p>We do not build advertising profiles, do not engage in cross-context behavioural advertising, do not engage in real-time bidding, and do not share data with ad networks. We may use <strong>pseudonymous aggregate analytics</strong> (for example aggregate feature usage) to improve the App. Where we rely on <strong>legitimate interests</strong> for analytics, we apply minimisation and, where appropriate, aggregate or de-identify data so that individual users are not singled out.</p>
-        <p>If in the future we introduce processing that qualifies as solely automated decision-making with legal or similarly significant effects (other than as described in 15.2), we will update this policy and provide the information required under Article 13(2)(f) and Article 22 GDPR before that processing takes effect.</p>
+        <h3 id="priv-15-3">15.3 Advertising and profiling</h3>
+        <p>Nuria does <strong>not</strong> use your reflection history, Ask Nuria questions, or other Nuria account content to build our own advertising profiles or to target third-party ads. The App does display third-party advertising through Google AdMob (Section 2.19). Google and its partners may process device and usage data for ad delivery, measurement, and — where you consent — personalisation. That processing is governed by Google's policies and your UMP/ATT consent choices, not by Nuria's use of your spiritual content.</p>
+        <p>We may use <strong>pseudonymous aggregate analytics</strong> (for example aggregate feature usage via Firebase) to improve the App. Where we rely on <strong>legitimate interests</strong> for analytics, we apply minimisation and, where appropriate, aggregate or de-identify data so that individual users are not singled out.</p>
+        <p>If we introduce processing that qualifies as solely automated decision-making with legal or similarly significant effects (other than as described in 15.2), we will update this policy and provide the information required under Article 13(2)(f) and Article 22 GDPR before that processing takes effect.</p>
 
         <!-- ─── SECTION 16 ─────────────────────────────────────────── -->
         <h2 id="priv-16" data-i18n="privacy.section_16_title">16. United Kingdom, California, and Other Non-EU Jurisdictions</h2>
         <p><strong>United Kingdom:</strong> If you are in the UK, our processing is also subject to the UK GDPR and the Data Protection Act 2018. You may lodge a complaint with the <strong>Information Commissioner's Office (ICO)</strong> (<a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>). International transfers from the UK are safeguarded using appropriate mechanisms (for example the UK International Data Transfer Agreement / Addendum where relevant).</p>
         <p><strong>California (USA) — CCPA / CPRA:</strong> If California law applies to you, we provide the following disclosures in addition to the rest of this policy:</p>
         <ul>
-          <li><strong>Categories of personal information collected:</strong> identifiers such as email; commercial information relating to subscription purchases and gifts; internet or other electronic network activity within the App; geolocation information processed only on-device for Qibla and prayer times; audio information only when you actively record a voice bequest; inferences drawn from your use of features for product improvement; and sensitive personal information consisting of religious or philosophical beliefs revealed by your use of the App.</li>
-          <li><strong>Purposes:</strong> the business and commercial purposes described in Sections 5 and 6.</li>
-          <li><strong>Do Not Sell or Share:</strong> we do <strong>not</strong> sell personal information and we do <strong>not</strong> share personal information for cross-context behavioural advertising, as those terms are defined under the CCPA as amended by the CPRA. Because we do not sell or share, there is no "Do Not Sell or Share My Personal Information" link to operate.</li>
+          <li><strong>Categories of personal information collected:</strong> identifiers such as email and device/advertising identifiers (where permitted); commercial information relating to in-app purchases and gifts; internet or other electronic network activity within the App (including ad interaction events processed by ad partners); geolocation information processed only on-device for Qibla and prayer times; audio information only when you actively record a voice bequest; inferences drawn from your use of features for product improvement; and sensitive personal information consisting of religious or philosophical beliefs revealed by your use of the App.</li>
+          <li><strong>Purposes:</strong> the business and commercial purposes described in Sections 5 and 6, including displaying advertising to fund the free App.</li>
+          <li><strong>Do Not Sell or Share:</strong> we do <strong>not</strong> sell personal information for monetary consideration. We use Google AdMob to display ads; Google and its partners may process device and usage data for advertising, including cross-context behavioural advertising where you consent through UMP/ATT. Under the CCPA/CPRA, certain ad-tech disclosures may qualify as "sharing" for cross-context behavioural advertising. You can limit personalised ads through Google's <a href="https://adssettings.google.com" target="_blank" rel="noopener">Ads Settings</a>, the App's UMP consent flow, and iOS Tracking settings. We do not sell Nuria account content (reflections, Ask Nuria history) to advertisers.</li>
           <li><strong>Sensitive personal information:</strong> we limit our use of sensitive personal information (including information revealing religious beliefs) to the purposes permitted by Cal. Civ. Code § 1798.121 — namely, providing the services you have requested. We do not use sensitive personal information to infer characteristics about you for any purpose beyond providing the App.</li>
           <li><strong>Rights:</strong> California residents may have rights to know, access, delete, correct, and limit certain uses of personal information, and to opt out of sharing (which we do not engage in). To exercise rights, email <a href="mailto:hello@nuria.one">hello@nuria.one</a>. We will not discriminate against you for exercising these rights. Authorised agents may submit requests where permitted by law and after verification.</li>
         </ul>
@@ -798,7 +842,7 @@
         <h3 id="priv-20-2">20.2 What is retained after account deletion (and why)</h3>
         <ul>
           <li><strong>Purchase receipt metadata (<code>iap_transactions</code>):</strong> retained for 7 years from each transaction under Swedish accounting law (<em>Bokföringslagen</em> 1999:1078).</li>
-          <li><strong>Device fingerprint record (<code>device_fingerprints/{hash}</code>):</strong> retained for 365 days after the latest trial attempt for anti-abuse reasons. The hash cannot be reversed to identify your device. Earlier deletion is available on request.</li>
+          <li><strong>Device fingerprint / starter-binding records:</strong> retained for anti-abuse purposes (typically up to 365 days after the latest relevant attempt). Hashes cannot be reversed to identify your device. Earlier deletion is available on request.</li>
           <li><strong>Anonymised aggregate analytics:</strong> retained indefinitely; not personally identifiable.</li>
           <li><strong>Records reasonably necessary for the establishment, exercise, or defence of legal claims</strong> (Art. 6(1)(f), Art. 9(2)(f) GDPR): retained only for as long as such purposes require.</li>
           <li><strong>Backup snapshots:</strong> standard Google Cloud backup snapshots may briefly contain residual copies of deleted records; these are purged according to Google's backup rotation policy.</li>
