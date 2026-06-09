@@ -16,7 +16,7 @@ const T = {
   // ── English ──────────────────────────────────────────────────────────────────
   en: {
     nav: {
-      about: 'About', daily: 'Daily', categories: 'Categories',
+      about: 'About', daily: 'Daily', release: '4.3.0', categories: 'Categories',
       plans: 'Plans', support: 'Support', download: 'Download',
     },
     a11y: {
@@ -325,7 +325,7 @@ const T = {
       next_li2: 'Your account will be scheduled for deletion within <strong>30 days</strong>.',
       next_li3: 'During this period, you can cancel the deletion request by contacting <a href="mailto:hello@nuria.one">hello@nuria.one</a>.',
       next_li4: 'After 30 days, all personal data associated with your account will be permanently and irreversibly deleted from our systems.',
-      next_li6: 'Version 4.1.0 feature records, including learning progress, theme preferences, personalized settings, achievements, partner/referral links tied to your account, and support correspondence connected to the deletion request, are reviewed under the same privacy and retention rules.',
+      next_li6: 'Version 4.3.0 feature records, including learning progress, theme preferences, personalized settings, achievements, partner/referral links tied to your account, and support correspondence connected to the deletion request, are reviewed under the same privacy and retention rules.',
       next_li5: 'Some anonymised, non-identifiable usage data may be retained for statistical purposes only.',
       help_title: 'Need Help Instead?',
       help_text: 'Before you go, we would love to help if something isn\'t working. Please reach out at <a href="mailto:hello@nuria.one">hello@nuria.one</a> or visit our <a href="/support">Support Center</a> — we\'re here for you, in shaa Allah.',
@@ -335,11 +335,11 @@ const T = {
       card2_title: 'Credits & Reflections', card2_text: 'Learn how 15 starter reflections work and how personalised reflections are delivered inside Nuria.', card2_link: 'Learn more →',
       card3_title: 'Billing & Purchases', card3_text: "Questions about Nuria Serene, Nuria Noor, billing, or refunds? We've answered the most common questions below.", card3_link: 'View answers →',
       card4_title: 'Account & Privacy', card4_text: 'Need to update your account information, change settings, or request account deletion? Find everything you need here.', card4_link: 'Delete account →',
-      card5_title: 'Serene, Noor & Luxury Stone',
-      card5_text: 'Help for Nuria Serene and Nuria Noor one-time purchases, Luxury Stone via Noor, Quran tools, Qaida, Sunnat, Halqa, Live Haramain, and personalization.',
+      card5_title: '4.3.0 — Serene, Noor & Luxury Stone',
+      card5_text: 'Help for the 4.3.0 release line: free with ads, Nuria Serene and Nuria Noor purchases, Nuria Journey sync, Luxury Stone via Noor, Quran tools, Qaida, Sunnat, Halqa, Live Haramain, and personalization.',
       card5_link: 'See what changed →',
-      faq_release_q: 'What changed from 4.0.0 to 4.1.0?',
-      faq_release_a: '4.0.0 added Luxury Stone (via Nuria Noor), deeper Quran and audio tools, Halqa, Qaida, Sunnat, Live Haramain, and expanded localization. 4.1.0 continues polish through release hardening, partner flows, and personalization.',
+      faq_release_q: 'What changed from 4.0.0 to 4.3.0?',
+      faq_release_a: '4.0.0 brought Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat, and Live Haramain. 4.1.0 added Hiba gifts, Nuria Points, and release hardening. 4.3.0 makes Nuria free with ads, introduces Nuria Serene and Nuria Noor one-time purchases, Nuria Journey cloud sync, sharper Quran word-by-word audio, rewarded reflection bonuses, and polish across 100+ languages.',
       faq_stone_q: 'How do I get Luxury Stone?',
       faq_stone_a: 'Luxury Stone is included with <strong>Nuria Noor</strong>, a one-time purchase that also adds 300 bonus reflections and permanent ad-free access. <strong>Nuria Serene</strong> removes ads without Luxury Stone. Preview the palette on this website from the navbar theme selector.',
       faq_features_q: 'What are Qaida, Sunnat, Live Haramain, and scholar path?',
@@ -461,7 +461,7 @@ const T = {
   // ── Arabic ────────────────────────────────────────────────────────────────────
   ar: {
     nav: {
-      about: 'عن نوريا', daily: 'يومي', categories: 'الفئات',
+      about: 'عن نوريا', daily: 'يومي', release: '4.3.0', categories: 'الفئات',
       plans: 'الباقات', support: 'الدعم', download: 'تحميل',
     },
     a11y: {
@@ -768,6 +768,7 @@ const T = {
       next_li2: 'سيُجدوَل حذف حسابك خلال <strong>30 يوماً</strong>.',
       next_li3: 'خلال هذه الفترة يمكنك إلغاء الطلب عبر <a href="mailto:hello@nuria.one">hello@nuria.one</a>.',
       next_li4: 'بعد 30 يوماً ستُحذف جميع بياناتك الشخصية نهائياً من أنظمتنا.',
+      next_li6: 'سجلات ميزات الإصدار 4.3.0، بما في ذلك تقدم التعلم، تفضيلات المظهر، الإعدادات الشخصية، الإنجازات، روابط الشريك/الإحالة المرتبطة بحسابك، ومراسلات الدعم المتصلة بطلب الحذف، تُراجع وفق نفس قواعد الخصوصية والاحتفاظ.',
       next_li5: 'قد تُحتفظ ببعض البيانات المجهولة لأغراض إحصائية فحسب.',
       help_title: 'هل تحتاج إلى مساعدة؟',
       help_text: 'قبل المغادرة، يسعدنا المساعدة. تواصل معنا على <a href="mailto:hello@nuria.one">hello@nuria.one</a> أو زر <a href="/support">مركز الدعم</a> — نحن هنا من أجلك، إن شاء الله.',
@@ -777,11 +778,11 @@ const T = {
       card2_title: 'الأرصدة والتأملات', card2_text: 'تعرّف كيف تعمل 15 تأملاً ابتدائياً وكيف تُقدَّم التأملات الشخصية داخل نوريا.', card2_link: 'معرفة المزيد ←',
       card3_title: 'الفوترة والشراء', card3_text: 'أسئلة حول Nuria Serene أو Nuria Noor، الفوترة، أو الاسترداد؟ أجبنا على الأسئلة الشائعة أدناه.', card3_link: 'عرض الإجابات ←',
       card4_title: 'الحساب والخصوصية', card4_text: 'تحتاج لتحديث معلومات حسابك أو تغيير الإعدادات أو طلب الحذف؟ اعثر على كل ما تحتاجه هنا.', card4_link: 'حذف الحساب ←',
-      card5_title: 'Serene، Noor و Luxury Stone',
-      card5_text: 'مساعدة حول شراء Nuria Serene و Nuria Noor لمرة واحدة، Luxury Stone عبر Noor، أدوات القرآن، القاعدة، السنة، الحلقة، والحرمين.',
+      card5_title: '4.3.0 — Serene، Noor و Luxury Stone',
+      card5_text: 'مساعدة لخط إصدار 4.3.0: مجاني مع إعلانات، شراء Nuria Serene و Nuria Noor، مزامنة Journey، Luxury Stone عبر Noor، أدوات القرآن، القاعدة، السنة، الحلقة، والحرمين.',
       card5_link: 'عرض ما تغيّر ←',
-      faq_release_q: 'ما الذي تغيّر من 4.0.0 إلى 4.1.0؟',
-      faq_release_a: '4.0.0 أضاف Luxury Stone (عبر Nuria Noor)، أدوات قرآن وصوت أعمق، حلقة، قاعدة، سنة، الحرمين، وتوسيع اللغات. 4.1.0 يواصل التحسينات والتخصيص.',
+      faq_release_q: 'ما الذي تغيّر من 4.0.0 إلى 4.3.0؟',
+      faq_release_a: '4.0.0 أضاف Luxury Stone (عبر Nuria Noor)، الحلقة، القاعدة، السنة، والحرمين. 4.1.0 أضاف هدايا Hiba و Nuria Points وتقوية الإصدار. 4.3.0 يجعل نوريا مجانية مع إعلانات، Nuria Serene و Nuria Noor لمرة واحدة، مزامنة Journey السحابية، صوت قرآن أوضح، مكافآت تأملات، وتحسين 100+ لغة.',
       faq_stone_q: 'كيف أحصل على Luxury Stone؟',
       faq_stone_a: 'Luxury Stone مضمن مع <strong>Nuria Noor</strong> — شراء لمرة واحدة يضيف 300 تأملاً إضافياً ويزيل الإعلانات للأبد. <strong>Nuria Serene</strong> يزيل الإعلانات دون Luxury Stone. عاين الألوان من محدد المظهر في الموقع.',
       faq_features_q: 'ما هي القاعدة، السنة، الحرمين، ومسار العلماء؟',
@@ -891,7 +892,7 @@ const T = {
   // ── Urdu ─────────────────────────────────────────────────────────────────────
   ur: {
     nav: {
-      about: 'ہمارے بارے میں', daily: 'روزانہ', categories: 'زمرے',
+      about: 'ہمارے بارے میں', daily: 'روزانہ', release: '4.3.0', categories: 'زمرے',
       plans: 'منصوبے', support: 'مدد', download: 'ڈاؤن لوڈ',
     },
     a11y: {
@@ -1198,6 +1199,7 @@ const T = {
       next_li2: 'آپ کا اکاؤنٹ <strong>30 دنوں</strong> میں حذف کے لیے شیڈول کیا جائے گا۔',
       next_li3: 'اس مدت میں آپ <a href="mailto:hello@nuria.one">hello@nuria.one</a> سے رابطہ کر کے درخواست منسوخ کر سکتے ہیں۔',
       next_li4: '30 دنوں کے بعد آپ کا تمام ذاتی ڈیٹا ہمارے سسٹم سے مستقل طور پر حذف ہو جائے گا۔',
+      next_li6: 'ورژن 4.3.0 کی فیچر ریکارڈز، بشمول سیکھنے کی پیش رفت، theme preferences، personalized settings، achievements، partner/referral links، اور deletion request سے منسلک support correspondence، اسی privacy اور retention rules کے تحت جائزہ لیتی ہیں۔',
       next_li5: 'کچھ گمنام اعداد و شمار صرف شماریاتی مقاصد کے لیے محفوظ رکھے جا سکتے ہیں۔',
       help_title: 'مدد چاہیے؟',
       help_text: 'جانے سے پہلے، اگر کچھ کام نہیں کر رہا تو ہم مدد کرنا چاہیں گے۔ <a href="mailto:hello@nuria.one">hello@nuria.one</a> پر رابطہ کریں یا <a href="/support">سپورٹ سینٹر</a> پر جائیں — ان شاء اللہ۔',
@@ -1207,11 +1209,11 @@ const T = {
       card2_title: 'کریڈٹس اور غور و فکر', card2_text: '15 ابتدائی reflections کیسے کام کرتے ہیں اور ذاتی reflections نوریا میں کیسے ملتے ہیں، جانیں۔', card2_link: 'مزید جانیں ←',
       card3_title: 'Billing اور Purchases', card3_text: 'Nuria Serene، Nuria Noor، billing، یا refunds کے بارے میں سوالات؟ ہم نے عام سوالات کے جوابات نیچے دیے ہیں۔', card3_link: 'جوابات دیکھیں ←',
       card4_title: 'اکاؤنٹ اور پرائیویسی', card4_text: 'اکاؤنٹ کی معلومات اپڈیٹ کرنا، ترتیبات تبدیل کرنا یا حذف کی درخواست؟ سب کچھ یہاں ہے۔', card4_link: 'اکاؤنٹ حذف کریں ←',
-      card5_title: 'Serene، Noor اور Luxury Stone',
-      card5_text: 'Nuria Serene اور Nuria Noor one-time purchases، Noor کے ذریعے Luxury Stone، Quran tools، Qaida، Sunnat، Halqa، Live Haramain کی مدد۔',
+      card5_title: '4.3.0 — Serene، Noor اور Luxury Stone',
+      card5_text: '4.3.0 release line کی مدد: ads کے ساتھ مفت، Nuria Serene اور Nuria Noor purchases، Journey sync، Noor کے ذریعے Luxury Stone، Quran tools، Qaida، Sunnat، Halqa، Live Haramain۔',
       card5_link: 'تبدیلیاں دیکھیں →',
-      faq_release_q: '4.0.0 سے 4.1.0 میں کیا بدلا؟',
-      faq_release_a: '4.0.0 میں Luxury Stone (Nuria Noor کے ذریعے)، گہرے Quran tools، Halqa، Qaida، Sunnat، Live Haramain، اور زبانوں کی توسیع آئی۔ 4.1.0 polish اور personalization جاری ہے۔',
+      faq_release_q: '4.0.0 سے 4.3.0 میں کیا بدلا؟',
+      faq_release_a: '4.0.0 میں Luxury Stone (Nuria Noor کے ذریعے)، Halqa، Qaida، Sunnat، اور Live Haramain آئے۔ 4.1.0 میں Hiba gifts، Nuria Points، اور release hardening آئی۔ 4.3.0 نوریا کو ads کے ساتھ مفت کرتا ہے، Nuria Serene اور Nuria Noor one-time purchases، Journey cloud sync، بہتر Quran word-by-word audio، rewarded reflection bonuses، اور 100+ زبانوں میں polish لاتا ہے۔',
       faq_stone_q: 'Luxury Stone کیسے حاصل کریں؟',
       faq_stone_a: 'Luxury Stone <strong>Nuria Noor</strong> کے ساتھ ہے — one-time purchase جو 300 bonus reflections اور permanent ad-free بھی دیتا ہے۔ <strong>Nuria Serene</strong> ads ہٹاتا ہے بغیر Luxury Stone۔ navbar theme selector سے preview کریں۔',
       faq_features_q: 'Qaida، Sunnat، Live Haramain، اور scholar path کیا ہیں؟',
@@ -1321,7 +1323,7 @@ const T = {
   // ── Indonesian ────────────────────────────────────────────────────────────────
   id: {
     nav: {
-      about: 'Tentang', daily: 'Harian', categories: 'Kategori',
+      about: 'Tentang', daily: 'Harian', release: '4.3.0', categories: 'Kategori',
       plans: 'Paket', support: 'Dukungan', download: 'Unduh',
     },
     a11y: {
@@ -1628,6 +1630,7 @@ const T = {
       next_li2: 'Akun Anda akan dijadwalkan untuk dihapus dalam <strong>30 hari</strong>.',
       next_li3: 'Selama periode ini, Anda dapat membatalkan permintaan dengan menghubungi <a href="mailto:hello@nuria.one">hello@nuria.one</a>.',
       next_li4: 'Setelah 30 hari, semua data pribadi akan dihapus secara permanen dari sistem kami.',
+      next_li6: 'Catatan fitur versi 4.3.0, termasuk progres belajar, preferensi tema, pengaturan personal, achievements, tautan partner/referral, dan korespondensi dukungan terkait permintaan penghapusan, ditinjau dengan aturan privasi dan retensi yang sama.',
       next_li5: 'Beberapa data anonim dapat disimpan untuk tujuan statistik saja.',
       help_title: 'Butuh Bantuan?',
       help_text: 'Sebelum pergi, kami ingin membantu jika ada yang tidak berfungsi. Hubungi kami di <a href="mailto:hello@nuria.one">hello@nuria.one</a> atau kunjungi <a href="/support">Pusat Dukungan</a> — kami ada untuk Anda, in shaa Allah.',
@@ -1637,11 +1640,11 @@ const T = {
       card2_title: 'Kredit & Refleksi', card2_text: 'Pelajari cara 15 refleksi awal bekerja dan bagaimana refleksi personal disampaikan di Nuria.', card2_link: 'Pelajari lebih lanjut →',
       card3_title: 'Tagihan & Pembelian', card3_text: 'Pertanyaan tentang Nuria Serene, Nuria Noor, tagihan, atau refund? Kami menjawab pertanyaan umum di bawah.', card3_link: 'Lihat jawaban →',
       card4_title: 'Akun & Privasi', card4_text: 'Perlu memperbarui informasi akun, mengubah pengaturan, atau meminta penghapusan? Temukan semua yang Anda butuhkan di sini.', card4_link: 'Hapus akun →',
-      card5_title: 'Serene, Noor & Luxury Stone',
-      card5_text: 'Bantuan untuk pembelian sekali Nuria Serene dan Nuria Noor, Luxury Stone via Noor, Quran, Qaida, Sunnat, Halqa, Live Haramain.',
+      card5_title: '4.3.0 — Serene, Noor & Luxury Stone',
+      card5_text: 'Bantuan untuk jalur rilis 4.3.0: gratis dengan iklan, Nuria Serene dan Nuria Noor, sinkronisasi Journey, Luxury Stone via Noor, Quran, Qaida, Sunnat, Halqa, Live Haramain.',
       card5_link: 'Lihat perubahan →',
-      faq_release_q: 'Apa yang berubah dari 4.0.0 ke 4.1.0?',
-      faq_release_a: '4.0.0 menambahkan Luxury Stone (via Nuria Noor), alat Quran lebih dalam, Halqa, Qaida, Sunnat, Live Haramain, dan ekspansi bahasa. 4.1.0 melanjutkan polish dan personalisasi.',
+      faq_release_q: 'Apa yang berubah dari 4.0.0 ke 4.3.0?',
+      faq_release_a: '4.0.0 membawa Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat, dan Live Haramain. 4.1.0 menambahkan Hiba gifts, Nuria Points, dan hardening rilis. 4.3.0 membuat Nuria gratis dengan iklan, Nuria Serene dan Nuria Noor sekali beli, sinkronisasi cloud Journey, audio Quran word-by-word lebih tajam, bonus refleksi berhadiah, dan polish 100+ bahasa.',
       faq_stone_q: 'Bagaimana mendapatkan Luxury Stone?',
       faq_stone_a: 'Luxury Stone termasuk dengan <strong>Nuria Noor</strong> — pembelian sekali dengan 300 refleksi bonus dan bebas iklan. <strong>Nuria Serene</strong> menghapus iklan tanpa Luxury Stone. Pratinjau dari pemilih tema navbar.',
       faq_features_q: 'Apa itu Qaida, Sunnat, Live Haramain, dan scholar path?',
@@ -1751,7 +1754,7 @@ const T = {
   // ── French ────────────────────────────────────────────────────────────────────
   fr: {
     nav: {
-      about: '\u00c0 propos', daily: 'Quotidien', categories: 'Cat\u00e9gories',
+      about: '\u00c0 propos', daily: 'Quotidien', release: '4.3.0', categories: 'Cat\u00e9gories',
       plans: 'Formules', support: 'Assistance', download: 'T\u00e9l\u00e9charger',
     },
     a11y: {
@@ -2058,6 +2061,7 @@ const T = {
       next_li2: 'Votre compte sera programmé pour suppression sous <strong>30 jours</strong>.',
       next_li3: 'Pendant cette période, vous pouvez annuler la demande en contactant <a href="mailto:hello@nuria.one">hello@nuria.one</a>.',
       next_li4: 'Après 30 jours, toutes vos données personnelles seront définitivement et irrémédiablement supprimées.',
+      next_li6: 'Les enregistrements de fonctionnalités de la version 4.3.0, incluant progression d\'apprentissage, préférences de thème, paramètres personnalisés, achievements, liens partenaire/parrainage et correspondance de support liée à la demande de suppression, sont examinés selon les mêmes règles de confidentialité et de conservation.',
       next_li5: 'Certaines données anonymisées peuvent être conservées à des fins statistiques uniquement.',
       help_title: 'Besoin d\'aide\u00a0?',
       help_text: 'Avant de partir, nous serions ravis de vous aider. Contactez-nous à <a href="mailto:hello@nuria.one">hello@nuria.one</a> ou visitez notre <a href="/support">Centre d\'assistance</a> — nous sommes là pour vous, in shaa Allah.',
@@ -2067,11 +2071,11 @@ const T = {
       card2_title: 'Crédits & Réflexions', card2_text: 'Découvrez les 15 réflexions de départ et comment les réflexions personnalisées sont proposées dans Nuria.', card2_link: 'En savoir plus →',
       card3_title: 'Facturation & achats', card3_text: 'Questions sur Nuria Serene, Nuria Noor, la facturation ou les remboursements ? Voir les FAQ ci-dessous.', card3_link: 'Voir les réponses →',
       card4_title: 'Compte & Confidentialité', card4_text: 'Besoin de mettre à jour vos informations, changer les paramètres ou demander une suppression\u00a0? Trouvez tout ici.', card4_link: 'Supprimer le compte →',
-      card5_title: 'Serene, Noor & Luxury Stone',
-      card5_text: 'Aide pour les achats uniques Nuria Serene et Nuria Noor, Luxury Stone via Noor, Quran, Qaida, Sunnat, Halqa, Live Haramain.',
+      card5_title: '4.3.0 — Serene, Noor & Luxury Stone',
+      card5_text: 'Aide pour la ligne 4.3.0 : gratuit avec pubs, Nuria Serene et Nuria Noor, synchro Journey, Luxury Stone via Noor, Quran, Qaida, Sunnat, Halqa, Live Haramain.',
       card5_link: 'Voir les changements →',
-      faq_release_q: 'Quoi de nouveau entre 4.0.0 et 4.1.0 ?',
-      faq_release_a: '4.0.0 a ajouté Luxury Stone (via Nuria Noor), outils Coran plus profonds, Halqa, Qaida, Sunnat, Live Haramain et plus de langues. 4.1.0 poursuit le polish et la personnalisation.',
+      faq_release_q: 'Quoi de nouveau entre 4.0.0 et 4.3.0 ?',
+      faq_release_a: '4.0.0 a apporté Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat et Live Haramain. 4.1.0 a ajouté les cadeaux Hiba, Nuria Points et le durcissement release. 4.3.0 rend Nuria gratuit avec pubs, Nuria Serene et Nuria Noor en achat unique, synchro cloud Journey, audio Coran mot à mot plus net, réflexions bonus récompensées et polish dans 100+ langues.',
       faq_stone_q: 'Comment obtenir Luxury Stone ?',
       faq_stone_a: 'Luxury Stone est inclus avec <strong>Nuria Noor</strong> — achat unique avec 300 réflexions bonus et sans pub. <strong>Nuria Serene</strong> supprime les pubs sans Luxury Stone. Prévisualisez via le sélecteur de thème.',
       faq_features_q: 'Qaida, Sunnat, Live Haramain et scholar path ?',
@@ -2181,7 +2185,7 @@ const T = {
   // ── Turkish ───────────────────────────────────────────────────────────────────
   tr: {
     nav: {
-      about: 'Hakk\u0131nda', daily: 'G\u00fcnl\u00fck', categories: 'Kategoriler',
+      about: 'Hakk\u0131nda', daily: 'G\u00fcnl\u00fck', release: '4.3.0', categories: 'Kategoriler',
       plans: 'Planlar', support: 'Destek', download: '\u0130ndir',
     },
     a11y: {
@@ -2488,6 +2492,7 @@ const T = {
       next_li2: 'Hesabınız <strong>30 gün</strong> içinde silinmek üzere planlanacaktır.',
       next_li3: 'Bu süre içinde <a href="mailto:hello@nuria.one">hello@nuria.one</a> ile iletişime geçerek silme talebini iptal edebilirsiniz.',
       next_li4: '30 gün sonra hesabınızla ilişkili tüm kişisel veriler sistemlerimizden kalıcı olarak silinecektir.',
+      next_li6: 'Öğrenme ilerlemesi, tema tercihleri, kişiselleştirilmiş ayarlar, achievements, partner/referral bağlantıları ve silme talebine bağlı destek yazışmaları dahil 4.3.0 özellik kayıtları aynı gizlilik ve saklama kuralları altında incelenir.',
       next_li5: 'Bazı anonim kullanım verileri yalnızca istatistiksel amaçlarla saklanabilir.',
       help_title: 'Yardıma mı İhtiyacınız Var?',
       help_text: 'Gitmeden önce bir şey beklendiği gibi çalışmıyorsa yardımcı olmak isteriz. <a href="mailto:hello@nuria.one">hello@nuria.one</a> adresinden bize ulaşın veya <a href="/support">Destek Merkezi</a>\'ni ziyaret edin — inşaallah buradayız.',
@@ -2497,11 +2502,11 @@ const T = {
       card2_title: 'Krediler & Tefekkürler', card2_text: '15 başlangıç reflection nasıl çalışır ve kişisel reflections Nuria\'da nasıl sunulur, öğrenin.', card2_link: 'Daha fazla bilgi →',
       card3_title: 'Faturalama ve Satın Almalar', card3_text: 'Nuria Serene, Nuria Noor, faturalama veya geri ödeme hakkında sorular? Sık sorulanları aşağıda yanıtladık.', card3_link: 'Yanıtları gör →',
       card4_title: 'Hesap & Gizlilik', card4_text: 'Hesap bilgilerini güncellemek, ayarları değiştirmek veya hesap silme talebinde bulunmak mı istiyorsunuz? Her şeyi burada bulabilirsiniz.', card4_link: 'Hesabı sil →',
-      card5_title: 'Serene, Noor ve Luxury Stone',
-      card5_text: 'Nuria Serene ve Nuria Noor tek seferlik satın almalar, Noor ile Luxury Stone, Kuran araçları, Qaida, Sunnat, Halqa, Canlı Haramain.',
+      card5_title: '4.3.0 — Serene, Noor ve Luxury Stone',
+      card5_text: '4.3.0 sürüm hattı için yardım: reklamlarla ücretsiz, Nuria Serene ve Nuria Noor, Journey senkronu, Noor ile Luxury Stone, Kuran araçları, Qaida, Sunnat, Halqa, Canlı Haramain.',
       card5_link: 'Değişiklikleri gör →',
-      faq_release_q: '4.0.0\'dan 4.1.0\'a ne değişti?',
-      faq_release_a: '4.0.0 Luxury Stone (Nuria Noor ile), daha derin Kuran araçları, Halqa, Qaida, Sunnat, Canlı Haramain ve dil genişlemesi ekledi. 4.1.0 polish ve kişiselleştirmeyi sürdürüyor.',
+      faq_release_q: '4.0.0\'dan 4.3.0\'a ne değişti?',
+      faq_release_a: '4.0.0 Luxury Stone (Nuria Noor ile), Halqa, Qaida, Sunnat ve Canlı Haramain getirdi. 4.1.0 Hiba hediyeleri, Nuria Points ve release hardening ekledi. 4.3.0 Nuria\'yı reklamlarla ücretsiz yapar, Nuria Serene ve Nuria Noor tek seferlik satın almaları, Journey bulut senkronu, daha net Kuran kelime sesi, ödüllü reflection bonusları ve 100+ dilde cilayı getirir.',
       faq_stone_q: 'Luxury Stone nasıl alınır?',
       faq_stone_a: 'Luxury Stone <strong>Nuria Noor</strong> ile gelir — 300 bonus reflection ve kalıcı reklamsız tek seferlik satın alma. <strong>Nuria Serene</strong> Luxury Stone olmadan reklamları kaldırır. Navbar tema seçicisinden önizleyin.',
       faq_features_q: 'Qaida, Sunnat, Canlı Haramain ve scholar path nedir?',
