@@ -2758,6 +2758,14 @@ function getLang() {
   return T[browser] ? browser : 'en';
 }
 
+// Minimal programmatic lookup for page scripts that set text dynamically
+// (e.g. /quran deep-link statuses). Returns '' when the key is missing.
+window.NuriaI18n = {
+  t: (key) => getVal(getLang(), key) || '',
+  getLang,
+  setLang,
+};
+
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 (function () {
   function boot() {

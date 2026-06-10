@@ -10,7 +10,8 @@
           "/r/*",
           "/family/*",
           "/subscribe",
-          "/subscribe/*"
+          "/subscribe/*",
+          "/quran/*"
         ]
       }
     ]

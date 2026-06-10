@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n-title="quran.meta_title">Open this verse in Nuria | Qur'an</title>
+  <meta name="description" data-i18n-content="quran.meta_desc" content="Open a shared Qur'an verse directly in the Nuria app — with translation, tafsir and word-by-word audio." />
+  <meta name="theme-color" content="#050c08" />
+  <meta property="og:title" content="A verse from the Qur'an — Nuria" />
+  <meta
+    property="og:description"
+    content="Read this verse in Nuria with translation, tafsir and word-by-word recitation."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://nuria.one/quran/" />
+  <meta property="og:site_name" content="Nuria" />
+  <meta property="og:image" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta property="og:image:secure_url" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1600" />
+  <meta property="og:image:height" content="1600" />
+  <meta property="og:image:alt" content="Nuria logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="A verse from the Qur'an — Nuria" />
+  <meta
+    name="twitter:description"
+    content="Read this verse in Nuria with translation, tafsir and word-by-word recitation."
+  />
+  <meta name="twitter:image" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta name="twitter:image:alt" content="Nuria logo" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="icon" type="image/png" href="/assets/favicon-tab.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+
+  <nav class="nav scrolled" id="nav" role="navigation" aria-label="Main">
+    <div class="nav__container">
+      <a href="/" class="nav__logo" aria-label="Nuria - Home">
+        <span class="nav__logo-img" aria-hidden="true"></span>
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="/#about" class="nav__link" data-i18n="nav.about">About</a>
+        <a href="/#daily" class="nav__link" data-i18n="nav.daily">Daily</a>
+        <a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>
+        <a href="/#pricing" class="nav__link" data-i18n="nav.plans">Plans</a>
+        <a href="/support" class="nav__link" data-i18n="nav.support">Support</a>
+      </div>
+      <div class="nav__download" id="navDownload">
+        <button class="btn btn--gold nav__download-btn" id="downloadBtn" aria-haspopup="true" aria-expanded="false" data-i18n="nav.download">Download <span class="download-chevron">&#9662;</span></button>
+        <div class="nav__download-menu" id="downloadMenu">
+          <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="nav__download-option" data-store-link="app-store" target="_blank" rel="noopener noreferrer">App Store</a>
+          <a href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv" class="nav__download-option" data-store-link="google-play" target="_blank" rel="noopener noreferrer">Google Play</a>
+        </div>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <header class="page-hero page-hero--referral">
+    <div class="container">
+      <p class="page-hero__label" data-i18n="quran.hero_label">Qur'an</p>
+      <h1 class="page-hero__title" data-i18n="quran.hero_title">A verse was shared with you</h1>
+      <p class="page-hero__subtitle" data-i18n="quran.hero_subtitle">
+        Open it in Nuria to read the full surah with translation, tafsir and word-by-word recitation.
+      </p>
+    </div>
+  </header>
+
+  <main class="page-content referral-page">
+    <div class="container referral-layout">
+      <section class="referral-card referral-card--primary">
+        <span class="referral-status-chip referral-status-chip--valid" id="quranVerseReference" hidden></span>
+        <p class="referral-kicker" data-i18n="quran.card_kicker">Shared verse</p>
+        <h2 class="referral-title" data-i18n="quran.card_title">Continue reading in Nuria</h2>
+        <p class="referral-copy" data-i18n="quran.card_copy">
+          If Nuria does not open automatically, tap the button below. If the app is not installed yet,
+          download Nuria first and open this link again — it lands on the exact verse.
+        </p>
+
+        <div class="referral-app-actions">
+          <a href="nuria://quran" class="btn btn--gold" id="quranOpenButton" data-quran-open data-i18n="quran.open_cta">
+            Open in Nuria
+          </a>
+          <a href="nuria://quran" class="btn btn--outline" id="quranRetryButton" data-quran-open data-i18n="quran.retry_cta">
+            Try again
+          </a>
+        </div>
+
+        <p class="referral-copy-status" id="quranOpenStatus" aria-live="polite" data-i18n="quran.status_ready">
+          Ready to open Nuria.
+        </p>
+
+        <div class="referral-store-actions">
+          <a
+            href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913"
+            class="btn btn--store btn--store-lg"
+            data-store-link="app-store"
+            aria-label="Download on the App Store"
+            data-i18n-aria-label="a11y.store_apple_short"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span><small data-i18n="hero.appstore_small">Download on the</small> <span data-i18n="hero.appstore">App Store</span></span>
+          </a>
+          <a
+            href="https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv"
+            class="btn btn--store btn--store-lg"
+            data-store-link="google-play"
+            aria-label="Get it on Google Play"
+            data-i18n-aria-label="a11y.store_google"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span><small data-i18n="hero.googleplay_small">Get it on</small> <span data-i18n="hero.googleplay">Google Play</span></span>
+          </a>
+        </div>
+      </section>
+
+      <aside class="referral-card referral-card--aside">
+        <span class="referral-side-label" data-i18n="quran.aside_label">In the app</span>
+        <h2 class="referral-side-title" data-i18n="quran.aside_title">The Qur'an, the way it deserves</h2>
+        <p class="referral-side-copy" data-i18n="quran.aside_copy">
+          Nuria's Qur'an reader is free: full mushaf with tajweed colours, trusted translations in 100+
+          languages, tafsir, word-by-word audio, bookmarks, notes and a Khatmah planner that keeps your
+          reading on track.
+        </p>
+        <div class="referral-facts">
+          <div class="referral-fact">
+            <strong data-i18n="quran.fact_1_title">Word by word</strong>
+            <span data-i18n="quran.fact_1_text">Tap any word to hear it recited and see its meaning.</span>
+          </div>
+          <div class="referral-fact">
+            <strong data-i18n="quran.fact_2_title">Tafsir included</strong>
+            <span data-i18n="quran.fact_2_text">Classical commentary alongside every verse.</span>
+          </div>
+          <div class="referral-fact">
+            <strong data-i18n="quran.fact_3_title">Khatmah planner</strong>
+            <span data-i18n="quran.fact_3_text">Finish the Qur'an at your own pace with daily goals.</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__bottom">
+        <p data-i18n="footer.copy">&copy; Nuria</p>
+        <div class="footer__bottom-links">
+          <a href="/privacy" data-i18n="footer.privacy">Privacy</a>
+          <a href="/terms" data-i18n="footer.terms">Terms</a>
+          <a href="/support" data-i18n="footer.support_center">Support</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/site-utils.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/quran-link.js"></script>
+  <script src="../js/quran-page.js"></script>
+</body>
+</html>
