@@ -9454,29 +9454,47 @@ code {
   }
 }
 
-body.theme-luxury-stone.page-join .page-hero__partner-cta {
+body.theme-luxury-stone.page-join .page-hero__partner-cta,
+body.theme-luxury-stone.page-subscribe .page-hero__partner-cta,
+body.theme-luxury-stone.page-quran .page-hero__partner-cta,
+body.theme-luxury-stone.page-invite .page-hero__partner-cta{
   color: #31240f;
   font-size: 1rem;
   font-weight: 600;
 }
 
-body.theme-luxury-stone.page-join .page-hero__partner-link {
+body.theme-luxury-stone.page-join .page-hero__partner-link,
+body.theme-luxury-stone.page-subscribe .page-hero__partner-link,
+body.theme-luxury-stone.page-quran .page-hero__partner-link,
+body.theme-luxury-stone.page-invite .page-hero__partner-link{
   color: #7e5616;
   border-bottom-color: rgba(155, 111, 34, 0.46);
   font-weight: 800;
 }
 
 body.theme-luxury-stone.page-join .page-hero__partner-link:hover,
-body.theme-luxury-stone.page-join .page-hero__partner-link:focus-visible {
+body.theme-luxury-stone.page-subscribe .page-hero__partner-link:hover,
+body.theme-luxury-stone.page-quran .page-hero__partner-link:hover,
+body.theme-luxury-stone.page-invite .page-hero__partner-link:hover,
+body.theme-luxury-stone.page-join .page-hero__partner-link:focus-visible,
+body.theme-luxury-stone.page-subscribe .page-hero__partner-link:focus-visible,
+body.theme-luxury-stone.page-quran .page-hero__partner-link:focus-visible,
+body.theme-luxury-stone.page-invite .page-hero__partner-link:focus-visible{
   color: #343d24;
   border-bottom-color: rgba(52, 61, 36, 0.56);
 }
 
-body.theme-luxury-stone.page-join .page-hero__partner-cta-suffix {
+body.theme-luxury-stone.page-join .page-hero__partner-cta-suffix,
+body.theme-luxury-stone.page-subscribe .page-hero__partner-cta-suffix,
+body.theme-luxury-stone.page-quran .page-hero__partner-cta-suffix,
+body.theme-luxury-stone.page-invite .page-hero__partner-cta-suffix{
   color: #4e3b18;
 }
 
-body.theme-luxury-stone.page-join .referral-card {
+body.theme-luxury-stone.page-join .referral-card,
+body.theme-luxury-stone.page-subscribe .referral-card,
+body.theme-luxury-stone.page-quran .referral-card,
+body.theme-luxury-stone.page-invite .referral-card{
   background:
     radial-gradient(circle at 92% 8%, rgba(52, 61, 36, 0.13), transparent 34%),
     radial-gradient(circle at 5% 94%, rgba(155, 111, 34, 0.12), transparent 38%),
@@ -9487,13 +9505,19 @@ body.theme-luxury-stone.page-join .referral-card {
   color: #31240f;
 }
 
-body.theme-luxury-stone.page-join .referral-card::before {
+body.theme-luxury-stone.page-join .referral-card::before,
+body.theme-luxury-stone.page-subscribe .referral-card::before,
+body.theme-luxury-stone.page-quran .referral-card::before,
+body.theme-luxury-stone.page-invite .referral-card::before{
   background:
     linear-gradient(90deg, rgba(52, 61, 36, 0.12), transparent 34%),
     radial-gradient(circle at 84% 12%, rgba(244, 232, 196, 0.56), transparent 42%);
 }
 
-body.theme-luxury-stone.page-join .referral-status-chip {
+body.theme-luxury-stone.page-join .referral-status-chip,
+body.theme-luxury-stone.page-subscribe .referral-status-chip,
+body.theme-luxury-stone.page-quran .referral-status-chip,
+body.theme-luxury-stone.page-invite .referral-status-chip{
   background: rgba(244, 232, 196, 0.72);
   border-color: rgba(155, 111, 34, 0.34);
   color: #7e5616;
@@ -9501,77 +9525,167 @@ body.theme-luxury-stone.page-join .referral-status-chip {
   letter-spacing: 0.1em;
 }
 
-body.theme-luxury-stone.page-join .referral-status-chip--valid {
+body.theme-luxury-stone.page-join .referral-status-chip--valid,
+body.theme-luxury-stone.page-subscribe .referral-status-chip--valid,
+body.theme-luxury-stone.page-quran .referral-status-chip--valid,
+body.theme-luxury-stone.page-invite .referral-status-chip--valid{
   background: rgba(52, 61, 36, 0.10);
   border-color: rgba(52, 61, 36, 0.28);
   color: #343d24;
 }
 
-body.theme-luxury-stone.page-join .referral-status-chip--warning {
+body.theme-luxury-stone.page-join .referral-status-chip--warning,
+body.theme-luxury-stone.page-subscribe .referral-status-chip--warning,
+body.theme-luxury-stone.page-quran .referral-status-chip--warning,
+body.theme-luxury-stone.page-invite .referral-status-chip--warning{
   background: rgba(127, 29, 29, 0.10);
   border-color: rgba(127, 29, 29, 0.28);
   color: #7f1d1d;
 }
 
 body.theme-luxury-stone.page-join .referral-kicker,
+body.theme-luxury-stone.page-subscribe .referral-kicker,
+body.theme-luxury-stone.page-quran .referral-kicker,
+body.theme-luxury-stone.page-invite .referral-kicker,
 body.theme-luxury-stone.page-join .referral-form-label,
+body.theme-luxury-stone.page-subscribe .referral-form-label,
+body.theme-luxury-stone.page-quran .referral-form-label,
+body.theme-luxury-stone.page-invite .referral-form-label,
 body.theme-luxury-stone.page-join .referral-side-label,
+body.theme-luxury-stone.page-subscribe .referral-side-label,
+body.theme-luxury-stone.page-quran .referral-side-label,
+body.theme-luxury-stone.page-invite .referral-side-label,
 body.theme-luxury-stone.page-join .referral-code-badge span,
+body.theme-luxury-stone.page-subscribe .referral-code-badge span,
+body.theme-luxury-stone.page-quran .referral-code-badge span,
+body.theme-luxury-stone.page-invite .referral-code-badge span,
 body.theme-luxury-stone.page-join .referral-fact__label,
+body.theme-luxury-stone.page-subscribe .referral-fact__label,
+body.theme-luxury-stone.page-quran .referral-fact__label,
+body.theme-luxury-stone.page-invite .referral-fact__label,
 body.theme-luxury-stone.page-join .referral-partner-login__label,
-body.theme-luxury-stone.page-join .referral-card .form-label {
+body.theme-luxury-stone.page-subscribe .referral-partner-login__label,
+body.theme-luxury-stone.page-quran .referral-partner-login__label,
+body.theme-luxury-stone.page-invite .referral-partner-login__label,
+body.theme-luxury-stone.page-join .referral-card .form-label,
+body.theme-luxury-stone.page-subscribe .referral-card .form-label,
+body.theme-luxury-stone.page-quran .referral-card .form-label,
+body.theme-luxury-stone.page-invite .referral-card .form-label{
   color: #7e5616;
   font-size: 0.82rem;
   font-weight: 800;
 }
 
 body.theme-luxury-stone.page-join .referral-title,
+body.theme-luxury-stone.page-subscribe .referral-title,
+body.theme-luxury-stone.page-quran .referral-title,
+body.theme-luxury-stone.page-invite .referral-title,
 body.theme-luxury-stone.page-join .referral-side-title,
+body.theme-luxury-stone.page-subscribe .referral-side-title,
+body.theme-luxury-stone.page-quran .referral-side-title,
+body.theme-luxury-stone.page-invite .referral-side-title,
 body.theme-luxury-stone.page-join .referral-form-title,
+body.theme-luxury-stone.page-subscribe .referral-form-title,
+body.theme-luxury-stone.page-quran .referral-form-title,
+body.theme-luxury-stone.page-invite .referral-form-title,
 body.theme-luxury-stone.page-join .referral-partner-login__title,
-body.theme-luxury-stone.page-join .referral-fact strong {
+body.theme-luxury-stone.page-subscribe .referral-partner-login__title,
+body.theme-luxury-stone.page-quran .referral-partner-login__title,
+body.theme-luxury-stone.page-invite .referral-partner-login__title,
+body.theme-luxury-stone.page-join .referral-fact strong,
+body.theme-luxury-stone.page-subscribe .referral-fact strong,
+body.theme-luxury-stone.page-quran .referral-fact strong,
+body.theme-luxury-stone.page-invite .referral-fact strong{
   color: #343d24;
   letter-spacing: 0;
 }
 
-body.theme-luxury-stone.page-join .referral-title {
+body.theme-luxury-stone.page-join .referral-title,
+body.theme-luxury-stone.page-subscribe .referral-title,
+body.theme-luxury-stone.page-quran .referral-title,
+body.theme-luxury-stone.page-invite .referral-title{
   font-size: clamp(2.1rem, 4.4vw, 2.95rem);
   line-height: 1.06;
 }
 
-body.theme-luxury-stone.page-join .referral-side-title {
+body.theme-luxury-stone.page-join .referral-side-title,
+body.theme-luxury-stone.page-subscribe .referral-side-title,
+body.theme-luxury-stone.page-quran .referral-side-title,
+body.theme-luxury-stone.page-invite .referral-side-title{
   font-size: clamp(1.9rem, 3.3vw, 2.45rem);
   line-height: 1.05;
 }
 
-body.theme-luxury-stone.page-join .referral-form-title {
+body.theme-luxury-stone.page-join .referral-form-title,
+body.theme-luxury-stone.page-subscribe .referral-form-title,
+body.theme-luxury-stone.page-quran .referral-form-title,
+body.theme-luxury-stone.page-invite .referral-form-title{
   font-size: clamp(1.55rem, 2.4vw, 1.85rem);
 }
 
 body.theme-luxury-stone.page-join .referral-copy,
+body.theme-luxury-stone.page-subscribe .referral-copy,
+body.theme-luxury-stone.page-quran .referral-copy,
+body.theme-luxury-stone.page-invite .referral-copy,
 body.theme-luxury-stone.page-join .referral-form-copy,
+body.theme-luxury-stone.page-subscribe .referral-form-copy,
+body.theme-luxury-stone.page-quran .referral-form-copy,
+body.theme-luxury-stone.page-invite .referral-form-copy,
 body.theme-luxury-stone.page-join .referral-side-copy,
+body.theme-luxury-stone.page-subscribe .referral-side-copy,
+body.theme-luxury-stone.page-quran .referral-side-copy,
+body.theme-luxury-stone.page-invite .referral-side-copy,
 body.theme-luxury-stone.page-join .referral-side-note,
-body.theme-luxury-stone.page-join .referral-partner-login__copy {
+body.theme-luxury-stone.page-subscribe .referral-side-note,
+body.theme-luxury-stone.page-quran .referral-side-note,
+body.theme-luxury-stone.page-invite .referral-side-note,
+body.theme-luxury-stone.page-join .referral-partner-login__copy,
+body.theme-luxury-stone.page-subscribe .referral-partner-login__copy,
+body.theme-luxury-stone.page-quran .referral-partner-login__copy,
+body.theme-luxury-stone.page-invite .referral-partner-login__copy{
   color: #31240f;
   font-weight: 600;
 }
 
-body.theme-luxury-stone.page-join .referral-open-note {
+body.theme-luxury-stone.page-join .referral-open-note,
+body.theme-luxury-stone.page-subscribe .referral-open-note,
+body.theme-luxury-stone.page-quran .referral-open-note,
+body.theme-luxury-stone.page-invite .referral-open-note{
   color: #4e3b18;
   font-weight: 600;
 }
 
 body.theme-luxury-stone.page-join .referral-lookup-panel,
-body.theme-luxury-stone.page-join .referral-side-note {
+body.theme-luxury-stone.page-subscribe .referral-lookup-panel,
+body.theme-luxury-stone.page-quran .referral-lookup-panel,
+body.theme-luxury-stone.page-invite .referral-lookup-panel,
+body.theme-luxury-stone.page-join .referral-side-note,
+body.theme-luxury-stone.page-subscribe .referral-side-note,
+body.theme-luxury-stone.page-quran .referral-side-note,
+body.theme-luxury-stone.page-invite .referral-side-note{
   border-top-color: rgba(155, 111, 34, 0.30);
 }
 
 body.theme-luxury-stone.page-join .referral-code-badge,
+body.theme-luxury-stone.page-subscribe .referral-code-badge,
+body.theme-luxury-stone.page-quran .referral-code-badge,
+body.theme-luxury-stone.page-invite .referral-code-badge,
 body.theme-luxury-stone.page-join .referral-fact,
+body.theme-luxury-stone.page-subscribe .referral-fact,
+body.theme-luxury-stone.page-quran .referral-fact,
+body.theme-luxury-stone.page-invite .referral-fact,
 body.theme-luxury-stone.page-join .referral-steps li,
+body.theme-luxury-stone.page-subscribe .referral-steps li,
+body.theme-luxury-stone.page-quran .referral-steps li,
+body.theme-luxury-stone.page-invite .referral-steps li,
 body.theme-luxury-stone.page-join .referral-trust-note,
-body.theme-luxury-stone.page-join .referral-partner-login {
+body.theme-luxury-stone.page-subscribe .referral-trust-note,
+body.theme-luxury-stone.page-quran .referral-trust-note,
+body.theme-luxury-stone.page-invite .referral-trust-note,
+body.theme-luxury-stone.page-join .referral-partner-login,
+body.theme-luxury-stone.page-subscribe .referral-partner-login,
+body.theme-luxury-stone.page-quran .referral-partner-login,
+body.theme-luxury-stone.page-invite .referral-partner-login{
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.30), rgba(255, 255, 255, 0.08)),
     rgba(244, 232, 196, 0.56);
@@ -9580,68 +9694,107 @@ body.theme-luxury-stone.page-join .referral-partner-login {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
 }
 
-body.theme-luxury-stone.page-join .referral-code-badge strong {
+body.theme-luxury-stone.page-join .referral-code-badge strong,
+body.theme-luxury-stone.page-subscribe .referral-code-badge strong,
+body.theme-luxury-stone.page-quran .referral-code-badge strong,
+body.theme-luxury-stone.page-invite .referral-code-badge strong{
   color: #343d24;
   font-size: clamp(1.45rem, 3.2vw, 2rem);
   letter-spacing: 0.11em;
 }
 
-body.theme-luxury-stone.page-join .referral-steps li {
+body.theme-luxury-stone.page-join .referral-steps li,
+body.theme-luxury-stone.page-subscribe .referral-steps li,
+body.theme-luxury-stone.page-quran .referral-steps li,
+body.theme-luxury-stone.page-invite .referral-steps li{
   font-size: 1rem;
   font-weight: 600;
 }
 
-body.theme-luxury-stone.page-join .referral-steps li::before {
+body.theme-luxury-stone.page-join .referral-steps li::before,
+body.theme-luxury-stone.page-subscribe .referral-steps li::before,
+body.theme-luxury-stone.page-quran .referral-steps li::before,
+body.theme-luxury-stone.page-invite .referral-steps li::before{
   background: linear-gradient(135deg, #343d24, #5b642b);
   color: #f4e8c4;
   box-shadow: 0 12px 24px rgba(52, 61, 36, 0.18);
 }
 
-body.theme-luxury-stone.page-join .referral-trust-note {
+body.theme-luxury-stone.page-join .referral-trust-note,
+body.theme-luxury-stone.page-subscribe .referral-trust-note,
+body.theme-luxury-stone.page-quran .referral-trust-note,
+body.theme-luxury-stone.page-invite .referral-trust-note{
   border-color: rgba(52, 61, 36, 0.26);
   color: #343d24;
 }
 
-body.theme-luxury-stone.page-join .referral-card .form-input {
+body.theme-luxury-stone.page-join .referral-card .form-input,
+body.theme-luxury-stone.page-subscribe .referral-card .form-input,
+body.theme-luxury-stone.page-quran .referral-card .form-input,
+body.theme-luxury-stone.page-invite .referral-card .form-input{
   background: rgba(248, 241, 223, 0.76);
   border-color: rgba(155, 111, 34, 0.46);
   color: #31240f;
   font-weight: 700;
 }
 
-body.theme-luxury-stone.page-join .referral-card .form-input::placeholder {
+body.theme-luxury-stone.page-join .referral-card .form-input::placeholder,
+body.theme-luxury-stone.page-subscribe .referral-card .form-input::placeholder,
+body.theme-luxury-stone.page-quran .referral-card .form-input::placeholder,
+body.theme-luxury-stone.page-invite .referral-card .form-input::placeholder{
   color: rgba(126, 86, 22, 0.78);
 }
 
-body.theme-luxury-stone.page-join .referral-card .form-input:focus {
+body.theme-luxury-stone.page-join .referral-card .form-input:focus,
+body.theme-luxury-stone.page-subscribe .referral-card .form-input:focus,
+body.theme-luxury-stone.page-quran .referral-card .form-input:focus,
+body.theme-luxury-stone.page-invite .referral-card .form-input:focus{
   background: rgba(248, 241, 223, 0.92);
   border-color: rgba(52, 61, 36, 0.62);
   box-shadow: 0 0 0 3px rgba(52, 61, 36, 0.12);
 }
 
-body.theme-luxury-stone.page-join .referral-partner-login {
+body.theme-luxury-stone.page-join .referral-partner-login,
+body.theme-luxury-stone.page-subscribe .referral-partner-login,
+body.theme-luxury-stone.page-quran .referral-partner-login,
+body.theme-luxury-stone.page-invite .referral-partner-login{
   margin-top: 1.45rem;
 }
 
-body.theme-luxury-stone.page-join .referral-partner-login__title {
+body.theme-luxury-stone.page-join .referral-partner-login__title,
+body.theme-luxury-stone.page-subscribe .referral-partner-login__title,
+body.theme-luxury-stone.page-quran .referral-partner-login__title,
+body.theme-luxury-stone.page-invite .referral-partner-login__title{
   font-size: 1.32rem;
 }
 
-body.theme-luxury-stone.page-join .referral-copy-status {
+body.theme-luxury-stone.page-join .referral-copy-status,
+body.theme-luxury-stone.page-subscribe .referral-copy-status,
+body.theme-luxury-stone.page-quran .referral-copy-status,
+body.theme-luxury-stone.page-invite .referral-copy-status{
   color: #343d24;
   font-weight: 800;
 }
 
 @media (max-width: 640px) {
-  body.theme-luxury-stone.page-join .referral-title {
+  body.theme-luxury-stone.page-join .referral-title,
+body.theme-luxury-stone.page-subscribe .referral-title,
+body.theme-luxury-stone.page-quran .referral-title,
+body.theme-luxury-stone.page-invite .referral-title{
     font-size: clamp(1.9rem, 9vw, 2.35rem);
   }
 
-  body.theme-luxury-stone.page-join .referral-side-title {
+  body.theme-luxury-stone.page-join .referral-side-title,
+body.theme-luxury-stone.page-subscribe .referral-side-title,
+body.theme-luxury-stone.page-quran .referral-side-title,
+body.theme-luxury-stone.page-invite .referral-side-title{
     font-size: clamp(1.7rem, 8vw, 2.15rem);
   }
 
-  body.theme-luxury-stone.page-join .page-hero__partner-cta {
+  body.theme-luxury-stone.page-join .page-hero__partner-cta,
+body.theme-luxury-stone.page-subscribe .page-hero__partner-cta,
+body.theme-luxury-stone.page-quran .page-hero__partner-cta,
+body.theme-luxury-stone.page-invite .page-hero__partner-cta{
     font-size: 0.95rem;
   }
 }
