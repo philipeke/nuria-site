@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="/css/styles.css" />
   <script src="/js/referral-routing.js"></script>
   <script src="/js/quran-link.js"></script>
+  <script src="/js/invite-link.js"></script>
   <script>
     (function () {
       var currentUrl = (window.location.pathname || "") + (window.location.search || "");
@@ -44,6 +45,15 @@
         var quranUrl = quranLink.buildQuranRedirectUrl(window.location);
         if (quranUrl && quranUrl !== currentUrl) {
           window.location.replace(quranUrl);
+          return;
+        }
+      }
+
+      var inviteLink = window.NuriaInviteLink || {};
+      if (typeof inviteLink.buildInviteRedirectUrl === "function") {
+        var inviteUrl = inviteLink.buildInviteRedirectUrl(window.location);
+        if (inviteUrl && inviteUrl !== currentUrl) {
+          window.location.replace(inviteUrl);
           return;
         }
       }

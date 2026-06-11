@@ -11,7 +11,9 @@
           "/family/*",
           "/subscribe",
           "/subscribe/*",
-          "/quran/*"
+          "/quran/*",
+          "/invite",
+          "/invite/*"
         ]
       }
     ]
