@@ -11,7 +11,12 @@
           "/family/*",
           "/subscribe",
           "/subscribe/*",
+          "/dashboard",
+          "/dashboard/*",
+          "/quran",
           "/quran/*",
+          "/qibla",
+          "/qibla/*",
           "/invite",
           "/invite/*"
         ]
