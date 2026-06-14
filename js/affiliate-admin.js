@@ -782,6 +782,18 @@ function getActionableErrorMessage(error, fallbackMessage) {
     return 'No Firebase Auth account exists for this email yet.';
   }
 
+  if (code === 'invalid-credential' || code === 'invalid-login-credentials') {
+    return 'Email or password is incorrect. Try again or send a password reset link.';
+  }
+
+  if (code === 'operation-not-allowed') {
+    return 'Email/password sign-in is not enabled for this Firebase project.';
+  }
+
+  if (code === 'network-request-failed') {
+    return 'Could not reach Firebase Auth. Check your connection and try again.';
+  }
+
   if (code === 'not-found') {
     if (message.includes('affiliate_partner_not_found')) {
       return 'Partner profile is not saved yet. Save the affiliate code/partner first, then create a claim link.';
@@ -7873,9 +7885,10 @@ function handleLoadError(error) {
     return;
   }
 
-  elements.errorCopy.textContent = parts.message;
+  const message = getActionableErrorMessage(error, parts.message);
+  elements.errorCopy.textContent = message;
   setView('error');
-  showBanner(parts.message, 'error');
+  showBanner(message, 'error');
 }
 
 async function loadDashboard(options) {
@@ -8011,9 +8024,9 @@ async function handleEmailSignIn(event) {
     state.pendingOnboardingAfterLogin = true;
     await playLoginSuccessSound({ restart: true });
   } catch (error) {
-    const parts = getErrorParts(error);
+    const message = getActionableErrorMessage(error, getErrorParts(error).message);
     elements.authError.hidden = false;
-    elements.authError.textContent = parts.message;
+    elements.authError.textContent = message;
   } finally {
     setButtonBusy(submitButton, false);
   }

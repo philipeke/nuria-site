@@ -50,7 +50,7 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260509-admin-resilience-theme'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260614-auth-errors'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -162,6 +162,22 @@ run('admin access check and dashboard calls stop showing endless spinners', () =
   assert(affiliateAdminScript.includes('Access check timed out. Sign in again or refresh the page.'));
   assert(affiliateAdminScript.includes('await withAdminTimeout(name, runner, ADMIN_CALL_TIMEOUT_MS);'));
   assert(affiliateAdminScript.includes("'admin dashboard load'"));
+});
+
+run('admin email login shows actionable Firebase Auth errors', () => {
+  assert(affiliateAdminScript.includes("code === 'invalid-credential' || code === 'invalid-login-credentials'"));
+  assert(affiliateAdminScript.includes('Email or password is incorrect. Try again or send a password reset link.'));
+  assert(affiliateAdminScript.includes('Email/password sign-in is not enabled for this Firebase project.'));
+  assert(affiliateAdminScript.includes('Could not reach Firebase Auth. Check your connection and try again.'));
+  assert(affiliateAdminScript.includes('const message = getActionableErrorMessage(error, getErrorParts(error).message);'));
+  assert(affiliateAdminScript.includes('elements.authError.textContent = message;'));
+  assert(!affiliateAdminScript.includes('elements.authError.textContent = parts.message;'));
+});
+
+run('admin load errors also use actionable Firebase copy', () => {
+  assert(affiliateAdminScript.includes('const message = getActionableErrorMessage(error, parts.message);'));
+  assert(affiliateAdminScript.includes('elements.errorCopy.textContent = message;'));
+  assert(affiliateAdminScript.includes("showBanner(message, 'error');"));
 });
 
 run('admin root route always resolves to the landing page', () => {
