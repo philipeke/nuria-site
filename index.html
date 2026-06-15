@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-title="site.index_title">Nuria — Free Islamic Companion | Serene &amp; Noor</title>
-  <meta name="description" data-i18n-content="site.index_desc" content="Free Quran, prayer tools, Ask Nuria, and daily Islamic guidance. Remove ads with Nuria Serene, or unlock Luxury Stone and 300 bonus reflections with Nuria Noor." />
+  <script>
+    (function () {
+      if (window.location.protocol === 'http:' && window.location.hostname === 'nuria.one') {
+        window.location.replace('https://' + window.location.host + window.location.pathname + window.location.search + window.location.hash);
+      }
+    }());
+  </script>
+  <title>Nuria — Free Islamic Companion | Serene &amp; Noor</title>
+  <link rel="canonical" href="https://nuria.one/" />
+  <meta name="description" content="Free Quran, prayer tools, Ask Nuria, and daily Islamic guidance. Remove ads with Nuria Serene, or unlock Luxury Stone and 300 bonus reflections with Nuria Noor." />
   <meta name="theme-color" content="#050c08" />
 
   <!-- Open Graph -->
-  <meta property="og:title"       data-i18n-content="site.index_og_title" content="Nuria — Free Islamic Companion | Serene &amp; Noor" />
-  <meta property="og:description" data-i18n-content="site.index_og_desc" content="Download Nuria free with ads, or choose Nuria Serene (ad-free) or Nuria Noor (Luxury Stone + bonus reflections)." />
+  <meta property="og:title"       content="Nuria — Free Islamic Companion | Serene &amp; Noor" />
+  <meta property="og:description" content="Download Nuria free with ads, or choose Nuria Serene (ad-free) or Nuria Noor (Luxury Stone + bonus reflections)." />
   <meta property="og:image"       content="https://nuria.one/assets/Nuria%20Logo.png" />
   <meta property="og:image:secure_url" content="https://nuria.one/assets/Nuria%20Logo.png" />
   <meta property="og:image:type" content="image/png" />
@@ -17,12 +25,13 @@
   <meta property="og:image:height" content="1600" />
   <meta property="og:image:alt" content="Nuria logo" />
   <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://nuria.one/" />
   <meta property="og:site_name"   content="Nuria" />
 
   <!-- Twitter -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       data-i18n-content="site.index_og_title" content="Nuria — Free Islamic Companion | Serene &amp; Noor" />
-  <meta name="twitter:description" data-i18n-content="site.index_og_desc" content="Download Nuria free with ads, or choose Nuria Serene (ad-free) or Nuria Noor (Luxury Stone + bonus reflections)." />
+  <meta name="twitter:title"       content="Nuria — Free Islamic Companion | Serene &amp; Noor" />
+  <meta name="twitter:description" content="Download Nuria free with ads, or choose Nuria Serene (ad-free) or Nuria Noor (Luxury Stone + bonus reflections)." />
   <meta name="twitter:image"       content="https://nuria.one/assets/Nuria%20Logo.png" />
   <meta name="twitter:image:alt" content="Nuria logo" />
 
@@ -111,6 +120,8 @@
       <div class="hero__logo-wrap">
         <div class="hero__logo" role="img" aria-label="Nuria"></div>
       </div>
+
+      <h1 class="hero__title" data-i18n="site.index_og_title">Nuria — Free Islamic Companion | Serene &amp; Noor</h1>
 
       <p class="hero__subtitle" data-i18n="hero.subtitle">Free with ads — Serene &amp; Noor when you want more</p>
 

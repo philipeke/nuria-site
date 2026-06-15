@@ -3,6 +3,19 @@
 (function () {
   const config = window.NURIA_SITE_CONFIG || {};
   const routing = window.NuriaReferralRouting || {};
+  const httpsHosts = new Set(['nuria.one', 'www.nuria.one']);
+
+  function enforceHttps() {
+    if (window.location.protocol !== 'http:') return;
+    if (!httpsHosts.has(window.location.hostname)) return;
+
+    window.location.replace(
+      `https://${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`,
+    );
+  }
+
+  enforceHttps();
+
   const normalizeWithFallback = routing.normalizeReferralCode || function (value) {
     return String(value || '')
       .trim()

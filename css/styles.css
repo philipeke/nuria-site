@@ -864,6 +864,7 @@ body.theme-luxury-stone .footer__bismillah {
 }
 body.theme-luxury-stone .hero__bismillah,
 body.theme-luxury-stone .hero__logo-wrap,
+body.theme-luxury-stone .hero__title,
 body.theme-luxury-stone .hero__subtitle,
 body.theme-luxury-stone .hero__desc,
 body.theme-luxury-stone .hero__stats,
@@ -903,8 +904,8 @@ body.theme-luxury-stone .hero__phone-wrap {
   margin-bottom: 1rem;
 }
 /*
- * Desktop: Arabic, logo, and subtitle share one band. The Arabic sits left above the mark,
- * while the logo and subtitle are centered on the same axis.
+ * Desktop: Arabic, logo, title, and subtitle share one band. The Arabic sits left above the
+ * mark, while the logo and headline stack are centered on the same axis.
  */
 @media (min-width: 1025px) {
   .hero__bismillah {
@@ -924,6 +925,7 @@ body.theme-luxury-stone .hero__phone-wrap {
     flex-shrink: 0;
   }
 
+  .hero__title,
   .hero__subtitle {
     width: var(--hero-copy-width);
     max-width: 470px;
@@ -970,12 +972,32 @@ body.theme-luxury-stone .hero__logo {
     drop-shadow(0 0 20px rgba(217, 169, 74, 0.24));
 }
 
+.hero__title {
+  max-width: 470px;
+  margin: -0.3rem auto -0.15rem;
+  font-family: var(--font-heading);
+  font-size: 2.45rem;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: 0;
+  color: var(--color-text);
+  animation: fadeInUp 1s ease 0.4s both;
+  text-shadow:
+    0 0 24px rgba(45, 190, 108, 0.22),
+    0 0 38px rgba(201, 168, 76, 0.14);
+}
+
+body.theme-luxury-stone .hero__title {
+  color: #1a1a15;
+  text-shadow: 0 10px 28px rgba(78, 59, 24, 0.12);
+}
+
 .hero__subtitle {
   font-family: var(--font-heading);
   font-size: clamp(1.1rem, 2.2vw, 1.4rem);
   font-style: italic;
   color: var(--color-green-bright);
-  animation: fadeInUp 1s ease 0.45s both;
+  animation: fadeInUp 1s ease 0.5s both;
   text-shadow: 0 0 24px rgba(45, 190, 108, 0.4);
 }
 
@@ -5476,6 +5498,7 @@ html.perf-lite .btn--store {
 
   .hero__bismillah,
   .hero__logo-wrap,
+  .hero__title,
   .hero__subtitle,
   .hero__desc,
   .hero__stats,
@@ -5739,10 +5762,16 @@ html.perf-lite .btn--store {
   }
   .hero,
   .hero__content,
+  .hero__title,
   .hero__subtitle,
   .hero__desc {
     max-width: 100%;
     min-width: 0;
+  }
+  .hero__title {
+    font-size: 2rem;
+    text-align: center;
+    overflow-wrap: anywhere;
   }
   .hero__subtitle,
   .hero__desc {
