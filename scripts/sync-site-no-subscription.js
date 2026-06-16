@@ -29,9 +29,9 @@ const COPY = {
       "Every new device receives <strong>15 starter reflections</strong> once. You can add more through rewarded ads, reflection top-ups in Settings, or by choosing Nuria Noor.",
     faq7_a:
       "You can keep using Nuria's daily guidance and prayer tools as normal. Watch optional rewarded ads for bonus reflections, buy a top-up in Settings, or choose Nuria Noor for a larger reflection bundle.",
-    faq_release_q: "What changed from 4.0.0 to 4.3.0?",
+    faq_release_q: "What changed from 4.0.0 to 4.3?",
     faq_release_a:
-      "4.0.0 brought Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat, and Live Haramain. 4.1.0 added Hiba gifts, Nuria Points, and release hardening. 4.3.0 makes Nuria free with ads, introduces Nuria Serene and Nuria Noor one-time purchases, Nuria Journey cloud sync, sharper Quran word-by-word audio, rewarded reflection bonuses, and polish across 100+ languages.",
+      "4.0.0 brought Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat, and Live Haramain. 4.1.0 added Hiba gifts, Nuria Points, and release hardening. 4.3 makes Nuria free with ads, introduces Nuria Serene and Nuria Noor one-time purchases, Nuria Journey cloud sync, sharper Quran word-by-word audio, rewarded reflection bonuses, and polish across 100+ languages.",
     faq_stone_q: "How do I get Luxury Stone?",
     faq_stone_a:
       "Luxury Stone is included with <strong>Nuria Noor</strong>, a one-time purchase that also adds 300 bonus reflections and permanent ad-free access. <strong>Nuria Serene</strong> removes ads without Luxury Stone. Preview the palette on this website from the navbar theme selector.",
@@ -68,9 +68,9 @@ const COPY = {
       "كل جهاز جديد يحصل على <strong>15 تأملاً ابتدائياً</strong> مرة واحدة. يمكنك إضافة المزيد عبر إعلانات مكافأة، تعبئة في الإعدادات، أو Nuria Noor.",
     faq7_a:
       "يمكنك الاستمرار في الإرشاد اليومي وأدوات الصلاة. شاهد إعلانات مكافأة اختيارية، اشترِ تعبئة في الإعدادات، أو اختر Nuria Noor لحزمة تأملات أكبر.",
-    faq_release_q: "ما الذي تغيّر من 4.0.0 إلى 4.3.0؟",
+    faq_release_q: "ما الذي تغيّر من 4.0.0 إلى 4.3؟",
     faq_release_a:
-      "4.0.0 أضاف Luxury Stone (عبر Nuria Noor)، الحلقة، القاعدة، السنة، والحرمين. 4.1.0 أضاف هدايا Hiba و Nuria Points وتقوية الإصدار. 4.3.0 يجعل نوريا مجانية مع إعلانات، Nuria Serene و Nuria Noor لمرة واحدة، مزامنة Journey السحابية، صوت قرآن أوضح، مكافآت تأملات، وتحسين 100+ لغة.",
+      "4.0.0 أضاف Luxury Stone (عبر Nuria Noor)، الحلقة، القاعدة، السنة، والحرمين. 4.1.0 أضاف هدايا Hiba و Nuria Points وتقوية الإصدار. 4.3 يجعل نوريا مجانية مع إعلانات، Nuria Serene و Nuria Noor لمرة واحدة، مزامنة Journey السحابية، صوت قرآن أوضح، مكافآت تأملات، وتحسين 100+ لغة.",
     faq_stone_q: "كيف أحصل على Luxury Stone؟",
     faq_stone_a:
       "Luxury Stone مضمن مع <strong>Nuria Noor</strong> — شراء لمرة واحدة يضيف 300 تأملاً إضافياً ويزيل الإعلانات للأبد. <strong>Nuria Serene</strong> يزيل الإعلانات دون Luxury Stone. عاين الألوان من محدد المظهر في الموقع.",
@@ -106,9 +106,9 @@ const COPY = {
       "ہر نئے ڈیوائس پر <strong>15 ابتدائی reflections</strong> ایک بار ملتے ہیں۔ rewarded ads، Settings میں top-up، یا Nuria Noor سے مزید حاصل کریں۔",
     faq7_a:
       "روزانہ رہنمائی اور نماز ٹولز حسب معمول استعمال کریں۔ rewarded ads دیکھیں، Settings میں top-up خریدیں، یا Nuria Noor منتخب کریں۔",
-    faq_release_q: "4.0.0 سے 4.3.0 میں کیا بدلا؟",
+    faq_release_q: "4.0.0 سے 4.3 میں کیا بدلا؟",
     faq_release_a:
-      "4.0.0 میں Luxury Stone (Nuria Noor کے ذریعے)، Halqa، Qaida، Sunnat، اور Live Haramain آئے۔ 4.1.0 میں Hiba gifts، Nuria Points، اور release hardening آئی۔ 4.3.0 نوریا کو ads کے ساتھ مفت کرتا ہے، Nuria Serene اور Nuria Noor one-time purchases، Journey cloud sync، بہتر Quran word-by-word audio، rewarded reflection bonuses، اور 100+ زبانوں میں polish لاتا ہے۔",
+      "4.0.0 میں Luxury Stone (Nuria Noor کے ذریعے)، Halqa، Qaida، Sunnat، اور Live Haramain آئے۔ 4.1.0 میں Hiba gifts، Nuria Points، اور release hardening آئی۔ 4.3 نوریا کو ads کے ساتھ مفت کرتا ہے، Nuria Serene اور Nuria Noor one-time purchases، Journey cloud sync، بہتر Quran word-by-word audio، rewarded reflection bonuses، اور 100+ زبانوں میں polish لاتا ہے۔",
     faq_stone_q: "Luxury Stone کیسے حاصل کریں؟",
     faq_stone_a:
       "Luxury Stone <strong>Nuria Noor</strong> کے ساتھ ہے — one-time purchase جو 300 bonus reflections اور permanent ad-free بھی دیتا ہے۔ <strong>Nuria Serene</strong> ads ہٹاتا ہے بغیر Luxury Stone۔ navbar theme selector سے preview کریں۔",
@@ -144,9 +144,9 @@ const COPY = {
       "Setiap perangkat baru mendapat <strong>15 refleksi awal</strong> sekali. Tambahkan via iklan reward, top-up di Pengaturan, atau Nuria Noor.",
     faq7_a:
       "Lanjutkan panduan harian dan alat shalat. Tonton iklan reward, beli top-up di Pengaturan, atau pilih Nuria Noor.",
-    faq_release_q: "Apa yang berubah dari 4.0.0 ke 4.3.0?",
+    faq_release_q: "Apa yang berubah dari 4.0.0 ke 4.3?",
     faq_release_a:
-      "4.0.0 membawa Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat, dan Live Haramain. 4.1.0 menambahkan Hiba gifts, Nuria Points, dan hardening rilis. 4.3.0 membuat Nuria gratis dengan iklan, Nuria Serene dan Nuria Noor sekali beli, sinkronisasi cloud Journey, audio Quran word-by-word lebih tajam, bonus refleksi berhadiah, dan polish 100+ bahasa.",
+      "4.0.0 membawa Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat, dan Live Haramain. 4.1.0 menambahkan Hiba gifts, Nuria Points, dan hardening rilis. 4.3 membuat Nuria gratis dengan iklan, Nuria Serene dan Nuria Noor sekali beli, sinkronisasi cloud Journey, audio Quran word-by-word lebih tajam, bonus refleksi berhadiah, dan polish 100+ bahasa.",
     faq_stone_q: "Bagaimana mendapatkan Luxury Stone?",
     faq_stone_a:
       "Luxury Stone termasuk dengan <strong>Nuria Noor</strong> — pembelian sekali dengan 300 refleksi bonus dan bebas iklan. <strong>Nuria Serene</strong> menghapus iklan tanpa Luxury Stone. Pratinjau dari pemilih tema navbar.",
@@ -182,9 +182,9 @@ const COPY = {
       "Chaque nouvel appareil reçoit <strong>15 réflexions de départ</strong> une fois. Ajoutez via pubs récompensées, top-up dans Paramètres, ou Nuria Noor.",
     faq7_a:
       "Continuez la guidance quotidienne et les outils de prière. Pubs récompensées, top-up dans Paramètres, ou Nuria Noor.",
-    faq_release_q: "Quoi de nouveau entre 4.0.0 et 4.3.0 ?",
+    faq_release_q: "Quoi de nouveau entre 4.0.0 et 4.3 ?",
     faq_release_a:
-      "4.0.0 a apporté Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat et Live Haramain. 4.1.0 a ajouté les cadeaux Hiba, Nuria Points et le durcissement release. 4.3.0 rend Nuria gratuit avec pubs, Nuria Serene et Nuria Noor en achat unique, synchro cloud Journey, audio Coran mot à mot plus net, réflexions bonus récompensées et polish dans 100+ langues.",
+      "4.0.0 a apporté Luxury Stone (via Nuria Noor), Halqa, Qaida, Sunnat et Live Haramain. 4.1.0 a ajouté les cadeaux Hiba, Nuria Points et le durcissement release. 4.3 rend Nuria gratuit avec pubs, Nuria Serene et Nuria Noor en achat unique, synchro cloud Journey, audio Coran mot à mot plus net, réflexions bonus récompensées et polish dans 100+ langues.",
     faq_stone_q: "Comment obtenir Luxury Stone ?",
     faq_stone_a:
       "Luxury Stone est inclus avec <strong>Nuria Noor</strong> — achat unique avec 300 réflexions bonus et sans pub. <strong>Nuria Serene</strong> supprime les pubs sans Luxury Stone. Prévisualisez via le sélecteur de thème.",
@@ -220,9 +220,9 @@ const COPY = {
       "Her yeni cihaz bir kez <strong>15 başlangıç reflection</strong> alır. Ödüllü reklamlar, Ayarlarda top-up veya Nuria Noor ile ekleyin.",
     faq7_a:
       "Günlük rehberlik ve namaz araçlarını normal kullanın. Ödüllü reklamlar, Ayarlarda top-up veya Nuria Noor seçin.",
-    faq_release_q: "4.0.0'dan 4.3.0'a ne değişti?",
+    faq_release_q: "4.0.0'dan 4.3'a ne değişti?",
     faq_release_a:
-      "4.0.0 Luxury Stone (Nuria Noor ile), Halqa, Qaida, Sunnat ve Canlı Haramain getirdi. 4.1.0 Hiba hediyeleri, Nuria Points ve release hardening ekledi. 4.3.0 Nuria'yı reklamlarla ücretsiz yapar, Nuria Serene ve Nuria Noor tek seferlik satın almaları, Journey bulut senkronu, daha net Kuran kelime sesi, ödüllü reflection bonusları ve 100+ dilde cilayı getirir.",
+      "4.0.0 Luxury Stone (Nuria Noor ile), Halqa, Qaida, Sunnat ve Canlı Haramain getirdi. 4.1.0 Hiba hediyeleri, Nuria Points ve release hardening ekledi. 4.3 Nuria'yı reklamlarla ücretsiz yapar, Nuria Serene ve Nuria Noor tek seferlik satın almaları, Journey bulut senkronu, daha net Kuran kelime sesi, ödüllü reflection bonusları ve 100+ dilde cilayı getirir.",
     faq_stone_q: "Luxury Stone nasıl alınır?",
     faq_stone_a:
       "Luxury Stone <strong>Nuria Noor</strong> ile gelir — 300 bonus reflection ve kalıcı reklamsız tek seferlik satın alma. <strong>Nuria Serene</strong> Luxury Stone olmadan reklamları kaldırır. Navbar tema seçicisinden önizleyin.",
