@@ -241,16 +241,20 @@
       meta: '#efe3c9',
     },
   };
+  const DEFAULT_SITE_THEME = SITE_THEMES.stone.id;
   let themeBooted = false;
 
   function getStoredSiteTheme() {
     try {
-      return window.localStorage.getItem(SITE_THEME_STORAGE_KEY) === SITE_THEMES.stone.id
-        ? SITE_THEMES.stone.id
-        : SITE_THEMES.classic.id;
+      const storedTheme = window.localStorage.getItem(SITE_THEME_STORAGE_KEY);
+      if (storedTheme === SITE_THEMES.classic.id || storedTheme === SITE_THEMES.stone.id) {
+        return storedTheme;
+      }
     } catch (error) {
-      return SITE_THEMES.classic.id;
+      return DEFAULT_SITE_THEME;
     }
+
+    return DEFAULT_SITE_THEME;
   }
 
   function setStoredSiteTheme(theme) {
@@ -614,6 +618,10 @@
   function initStoreLinks() {
     updateStoreLinks(document);
     document.addEventListener('click', handleStoreLinkClick);
+  }
+
+  if (document.body) {
+    initSiteTheme();
   }
 
   if (document.readyState === 'loading') {
