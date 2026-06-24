@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="stone">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n-title="ask.page_title">NuriaOne — The Halal AI You Can Trust | Nuria Technologies</title>
+  <meta name="description" data-i18n-content="ask.meta_desc" content="NuriaOne is a faith-first AI assistant for sensitive religious questions — grounded in authentic sources, governed by scholars, and built never to hallucinate. By Nuria Technologies." />
+  <meta name="theme-color" content="#efe3c9" />
+  <link rel="canonical" href="https://nuria.one/ask/" />
+  <meta property="og:title" content="NuriaOne — The Halal AI You Can Trust" />
+  <meta property="og:description" content="A faith-first AI for sensitive religious questions. Grounded in authentic sources, scholar-governed, and built never to hallucinate. By Nuria Technologies." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://nuria.one/ask/" />
+  <meta property="og:site_name" content="NuriaOne" />
+  <meta property="og:image" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta property="og:image:secure_url" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1600" />
+  <meta property="og:image:height" content="1600" />
+  <meta property="og:image:alt" content="NuriaOne logo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NuriaOne — The Halal AI You Can Trust" />
+  <meta name="twitter:description" content="A faith-first AI for sensitive religious questions — built never to hallucinate. By Nuria Technologies." />
+  <meta name="twitter:image" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta name="twitter:image:alt" content="NuriaOne logo" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="icon" type="image/png" href="/assets/favicon-tab.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="theme-luxury-stone" data-site-theme="stone">
+
+  <!-- =========================================================
+       NAVIGATION — NuriaOne
+  ========================================================= -->
+  <nav class="nav scrolled nav--ask" id="nav" role="navigation" data-i18n-aria-label="ask.nav_aria" aria-label="NuriaOne navigation">
+    <div class="nav__container">
+      <a href="/" class="nav__logo nav__logo--ask" data-i18n-aria-label="ask.nav_home" aria-label="Back to nuria.one">
+        <span class="nav__logo-img" aria-hidden="true"></span>
+        <span class="nav__wordmark">Nuria<strong>One</strong></span>
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="#why"     class="nav__link" data-i18n="ask.nav_why">Why NuriaOne</a>
+        <a href="#models"  class="nav__link" data-i18n="ask.nav_models">Models</a>
+        <a href="#uses"    class="nav__link" data-i18n="ask.nav_uses">Use cases</a>
+        <a href="#how"     class="nav__link" data-i18n="ask.nav_how">How it works</a>
+        <a href="#pricing" class="nav__link" data-i18n="ask.nav_pricing">Pricing</a>
+        <a href="/"        class="nav__link nav__link--back" data-i18n="ask.nav_app">← Nuria App</a>
+      </div>
+      <div class="nav__cta">
+        <a href="#waitlist" class="btn btn--gold" data-i18n="ask.nav_cta">Join the waitlist</a>
+      </div>
+      <div class="nav__lang" id="langSwitcher">
+        <button class="nav__lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-flag" id="langFlag">🇬🇧</span>
+          <span class="lang-code" id="langCode">EN</span>
+          <span class="lang-chevron">▼</span>
+        </button>
+        <div class="nav__lang-dropdown" id="langDropdown" role="listbox">
+          <button class="nav__lang-option" data-lang="en" role="option"><span class="opt-flag">🇬🇧</span><span class="opt-name">English</span></button>
+          <button class="nav__lang-option" data-lang="ar" role="option"><span class="opt-flag">🇸🇦</span><span class="opt-name">العربية</span></button>
+          <button class="nav__lang-option" data-lang="ur" role="option"><span class="opt-flag">🇵🇰</span><span class="opt-name">اردو</span></button>
+          <button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>
+          <button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>
+          <button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>
+        </div>
+      </div>
+      <button class="nav__hamburger" id="hamburger" data-i18n-aria-label="a11y.open_menu" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       HERO
+  ========================================================= -->
+  <div class="hero__geo-bg" aria-hidden="true"></div>
+
+  <header class="page-hero page-hero--ask" id="top">
+    <div class="container">
+      <div class="ask-hero">
+        <div class="ask-hero__content">
+          <span class="ask-badge" data-i18n="ask.hero_badge">✦ Launching soon · Demo preview</span>
+          <p class="page-hero__label" data-i18n="ask.hero_label">NuriaOne · by Nuria Technologies</p>
+          <h1 class="page-hero__title" data-i18n-html="ask.hero_title">The halal AI you can trust with your <em>deen</em></h1>
+          <p class="page-hero__subtitle page-hero__subtitle--wide" data-i18n="ask.hero_subtitle">
+            NuriaOne is a faith-first AI assistant for the questions that matter most — grounded in
+            authentic sources, governed by qualified scholars, and built never to hallucinate. The
+            reassurance that ChatGPT, Gemini and other models simply cannot give you.
+          </p>
+          <div class="ask-hero__cta">
+            <a href="#waitlist" class="btn btn--gold btn--store-lg" data-i18n="ask.hero_cta_primary">Join the waitlist</a>
+            <a href="#how" class="btn btn--outline" data-i18n="ask.hero_cta_secondary">See how it works</a>
+          </div>
+          <p class="ask-hero__note" data-i18n="ask.hero_note">No hallucinations. No guesswork. Only answers you can rely on.</p>
+        </div>
+
+        <!-- Chat: live island when enabled (NURIA_SITE_CONFIG.chat / ?chat=1),
+             otherwise the static marketing mockup below stays as the fallback. -->
+        <div id="nuriaChat" data-nuria-chat>
+        <div class="ask-chat" aria-hidden="true">
+          <div class="ask-chat__head">
+            <span class="ask-chat__avatar"></span>
+            <div class="ask-chat__id">
+              <span class="ask-chat__title">NuriaOne</span>
+              <span class="ask-chat__status" data-i18n="ask.chat_status">Halal-certified · Source-grounded</span>
+            </div>
+            <span class="ask-chat__dot"></span>
+          </div>
+          <div class="ask-chat__body">
+            <div class="ask-bubble ask-bubble--user" data-i18n="ask.chat_user">
+              Can I combine Dhuhr and Asr while travelling?
+            </div>
+            <div class="ask-bubble ask-bubble--bot">
+              <span data-i18n="ask.chat_bot">Yes. The majority of scholars permit combining Dhuhr with Asr, and Maghrib with Isha, for a traveller. Below is the evidence and the conditions that apply.</span>
+              <span class="ask-bubble__source" data-i18n="ask.chat_bot_source">📖 Sahih Muslim 705 · cross-checked against authentic Hadith</span>
+            </div>
+          </div>
+          <div class="ask-chat__input">
+            <span class="ask-chat__field" data-i18n="ask.chat_input_placeholder">Ask NuriaOne anything about your deen…</span>
+            <span class="ask-chat__send" aria-hidden="true">➤</span>
+          </div>
+          <p class="ask-chat__soon" data-i18n="ask.chat_input_note">NuriaOne is launching soon.</p>
+        </div>
+        </div><!-- /#nuriaChat -->
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       TRUST STRIP
+  ========================================================= -->
+  <section class="ask-trust-section" aria-label="Why NuriaOne is trustworthy">
+    <div class="container">
+      <div class="ask-trust">
+        <div class="ask-trust__item">
+          <span class="ask-trust__icon">✦</span>
+          <span class="ask-trust__text" data-i18n="ask.trust1">Built never to hallucinate</span>
+        </div>
+        <div class="ask-trust__item">
+          <span class="ask-trust__icon">☾</span>
+          <span class="ask-trust__text" data-i18n="ask.trust2">Grounded in Qur'an &amp; authentic Hadith</span>
+        </div>
+        <div class="ask-trust__item">
+          <span class="ask-trust__icon">۝</span>
+          <span class="ask-trust__text" data-i18n="ask.trust3">Every answer shows its sources</span>
+        </div>
+        <div class="ask-trust__item">
+          <span class="ask-trust__icon">✶</span>
+          <span class="ask-trust__text" data-i18n="ask.trust4">Governed by qualified scholars</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       WHY NURIAONE (the problem)
+  ========================================================= -->
+  <section class="section" id="why">
+    <div class="container">
+      <div class="section__label section__label--center" data-i18n="ask.why_label">Why NuriaOne</div>
+      <h2 class="section__title section__title--center" data-i18n-html="ask.why_title">For your faith, <em>&ldquo;probably right&rdquo;</em> is not good enough</h2>
+      <p class="section__subtitle section__subtitle--center" data-i18n="ask.why_subtitle">
+        General-purpose AI was built to sound confident — not to protect your deen. For sensitive
+        religious questions, that is a risk no believer should have to take. NuriaOne is built differently.
+      </p>
+
+      <div class="about-vision">
+        <div class="about-card animate-on-scroll">
+          <div class="about-card__icon">⚠</div>
+          <h3 class="about-card__title" data-i18n="ask.why_c1_title">They invent with confidence</h3>
+          <p class="about-card__text" data-i18n="ask.why_c1_text">General models will confidently fabricate rulings, misquote the Qur'an, and attribute hadith that were never spoken. NuriaOne refuses to guess — if it is not certain, it tells you.</p>
+        </div>
+        <div class="about-card animate-on-scroll" data-delay="100">
+          <div class="about-card__icon">⚖</div>
+          <h3 class="about-card__title" data-i18n="ask.why_c2_title">They blur the lines</h3>
+          <p class="about-card__text" data-i18n="ask.why_c2_text">Mainstream AI mixes schools, sects and opinions into one vague answer. NuriaOne respects your madhhab, keeps positions distinct, and is clear about where scholars differ.</p>
+        </div>
+        <div class="about-card animate-on-scroll" data-delay="200">
+          <div class="about-card__icon">☾</div>
+          <h3 class="about-card__title" data-i18n="ask.why_c3_title">They answer to no one</h3>
+          <p class="about-card__text" data-i18n="ask.why_c3_text">No scholar oversees ChatGPT or Gemini. NuriaOne is governed by qualified muftis and anchored to verified sources — accountable to the tradition, by design.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       MODELS
+  ========================================================= -->
+  <section class="section section--ask-models" id="models">
+    <div class="container">
+      <div class="section__label section__label--center" data-i18n="ask.models_label">The Engine</div>
+      <h2 class="section__title section__title--center" data-i18n-html="ask.models_title">The world&rsquo;s best models, <em>disciplined by the truth</em></h2>
+      <p class="section__subtitle section__subtitle--center" data-i18n="ask.models_subtitle">
+        NuriaOne orchestrates the leading AI models — Claude, ChatGPT and Gemini — alongside our own
+        halal-certified Nuria model. Every response is filtered through our halal guardrails and
+        grounded in authentic sources before it ever reaches you.
+      </p>
+
+      <div class="ask-models">
+        <div class="ask-model-chip">
+          <span class="ask-model-chip__mark">C</span>
+          <span class="ask-model-chip__name">Claude</span>
+          <span class="ask-model-chip__by">Anthropic</span>
+        </div>
+        <div class="ask-model-chip">
+          <span class="ask-model-chip__mark">G</span>
+          <span class="ask-model-chip__name">ChatGPT</span>
+          <span class="ask-model-chip__by">OpenAI</span>
+        </div>
+        <div class="ask-model-chip">
+          <span class="ask-model-chip__mark">✦</span>
+          <span class="ask-model-chip__name">Gemini</span>
+          <span class="ask-model-chip__by">Google</span>
+        </div>
+        <div class="ask-model-chip ask-model-chip--own">
+          <span class="ask-model-chip__mark ask-model-chip__mark--own"></span>
+          <span class="ask-model-chip__name" data-i18n="ask.model_nuria">Nuria Model</span>
+          <span class="ask-model-chip__by" data-i18n="ask.model_nuria_by">Halal-certified · Nuria Technologies</span>
+        </div>
+      </div>
+
+      <p class="ask-guardrail" data-i18n="ask.models_guardrail">
+        🛡 Every answer must pass the Nuria halal layer before you ever see it.
+      </p>
+
+      <!-- Comparison table -->
+      <div class="ask-compare">
+        <h3 class="ask-compare__title" data-i18n="ask.compare_title">NuriaOne vs. general-purpose AI</h3>
+        <table class="ask-compare__table">
+          <thead>
+            <tr>
+              <th class="ask-compare__feature" data-i18n="ask.compare_col_feature">Capability</th>
+              <th class="ask-compare__own">NuriaOne</th>
+              <th>ChatGPT</th>
+              <th>Gemini</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="ask.compare_r1">Refuses to invent rulings</td>
+              <td class="ask-compare__own"><span class="ask-yes">✓</span></td>
+              <td><span class="ask-no">✕</span></td>
+              <td><span class="ask-no">✕</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="ask.compare_r2">Cites authentic sources</td>
+              <td class="ask-compare__own"><span class="ask-yes">✓</span></td>
+              <td><span class="ask-no">✕</span></td>
+              <td><span class="ask-no">✕</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="ask.compare_r3">Respects your madhhab</td>
+              <td class="ask-compare__own"><span class="ask-yes">✓</span></td>
+              <td><span class="ask-no">✕</span></td>
+              <td><span class="ask-no">✕</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="ask.compare_r4">Won't fabricate hadith</td>
+              <td class="ask-compare__own"><span class="ask-yes">✓</span></td>
+              <td><span class="ask-maybe">~</span></td>
+              <td><span class="ask-maybe">~</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="ask.compare_r5">Scholar-governed answers</td>
+              <td class="ask-compare__own"><span class="ask-yes">✓</span></td>
+              <td><span class="ask-no">✕</span></td>
+              <td><span class="ask-no">✕</span></td>
+            </tr>
+            <tr>
+              <td data-i18n="ask.compare_r6">Halal-certified</td>
+              <td class="ask-compare__own"><span class="ask-yes">✓</span></td>
+              <td><span class="ask-no">✕</span></td>
+              <td><span class="ask-no">✕</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="ask-compare__note" data-i18n="ask.compare_note">Comparison reflects general-purpose models without faith-specific safeguards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       USE CASES
+  ========================================================= -->
+  <section class="section" id="uses">
+    <div class="container">
+      <div class="section__label section__label--center" data-i18n="ask.uses_label">Use cases</div>
+      <h2 class="section__title section__title--center" data-i18n-html="ask.uses_title">Answers for the questions <em>that matter most</em></h2>
+      <p class="section__subtitle section__subtitle--center" data-i18n="ask.uses_subtitle">
+        From everyday worship to the heaviest matters of the heart — NuriaOne meets you with knowledge
+        you can trust, in your own language.
+      </p>
+
+      <div class="ask-uses">
+        <div class="ask-use animate-on-scroll">
+          <span class="ask-use__icon">📜</span>
+          <h3 class="ask-use__title" data-i18n="ask.use1_title">Fiqh &amp; rulings</h3>
+          <p class="ask-use__text" data-i18n="ask.use1_text">Clear, sourced answers on worship, transactions and daily life — with the evidence and the differences of opinion made plain.</p>
+        </div>
+        <div class="ask-use animate-on-scroll" data-delay="80">
+          <span class="ask-use__icon">🕋</span>
+          <h3 class="ask-use__title" data-i18n="ask.use2_title">Qur'an &amp; Tafsir</h3>
+          <p class="ask-use__text" data-i18n="ask.use2_text">Explore verses with faithful translation and classical commentary — never a fabricated ayah, never a verse out of context.</p>
+        </div>
+        <div class="ask-use animate-on-scroll" data-delay="160">
+          <span class="ask-use__icon">📖</span>
+          <h3 class="ask-use__title" data-i18n="ask.use3_title">Hadith, authenticated</h3>
+          <p class="ask-use__text" data-i18n="ask.use3_text">Ask about a narration and NuriaOne checks its grading and chain — so you are never handed a weak or invented hadith as if it were sound.</p>
+        </div>
+        <div class="ask-use animate-on-scroll" data-delay="0">
+          <span class="ask-use__icon">🤲</span>
+          <h3 class="ask-use__title" data-i18n="ask.use4_title">Worship &amp; practice</h3>
+          <p class="ask-use__text" data-i18n="ask.use4_text">Prayer, fasting, zakat, hajj and purification — practical, step-by-step guidance rooted in authentic teaching.</p>
+        </div>
+        <div class="ask-use animate-on-scroll" data-delay="80">
+          <span class="ask-use__icon">🫶</span>
+          <h3 class="ask-use__title" data-i18n="ask.use5_title">Personal struggles</h3>
+          <p class="ask-use__text" data-i18n="ask.use5_text">Bring the weight on your heart — grief, doubt, temptation, repentance — and receive compassionate counsel anchored in the deen.</p>
+        </div>
+        <div class="ask-use animate-on-scroll" data-delay="160">
+          <span class="ask-use__icon">🌍</span>
+          <h3 class="ask-use__title" data-i18n="ask.use6_title">In your language</h3>
+          <p class="ask-use__text" data-i18n="ask.use6_text">Ask in Arabic, Urdu, Indonesian, French, Turkish, English and more — and receive the same trustworthy answer, natively.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       HOW IT WORKS
+  ========================================================= -->
+  <section class="section section--ask-how" id="how">
+    <div class="container">
+      <div class="section__label section__label--center" data-i18n="ask.how_label">How it works</div>
+      <h2 class="section__title section__title--center" data-i18n-html="ask.how_title">How NuriaOne <em>answers</em></h2>
+      <p class="section__subtitle section__subtitle--center" data-i18n="ask.how_subtitle">
+        Four disciplined steps stand between your question and your answer — so confidence is earned, never faked.
+      </p>
+
+      <div class="ask-steps">
+        <div class="ask-step animate-on-scroll">
+          <span class="ask-step__num">1</span>
+          <h3 class="ask-step__title" data-i18n="ask.step1_title">You ask</h3>
+          <p class="ask-step__text" data-i18n="ask.step1_text">Pose your question in your own words and language — as openly or as privately as you wish.</p>
+        </div>
+        <div class="ask-step animate-on-scroll" data-delay="100">
+          <span class="ask-step__num">2</span>
+          <h3 class="ask-step__title" data-i18n="ask.step2_title">We retrieve the sources</h3>
+          <p class="ask-step__text" data-i18n="ask.step2_text">NuriaOne searches a curated library of the Qur'an, authentic Hadith and trusted scholarship — not the open internet.</p>
+        </div>
+        <div class="ask-step animate-on-scroll" data-delay="200">
+          <span class="ask-step__num">3</span>
+          <h3 class="ask-step__title" data-i18n="ask.step3_title">The halal layer verifies</h3>
+          <p class="ask-step__text" data-i18n="ask.step3_text">Our guardrails and scholar governance check every claim against its evidence and remove anything uncertain.</p>
+        </div>
+        <div class="ask-step animate-on-scroll" data-delay="300">
+          <span class="ask-step__num">4</span>
+          <h3 class="ask-step__title" data-i18n="ask.step4_title">You receive the answer</h3>
+          <p class="ask-step__text" data-i18n="ask.step4_text">A clear, compassionate reply — with its sources shown, so you can verify it for yourself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CERTIFICATION
+  ========================================================= -->
+  <section class="section" id="certification">
+    <div class="container">
+      <div class="ask-cert">
+        <span class="ask-cert__badge" data-i18n="ask.cert_badge">⏳ GIFS certification in progress</span>
+        <div class="section__label" data-i18n="ask.cert_label">Scholar Governance</div>
+        <h2 class="ask-cert__title" data-i18n-html="ask.cert_title">Certified by <em>scholars</em>, not just engineers</h2>
+        <p class="ask-cert__text" data-i18n="ask.cert_text1">
+          NuriaOne is being certified by the mufti scholars at GIFS. Until that certification is
+          complete, NuriaOne stays in supervised demo — because when it comes to your deen, we will
+          not cut a single corner.
+        </p>
+        <p class="ask-cert__text" data-i18n="ask.cert_text2">
+          This is the difference between an AI that was trained to please and an assistant that is
+          held to account. Real scholars. Real sources. Real responsibility.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PRICING
+  ========================================================= -->
+  <section class="section section--ask-pricing" id="pricing">
+    <div class="container">
+      <div class="section__label section__label--center" data-i18n="ask.pricing_label">Pricing</div>
+      <h2 class="section__title section__title--center" data-i18n-html="ask.pricing_title">Plans are <em>on the way</em></h2>
+      <p class="section__subtitle section__subtitle--center" data-i18n="ask.pricing_subtitle">
+        NuriaOne is currently a free demo preview. Full plans will be announced when the assistant
+        launches, in shā Allah. Join the waitlist to be the first to know.
+      </p>
+
+      <div class="ask-pricing-grid">
+        <div class="ask-price-card">
+          <span class="ask-price-card__badge" data-i18n="ask.price_t1_tag">Available at launch</span>
+          <h3 class="ask-price-card__name" data-i18n="ask.price_t1_name">Preview</h3>
+          <p class="ask-price-card__price" data-i18n="ask.price_t1_price">Free</p>
+          <p class="ask-price-card__desc" data-i18n="ask.price_t1_desc">A taste of NuriaOne — ask everyday questions and see how trustworthy AI should feel.</p>
+        </div>
+        <div class="ask-price-card ask-price-card--featured">
+          <span class="ask-price-card__badge ask-price-card__badge--soon" data-i18n="ask.price_coming">Coming soon</span>
+          <h3 class="ask-price-card__name" data-i18n="ask.price_t2_name">NuriaOne Plus</h3>
+          <p class="ask-price-card__price" data-i18n="ask.price_t2_price">—</p>
+          <p class="ask-price-card__desc" data-i18n="ask.price_t2_desc">Unlimited questions, deeper sources, full multilingual support and priority answers.</p>
+        </div>
+        <div class="ask-price-card">
+          <span class="ask-price-card__badge ask-price-card__badge--soon" data-i18n="ask.price_coming">Coming soon</span>
+          <h3 class="ask-price-card__name" data-i18n="ask.price_t3_name">NuriaOne Scholar</h3>
+          <p class="ask-price-card__price" data-i18n="ask.price_t3_price">—</p>
+          <p class="ask-price-card__desc" data-i18n="ask.price_t3_desc">For institutions and study circles — citations, exports and scholar-reviewed depth.</p>
+        </div>
+      </div>
+      <p class="ask-pricing-note" data-i18n="ask.pricing_note">✦ Pricing will be announced at launch. The demo is free for everyone.</p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       WAITLIST CTA
+  ========================================================= -->
+  <section class="section section--download" id="waitlist">
+    <div class="container">
+      <div class="download-wrap" style="text-align:center;">
+        <span class="ask-badge ask-badge--center" data-i18n="ask.hero_badge">✦ Launching soon · Demo preview</span>
+        <h2 class="section__title" data-i18n="ask.cta_title">Be first to experience NuriaOne</h2>
+        <p class="section__subtitle" style="margin-left:auto;margin-right:auto;" data-i18n="ask.cta_text">
+          A halal AI you can finally trust with your deen is almost here. Join the waitlist and we will
+          let you know the moment NuriaOne opens.
+        </p>
+        <div style="margin-top:2rem;">
+          <a href="mailto:hello@nuria.one?subject=NuriaOne%20Waitlist" class="btn btn--gold btn--store-lg" data-i18n="ask.cta_btn">Join the waitlist</a>
+        </div>
+        <p class="ask-cta__by" data-i18n="ask.cta_note">NuriaOne — a product of Nuria Technologies.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <span class="footer__logo-wrap"><span class="footer__logo" role="img" aria-label="Nuria"></span></span>
+          <p class="footer__tagline" data-i18n="footer.tagline">Light for the Muslim soul — every single day.</p>
+          <p class="footer__bismillah" lang="ar">الله أكبر</p>
+          <div class="social-links footer__social" data-i18n-aria-label="a11y.social" aria-label="Nuria on social media">
+            <a class="social-links__item" href="https://www.instagram.com/nuria_app/" target="_blank" rel="noopener noreferrer" aria-label="Nuria on Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16z"/></svg>
+            </a>
+            <a class="social-links__item" href="https://www.tiktok.com/@nuria_app" target="_blank" rel="noopener noreferrer" aria-label="Nuria on TikTok">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.82a4.28 4.28 0 0 1-1.05-2.82h-3.2v12.93a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 1 1 .78-5.05V8.1a5.86 5.86 0 0 0-.78-.05A5.78 5.78 0 1 0 15.34 13.8V8.79a7.5 7.5 0 0 0 4.36 1.4V7a4.28 4.28 0 0 1-3.1-1.18z"/></svg>
+            </a>
+            <a class="social-links__item" href="https://www.linkedin.com/company/nuria-app/" target="_blank" rel="noopener noreferrer" aria-label="Nuria on LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zM8.34 18.34V9.99H5.67v8.35h2.67zM7 8.8a1.55 1.55 0 1 0 0-3.1 1.55 1.55 0 0 0 0 3.1zm11.34 9.54v-4.58c0-2.45-1.31-3.59-3.06-3.59a2.64 2.64 0 0 0-2.39 1.31v-1.13h-2.67v8.35h2.67v-4.41c0-1.16.22-2.29 1.66-2.29 1.42 0 1.44 1.33 1.44 2.36v4.34h2.68z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <nav class="footer__links" data-i18n-aria-label="a11y.footer_nav" aria-label="Footer navigation">
+          <div class="footer__col">
+            <span class="footer__col-title" data-i18n="footer.col1">App</span>
+            <a href="/" data-i18n="footer.home">Home</a>
+            <a href="/about" data-i18n="footer.company">Company</a>
+            <a href="/blog" data-i18n="footer.blog">Blog</a>
+            <a href="/#pricing" data-i18n="footer.plans">Plans</a>
+            <a href="/ask">NuriaOne</a>
+            <a href="/join" data-i18n="footer.partner">Nuria Partner</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title" data-i18n="footer.col2">Legal</span>
+            <a href="/sources" data-i18n="footer.sources">Sources</a>
+            <a href="/privacy" data-i18n="footer.privacy">Privacy Policy</a>
+            <a href="/terms" data-i18n="footer.terms">Terms of Service</a>
+            <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
+          </div>
+          <div class="footer__col">
+            <span class="footer__col-title" data-i18n="footer.col3">Help</span>
+            <a href="/support" data-i18n="footer.support_center">Support Center</a>
+            <a href="/support#contact" data-i18n="footer.contact">Contact Us</a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer__bottom">
+        <p data-i18n="footer.copy">&copy; Nuria Technologies</p>
+        <div class="footer__bottom-links">
+          <a href="/privacy" data-i18n="footer.nav_privacy">Privacy</a>
+          <a href="/terms" data-i18n="footer.nav_terms">Terms</a>
+          <a href="/cookies" data-i18n="footer.cookies">Cookie Policy</a>
+          <a href="/support" data-i18n="footer.nav_support">Support</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/site-config.js"></script>
+  <script src="../js/site-utils.js?v=20260616-stone-default"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/nuria-chat.js"></script>
+</body>
+</html>

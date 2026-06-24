@@ -1,0 +1,12 @@
+# Copy to ".dev.vars" for local `wrangler dev`. NEVER commit the real key.
+# .dev.vars is git-ignored; this .example file documents the shape.
+
+NURIA_API_BASE=https://api.nuria.one
+NURIA_API_KEY=replace-with-partner-key
+
+# Local preview without the live API (returns mock answers):
+# NURIA_MOCK=1
+# NURIA_ALLOW_LOCALHOST=1
+
+# Optional override (default 20):
+# NURIA_RATE_LIMIT_PER_MIN=20

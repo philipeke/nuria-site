@@ -1,0 +1,26 @@
+name = "nuria-chat"
+main = "src/index.js"
+compatibility_date = "2025-11-01"
+workers_dev = false
+
+# --- Route the BFF at the apex under /api/chat -----------------------------
+# Uncomment once the nuria.one zone is on this Cloudflare account.
+# routes = [
+#   { pattern = "nuria.one/api/chat", zone_name = "nuria.one" }
+# ]
+
+[vars]
+NURIA_API_BASE = "https://api.nuria.one"
+NURIA_RATE_LIMIT_PER_MIN = "20"
+# NURIA_MOCK = "1"            # return mock answers (pre-launch / local preview)
+# NURIA_ALLOW_LOCALHOST = "1" # allow localhost origins during local dev
+
+# --- Per-IP rate limiting (KV) ---------------------------------------------
+# Create the namespace, then paste its id here:
+#   wrangler kv namespace create RATE_LIMIT
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT"
+# id = "<your-kv-namespace-id>"
+
+# --- Secret (NEVER in code/git) --------------------------------------------
+#   wrangler secret put NURIA_API_KEY

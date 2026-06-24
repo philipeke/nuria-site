@@ -1,1 +1,14 @@
 tmp/
+
+# Secrets / local env — never commit
+.env
+.env.local
+.dev.vars
+**/.dev.vars
+.env.*
+!.env.example
+!**/.dev.vars.example
+
+# Worker / tooling
+node_modules/
+.wrangler/

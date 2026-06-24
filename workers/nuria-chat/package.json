@@ -1,0 +1,14 @@
+{
+  "name": "nuria-chat-bff",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Secure backend-for-frontend (Cloudflare Worker) for Nuria Chat — proxies the site chat island to the Nuria Intelligence API and keeps the partner key server-side.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
