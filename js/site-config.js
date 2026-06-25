@@ -10,6 +10,7 @@
     affiliateLookupUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/lookupAffiliateCodeHttp',
     socialFeedUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/getSocialFeedHttp',
     blogFeedUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/getBlogFeedHttp',
+    blogPostUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/getBlogPostHttp',
     appStoreUrl: 'https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913',
     googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.oakdev.nuria&hl=sv',
     firebaseFunctionsRegion: 'us-central1',
