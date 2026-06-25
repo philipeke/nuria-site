@@ -139,14 +139,17 @@
     grid.appendChild(frag);
   }
 
-  var DIVIDER_SVG = '<svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 4 L36 20 L20 36 L4 20 Z" stroke="currentColor" stroke-width="1.1"/><path d="M8.7 8.7 H31.3 V31.3 H8.7 Z" stroke="currentColor" stroke-width="1.1"/><circle cx="20" cy="20" r="2.3" fill="currentColor"/></svg>';
+  var DIVIDER_SVG = '<svg class="nuria-divider__line" viewBox="0 0 400 8" fill="none" aria-hidden="true">' +
+    '<defs><linearGradient id="ndGold2" x1="0" x2="1" y1="0" y2="0">' +
+    '<stop offset="0" stop-color="#c9a84c" stop-opacity="0"/><stop offset="0.2" stop-color="#c9a84c"/>' +
+    '<stop offset="0.5" stop-color="#f4d98c"/><stop offset="0.8" stop-color="#c9a84c"/>' +
+    '<stop offset="1" stop-color="#c9a84c" stop-opacity="0"/></linearGradient></defs>' +
+    '<path d="M5 4 C60 3 90 3 130 3 L270 3 C310 3 340 3 395 4 C340 5 310 5 270 5 L130 5 C90 5 60 5 5 4 Z" fill="url(#ndGold2)"/></svg>';
   function makeDivider() {
     const d = document.createElement('div');
     d.className = 'nuria-divider nuria-divider--tight';
     d.setAttribute('aria-hidden', 'true');
-    d.innerHTML = '<span class="nuria-divider__rule nuria-divider__rule--l"></span>' +
-      '<span class="nuria-divider__gem">' + DIVIDER_SVG + '</span>' +
-      '<span class="nuria-divider__rule nuria-divider__rule--r"></span>';
+    d.innerHTML = DIVIDER_SVG;
     return d;
   }
 
