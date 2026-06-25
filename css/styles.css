@@ -5453,10 +5453,8 @@ address.legal-address strong { color: var(--color-text); }
     contain-intrinsic-size: auto 960px;
   }
 
-  .download-wrap {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 520px;
-  }
+  /* NB: no content-visibility on .download-wrap — its paint containment would
+     clip the launcher icon's breathing glow halo at the top edge. */
 }
 
 html.hero-offscreen .hero__logo-wrap::before,
