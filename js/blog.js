@@ -67,7 +67,8 @@
 
   function showState(msgKey, fallback) {
     grid.hidden = false;
-    if (article) article.hidden = true;
+    grid.style.display = '';
+    if (article) { article.hidden = true; article.style.display = 'none'; }
     grid.innerHTML = '';
     const div = document.createElement('div');
     div.className = 'blog-state';
@@ -122,8 +123,9 @@
   }
 
   function renderList() {
-    if (article) article.hidden = true;
+    if (article) { article.hidden = true; article.style.display = 'none'; }
     grid.hidden = false;
+    grid.style.display = '';
     if (!state.posts.length) {
       showState('blog.empty', 'Articles are coming soon, in shā Allah. Follow along.');
       return;
@@ -141,7 +143,9 @@
     const post = state.post;
     const tr = pick(post.translations);
     grid.hidden = true;
+    grid.style.display = 'none';
     article.hidden = false;
+    article.style.display = '';
     article.innerHTML = '';
 
     const back = document.createElement('a');
