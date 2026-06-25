@@ -61,6 +61,7 @@ const T = {
       view_on_linkedin: 'View on LinkedIn ↗',
       tiktok_video: 'TikTok video',
       linkedin_post: 'LinkedIn post',
+      read_full: 'Read full post',
       close: 'Close',
     },
     company: {

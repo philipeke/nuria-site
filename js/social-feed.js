@@ -328,7 +328,9 @@
     return a;
   }
 
-  // Newest LinkedIn post, expanded inline via the official embed.
+  // Newest LinkedIn post, shown as a non-interactive live preview via the
+  // official embed. A transparent overlay catches the wheel (so it scrolls the
+  // feed instead of the embed) and opens the full post in the lightbox.
   function buildFeatured(item) {
     const urn = linkedinUrn(item);
     if (!urn) return null;
@@ -354,13 +356,34 @@
 
     const frame = document.createElement('div');
     frame.className = 'social-embed social-embed--linkedin';
+
     const iframe = document.createElement('iframe');
     iframe.src = linkedinEmbedSrc(urn);
     iframe.title = item.title || t('feed.linkedin_post', 'LinkedIn post');
     iframe.loading = 'lazy';
+    iframe.tabIndex = -1; // it's a preview; the overlay link is the handle
+    iframe.setAttribute('aria-hidden', 'true');
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('frameborder', '0');
     frame.appendChild(iframe);
+
+    // Click + scroll catcher: opens the full post in the lightbox and keeps the
+    // wheel scrolling the feed instead of being trapped by the embed.
+    const cta = document.createElement('a');
+    cta.className = 'social-feed__featured-cta';
+    cta.href = item.url;
+    cta.target = '_blank';
+    cta.rel = 'noopener noreferrer';
+    const read = t('feed.read', 'Read on LinkedIn');
+    cta.setAttribute('aria-label', item.title ? item.title + ' — ' + read : read);
+    const pill = document.createElement('span');
+    pill.className = 'social-feed__featured-pill';
+    pill.textContent = t('feed.read_full', 'Read full post');
+    pill.insertAdjacentHTML('beforeend', CHEVRON_SVG);
+    cta.appendChild(pill);
+    bindOpen(cta, 'linkedin', item);
+    frame.appendChild(cta);
+
     wrap.appendChild(frame);
     return wrap;
   }

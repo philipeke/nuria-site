@@ -12357,6 +12357,7 @@ body.page-ambassador .cookie-consent__text {
   letter-spacing: 0.02em;
 }
 .social-embed {
+  position: relative;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   overflow: hidden;
@@ -12365,9 +12366,47 @@ body.page-ambassador .cookie-consent__text {
 .social-embed--linkedin iframe {
   display: block;
   width: 100%;
-  height: 540px;
+  height: 380px;
   border: 0;
+  pointer-events: none; /* preview only — the overlay handles interaction */
 }
+/* Transparent click/scroll catcher with a "read more" fade + pill. */
+.social-feed__featured-cta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.85rem;
+  cursor: pointer;
+  /* fade only the bottom so most of the post stays crisp; fades to the embed's
+     own white so it reads as "there's more, click to open" */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.96) 100%);
+  transition: var(--transition);
+}
+.social-feed__featured-cta:focus-visible { outline: 2px solid var(--color-gold-bright); outline-offset: 2px; }
+.social-feed__featured-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #15120c;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  padding: 0.45rem 0.5rem 0.45rem 0.95rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+  transition: var(--transition);
+}
+.social-feed__featured-pill svg { width: 15px; height: 15px; color: var(--color-gold); }
+[dir="rtl"] .social-feed__featured-pill svg { transform: scaleX(-1); }
+.social-feed__featured-cta:hover .social-feed__featured-pill {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+}
+.social-feed__featured-cta:hover .social-feed__featured-pill svg { color: var(--color-gold-bright); }
 
 /* Skeleton / empty states */
 .social-feed__skeleton {
@@ -12511,14 +12550,16 @@ html.social-modal-open { overflow: hidden; }
   .social-card,
   .social-card__thumb img,
   .social-card__play,
-  .social-card__play::before { transition: none; }
+  .social-card__play::before,
+  .social-feed__featured-cta,
+  .social-feed__featured-pill { transition: none; }
   .social-feed__skeleton { animation: none; }
 }
 
 @media (max-width: 760px) {
   .social-feed { grid-template-columns: 1fr; }
   .social-feed__scroll { max-height: 520px; }
-  .social-embed--linkedin iframe { height: 480px; }
+  .social-embed--linkedin iframe { height: 360px; }
 }
 
 /* ============================================================
