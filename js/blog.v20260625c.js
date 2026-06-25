@@ -192,34 +192,57 @@
     else renderList();
   }
 
+  function cacheGet(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (_e) { return null; } }
+  function cacheSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (_e) {} }
+
   function loadList() {
     state.mode = 'list';
+    // Stale-while-revalidate: paint cached articles instantly, refresh behind.
+    const cached = cacheGet('nuria_blog_list');
+    if (cached && Array.isArray(cached.posts) && cached.posts.length) {
+      state.posts = cached.posts;
+      render();
+    } else {
+      showState('blog.loading', 'Loading the latest articles…');
+    }
     if (!listUrl) {
-      showState('blog.empty', 'Articles are coming soon, in shā Allah. Follow along.');
+      if (!state.posts.length) showState('blog.empty', 'Articles are coming soon, in shā Allah. Follow along.');
       return;
     }
-    showState('blog.loading', 'Loading the latest articles…');
     fetch(listUrl, { method: 'GET', mode: 'cors' })
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-      .then((data) => { state.posts = (data && data.posts) || []; render(); })
-      .catch(() => showState('blog.empty', 'Articles are coming soon. Follow along.'));
+      .then((data) => {
+        const posts = (data && data.posts) || [];
+        cacheSet('nuria_blog_list', { ts: Date.now(), posts });
+        if (state.mode === 'list') { state.posts = posts; render(); }
+      })
+      .catch(() => { if (!state.posts.length) showState('blog.empty', 'Articles are coming soon. Follow along.'); });
   }
 
   function loadArticle(slug) {
     if (!postUrl) { loadList(); return; }
-    showState('blog.loading', 'Loading the latest articles…');
+    state.mode = 'article';
+    const key = 'nuria_blog_post_' + slug;
+    const cached = cacheGet(key);
+    if (cached && cached.post) {
+      state.post = cached.post;
+      render(); // instant from cache — revalidate below
+    } else {
+      showState('blog.loading', 'Loading the latest articles…');
+    }
     fetch(postUrl + '?slug=' + encodeURIComponent(slug), { method: 'GET', mode: 'cors' })
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data) => {
         if (data && data.ok && data.post) {
+          cacheSet(key, { ts: Date.now(), post: data.post });
           state.mode = 'article';
           state.post = data.post;
           render();
-        } else {
-          loadList(); // unknown slug -> show the list
+        } else if (!state.post) {
+          loadList(); // unknown slug and nothing cached -> show the list
         }
       })
-      .catch(() => loadList());
+      .catch(() => { if (!state.post) loadList(); });
   }
 
   function start() {
