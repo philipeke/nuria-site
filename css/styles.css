@@ -13416,6 +13416,13 @@ html.social-modal-open { overflow: hidden; }
   border: 1px solid var(--color-border);
 }
 .blog-article__cover img { width: 100%; height: auto; display: block; }
+/* "Welcome to Nuria Journal" uses the brand logo (not a photo) as its cover.
+   Drop the framed-box look so it reads as a mark: no border, tighter spacing. */
+.blog-article__cover:has(img[src*="Nuria"][src*="Logo"]) {
+  border: none;
+  border-radius: 0;
+  margin-bottom: 1rem;
+}
 .blog-article__body {
   color: var(--color-text-dim);
   font-size: 1.05rem;
