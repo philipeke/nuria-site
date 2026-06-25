@@ -12558,7 +12558,18 @@ html.social-modal-open { overflow: hidden; }
 
 @media (max-width: 760px) {
   .social-feed { grid-template-columns: 1fr; }
-  .social-feed__scroll { max-height: 520px; }
+  /* Drop the nested inner scroll on touch — a fixed-height scroll box inside a
+     long page captures the swipe and makes it hard to scroll past. Let the page
+     scroll as one, and keep the section compact by showing only the latest few
+     (the "Follow" link in each header is the path to the rest). */
+  .social-feed__scroll {
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .social-feed__col--tiktok .social-card--video:nth-of-type(n+7) { display: none; }
+  .social-feed__col--linkedin .social-card--post:nth-of-type(n+5) { display: none; }
   .social-embed--linkedin iframe { height: 360px; }
 }
 
