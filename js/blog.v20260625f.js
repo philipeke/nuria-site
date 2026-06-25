@@ -139,7 +139,7 @@
     grid.appendChild(frag);
   }
 
-  var DIVIDER_SVG = '<svg class="nuria-divider__line" viewBox="0 0 400 8" fill="none" aria-hidden="true">' +
+  var DIVIDER_SVG = '<svg class="nuria-divider__line" viewBox="0 0 400 8" fill="none" aria-hidden="true" style="width:100%;height:auto;display:block">' +
     '<defs><linearGradient id="ndGold2" x1="0" x2="1" y1="0" y2="0">' +
     '<stop offset="0" stop-color="#c9a84c" stop-opacity="0"/><stop offset="0.2" stop-color="#c9a84c"/>' +
     '<stop offset="0.5" stop-color="#f4d98c"/><stop offset="0.8" stop-color="#c9a84c"/>' +
