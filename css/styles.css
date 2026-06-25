@@ -4455,6 +4455,11 @@ body.theme-luxury-stone .admin-dashboard-copy-compare__row span {
   filter: saturate(0.92) contrast(1.04);
   transform: scale(1);
 }
+/* Luxury Stone: badge sits on a dark pill, so its label must be gold — the theme's
+   --color-text is dark and would otherwise read dark-on-dark. */
+body.theme-luxury-stone .support-founder__badge {
+  color: var(--color-gold-bright);
+}
 .support-founder__badge {
   position: absolute;
   left: 50%;
