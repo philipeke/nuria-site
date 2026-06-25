@@ -123,6 +123,7 @@
   }
 
   function renderList() {
+    document.documentElement.classList.remove('blog-reading');
     if (article) { article.hidden = true; article.style.display = 'none'; }
     grid.hidden = false;
     grid.style.display = '';
@@ -138,10 +139,22 @@
     grid.appendChild(frag);
   }
 
+  var DIVIDER_SVG = '<svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 4 L36 20 L20 36 L4 20 Z" stroke="currentColor" stroke-width="1.1"/><path d="M8.7 8.7 H31.3 V31.3 H8.7 Z" stroke="currentColor" stroke-width="1.1"/><circle cx="20" cy="20" r="2.3" fill="currentColor"/></svg>';
+  function makeDivider() {
+    const d = document.createElement('div');
+    d.className = 'nuria-divider nuria-divider--tight';
+    d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<span class="nuria-divider__rule nuria-divider__rule--l"></span>' +
+      '<span class="nuria-divider__gem">' + DIVIDER_SVG + '</span>' +
+      '<span class="nuria-divider__rule nuria-divider__rule--r"></span>';
+    return d;
+  }
+
   function renderArticle() {
     if (!article || !state.post) return;
     const post = state.post;
     const tr = pick(post.translations);
+    document.documentElement.classList.add('blog-reading');
     grid.hidden = true;
     grid.style.display = 'none';
     article.hidden = false;
@@ -176,6 +189,8 @@
       cover.appendChild(img);
       article.appendChild(cover);
     }
+
+    article.appendChild(makeDivider());
 
     const bodyEl = document.createElement('div');
     bodyEl.className = 'blog-article__body';
