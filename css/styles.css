@@ -2811,6 +2811,47 @@ body.theme-luxury-stone .market-story--ipad .market-story__copy--ipad .market-st
   opacity: 0.35;
   text-decoration: line-through;
 }
+/* Serene & Noor in-app purchases — App Store style square art with rounded
+   (squircle-ish) corners, gilded edge, and a soft lift on hover. */
+.iap-tiles {
+  display: flex;
+  gap: 1.1rem;
+  justify-content: center;
+  margin: -0.25rem 0 1.75rem;
+}
+.iap-tile {
+  margin: 0;
+  flex: 1 1 0;
+  max-width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.iap-tile__img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  display: block;
+  border-radius: 22.5%;
+  border: 1px solid var(--color-border-mid);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(201, 168, 76, 0.06);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.iap-tile:hover .iap-tile__img {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(201, 168, 76, 0.12);
+}
+.iap-tile__name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+}
 
 /* ===== DOWNLOAD CTA ===== */
 .section--download {
