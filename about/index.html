@@ -12,17 +12,17 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://nuria.one/about/" />
   <meta property="og:site_name" content="Nuria" />
-  <meta property="og:image" content="https://nuria.one/assets/Nuria%20Logo.png" />
-  <meta property="og:image:secure_url" content="https://nuria.one/assets/Nuria%20Logo.png" />
+  <meta property="og:image" content="https://nuria.one/assets/sintra/nuria-og.png" />
+  <meta property="og:image:secure_url" content="https://nuria.one/assets/sintra/nuria-og.png" />
   <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1600" />
-  <meta property="og:image:height" content="1600" />
-  <meta property="og:image:alt" content="Nuria logo" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="896" />
+  <meta property="og:image:alt" content="Nuria Technologies — نور, light for the global ummah" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Our Story — Nuria Technologies" />
   <meta name="twitter:description" content="Built for the Muslim. Not built off the Muslim. The story behind Nuria — the digital home for the global ummah." />
-  <meta name="twitter:image" content="https://nuria.one/assets/Nuria%20Logo.png" />
-  <meta name="twitter:image:alt" content="Nuria logo" />
+  <meta name="twitter:image" content="https://nuria.one/assets/sintra/nuria-og.png" />
+  <meta name="twitter:image:alt" content="Nuria Technologies — نور, light for the global ummah" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
   <link rel="icon" type="image/png" href="/assets/favicon-tab.png" />
@@ -31,6 +31,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    /* Company page visual layer (page-scoped) */
+    .company-hero { display: flex; align-items: center; justify-content: center; gap: clamp(1.5rem, 4vw, 3.5rem); flex-wrap: wrap; }
+    .company-hero__text { flex: 1 1 380px; max-width: 600px; text-align: left; }
+    .company-hero__visual { flex: 0 0 auto; }
+    .company-hero__phone { width: clamp(190px, 26vw, 280px); height: auto; display: block;
+      filter: drop-shadow(0 22px 55px rgba(201, 168, 76, 0.22)); }
+    .about-card__icon-img { width: 112px; height: 112px; object-fit: contain; display: block; margin: 0 auto 0.5rem; }
+    .app-icon-svg { width: 96px; height: 96px; display: block; margin: 0 auto 0.5rem; fill: none;
+      stroke: var(--color-gold-bright); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+    .company-founding-banner { width: 100%; max-width: 720px; aspect-ratio: 1200 / 896; object-fit: cover;
+      border-radius: 18px; display: block; margin: 0 auto 2rem; box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3); }
+    @media (max-width: 760px) {
+      .company-hero__text { text-align: center; flex-basis: 100%; }
+      .company-hero__visual { order: -1; }
+      .company-hero__phone { width: clamp(165px, 55vw, 220px); margin: 0 auto; }
+    }
+  </style>
 </head>
 <body>
 
@@ -92,13 +110,18 @@
   <div class="hero__geo-bg" aria-hidden="true"></div>
 
   <header class="page-hero">
-    <div class="container">
-      <p class="page-hero__label" data-i18n="company.hero_label">Nuria Technologies</p>
-      <h1 class="page-hero__title" data-i18n-html="company.lead_title">Built for the Muslim. <em>Not built off the Muslim.</em></h1>
-      <p class="page-hero__subtitle" data-i18n="company.lead_sub">
-        Nuria Technologies is building the digital home the global ummah has never had — and the
-        verified Islamic AI infrastructure the world needs before it can trust what it hears about the deen.
-      </p>
+    <div class="container company-hero">
+      <div class="company-hero__text">
+        <p class="page-hero__label" data-i18n="company.hero_label">Nuria Technologies</p>
+        <h1 class="page-hero__title" data-i18n-html="company.lead_title">Built for the Muslim. <em>Not built off the Muslim.</em></h1>
+        <p class="page-hero__subtitle" data-i18n="company.lead_sub">
+          Nuria Technologies is building the digital home the global ummah has never had — and the
+          verified Islamic AI infrastructure the world needs before it can trust what it hears about the deen.
+        </p>
+      </div>
+      <div class="company-hero__visual">
+        <img src="../assets/sintra/nuria-hero.png" alt="The Nuria app showing نور — light" class="company-hero__phone" width="768" height="1376" loading="eager" decoding="async" />
+      </div>
     </div>
   </header>
 
@@ -135,27 +158,32 @@
 
       <div class="about-vision">
         <div class="about-card animate-on-scroll">
-          <div class="about-card__icon">☾</div>
+          <svg class="app-icon-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <rect x="38" y="14" width="44" height="92" rx="9"/>
+            <line x1="53" y1="22" x2="67" y2="22"/>
+            <rect x="46" y="48" width="28" height="28" rx="2"/>
+            <rect x="46" y="48" width="28" height="28" rx="2" transform="rotate(45 60 62)"/>
+          </svg>
           <h3 class="about-card__title" data-i18n="company.sphere_app_title">Nuria — the companion in your pocket</h3>
           <p class="about-card__text" data-i18n="company.sphere_app_text">The full Quran word-by-word with audio, precise prayer times, the Qibla, dhikr, duas, and Qaida learning paths. Free, always.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="80">
-          <div class="about-card__icon">۝</div>
+          <img src="../assets/sintra/nuria-icon-halqa.png" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
           <h3 class="about-card__title" data-i18n="company.sphere_halqa_title">Halqa — you were never meant to do this alone</h3>
           <p class="about-card__text" data-i18n="company.sphere_halqa_text">Accountability circles, made of love. Build a circle with family, friends, your study group; set goals together; show up for one another. The ummah is one body.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="160">
-          <div class="about-card__icon">✦</div>
+          <img src="../assets/sintra/nuria-icon-nuriaone.png" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
           <h3 class="about-card__title" data-i18n="company.sphere_nuriaone_title">NuriaOne — a scholarly companion, not a chatbot</h3>
           <p class="about-card__text" data-i18n="company.sphere_nuriaone_text">Our source-citing Islamic AI: it answers from authentic sources and cites them, says what it does not know, and never issues a binding fatwa. Ask NuriaOne anything — and know where the answer comes from.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="240">
-          <div class="about-card__icon">◈</div>
+          <img src="../assets/sintra/nuria-icon-intelligence.png" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
           <h3 class="about-card__title" data-i18n="company.sphere_intel_title">Nuria Intelligence — the foundation beneath</h3>
           <p class="about-card__text" data-i18n="company.sphere_intel_text">A scholar-certified Islamic knowledge layer, exposed through open interfaces so other apps and tools can build on verified Islamic knowledge instead of hallucinated fatwas. The moat is not the model. The moat is the trust.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="320">
-          <div class="about-card__icon">۩</div>
+          <img src="../assets/sintra/nuria-icon-family-tree.png" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
           <h3 class="about-card__title" data-i18n="company.sphere_family_title">Family Deen Tree — passing the light forward</h3>
           <p class="about-card__text" data-i18n="company.sphere_family_text">Connect your family inside the app, and add a cloud legacy and bequest layer. A light handed down, not an account that ends when you do.</p>
         </div>
@@ -308,6 +336,7 @@
   <section class="section" style="padding-top:0;">
     <div class="container">
       <div class="page-content__card animate-on-scroll">
+        <img src="../assets/sintra/nuria-founding.png" alt="An open Quran in the warm light of dawn" class="company-founding-banner" width="1200" height="896" loading="lazy" decoding="async" />
         <p class="section__label" data-i18n="company.team_label">The People Behind Nuria</p>
         <h2 data-i18n="company.team_title">A small team with one intention</h2>
 
