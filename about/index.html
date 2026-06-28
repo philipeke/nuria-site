@@ -45,7 +45,8 @@
       border-radius: 18px; display: block; margin: 0 auto 2rem; box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3); }
     @media (max-width: 760px) {
       .company-hero__text { text-align: center; flex-basis: 100%; }
-      .company-hero__visual { order: -1; }
+      /* Phone sits below the intro copy on mobile (source order) rather than above it. */
+      .company-hero__visual { order: 0; margin-top: 0.5rem; }
       .company-hero__phone { width: clamp(165px, 55vw, 220px); margin: 0 auto; }
     }
   </style>
