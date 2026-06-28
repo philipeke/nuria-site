@@ -5735,10 +5735,23 @@ html.perf-lite .btn--store {
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
   .pricing-grid { grid-template-columns: 1fr; }
   .support-grid { grid-template-columns: 1fr; }
-  /* Founder section on mobile: dissolve the nested card + heavy photo frame into one
-     clean profile layout — a circular portrait above centered text. No box-on-box. */
+  /* Founder section on mobile: strip every nested box so the content sits straight on
+     the page like the other sections — no card, no inner box, no photo frame. Just a
+     banner, a circular portrait, flowing text, and a quiet pull-quote. */
+  .company-team-card {
+    background: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+  .company-founding-banner {
+    border-radius: 14px;
+    box-shadow: none;
+    margin-bottom: 1.75rem;
+  }
   .support-founder {
-    margin: 1.75rem 0 0.5rem;
+    margin: 1.5rem 0 0;
     padding: 0;
     border: none;
     background: none;
@@ -5765,6 +5778,15 @@ html.perf-lite .btn--store {
   .support-founder__content { padding: 0; }
   .support-founder__eyebrow,
   .support-founder__title { text-align: center; }
+  /* Pull-quote: a quiet gold left-rule instead of a filled box */
+  .support-founder__quote {
+    background: none;
+    border: none;
+    border-left: 3px solid var(--color-gold);
+    border-radius: 0;
+    padding: 0.1rem 0 0.1rem 1.1rem;
+    margin-top: 1.75rem;
+  }
   .support-contact-wrap { grid-template-columns: 1fr; }
   .support-contact-panel { padding: 2rem; }
   .footer__links { flex-wrap: wrap; gap: 2rem; }
