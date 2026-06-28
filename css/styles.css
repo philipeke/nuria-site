@@ -3742,7 +3742,6 @@ body.theme-luxury-stone .sources-release__grid article,
 body.theme-luxury-stone .sources-intro__card,
 body.theme-luxury-stone .sources-footnote,
 body.theme-luxury-stone .support-card,
-body.theme-luxury-stone .support-founder,
 body.theme-luxury-stone .release-card,
 body.theme-luxury-stone .release-band,
 body.theme-luxury-stone .release-band div {
@@ -4445,18 +4444,18 @@ body.theme-luxury-stone .admin-dashboard-copy-compare__row span {
     grid-column: auto;
   }
 }
+/* The founder block flows directly inside the outer .page-content__card at every
+   width — no nested card. (Mobile additionally strips the outer card; see the
+   max-width:768px block.) */
 .support-founder {
-  margin: 2.75rem auto 1.2rem;
-  padding: 2rem;
+  margin: 2rem auto 0;
+  padding: 0;
   display: block;
   max-width: 920px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(201, 168, 76, 0.08), transparent 26%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 100%),
-    rgba(255, 255, 255, 0.012);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 .support-founder__media {
   position: relative;
