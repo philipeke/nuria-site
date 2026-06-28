@@ -13603,3 +13603,164 @@ html.social-modal-open { overflow: hidden; }
 @media (max-width: 700px) {
   .blog-reading .section { padding-top: 96px; }
 }
+
+/* ============================================================
+   LIVING VIDEO STAGE — reusable cinematic video background.
+   Wrap a section (or several) in .video-stage and drop a
+   .video-stage__bg (video + scrim) in as the FIRST child.
+   It stays a dark, legible strip in BOTH themes (a video needs
+   a dark treatment regardless of page theme); when motion or
+   data is limited it degrades to a static gradient.
+   Behaviour is wired by js/video-stage.js.
+   ============================================================ */
+.video-stage { position: relative; isolation: isolate; overflow: hidden; }
+.video-stage > :not(.video-stage__bg) { position: relative; z-index: 1; }
+
+/* Optional: a taller, vertically-centred feature band. The band grows
+   with the viewport so more of the (vertical) film is revealed on wide
+   screens instead of just a thin horizontal slice. */
+.video-stage--feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: clamp(480px, 66vh, 760px);
+}
+@media (min-width: 1200px) {
+  .video-stage--feature { min-height: clamp(740px, 82vh, 1060px); }
+}
+@media (min-width: 1700px) {
+  .video-stage--feature { min-height: clamp(920px, 88vh, 1220px); }
+}
+
+.video-stage__bg {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+  background-color: #06100b; /* dark base before the video paints */
+}
+.video-stage__media {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: var(--video-pos, center 40%);
+  filter: brightness(0.82) saturate(0.95) contrast(1.02);
+  opacity: 0;                         /* fades in once it is actually playing */
+  transition: opacity 1.4s ease;
+}
+.video-stage__media.is-playing { opacity: 1; }
+
+.video-stage__scrim {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(125% 115% at 50% 42%,
+      rgba(6, 16, 11, 0.14) 0%,
+      rgba(6, 16, 11, 0.46) 60%,
+      rgba(3, 9, 6, 0.78) 100%);
+}
+/* Feather the top/bottom edges so the strip melts into a dark page
+   and reads as an intentional dark band on a light (stone) page. */
+.video-stage__bg::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(6, 16, 11, 0.92) 0%, rgba(6, 16, 11, 0) 11%,
+    rgba(6, 16, 11, 0) 89%, rgba(6, 16, 11, 0.92) 100%);
+}
+/* Static fallback (reduced motion / data saver / autoplay blocked). */
+.video-stage.is-static .video-stage__scrim {
+  background:
+    radial-gradient(125% 115% at 50% 40%,
+      rgba(26, 122, 74, 0.14) 0%,
+      rgba(6, 16, 11, 0.84) 58%,
+      rgba(3, 9, 6, 0.94) 100%);
+}
+
+/* Force light, legible content over the always-dark band, in BOTH
+   themes. The second selector in each pair out-specifies the
+   stone-theme rules that would otherwise re-colour these for light. */
+.video-stage .section__label,
+body.theme-luxury-stone .video-stage .section__label {
+  color: var(--color-green-light);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+}
+.video-stage .section__title,
+body.theme-luxury-stone .video-stage .section__title {
+  color: #f4ead0;
+  text-shadow: 0 2px 26px rgba(0, 0, 0, 0.6);
+}
+.video-stage .section__subtitle,
+body.theme-luxury-stone .video-stage .section__subtitle {
+  color: rgba(234, 246, 240, 0.86);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.6);
+}
+.video-stage .about-metric__num,
+body.theme-luxury-stone .video-stage .about-metric__num {
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 24px rgba(201, 168, 76, 0.4), 0 2px 18px rgba(0, 0, 0, 0.6);
+}
+.video-stage .about-metric__label,
+body.theme-luxury-stone .video-stage .about-metric__label {
+  color: rgba(234, 246, 240, 0.85);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.65);
+}
+.video-stage .featured-quote,
+body.theme-luxury-stone .video-stage .featured-quote { color: #f4ead0; }
+.video-stage .featured-quote__arabic,
+body.theme-luxury-stone .video-stage .featured-quote__arabic {
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.55), 0 2px 18px rgba(0, 0, 0, 0.6);
+}
+.video-stage .featured-quote__text,
+body.theme-luxury-stone .video-stage .featured-quote__text {
+  color: #f4ead0;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+}
+.video-stage .featured-quote__cite,
+body.theme-luxury-stone .video-stage .featured-quote__cite {
+  color: rgba(234, 246, 240, 0.82);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+}
+.video-stage .featured-quote__star,
+body.theme-luxury-stone .video-stage .featured-quote__star { color: var(--color-gold-bright); }
+
+/* ---- Bright-footage variant ------------------------------------
+   For light scenes (e.g. sunlit desert) keep the film bright and
+   place a soft warm "light box" behind the text so DARK type stays
+   readable even as dark subjects move through frame. Rules sit after
+   the defaults so they win at equal specificity. */
+.video-stage--bright .video-stage__media {
+  filter: brightness(0.98) saturate(1.02) contrast(1.02);
+}
+.video-stage--bright .video-stage__scrim {
+  background:
+    radial-gradient(115% 95% at 50% 50%,
+      rgba(247, 240, 224, 0.86) 0%,
+      rgba(247, 240, 224, 0.62) 34%,
+      rgba(247, 240, 224, 0.18) 58%,
+      rgba(247, 240, 224, 0) 74%);
+}
+/* Keep a gentle edge feather, but warm/light instead of dark. */
+.video-stage--bright .video-stage__bg::after {
+  background: linear-gradient(180deg,
+    rgba(20, 14, 4, 0.34) 0%, rgba(20, 14, 4, 0) 14%,
+    rgba(20, 14, 4, 0) 86%, rgba(20, 14, 4, 0.34) 100%);
+}
+.video-stage--bright .featured-quote__arabic,
+body.theme-luxury-stone .video-stage--bright .featured-quote__arabic {
+  color: #241803;
+  text-shadow: 0 1px 10px rgba(247, 240, 224, 0.7);
+}
+.video-stage--bright .featured-quote__text,
+body.theme-luxury-stone .video-stage--bright .featured-quote__text {
+  color: #1a140a;
+  text-shadow: 0 1px 9px rgba(247, 240, 224, 0.65);
+}
+.video-stage--bright .featured-quote__cite,
+body.theme-luxury-stone .video-stage--bright .featured-quote__cite {
+  color: #4e3b18;
+  text-shadow: 0 1px 8px rgba(247, 240, 224, 0.6);
+}
+.video-stage--bright .featured-quote__star,
+body.theme-luxury-stone .video-stage--bright .featured-quote__star { color: var(--color-gold-dim); }
+.video-stage--bright .featured-quote::before,
+.video-stage--bright .featured-quote::after {
+  background: linear-gradient(90deg, transparent, rgba(80, 56, 16, 0.6), transparent);
+}
