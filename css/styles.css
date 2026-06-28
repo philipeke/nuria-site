@@ -5735,10 +5735,32 @@ html.perf-lite .btn--store {
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
   .pricing-grid { grid-template-columns: 1fr; }
   .support-grid { grid-template-columns: 1fr; }
+  /* Founder section on mobile: dissolve the nested card + heavy photo frame into one
+     clean profile layout — a circular portrait above centered text. No box-on-box. */
+  .support-founder {
+    margin: 1.75rem 0 0.5rem;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
   .support-founder__media {
     float: none;
-    width: min(100%, 380px);
-    margin: 0 auto 2rem;
+    width: min(58%, 200px);
+    margin: 0 auto 2.4rem;
+    padding-bottom: 0;
+  }
+  .support-founder__frame {
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 2px solid rgba(201, 168, 76, 0.32);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+  }
+  .support-founder__frame::before { display: none; }
+  .support-founder__image {
+    object-position: center 18%;
+    filter: none;
   }
   .support-founder__content { padding: 0; }
   .support-founder__eyebrow,
