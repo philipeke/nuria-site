@@ -467,9 +467,25 @@ body.theme-luxury-stone::after {
   border: none;
   cursor: pointer;
   font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   padding: 0;
   color: var(--color-text-dim);
+  position: relative;
 }
+.nav__app-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--color-gold);
+  transition: var(--transition);
+}
+.nav__app-btn:hover { color: var(--color-text); }
+.nav__app-btn:hover::after,
+.nav__app-btn.active::after { width: 100%; }
+.nav__app-btn.active { color: var(--color-text); }
 .nav__app-chevron {
   font-size: 0.58rem;
   transition: transform 0.2s ease;
@@ -5759,7 +5775,7 @@ html.perf-lite .btn--store {
   .nav__links.open { display: flex; }
   .nav__link { display: block; }
   .nav__app { width: 100%; }
-  .nav__app-btn { display: flex; width: 100%; justify-content: space-between; text-align: left; }
+  .nav__app-btn { width: 100%; justify-content: space-between; }
   .nav__sep { display: none; }
   .nav__app-dropdown {
     position: static;
