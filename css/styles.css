@@ -5759,7 +5759,7 @@ html.perf-lite .btn--store {
   .nav__links.open { display: flex; }
   .nav__link { display: block; }
   .nav__app { width: 100%; }
-  .nav__app-btn { width: 100%; justify-content: space-between; }
+  .nav__app-btn { display: flex; width: 100%; justify-content: space-between; text-align: left; }
   .nav__sep { display: none; }
   .nav__app-dropdown {
     position: static;
