@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260629i" />
+  <link rel="stylesheet" href="css/styles.css?v=20260629j" />
 </head>
 <body>
 
@@ -441,15 +441,48 @@
         </div>
       </div>
 
-      <div class="market-story market-story--about market-story--ipad animate-on-scroll" data-delay="100">
+    </div>
+  </section>
+
+  <!-- =========================================================
+       iPAD SHOWCASE — full-bleed cinematic dark stage
+  ========================================================= -->
+  <section class="ipad-showcase" aria-label="Nuria on iPad">
+    <div class="ipad-showcase__bg" aria-hidden="true">
+      <span class="ipad-showcase__beam ipad-showcase__beam--1"></span>
+      <span class="ipad-showcase__beam ipad-showcase__beam--2"></span>
+      <span class="ipad-showcase__aura"></span>
+      <div class="ipad-showcase__embers">
+        <span style="--x:5%;  --d:14s; --delay:0s;   --s:0.7"></span>
+        <span style="--x:12%; --d:18s; --delay:4s;   --s:1"></span>
+        <span style="--x:19%; --d:16s; --delay:7s;   --s:0.6"></span>
+        <span style="--x:27%; --d:21s; --delay:2s;   --s:0.9"></span>
+        <span style="--x:34%; --d:15s; --delay:9s;   --s:0.7"></span>
+        <span style="--x:41%; --d:19s; --delay:5s;   --s:1.1"></span>
+        <span style="--x:48%; --d:17s; --delay:11s;  --s:0.65"></span>
+        <span style="--x:55%; --d:22s; --delay:1s;   --s:0.9"></span>
+        <span style="--x:62%; --d:16s; --delay:8s;   --s:0.75"></span>
+        <span style="--x:69%; --d:20s; --delay:3s;   --s:1"></span>
+        <span style="--x:76%; --d:15s; --delay:12s;  --s:0.6"></span>
+        <span style="--x:83%; --d:18s; --delay:6s;   --s:0.85"></span>
+        <span style="--x:90%; --d:21s; --delay:10s;  --s:0.7"></span>
+        <span style="--x:95%; --d:17s; --delay:2.5s; --s:0.9"></span>
+        <span style="--x:31%; --d:23s; --delay:13s;  --s:0.55"></span>
+        <span style="--x:72%; --d:24s; --delay:14s;  --s:0.6"></span>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="market-story market-story--about market-story--ipad ipad-showcase__story" data-reveal data-delay="60">
         <div class="market-story__copy market-story__copy--ipad">
           <p class="section__label market-story__eyebrow" data-i18n="about.showcase_label">Calm in the everyday</p>
           <p class="market-story__lead" data-i18n="about.showcase_lead">
             Quran, prayer tools, and guidance — one peaceful screen when you open Nuria.
           </p>
         </div>
-        <figure class="market-story__figure market-story__figure--ipad">
-          <div class="market-story__frame market-story__frame--ipad">
+        <figure class="market-story__figure market-story__figure--ipad ipad-showcase__figure">
+          <span class="ipad-showcase__halo" aria-hidden="true"></span>
+          <div class="market-story__frame market-story__frame--ipad ipad-showcase__device">
             <picture class="market-story__picture market-story__picture--ipad">
               <img
                 src="assets/market-image-2.png"
@@ -462,6 +495,7 @@
                 decoding="async"
               />
             </picture>
+            <span class="ipad-showcase__glare" aria-hidden="true"></span>
           </div>
           <figcaption class="market-story__caption" data-i18n="about.showcase_caption">Nuria on your iPad — Quran, prayer, and reflection in one place.</figcaption>
         </figure>
@@ -1076,7 +1110,7 @@
   <script src="js/components.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/sources-translations.js"></script>
-  <script src="js/main.js?v=20260629i"></script>
+  <script src="js/main.js?v=20260629j"></script>
   <script src="js/social-feed.js?v=20260625-li-preview"></script>
   <script src="js/video-stage.js?v=20260629"></script>
 </body>
