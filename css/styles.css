@@ -1531,6 +1531,9 @@ body.theme-luxury-stone .hero__title {
   object-fit: cover;
   object-position: center 30%;
   filter: brightness(0.6) saturate(0.84);
+  will-change: transform;       /* keep the Ken Burns zoom on its own layer */
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 .mosque-band__scrim {
   position: absolute; inset: 0;
@@ -1588,18 +1591,20 @@ body.theme-luxury-stone .mosque-band .section__subtitle {
   color: rgba(244, 234, 208, 0.85) !important;
 }
 
-/* Reflection cards — frosted glass so they read over the image */
+/* Reflection cards — translucent dark glass so they read over the image.
+   NOTE: deliberately NO backdrop-filter here. With 15 cards over the slowly
+   zooming (Ken Burns) image, a per-card blur would force the browser to
+   re-blur the moving image every frame and stutters the scroll. A slightly
+   more opaque solid fill gives the same legibility with zero per-frame cost. */
 .mosque-band .cat-card {
-  background: rgba(6, 14, 9, 0.46);
-  border: 1px solid rgba(201, 168, 76, 0.18);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+  background: rgba(7, 15, 10, 0.74);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.32);
 }
 .mosque-band .cat-card:hover {
-  border-color: rgba(201, 168, 76, 0.42);
-  background: rgba(6, 14, 9, 0.6);
-  box-shadow: 0 14px 35px rgba(0,0,0,0.4), 0 0 25px rgba(45, 190, 108, 0.08);
+  border-color: rgba(201, 168, 76, 0.44);
+  background: rgba(9, 18, 12, 0.82);
+  box-shadow: 0 14px 35px rgba(0,0,0,0.42), 0 0 25px rgba(45, 190, 108, 0.08);
 }
 body .mosque-band .cat-card h4,
 body.theme-luxury-stone .mosque-band .cat-card h4 { color: #f4ead0; }
@@ -2133,18 +2138,23 @@ body.theme-luxury-stone .feature-card:nth-child(6n) { --feature-accent: #c8a650;
   padding: clamp(1.15rem, 2vw, 1.45rem);
 }
 
-/* Primary app showcase: military-green stage with a landscape iPad display */
+/* Primary app showcase: a cinematic dark stage — a golden spotlight falls
+   behind the floating iPad, a soft emerald ambient rises from below, and a
+   gentle vignette + gold rim lift the whole panel off the page. */
 .market-story--ipad {
   margin-top: clamp(5.5rem, 8vw, 7.25rem);
-  padding: clamp(2.1rem, 3.5vw, 3.1rem) clamp(1.45rem, 3vw, 2.35rem) clamp(1.65rem, 3vw, 2.35rem);
-  gap: clamp(1.7rem, 3vw, 2.5rem);
-  border-color: rgba(227, 205, 132, 0.22);
+  padding: clamp(2.6rem, 4.5vw, 4rem) clamp(1.6rem, 3vw, 2.6rem) clamp(2.2rem, 4vw, 3.2rem);
+  gap: clamp(1.9rem, 3vw, 2.7rem);
+  border: 1px solid rgba(201, 168, 76, 0.22);
   background:
-    radial-gradient(ellipse 58% 42% at 50% 0%, rgba(231, 209, 137, 0.12), transparent 66%),
-    linear-gradient(180deg, #586331 0%, #414b27 100%);
+    radial-gradient(ellipse 58% 44% at 50% 10%, rgba(201, 168, 76, 0.2), transparent 64%),
+    radial-gradient(ellipse 104% 64% at 50% 118%, rgba(26, 122, 74, 0.16), transparent 72%),
+    linear-gradient(168deg, #0c1813 0%, #060d0a 50%, #0a1410 100%);
   box-shadow:
-    0 32px 68px rgba(43, 49, 27, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 44px 90px rgba(0, 0, 0, 0.42),
+    0 10px 26px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 70px rgba(0, 0, 0, 0.42);
 }
 
 .market-story--ipad::before {
@@ -4040,10 +4050,46 @@ body.theme-luxury-stone .feature-card--new::after {
 }
 body.theme-luxury-stone .section--new-features,
 body.theme-luxury-stone .section--download,
+/* ===== PREMIUM DARK FOOTER — one deep, muted tone on every page & theme.
+   The footer anchors the page in a calm dark band with lightened, gilded
+   text — the same on both the classic and Luxury Stone themes. ===== */
+.footer,
 body.theme-luxury-stone .footer {
   background:
-    radial-gradient(circle at 82% 18%, rgba(155, 111, 34, 0.13), transparent 36%),
-    rgba(232, 219, 192, 0.36);
+    radial-gradient(ellipse 46% 72% at 86% 0%, rgba(201, 168, 76, 0.08), transparent 60%),
+    linear-gradient(180deg, #0a1410 0%, #050b08 100%);
+  border-top: 1px solid rgba(201, 168, 76, 0.16);
+}
+.footer__tagline,
+body.theme-luxury-stone .footer__tagline {
+  color: rgba(238, 230, 208, 0.66);
+}
+.footer__col-title,
+body.theme-luxury-stone .footer__col-title {
+  color: rgba(216, 188, 120, 0.92);
+}
+.footer__col a,
+.footer__bottom p,
+.footer__bottom-links a,
+body.theme-luxury-stone .footer__col a,
+body.theme-luxury-stone .footer__bottom p,
+body.theme-luxury-stone .footer__bottom-links a {
+  color: rgba(238, 230, 208, 0.6);
+}
+.footer__col a:hover,
+.footer__bottom-links a:hover,
+body.theme-luxury-stone .footer__col a:hover,
+body.theme-luxury-stone .footer__bottom-links a:hover {
+  color: #f6edd6;
+}
+.footer__bottom,
+body.theme-luxury-stone .footer__bottom {
+  border-top-color: rgba(255, 255, 255, 0.09);
+}
+.footer__bismillah,
+body.theme-luxury-stone .footer__bismillah {
+  color: var(--color-gold);
+  opacity: 0.62;
 }
 body.theme-luxury-stone .section--release {
   background:
