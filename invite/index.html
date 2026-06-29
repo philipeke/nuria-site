@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260629g" />
 </head>
 <body>
 
@@ -54,7 +54,7 @@
   </header>
 
   <main class="page-content referral-page">
-    <div class="container referral-layout">
+    <div class="container referral-layout" data-stagger>
       <section class="referral-card referral-card--primary">
         <span class="referral-status-chip referral-status-chip--valid" id="inviteCodeChip" hidden></span>
         <p class="referral-kicker" data-i18n="invite.card_kicker">Friend invite</p>
@@ -103,19 +103,19 @@
         </div>
       </section>
 
-      <aside class="referral-card referral-card--aside">
+      <aside class="referral-card referral-card--aside" data-reveal="right">
         <span class="referral-side-label" data-i18n="invite.aside_label">Why Nuria</span>
         <h2 class="referral-side-title" data-i18n="invite.aside_title">One companion for your deen</h2>
         <p class="referral-side-copy" data-i18n="invite.aside_copy">
           Full Quran with tajweed, tafsir and word-by-word audio, accurate prayer times with adhan,
           qibla, duas, dhikr and personal reflections — free, in more than 100 languages.
         </p>
-        <div class="referral-facts">
-          <div class="referral-fact">
+        <div class="referral-facts" data-stagger>
+          <div class="referral-fact" data-reveal="scale">
             <strong data-i18n="invite.fact_1_title">You both win</strong>
             <span data-i18n="invite.fact_1_text">Joining through an invite gives bonus reflections to you and your friend.</span>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal="scale">
             <strong data-i18n="invite.fact_2_title">Free to use</strong>
             <span data-i18n="invite.fact_2_text">No account needed to start — sign in when you want to keep progress.</span>
           </div>
@@ -129,7 +129,7 @@
   <script src="../js/site-utils.js?v=20260616-stone-default"></script>
   <script src="../js/components.js?v=20260629b"></script>
   <script src="../js/i18n.js"></script>
-  <script src="../js/main.js"></script>
+  <script src="../js/main.js?v=20260629g"></script>
   <script src="../js/invite-link.js"></script>
   <script src="../js/invite-page.js"></script>
 </body>

@@ -90,6 +90,11 @@ button { font-family: inherit; }
   /* Motion */
   --transition:      all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: all 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Premium reveal easings */
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.4, 0.5, 1);
+  --reveal-dur:     0.9s;
 
   /* Shadows / Glows */
   --glow-green:    0 0 50px rgba(45, 190, 108, 0.2);
@@ -5586,14 +5591,77 @@ address.legal-address strong { color: var(--color-text); }
 }
 
 /* Scroll reveal */
-.animate-on-scroll {
+/* ============================================================
+   PREMIUM REVEAL ENGINE
+   Markup:
+     .animate-on-scroll            → default rise+fade
+     [data-reveal="left|right|scale|blur|clip"] → directional variant
+     [data-stagger] on a parent    → children cascade automatically
+   JS (main.js) adds .is-visible when the element enters the viewport.
+   ============================================================ */
+.animate-on-scroll,
+[data-reveal] {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.75s ease, transform 0.75s ease;
+  transform: translateY(42px);
+  transition:
+    opacity var(--reveal-dur) var(--ease-out-expo),
+    transform var(--reveal-dur) var(--ease-out-expo),
+    filter var(--reveal-dur) var(--ease-out-expo),
+    clip-path var(--reveal-dur) var(--ease-out-expo);
+  will-change: opacity, transform;
 }
-.animate-on-scroll.is-visible {
+.animate-on-scroll.is-visible,
+[data-reveal].is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
+  filter: none;
+  clip-path: inset(0 0 0 0);
+}
+/* Drop will-change once settled (set by JS on transitionend) */
+.animate-on-scroll.is-settled,
+[data-reveal].is-settled { will-change: auto; }
+
+/* Elements already on-screen at load are shown instantly with NO transition,
+   so above-the-fold content never swipes/flashes on first paint. */
+.animate-on-scroll.is-instant,
+[data-reveal].is-instant { transition: none !important; }
+
+/* Directional variants */
+[data-reveal="left"]  { transform: translateX(-52px); }
+[data-reveal="right"] { transform: translateX(52px); }
+[data-reveal="scale"] { transform: scale(0.93) translateY(28px); }
+[data-reveal="blur"]  { transform: translateY(30px); filter: blur(14px); }
+
+/* Clip-wipe — the dramatic "swipe in" for text boxes over imagery.
+   Content wipes upward into view behind a moving mask. */
+[data-reveal="clip"] {
+  transform: translateY(34px);
+  clip-path: inset(0 0 100% 0);
+}
+[data-reveal="clip-left"] {
+  transform: translateX(-40px);
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Auto-stagger: children of [data-stagger] cascade.
+   JS assigns --i (child index); base step is overridable per container. */
+[data-stagger] > * {
+  transition-delay: calc(var(--i, 0) * var(--stagger-step, 90ms));
+}
+/* Once a staggered child has finished revealing, drop the delay so that
+   later interactions (hover, etc.) respond instantly instead of inheriting
+   the entrance offset. */
+[data-stagger] > *.is-settled { transition-delay: 0s; }
+
+/* Ken Burns — a slow, barely-perceptible drift+zoom on background imagery.
+   Gives cinematic life to otherwise static hero/section images. */
+@keyframes kenburns {
+  0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+  100% { transform: scale(1.16) translate3d(-1.5%, -1.8%, 0); }
+}
+[data-kenburns] {
+  animation: kenburns 26s ease-in-out infinite alternate;
+  transform-origin: center 35%;
 }
 
 /* ===== SCROLL PERFORMANCE ===== */
@@ -5695,11 +5763,16 @@ html.perf-lite .btn--store {
     animation: none !important;
   }
 
-  .animate-on-scroll {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  .animate-on-scroll,
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    transition: none !important;
   }
+  [data-stagger] > * { transition-delay: 0s !important; }
+  [data-kenburns] { animation: none !important; }
 
   .hero__phone-wrap {
     perspective: none;

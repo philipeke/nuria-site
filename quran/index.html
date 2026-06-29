@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260629g" />
 </head>
 <body>
 
@@ -103,7 +103,7 @@
         </div>
       </section>
 
-      <aside class="referral-card referral-card--aside">
+      <aside class="referral-card referral-card--aside" data-reveal="right">
         <span class="referral-side-label" data-i18n="quran.aside_label">In the app</span>
         <h2 class="referral-side-title" data-i18n="quran.aside_title">The Qur'an, the way it deserves</h2>
         <p class="referral-side-copy" data-i18n="quran.aside_copy">
@@ -111,16 +111,16 @@
           languages, tafsir, word-by-word audio, bookmarks, notes and a Khatmah planner that keeps your
           reading on track.
         </p>
-        <div class="referral-facts">
-          <div class="referral-fact">
+        <div class="referral-facts" data-stagger>
+          <div class="referral-fact" data-reveal="scale">
             <strong data-i18n="quran.fact_1_title">Word by word</strong>
             <span data-i18n="quran.fact_1_text">Tap any word to hear it recited and see its meaning.</span>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal="scale">
             <strong data-i18n="quran.fact_2_title">Tafsir included</strong>
             <span data-i18n="quran.fact_2_text">Classical commentary alongside every verse.</span>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal="scale">
             <strong data-i18n="quran.fact_3_title">Khatmah planner</strong>
             <span data-i18n="quran.fact_3_text">Finish the Qur'an at your own pace with daily goals.</span>
           </div>
@@ -134,7 +134,7 @@
   <script src="../js/site-utils.js?v=20260616-stone-default"></script>
   <script src="../js/components.js?v=20260629b"></script>
   <script src="../js/i18n.js"></script>
-  <script src="../js/main.js"></script>
+  <script src="../js/main.js?v=20260629g"></script>
   <script src="../js/quran-link.js"></script>
   <script src="../js/quran-page.js"></script>
 </body>

@@ -35,7 +35,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260629g" />
 </head>
 <body>
 
@@ -261,7 +261,7 @@
           </p>
         </div>
 
-        <div class="referral-lookup-panel">
+        <div class="referral-lookup-panel" data-reveal="left">
           <div>
             <p class="referral-form-label" data-i18n="referral.try_another">Try another code</p>
             <h3 class="referral-form-title" data-i18n="referral.validate_before_app">Validate a referral before you open the app</h3>
@@ -290,14 +290,14 @@
         </div>
       </section>
 
-      <aside class="referral-card referral-card--aside" id="referralHelp">
+      <aside class="referral-card referral-card--aside" id="referralHelp" data-reveal="right">
         <span class="referral-side-label" data-i18n="referral.help_title">Important</span>
         <h2 class="referral-side-title" data-i18n="referral.help_partner_title">Quick reference for Nuria partners</h2>
         <p class="referral-side-copy" data-i18n="referral.help_partner_copy">
           When you use your community's referral code, your purchase directly supports their partnership with Nuria.
         </p>
 
-        <div class="referral-partner-login" role="region" aria-label="Affiliate Portal">
+        <div class="referral-partner-login" role="region" aria-label="Affiliate Portal" data-reveal="scale" data-delay="120">
           <p class="referral-partner-login__label" data-i18n="referral.partner_login_label">Partners</p>
           <h3 class="referral-partner-login__title" data-i18n="referral.partner_login_title">
             Sign in to your partner dashboard
@@ -314,20 +314,20 @@
           </a>
         </div>
 
-        <div class="referral-facts">
-          <div class="referral-fact">
+        <div class="referral-facts" data-stagger>
+          <div class="referral-fact" data-reveal>
             <strong data-i18n="referral.help_1">Get a referral code from your mosque, community, or organisation.</strong>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal>
             <strong data-i18n="referral.help_2">Validate it here to confirm it's active.</strong>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal>
             <strong data-i18n="referral.help_3">Copy the code (or let the app open directly with it).</strong>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal>
             <strong data-i18n="referral.help_4">Open Nuria and enter the code before your first purchase.</strong>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal>
             <strong data-i18n="referral.help_5">Your purchase supports your community's partnership with Nuria.</strong>
           </div>
         </div>
@@ -343,7 +343,7 @@
   <script src="../js/components.js?v=20260629b"></script>
   <script src="../js/i18n.js"></script>
   <script src="../js/sources-translations.js"></script>
-  <script src="../js/main.js"></script>
+  <script src="../js/main.js?v=20260629g"></script>
   <script src="../js/referral.js"></script>
 </body>
 </html>

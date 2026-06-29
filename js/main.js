@@ -294,24 +294,64 @@
   });
 }());
 
-/* ===== SCROLL-REVEAL ANIMATIONS ===== */
+/* ===== SCROLL-REVEAL ANIMATIONS (premium engine) =====
+   Handles .animate-on-scroll and [data-reveal] elements, supports
+   directional variants (CSS), per-element data-delay, and auto-stagger
+   for children of [data-stagger]. Drops will-change once settled. */
 (function () {
-  const els = document.querySelectorAll('.animate-on-scroll');
+  // Auto-index children of stagger containers so CSS can cascade them.
+  document.querySelectorAll('[data-stagger]').forEach(function (group) {
+    var kids = group.children;
+    for (var i = 0; i < kids.length; i++) {
+      kids[i].style.setProperty('--i', i);
+    }
+  });
+
+  var els = document.querySelectorAll('.animate-on-scroll, [data-reveal]');
   if (!els.length) return;
 
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const delay = parseInt(entry.target.dataset.delay || '0', 10);
-        setTimeout(() => {
-          entry.target.classList.add('is-visible');
-        }, delay);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  // No IntersectionObserver (very old browsers): just show everything.
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(function (el) { el.classList.add('is-visible', 'is-settled'); });
+    return;
+  }
 
-  els.forEach(el => observer.observe(el));
+  function settle(e) {
+    if (e.propertyName === 'transform' || e.propertyName === 'opacity') {
+      e.currentTarget.classList.add('is-settled');
+      e.currentTarget.removeEventListener('transitionend', settle);
+    }
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      var delay = parseInt(el.dataset.delay || '0', 10);
+      setTimeout(function () {
+        el.classList.add('is-visible');
+        el.addEventListener('transitionend', settle);
+      }, delay);
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+  function inView(el) {
+    var r = el.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    return r.top < vh && r.bottom > 0;
+  }
+
+  els.forEach(function (el) {
+    // Anything already on-screen at load reveals INSTANTLY (no swipe-in flash);
+    // only content below the fold gets the scroll-triggered entrance. This also
+    // guarantees above-the-fold content is never gated behind a scroll event.
+    if (inView(el)) {
+      el.classList.add('is-instant', 'is-visible', 'is-settled');
+    } else {
+      observer.observe(el);
+    }
+  });
 }());
 
 /* ===== SCROLL HANDLERS — single rAF-throttled listener ===== */

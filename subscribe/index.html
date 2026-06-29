@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260629g" />
 </head>
 <body>
   <div id="site-nav"></div>
@@ -96,22 +96,22 @@
         </div>
       </section>
 
-      <aside class="referral-card referral-card--aside">
+      <aside class="referral-card referral-card--aside" data-reveal="right">
         <span class="referral-side-label">Use in campaign</span>
         <h2 class="referral-side-title">Campaign-ready links</h2>
         <p class="referral-side-copy">
           Use the web link in ads, SMS, email, QR codes, and social posts. Use the app link only where custom app schemes are supported.
         </p>
-        <div class="referral-facts">
-          <div class="referral-fact">
+        <div class="referral-facts" data-stagger>
+          <div class="referral-fact" data-reveal>
             <strong>Public campaign URL</strong>
             <span id="subscribeCampaignUrl">https://nuria.one/subscribe</span>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal>
             <strong>App deep link</strong>
             <span id="subscribeSchemeUrl">nuria://subscribe</span>
           </div>
-          <div class="referral-fact">
+          <div class="referral-fact" data-reveal>
             <strong>App requirement</strong>
             <span>The Nuria app must handle the subscribe route and show the Serene / Noor offer screen.</span>
           </div>
@@ -125,7 +125,7 @@
   <script src="../js/site-utils.js?v=20260616-stone-default"></script>
   <script src="../js/components.js?v=20260629b"></script>
   <script src="../js/i18n.js"></script>
-  <script src="../js/main.js"></script>
+  <script src="../js/main.js?v=20260629g"></script>
   <script src="../js/subscribe.js"></script>
 </body>
 </html>

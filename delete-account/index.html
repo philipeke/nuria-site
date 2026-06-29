@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css?v=20260629g" />
 </head>
 <body>
   <div id="site-nav"></div>
@@ -52,13 +52,13 @@
     <div class="container">
 
       <!-- Info cards -->
-      <div class="support-grid" style="margin-bottom:2rem;">
-        <div class="support-card">
+      <div class="support-grid" style="margin-bottom:2rem;" data-stagger>
+        <div class="support-card" data-reveal="scale">
           <span class="support-card__icon">📱</span>
           <h3 data-i18n="del.app_title">Delete in the App</h3>
           <p data-i18n-html="del.app_text">The fastest way to delete your account is directly inside Nuria: go to <strong>Settings → Account → Delete Account</strong> and follow the steps.</p>
         </div>
-        <div class="support-card">
+        <div class="support-card" data-reveal="scale">
           <span class="support-card__icon">✉️</span>
           <h3 data-i18n="del.email_title">Request via Email</h3>
           <p data-i18n-html="del.email_text">You can also email us directly at <a href="mailto:hello@nuria.one">hello@nuria.one</a> with the subject "Account Deletion Request" and we will process it within 30 days.</p>
@@ -67,7 +67,7 @@
 
       <!-- Warning + Form -->
       <div class="page-content__card" style="margin-top:0;">
-        <h2 data-i18n="del.form_title">Submit a Deletion Request</h2>
+        <h2 data-i18n="del.form_title" data-reveal>Submit a Deletion Request</h2>
         <p data-i18n="del.form_desc">Use the form below to submit a formal account deletion request. Please provide the email address linked to your Nuria account.</p>
 
         <div class="form-warning" role="alert">
@@ -125,7 +125,7 @@
           </div>
         </form>
 
-        <h2 data-i18n="del.next_title">What Happens Next</h2>
+        <h2 data-i18n="del.next_title" data-reveal>What Happens Next</h2>
         <p data-i18n="del.next_intro">After we receive your request:</p>
         <ul>
           <li data-i18n="del.next_li1">We will send a confirmation email to the address you provided.</li>
@@ -136,7 +136,7 @@
           <li data-i18n="del.next_li5">Some anonymised, non-identifiable usage data may be retained for statistical purposes only.</li>
         </ul>
 
-        <h2 data-i18n="del.help_title">Need Help Instead?</h2>
+        <h2 data-i18n="del.help_title" data-reveal>Need Help Instead?</h2>
         <p data-i18n-html="del.help_text">
           Before you go, we would love to help if something isn't working as expected.
           Please reach out to us at <a href="mailto:hello@nuria.one">hello@nuria.one</a>
@@ -153,6 +153,6 @@
   <script src="../js/components.js?v=20260629b"></script>
   <script src="../js/i18n.js"></script>
   <script src="../js/sources-translations.js"></script>
-  <script src="../js/main.js"></script>
+  <script src="../js/main.js?v=20260629g"></script>
 </body>
 </html>
