@@ -36,13 +36,22 @@
           '<span class="nav__logo-img" aria-hidden="true"></span>' +
         '</a>' +
         '<div class="nav__links" id="navLinks">' +
-          '<a href="/#about"      class="nav__link" data-i18n="nav.about">About</a>' +
-          '<a href="/#daily"      class="nav__link" data-i18n="nav.daily">Daily</a>' +
-          '<a href="/#categories" class="nav__link" data-i18n="nav.categories">Categories</a>' +
-          '<a href="/#pricing"    class="nav__link" data-i18n="nav.plans">Plans</a>' +
-          '<a href="/about"       class="nav__link" data-i18n="nav.company">Company</a>' +
-          '<a href="/blog"        class="nav__link" data-i18n="nav.blog">Blog</a>' +
-          '<a href="/support"     class="nav__link" data-i18n="nav.support">Support</a>' +
+          '<div class="nav__app" id="navApp">' +
+            '<button class="nav__link nav__app-btn" id="appMenuBtn" aria-haspopup="true" aria-expanded="false">' +
+              '<span data-i18n="nav.app">App</span><span class="nav__app-chevron" aria-hidden="true">▾</span>' +
+            '</button>' +
+            '<div class="nav__app-dropdown" id="appMenuDropdown" role="menu">' +
+              '<a href="/#about"      class="nav__app-item" role="menuitem" data-i18n="nav.about">About</a>' +
+              '<a href="/#daily"      class="nav__app-item" role="menuitem" data-i18n="nav.daily">Daily</a>' +
+              '<a href="/#release"    class="nav__app-item" role="menuitem" data-i18n="nav.release">What\'s New</a>' +
+              '<a href="/#categories" class="nav__app-item" role="menuitem" data-i18n="nav.categories">Reflections</a>' +
+              '<a href="/#pricing"    class="nav__app-item" role="menuitem" data-i18n="nav.plans">Plans</a>' +
+            '</div>' +
+          '</div>' +
+          '<span class="nav__sep" aria-hidden="true"></span>' +
+          '<a href="/about"   class="nav__link" data-i18n="nav.company">Company</a>' +
+          '<a href="/blog"    class="nav__link" data-i18n="nav.blog">Blog</a>' +
+          '<a href="/support" class="nav__link" data-i18n="nav.support">Support</a>' +
         '</div>' +
         '<div class="nav__cta">' +
           '<a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>' +
@@ -78,7 +87,7 @@
               '<a href="/#about"      data-i18n="footer.about">About Nuria</a>' +
               '<a href="/about"       data-i18n="footer.company">Company</a>' +
               '<a href="/blog"        data-i18n="footer.blog">Blog</a>' +
-              '<a href="/#categories" data-i18n="nav.categories">Categories</a>' +
+              '<a href="/#categories" data-i18n="nav.categories">Reflections</a>' +
               '<a href="/#pricing"    data-i18n="footer.plans">Plans</a>' +
               '<a href="/ask">NuriaOne</a>' +
               '<a href="/join"        data-i18n="footer.partner">Nuria Partner</a>' +

@@ -188,6 +188,26 @@
   handleAnimationState();
 }());
 
+/* ===== APP MENU DROPDOWN ===== */
+(function () {
+  var wrapper = document.getElementById('navApp');
+  var btn     = document.getElementById('appMenuBtn');
+  if (!wrapper || !btn) return;
+
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var open = wrapper.classList.toggle('open');
+    btn.setAttribute('aria-expanded', String(open));
+  });
+
+  document.addEventListener('click', function () {
+    wrapper.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+  });
+
+  wrapper.addEventListener('click', function (e) { e.stopPropagation(); });
+}());
+
 /* ===== DOWNLOAD DROPDOWN ===== */
 (function () {
   const wrapper = document.getElementById('navDownload');
@@ -250,6 +270,10 @@
     a.addEventListener('click', () => {
       hamburger.classList.remove('active');
       navLinks.classList.remove('open');
+      var appWrapper = document.getElementById('navApp');
+      var appBtn = document.getElementById('appMenuBtn');
+      if (appWrapper) { appWrapper.classList.remove('open'); }
+      if (appBtn) { appBtn.setAttribute('aria-expanded', 'false'); }
     });
   });
 }());
@@ -294,7 +318,9 @@
 (function () {
   const nav        = document.getElementById('nav');
   const sections   = document.querySelectorAll('section[id]');
-  const navAnchors = document.querySelectorAll('.nav__link[href^="#"]');
+  const navAnchors = document.querySelectorAll('.nav__link[href^="#"], .nav__app-item[href^="#"]');
+  const appBtn     = document.getElementById('appMenuBtn');
+  const appSectionIds = new Set(['about','daily','release','categories','pricing']);
   const sectionPositions = [];
   let ticking = false;
 
@@ -324,6 +350,7 @@
       navAnchors.forEach(a => {
         a.classList.toggle('active', a.getAttribute('href') === `#${current}`);
       });
+      if (appBtn) appBtn.classList.toggle('active', appSectionIds.has(current));
     }
 
     ticking = false;

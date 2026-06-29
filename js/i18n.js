@@ -16,7 +16,7 @@ const T = {
   // ── English ──────────────────────────────────────────────────────────────────
   en: {
     nav: {
-      about: 'About', daily: 'Daily', release: '4.3', categories: 'Categories',
+      app: 'App', about: 'About', daily: 'Daily', release: "What's New", categories: 'Reflections',
       plans: 'Plans', company: 'Company', blog: 'Blog', support: 'Support', download: 'Download',
     },
     a11y: {
@@ -30,7 +30,7 @@ const T = {
       section_about: 'About Nuria',
       section_daily: 'Daily features',
       quote_hadith: 'Featured hadith',
-      section_categories: 'Reflection categories',
+      section_categories: 'Reflections',
       section_new_features: 'New features',
       section_pricing: 'Plans',
       section_download: 'Download Nuria',
@@ -417,7 +417,7 @@ const T = {
       cite: 'Sahih Muslim \u00b7 91',
     },
     categories: {
-      label: '15 Reflection Categories',
+      label: 'Soul Reflections',
       title: 'Every Dimension of Your <em>Soul</em>',
       subtitle: 'Choose the aspect of your life where your heart seeks guidance. Receive wisdom and reflection crafted with deep care for your spiritual need.',
       c1: 'Daily Guidance',   c2: 'Iman & Trust',         c3: 'Prayer Reflection',
@@ -750,7 +750,7 @@ const T = {
   // ── Arabic ────────────────────────────────────────────────────────────────────
   ar: {
     nav: {
-      about: 'عن نوريا', daily: 'يومي', release: '4.3', categories: 'الفئات',
+      app: 'التطبيق', about: 'عن نوريا', daily: 'يومي', release: 'الجديد', categories: 'التأملات',
       plans: 'الباقات', support: 'الدعم', download: 'تحميل',
     },
     a11y: {
@@ -1181,7 +1181,7 @@ const T = {
   // ── Urdu ─────────────────────────────────────────────────────────────────────
   ur: {
     nav: {
-      about: 'ہمارے بارے میں', daily: 'روزانہ', release: '4.3', categories: 'زمرے',
+      app: 'ایپ', about: 'ہمارے بارے میں', daily: 'روزانہ', release: 'نئی چیزیں', categories: 'عکاسی',
       plans: 'منصوبے', support: 'مدد', download: 'ڈاؤن لوڈ',
     },
     a11y: {
@@ -1612,7 +1612,7 @@ const T = {
   // ── Indonesian ────────────────────────────────────────────────────────────────
   id: {
     nav: {
-      about: 'Tentang', daily: 'Harian', release: '4.3', categories: 'Kategori',
+      app: 'App', about: 'Tentang', daily: 'Harian', release: 'Yang Baru', categories: 'Renungan',
       plans: 'Paket', support: 'Dukungan', download: 'Unduh',
     },
     a11y: {
@@ -2043,7 +2043,7 @@ const T = {
   // ── French ────────────────────────────────────────────────────────────────────
   fr: {
     nav: {
-      about: '\u00c0 propos', daily: 'Quotidien', release: '4.3', categories: 'Cat\u00e9gories',
+      app: 'App', about: '\u00c0 propos', daily: 'Quotidien', release: 'Nouveaut\u00e9s', categories: 'R\u00e9flexions',
       plans: 'Formules', support: 'Assistance', download: 'T\u00e9l\u00e9charger',
     },
     a11y: {
@@ -2474,7 +2474,7 @@ const T = {
   // ── Turkish ───────────────────────────────────────────────────────────────────
   tr: {
     nav: {
-      about: 'Hakk\u0131nda', daily: 'G\u00fcnl\u00fck', release: '4.3', categories: 'Kategoriler',
+      app: 'Uygulama', about: 'Hakk\u0131nda', daily: 'G\u00fcnl\u00fck', release: 'Yenilikler', categories: 'Yans\u0131malar',
       plans: 'Planlar', support: 'Destek', download: '\u0130ndir',
     },
     a11y: {

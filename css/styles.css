@@ -455,6 +455,71 @@ body.theme-luxury-stone::after {
 .nav__link.active::after { width: 100%; }
 .nav__link.active { color: var(--color-text); }
 
+/* ===== APP SECTIONS DROPDOWN ===== */
+.nav__app {
+  position: relative;
+}
+.nav__app-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  color: var(--color-text-dim);
+}
+.nav__app-chevron {
+  font-size: 0.58rem;
+  transition: transform 0.2s ease;
+  margin-left: 1px;
+  opacity: 0.7;
+}
+.nav__app.open .nav__app-chevron { transform: rotate(180deg); }
+.nav__app.open .nav__app-btn { color: var(--color-text); }
+
+.nav__app-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 176px;
+  background: #0b1a0f;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 14px;
+  padding: 5px;
+  box-shadow:
+    0 16px 42px rgba(0, 0, 0, 0.56),
+    0 0 0 1px rgba(201, 168, 76, 0.06) inset;
+  z-index: 200;
+}
+.nav__app.open .nav__app-dropdown { display: block; }
+.nav__app-item {
+  display: block;
+  padding: 9px 14px;
+  color: var(--color-text-dim);
+  font-size: 0.84rem;
+  border-radius: 10px;
+  transition: background 0.14s ease, color 0.14s ease;
+  white-space: nowrap;
+}
+.nav__app-item:hover {
+  background: rgba(201, 168, 76, 0.08);
+  color: var(--color-text);
+}
+
+/* Vertical divider between App dropdown and page links */
+.nav__sep {
+  display: block;
+  width: 1px;
+  height: 1.15rem;
+  background: rgba(255, 255, 255, 0.14);
+  flex-shrink: 0;
+  align-self: center;
+}
+
 .nav__hamburger {
   display: none;
   flex-direction: column;
@@ -748,23 +813,29 @@ body.theme-luxury-stone .nav__theme-btn {
 }
 body.theme-luxury-stone .nav__lang-dropdown,
 body.theme-luxury-stone .nav__theme-dropdown,
-body.theme-luxury-stone .nav__download-menu {
+body.theme-luxury-stone .nav__download-menu,
+body.theme-luxury-stone .nav__app-dropdown {
   background: #f8f1df;
   border-color: rgba(198, 167, 96, 0.54);
   box-shadow: 0 16px 36px rgba(78, 59, 24, 0.20);
 }
 body.theme-luxury-stone .nav__lang-option,
 body.theme-luxury-stone .nav__theme-option,
-body.theme-luxury-stone .nav__download-option {
+body.theme-luxury-stone .nav__download-option,
+body.theme-luxury-stone .nav__app-item {
   color: #31240f;
 }
 body.theme-luxury-stone .nav__lang-option:hover,
 body.theme-luxury-stone .nav__theme-option:hover,
 body.theme-luxury-stone .nav__download-option:hover,
+body.theme-luxury-stone .nav__app-item:hover,
 body.theme-luxury-stone .nav__lang-option.active,
 body.theme-luxury-stone .nav__theme-option.active {
   background: rgba(155, 111, 34, 0.12);
   color: #343d24;
+}
+body.theme-luxury-stone .nav__sep {
+  background: rgba(78, 59, 24, 0.22);
 }
 body.theme-luxury-stone .nav__theme-option strong {
   color: #343d24;
@@ -5687,6 +5758,22 @@ html.perf-lite .btn--store {
   }
   .nav__links.open { display: flex; }
   .nav__link { display: block; }
+  .nav__app { width: 100%; }
+  .nav__app-btn { width: 100%; justify-content: space-between; }
+  .nav__sep { display: none; }
+  .nav__app-dropdown {
+    position: static;
+    transform: none;
+    min-width: auto;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    box-shadow: none;
+    padding: 4px;
+    margin-top: 6px;
+  }
+  .nav__app-item { font-size: 0.88rem; padding: 10px 14px; }
   .nav__hamburger {
     display: flex;
     flex-shrink: 0;
