@@ -1510,6 +1510,49 @@ body.theme-luxury-stone .hero__title {
   padding: 5rem 0;
   position: relative;
 }
+
+/* ===== MOSQUE BACKGROUND — hadith quote section ===== */
+.section--quote-mosque { overflow: hidden; isolation: isolate; }
+.quote-mosque-bg {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+}
+.quote-mosque-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 38%;
+  filter: brightness(0.65) saturate(0.82);
+}
+.quote-mosque-scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg,
+      rgba(3, 8, 5, 0.86) 0%,
+      rgba(3, 8, 5, 0.22) 28%,
+      rgba(3, 8, 5, 0.14) 50%,
+      rgba(3, 8, 5, 0.24) 72%,
+      rgba(3, 8, 5, 0.88) 100%);
+}
+.section--quote-mosque > .container { position: relative; z-index: 1; }
+body .section--quote-mosque .featured-quote__arabic,
+body.theme-luxury-stone .section--quote-mosque .featured-quote__arabic {
+  color: #f7f0e0;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+}
+body .section--quote-mosque .featured-quote__text,
+body.theme-luxury-stone .section--quote-mosque .featured-quote__text {
+  color: rgba(244, 234, 208, 0.9);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.5);
+}
+body .section--quote-mosque .featured-quote__cite,
+body.theme-luxury-stone .section--quote-mosque .featured-quote__cite {
+  color: rgba(201, 168, 76, 0.85);
+}
+body .section--quote-mosque .featured-quote__star,
+body.theme-luxury-stone .section--quote-mosque .featured-quote__star {
+  color: var(--color-gold-bright);
+}
 .featured-quote {
   text-align: center;
   max-width: 720px;
