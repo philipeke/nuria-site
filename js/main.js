@@ -297,7 +297,13 @@
 /* ===== SCROLL-REVEAL ANIMATIONS (premium engine) =====
    Handles .animate-on-scroll and [data-reveal] elements, supports
    directional variants (CSS), per-element data-delay, and auto-stagger
-   for children of [data-stagger]. Drops will-change once settled. */
+   for children of [data-stagger]. Drops will-change once settled.
+
+   Geometry-based (NOT IntersectionObserver): an element reveals the moment
+   its top edge crosses into the viewport, checked on a rAF-throttled scroll
+   listener. This can never miss an element during a fast scroll the way an
+   async IntersectionObserver callback can — so content can never get stuck
+   invisible. Anything already on-screen at load reveals instantly. */
 (function () {
   // Auto-index children of stagger containers so CSS can cascade them.
   document.querySelectorAll('[data-stagger]').forEach(function (group) {
@@ -307,14 +313,12 @@
     }
   });
 
-  var els = document.querySelectorAll('.animate-on-scroll, [data-reveal]');
+  var els = Array.prototype.slice.call(
+    document.querySelectorAll('.animate-on-scroll, [data-reveal]')
+  );
   if (!els.length) return;
 
-  // No IntersectionObserver (very old browsers): just show everything.
-  if (!('IntersectionObserver' in window)) {
-    els.forEach(function (el) { el.classList.add('is-visible', 'is-settled'); });
-    return;
-  }
+  function vh() { return window.innerHeight || document.documentElement.clientHeight; }
 
   function settle(e) {
     if (e.propertyName === 'transform' || e.propertyName === 'opacity') {
@@ -323,35 +327,63 @@
     }
   }
 
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      var el = entry.target;
-      var delay = parseInt(el.dataset.delay || '0', 10);
-      setTimeout(function () {
-        el.classList.add('is-visible');
-        el.addEventListener('transitionend', settle);
-      }, delay);
-      observer.unobserve(el);
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-
-  function inView(el) {
-    var r = el.getBoundingClientRect();
-    var vh = window.innerHeight || document.documentElement.clientHeight;
-    return r.top < vh && r.bottom > 0;
+  function show(el, instant) {
+    if (el.__revealed) return;
+    el.__revealed = true;
+    if (instant) {
+      // Already on-screen at load: snap in with no transition (no flash).
+      el.classList.add('is-instant', 'is-visible', 'is-settled');
+      return;
+    }
+    var delay = parseInt(el.dataset.delay || '0', 10);
+    var run = function () {
+      el.classList.add('is-visible');
+      el.addEventListener('transitionend', settle);
+    };
+    if (delay) setTimeout(run, delay); else run();
   }
 
+  // Initial pass: reveal in-view content instantly, queue the rest.
+  var pending = [];
   els.forEach(function (el) {
-    // Anything already on-screen at load reveals INSTANTLY (no swipe-in flash);
-    // only content below the fold gets the scroll-triggered entrance. This also
-    // guarantees above-the-fold content is never gated behind a scroll event.
-    if (inView(el)) {
-      el.classList.add('is-instant', 'is-visible', 'is-settled');
-    } else {
-      observer.observe(el);
-    }
+    var r = el.getBoundingClientRect();
+    if (r.top < vh() && r.bottom > 0) show(el, true);
+    else pending.push(el);
   });
+
+  if (!pending.length) return;
+
+  var ticking = false;
+  function atBottom() {
+    return (window.innerHeight + window.scrollY) >=
+      (document.documentElement.scrollHeight - 2);
+  }
+  function check() {
+    ticking = false;
+    var trigger = vh() * 0.92;        // reveal as the top edge peeks in
+    var bottom = atBottom();
+    for (var i = pending.length - 1; i >= 0; i--) {
+      var el = pending[i];
+      // Reveal once the top has entered the viewport, or we've hit page bottom
+      // (guarantees the very last elements always appear).
+      if (bottom || el.getBoundingClientRect().top < trigger) {
+        show(el, false);
+        pending.splice(i, 1);
+      }
+    }
+    if (!pending.length) {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    }
+  }
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(check); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  // Run once now and shortly after load in case layout shifts (fonts/images).
+  requestAnimationFrame(check);
+  setTimeout(check, 1200);
 }());
 
 /* ===== SCROLL HANDLERS — single rAF-throttled listener ===== */

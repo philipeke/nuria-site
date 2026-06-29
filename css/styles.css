@@ -1516,47 +1516,97 @@ body.theme-luxury-stone .hero__title {
   position: relative;
 }
 
-/* ===== MOSQUE BACKGROUND — hadith quote section ===== */
-.section--quote-mosque { overflow: hidden; isolation: isolate; }
-.quote-mosque-bg {
+/* ===== MOSQUE BAND — hadith quote + Soul Reflections over one cinematic image =====
+   The image spans the whole band (quote on top, the 15 reflection cards below)
+   so it reads as a large feature, not a thin strip. Content sits over a scrim;
+   the cards become frosted glass so everything stays legible. */
+.mosque-band { position: relative; isolation: isolate; overflow: hidden; }
+.mosque-band__bg {
   position: absolute; inset: 0; z-index: 0;
   overflow: hidden; pointer-events: none;
 }
-.quote-mosque-img {
+.mosque-band__img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: center 38%;
-  filter: brightness(0.65) saturate(0.82);
+  object-position: center 30%;
+  filter: brightness(0.6) saturate(0.84);
 }
-.quote-mosque-scrim {
+.mosque-band__scrim {
   position: absolute; inset: 0;
   background:
     linear-gradient(180deg,
-      rgba(3, 8, 5, 0.86) 0%,
-      rgba(3, 8, 5, 0.22) 28%,
-      rgba(3, 8, 5, 0.14) 50%,
-      rgba(3, 8, 5, 0.24) 72%,
-      rgba(3, 8, 5, 0.88) 100%);
+      rgba(3, 8, 5, 0.9) 0%,
+      rgba(3, 8, 5, 0.5) 12%,
+      rgba(3, 8, 5, 0.42) 38%,
+      rgba(3, 8, 5, 0.46) 62%,
+      rgba(3, 8, 5, 0.6) 86%,
+      rgba(3, 8, 5, 0.92) 100%);
 }
-.section--quote-mosque > .container { position: relative; z-index: 1; }
-body .section--quote-mosque .featured-quote__arabic,
-body.theme-luxury-stone .section--quote-mosque .featured-quote__arabic {
+/* Lift both sections above the image; strip their own opaque backgrounds. */
+.mosque-band > .section { position: relative; z-index: 1; background: transparent; }
+.mosque-band .section--categories { background: transparent; }
+.mosque-band .section--categories::before { display: none; }
+
+/* Quote text — light over the image */
+body .mosque-band .featured-quote__arabic,
+body.theme-luxury-stone .mosque-band .featured-quote__arabic {
   color: #f7f0e0;
   text-shadow: 0 2px 20px rgba(0,0,0,0.6);
 }
-body .section--quote-mosque .featured-quote__text,
-body.theme-luxury-stone .section--quote-mosque .featured-quote__text {
-  color: rgba(244, 234, 208, 0.9);
+body .mosque-band .featured-quote__text,
+body.theme-luxury-stone .mosque-band .featured-quote__text {
+  color: rgba(244, 234, 208, 0.92);
   text-shadow: 0 1px 12px rgba(0,0,0,0.5);
 }
-body .section--quote-mosque .featured-quote__cite,
-body.theme-luxury-stone .section--quote-mosque .featured-quote__cite {
-  color: rgba(201, 168, 76, 0.85);
+body .mosque-band .featured-quote__cite,
+body.theme-luxury-stone .mosque-band .featured-quote__cite {
+  color: rgba(201, 168, 76, 0.9);
 }
-body .section--quote-mosque .featured-quote__star,
-body.theme-luxury-stone .section--quote-mosque .featured-quote__star {
+body .mosque-band .featured-quote__star,
+body.theme-luxury-stone .mosque-band .featured-quote__star {
   color: var(--color-gold-bright);
+}
+
+/* Reflections heading — light over the image */
+body .mosque-band .section__label,
+body.theme-luxury-stone .mosque-band .section__label {
+  color: #a8d4b0 !important;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.7);
+}
+body .mosque-band .section__title,
+body.theme-luxury-stone .mosque-band .section__title {
+  color: #f7f0e0 !important;
+  text-shadow: 0 3px 26px rgba(0,0,0,0.6);
+}
+body .mosque-band .section__title em,
+body.theme-luxury-stone .mosque-band .section__title em {
+  color: var(--color-gold-bright) !important;
+}
+body .mosque-band .section__subtitle,
+body.theme-luxury-stone .mosque-band .section__subtitle {
+  color: rgba(244, 234, 208, 0.85) !important;
+}
+
+/* Reflection cards — frosted glass so they read over the image */
+.mosque-band .cat-card {
+  background: rgba(6, 14, 9, 0.46);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+}
+.mosque-band .cat-card:hover {
+  border-color: rgba(201, 168, 76, 0.42);
+  background: rgba(6, 14, 9, 0.6);
+  box-shadow: 0 14px 35px rgba(0,0,0,0.4), 0 0 25px rgba(45, 190, 108, 0.08);
+}
+body .mosque-band .cat-card h4,
+body.theme-luxury-stone .mosque-band .cat-card h4 { color: #f4ead0; }
+body .mosque-band .cat-card__arabic,
+body.theme-luxury-stone .mosque-band .cat-card__arabic {
+  color: var(--color-gold-bright);
+  opacity: 0.82;
 }
 .featured-quote {
   text-align: center;
