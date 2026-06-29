@@ -4224,8 +4224,15 @@ body.theme-luxury-stone .feature-card--new::after {
   border-color: rgba(var(--feature-accent-rgb), 0.32);
   box-shadow: 0 6px 14px rgba(78, 59, 24, 0.08);
 }
+/* These two sections keep their intended light Stone background — they must
+   NOT inherit the dark footer fill below (text in them is dark Stone ink). */
 body.theme-luxury-stone .section--new-features,
-body.theme-luxury-stone .section--download,
+body.theme-luxury-stone .section--download {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(155, 111, 34, 0.13), transparent 36%),
+    rgba(232, 219, 192, 0.36);
+}
+
 /* ===== PREMIUM DARK FOOTER — one deep, muted tone on every page & theme.
    The footer anchors the page in a calm dark band with lightened, gilded
    text — the same on both the classic and Luxury Stone themes. ===== */
