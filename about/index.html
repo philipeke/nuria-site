@@ -36,8 +36,144 @@
     .company-hero { display: flex; align-items: center; justify-content: center; gap: clamp(1.5rem, 4vw, 3.5rem); flex-wrap: wrap; }
     .company-hero__text { flex: 1 1 380px; max-width: 600px; text-align: left; }
     .company-hero__visual { flex: 0 0 auto; }
-    .company-hero__phone { width: clamp(190px, 26vw, 280px); height: auto; display: block;
-      filter: drop-shadow(0 22px 55px rgba(201, 168, 76, 0.22)); }
+    /* ---- iPhone 17 Pro — pure CSS, vector-sharp at any size ---- */
+    .iphone {
+      --ip-w: clamp(208px, 27vw, 290px);
+      position: relative;
+      width: var(--ip-w);
+      aspect-ratio: 1179 / 2556;
+      margin: 0 auto;
+      filter:
+        drop-shadow(0 34px 64px rgba(0, 0, 0, 0.5))
+        drop-shadow(0 14px 30px rgba(201, 168, 76, 0.16));
+    }
+    .iphone *, .iphone *::before, .iphone *::after { box-sizing: border-box; }
+
+    /* Titanium rail */
+    .iphone__frame {
+      position: absolute; inset: 0;
+      border-radius: calc(var(--ip-w) * 0.16);
+      padding: calc(var(--ip-w) * 0.02);
+      background: linear-gradient(145deg,
+        #e9e4da 0%, #a8a49c 11%, #d8d3c9 24%, #6f6c66 46%,
+        #c4bfb6 60%, #6b6862 79%, #bbb6ad 92%, #e4dfd5 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 0.45),
+        inset 0 0 calc(var(--ip-w) * 0.012) rgba(0, 0, 0, 0.45);
+    }
+    /* Black bezel */
+    .iphone__bezel {
+      width: 100%; height: 100%;
+      padding: calc(var(--ip-w) * 0.017);
+      border-radius: calc(var(--ip-w) * 0.142);
+      background: #03100a;
+    }
+    /* Display */
+    .iphone__screen {
+      position: relative;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      border-radius: calc(var(--ip-w) * 0.123);
+      background:
+        radial-gradient(115% 70% at 50% 40%, rgba(201, 168, 76, 0.12) 0%, rgba(201, 168, 76, 0) 48%),
+        radial-gradient(140% 115% at 50% 118%, #061710 0%, #0a2014 55%, #0c2518 100%);
+    }
+
+    /* Dynamic Island */
+    .iphone__island {
+      position: absolute;
+      top: calc(var(--ip-w) * 0.03);
+      left: 50%; transform: translateX(-50%);
+      width: calc(var(--ip-w) * 0.305);
+      height: calc(var(--ip-w) * 0.083);
+      background: #000; border-radius: 999px; z-index: 6;
+    }
+    .iphone__island::after {
+      content: ""; position: absolute;
+      top: 50%; right: calc(var(--ip-w) * 0.052);
+      transform: translateY(-50%);
+      width: calc(var(--ip-w) * 0.032);
+      height: calc(var(--ip-w) * 0.032);
+      border-radius: 50%;
+      background: radial-gradient(circle at 34% 32%, #28435a 0%, #0a1622 55%, #050a10 100%);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    /* Side buttons */
+    .iphone__btn {
+      position: absolute; z-index: -1;
+      border-radius: calc(var(--ip-w) * 0.01);
+      background: linear-gradient(90deg, #5f5c57 0%, #c9c4bb 50%, #5f5c57 100%);
+    }
+    .iphone__btn--l { left: calc(var(--ip-w) * -0.009); width: calc(var(--ip-w) * 0.018); }
+    .iphone__btn--r { right: calc(var(--ip-w) * -0.009); width: calc(var(--ip-w) * 0.018); }
+    .iphone__btn--action { top: 19%;   height: 4.6%; }
+    .iphone__btn--volup  { top: 27.5%; height: 8.6%; }
+    .iphone__btn--voldn  { top: 39%;   height: 8.6%; }
+    .iphone__btn--power  { top: 25%;   height: 12.5%; }
+    .iphone__btn--camera { top: 41%;   height: 6.6%; }
+
+    /* ---- نور app screen ---- */
+    .noor-screen {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      font-family: 'Amiri', serif;
+      color: var(--color-gold);
+    }
+    .noor-screen__pattern {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='none' stroke='%23c9a84c' stroke-width='1'%3E%3Crect x='24' y='24' width='36' height='36'/%3E%3Crect x='24' y='24' width='36' height='36' transform='rotate(45 42 42)'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: calc(var(--ip-w) * 0.33);
+      opacity: 0.09;
+      -webkit-mask-image: radial-gradient(80% 70% at 50% 45%, #000 0%, transparent 80%);
+              mask-image: radial-gradient(80% 70% at 50% 45%, #000 0%, transparent 80%);
+    }
+    .noor-screen__status {
+      position: absolute; top: calc(var(--ip-w) * 0.038);
+      left: 0; right: 0; z-index: 4;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 calc(var(--ip-w) * 0.072);
+      color: rgba(240, 224, 160, 0.92);
+    }
+    .noor-screen__time {
+      font-family: 'Lato', sans-serif; font-weight: 700;
+      font-size: calc(var(--ip-w) * 0.046);
+    }
+    .noor-screen__icons { width: calc(var(--ip-w) * 0.205); height: auto; display: block; }
+    .noor-screen__hero {
+      position: relative; z-index: 2;
+      display: flex; flex-direction: column; align-items: center;
+      gap: calc(var(--ip-w) * 0.022);
+      padding: 0 calc(var(--ip-w) * 0.1);
+    }
+    .noor-screen__overline { font-size: calc(var(--ip-w) * 0.05); color: rgba(240, 224, 160, 0.72); }
+    .noor-screen__rule {
+      width: calc(var(--ip-w) * 0.18); height: 1px; border: 0;
+      margin: calc(var(--ip-w) * 0.01) 0;
+      background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.85), transparent);
+    }
+    .noor-screen__wordmark {
+      font-size: calc(var(--ip-w) * 0.3); line-height: 1; font-weight: 700;
+      background: linear-gradient(180deg, #f6e3a8 0%, #e7c873 38%, #c9a84c 72%, #a8842f 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+      filter: drop-shadow(0 0 calc(var(--ip-w) * 0.07) rgba(201, 168, 76, 0.55));
+    }
+    .noor-screen__caption {
+      font-family: 'Lato', sans-serif; font-weight: 400;
+      font-size: calc(var(--ip-w) * 0.033);
+      letter-spacing: 0.26em; text-transform: uppercase;
+      color: rgba(240, 224, 160, 0.6); padding-left: 0.26em;
+    }
+    .noor-screen__home {
+      position: absolute; bottom: calc(var(--ip-w) * 0.028);
+      left: 50%; transform: translateX(-50%);
+      width: calc(var(--ip-w) * 0.34); height: calc(var(--ip-w) * 0.013);
+      border-radius: 999px; background: rgba(240, 230, 200, 0.55); z-index: 4;
+    }
     .about-card__icon-img { width: 112px; height: 112px; object-fit: contain; display: block; margin: 0 auto 0.5rem; }
     .app-icon-svg { width: 96px; height: 96px; display: block; margin: 0 auto 0.5rem; fill: none;
       stroke: var(--color-gold-bright); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
@@ -47,7 +183,7 @@
       .company-hero__text { text-align: center; flex-basis: 100%; }
       /* Phone sits below the intro copy on mobile (source order) rather than above it. */
       .company-hero__visual { order: 0; margin-top: 0.5rem; }
-      .company-hero__phone { width: clamp(165px, 55vw, 220px); margin: 0 auto; }
+      .iphone { --ip-w: clamp(172px, 58vw, 232px); }
     }
 
     /* Company "By the numbers" band: nudge the falcon framing on phones. */
@@ -145,7 +281,45 @@
         </p>
       </div>
       <div class="company-hero__visual">
-        <img src="../assets/sintra/nuria-hero.png?v=20260629" alt="The Nuria app showing نور — light" class="company-hero__phone" width="768" height="1376" loading="eager" decoding="async" />
+        <div class="iphone" role="img" aria-label="The Nuria app — نور, light for the ummah, shown on iPhone">
+          <span class="iphone__btn iphone__btn--l iphone__btn--action" aria-hidden="true"></span>
+          <span class="iphone__btn iphone__btn--l iphone__btn--volup" aria-hidden="true"></span>
+          <span class="iphone__btn iphone__btn--l iphone__btn--voldn" aria-hidden="true"></span>
+          <span class="iphone__btn iphone__btn--r iphone__btn--power" aria-hidden="true"></span>
+          <span class="iphone__btn iphone__btn--r iphone__btn--camera" aria-hidden="true"></span>
+          <div class="iphone__frame">
+            <div class="iphone__bezel">
+              <div class="iphone__screen">
+                <div class="noor-screen">
+                  <div class="noor-screen__pattern" aria-hidden="true"></div>
+                  <div class="noor-screen__status" aria-hidden="true">
+                    <span class="noor-screen__time">9:41</span>
+                    <svg class="noor-screen__icons" viewBox="0 0 64 16" fill="currentColor" aria-hidden="true">
+                      <rect x="0" y="9" width="3" height="5" rx="1" />
+                      <rect x="5" y="6.5" width="3" height="7.5" rx="1" />
+                      <rect x="10" y="4" width="3" height="10" rx="1" />
+                      <rect x="15" y="1.5" width="3" height="12.5" rx="1" />
+                      <path d="M23 5.4a10 10 0 0 1 13 0l-1.7 1.9a7.4 7.4 0 0 0-9.6 0z" />
+                      <path d="M26.3 9a5.6 5.6 0 0 1 6.4 0l-1.8 2a3 3 0 0 0-2.8 0z" />
+                      <circle cx="29.5" cy="13" r="1.5" />
+                      <rect x="45" y="3.6" width="15" height="8.8" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.55" />
+                      <rect x="46.5" y="5.1" width="10" height="5.8" rx="1.2" />
+                      <rect x="61" y="6.2" width="1.6" height="3.6" rx="0.8" opacity="0.55" />
+                    </svg>
+                  </div>
+                  <div class="noor-screen__hero">
+                    <span class="noor-screen__overline">السلام عليكم</span>
+                    <hr class="noor-screen__rule" />
+                    <span class="noor-screen__wordmark">نور</span>
+                    <span class="noor-screen__caption">Nuria · light for the ummah</span>
+                  </div>
+                  <div class="noor-screen__home" aria-hidden="true"></div>
+                </div>
+                <div class="iphone__island" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
