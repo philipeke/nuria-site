@@ -877,6 +877,26 @@ body.theme-luxury-stone .btn--gold {
 body.theme-luxury-stone .btn--gold:hover {
   box-shadow: 0 16px 38px rgba(52, 61, 36, 0.26);
 }
+/* The nav Download button is a floating pill. A box-shadow on this
+   overflow:hidden + border-radius + bordered button renders with angular
+   ("kantig") octagonal corners in Chromium. filter: drop-shadow traces the
+   true rounded silhouette, so the shadow stays soft and fully pill-shaped. */
+.nav__download-btn.btn--gold {
+  box-shadow: none;
+  filter: drop-shadow(0 4px 14px rgba(201, 168, 76, 0.42));
+}
+.nav__download-btn.btn--gold:hover {
+  box-shadow: none;
+  filter: drop-shadow(0 8px 20px rgba(201, 168, 76, 0.5));
+}
+body.theme-luxury-stone .nav__download-btn.btn--gold {
+  box-shadow: none;
+  filter: drop-shadow(0 6px 15px rgba(52, 61, 36, 0.34));
+}
+body.theme-luxury-stone .nav__download-btn.btn--gold:hover {
+  box-shadow: none;
+  filter: drop-shadow(0 11px 22px rgba(52, 61, 36, 0.42));
+}
 body.theme-luxury-stone .btn--outline {
   color: #343d24;
   border-color: rgba(52, 61, 36, 0.45);
@@ -4224,13 +4244,53 @@ body.theme-luxury-stone .feature-card--new::after {
   border-color: rgba(var(--feature-accent-rgb), 0.32);
   box-shadow: 0 6px 14px rgba(78, 59, 24, 0.08);
 }
-/* These two sections keep their intended light Stone background — they must
-   NOT inherit the dark footer fill below (text in them is dark Stone ink). */
+/* ===== DARK CINEMATIC BAND — the New-in-Nuria + Download sections share the
+   footer's deep green-black tone and gilded hairline so the foot of the page
+   reads as one continuous, premium band. Headings that sit directly on the
+   dark fill are lifted to a bright palette below; the feature cards keep their
+   own light Stone surfaces as glowing islands. ===== */
 body.theme-luxury-stone .section--new-features,
 body.theme-luxury-stone .section--download {
   background:
-    radial-gradient(circle at 82% 18%, rgba(155, 111, 34, 0.13), transparent 36%),
-    rgba(232, 219, 192, 0.36);
+    radial-gradient(ellipse 46% 72% at 86% 0%, rgba(201, 168, 76, 0.08), transparent 60%),
+    linear-gradient(180deg, #0a1410 0%, #050b08 100%);
+  border-top: 1px solid rgba(201, 168, 76, 0.16);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.16);
+}
+/* Lift the eyebrow labels that sit directly on the dark fill. */
+body.theme-luxury-stone .section--new-features .section__label,
+body.theme-luxury-stone .section--download .section__label {
+  color: #e0c88f;
+}
+/* Lift the headings. */
+body.theme-luxury-stone .section--new-features .section__title,
+body.theme-luxury-stone .section--download .download__title {
+  color: rgba(247, 240, 222, 0.97);
+  text-shadow: 0 1px 26px rgba(0, 0, 0, 0.35);
+}
+body.theme-luxury-stone .section--new-features .section__title em,
+body.theme-luxury-stone .section--download .download__title em {
+  background: linear-gradient(135deg, #e7c977, #d8b25a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #d8b25a;
+}
+/* Lift the intro copy. */
+body.theme-luxury-stone .section--new-features .section__subtitle,
+body.theme-luxury-stone .section--download .download__desc {
+  color: rgba(244, 250, 246, 0.93);
+}
+/* App-store buttons are a dark-surface component — give them light glass on
+   the dark band so the store names read clearly. */
+body.theme-luxury-stone .section--download .btn--store {
+  color: rgba(247, 240, 222, 0.97);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(201, 168, 76, 0.32);
+}
+body.theme-luxury-stone .section--download .btn--store:hover {
+  border-color: rgba(201, 168, 76, 0.7);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ===== PREMIUM DARK FOOTER — one deep, muted tone on every page & theme.
