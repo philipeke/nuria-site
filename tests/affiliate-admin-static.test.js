@@ -47,10 +47,18 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'subscribers', 'index.html'),
   'utf8'
 );
+const amanahCryptoRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'amanah-crypto', 'index.html'),
+  'utf8'
+);
+const amanahDebateRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'amanah-debate', 'index.html'),
+  'utf8'
+);
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260706-amanah'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260706b-amanah-crypto'));
 });
 
 run('amanah catalogue tab is exposed in admin center', () => {
@@ -60,6 +68,28 @@ run('amanah catalogue tab is exposed in admin center', () => {
   assert(affiliateAdminScript.includes("callAdminFunction('listFinanceProductsAdmin'"));
   assert(affiliateAdminScript.includes("callAdminFunction('upsertFinanceProductAdmin'"));
   assert(affiliateAdminScript.includes('verified_requires_scholar'));
+});
+
+run('amanah crypto projects tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="amanah-crypto"'));
+  assert(affiliateAdminHtml.includes('adminSectionAmanahCrypto'));
+  assert(affiliateAdminHtml.includes('adminCryptoForm'));
+  assert(affiliateAdminHtml.includes('adminCryptoShariaCertifier'));
+  assert(affiliateAdminScript.includes("callAdminFunction('listCryptoProductsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertCryptoProductAdmin'"));
+  assert(affiliateAdminScript.includes('name_and_certifier_required'));
+  assert(affiliateAdminScript.includes('crypto_product_not_found'));
+});
+
+run('amanah debate positions tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="amanah-debate"'));
+  assert(affiliateAdminHtml.includes('adminSectionAmanahDebate'));
+  assert(affiliateAdminHtml.includes('adminDebateForm'));
+  assert(affiliateAdminHtml.includes('adminDebateArgumentSummary'));
+  assert(affiliateAdminScript.includes("callAdminFunction('listDebatePositionsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertDebatePositionAdmin'"));
+  assert(affiliateAdminScript.includes('argument_summary_required'));
+  assert(affiliateAdminScript.includes('debate_position_not_found'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -237,6 +267,8 @@ run('partner portal link previews use the Nuria logo metadata image', () => {
 run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(partnerRouteRedirectHtml.includes('?page=partners'));
   assert(subscriberRouteRedirectHtml.includes('?page=subscribers'));
+  assert(amanahCryptoRouteRedirectHtml.includes('?page=amanah-crypto'));
+  assert(amanahDebateRouteRedirectHtml.includes('?page=amanah-debate'));
 });
 
 if (process.exitCode && process.exitCode !== 0) {
