@@ -43,6 +43,8 @@ const ADMIN_PAGE_PATHS = {
   'live-notifications': '/internal/affiliate-admin/live-notifications/',
   'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
   amanah: '/internal/affiliate-admin/amanah/',
+  'amanah-crypto': '/internal/affiliate-admin/amanah-crypto/',
+  'amanah-debate': '/internal/affiliate-admin/amanah-debate/',
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;
@@ -53,6 +55,9 @@ const AUTH_STUCK_TIMEOUT_MS = 6000;
 const ADMIN_CALL_TIMEOUT_MS = 15000;
 const DASHBOARD_LOAD_TIMEOUT_MS = 25000;
 const AMANAH_EXPLANATION_MAX_CHARS = 2400;
+const AMANAH_CRYPTO_EXPLANATION_MAX_CHARS = 2400;
+const AMANAH_CRYPTO_PARTICIPATION_MAX_CHARS = 300;
+const AMANAH_DEBATE_SUMMARY_MAX_CHARS = 1600;
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -287,6 +292,56 @@ const elements = {
   saveAmanahProductButton: document.getElementById('adminSaveAmanahProductButton'),
   resetAmanahForm: document.getElementById('adminResetAmanahForm'),
   amanahFormError: document.getElementById('adminAmanahFormError'),
+  refreshCryptoProducts: document.getElementById('adminRefreshCryptoProducts'),
+  newCryptoProduct: document.getElementById('adminNewCryptoProduct'),
+  cryptoTableBody: document.getElementById('adminCryptoTableBody'),
+  cryptoEmpty: document.getElementById('adminCryptoEmpty'),
+  cryptoForm: document.getElementById('adminCryptoForm'),
+  cryptoFormTitle: document.getElementById('adminCryptoFormTitle'),
+  cryptoFormHelper: document.getElementById('adminCryptoFormHelper'),
+  cryptoProductId: document.getElementById('adminCryptoProductId'),
+  cryptoName: document.getElementById('adminCryptoName'),
+  cryptoShariaCertifier: document.getElementById('adminCryptoShariaCertifier'),
+  cryptoProviderName: document.getElementById('adminCryptoProviderName'),
+  cryptoLogoUrl: document.getElementById('adminCryptoLogoUrl'),
+  cryptoWebsiteUrl: document.getElementById('adminCryptoWebsiteUrl'),
+  cryptoShariaCertificateUrl: document.getElementById('adminCryptoShariaCertificateUrl'),
+  cryptoProductType: document.getElementById('adminCryptoProductType'),
+  cryptoShariaExplanation: document.getElementById('adminCryptoShariaExplanation'),
+  cryptoShariaExplanationMeta: document.getElementById('adminCryptoShariaExplanationMeta'),
+  cryptoGeography: document.getElementById('adminCryptoGeography'),
+  cryptoRiskLevel: document.getElementById('adminCryptoRiskLevel'),
+  cryptoParticipationMethod: document.getElementById('adminCryptoParticipationMethod'),
+  cryptoNuriaVerified: document.getElementById('adminCryptoNuriaVerified'),
+  cryptoVerifiedBy: document.getElementById('adminCryptoVerifiedBy'),
+  cryptoVerifiedDate: document.getElementById('adminCryptoVerifiedDate'),
+  cryptoNextReviewDate: document.getElementById('adminCryptoNextReviewDate'),
+  cryptoExternalUrl: document.getElementById('adminCryptoExternalUrl'),
+  cryptoAffiliateProvider: document.getElementById('adminCryptoAffiliateProvider'),
+  cryptoStatus: document.getElementById('adminCryptoStatus'),
+  saveCryptoProductButton: document.getElementById('adminSaveCryptoProductButton'),
+  resetCryptoForm: document.getElementById('adminResetCryptoForm'),
+  cryptoFormError: document.getElementById('adminCryptoFormError'),
+  refreshDebatePositions: document.getElementById('adminRefreshDebatePositions'),
+  newDebatePosition: document.getElementById('adminNewDebatePosition'),
+  debateTableBody: document.getElementById('adminDebateTableBody'),
+  debateEmpty: document.getElementById('adminDebateEmpty'),
+  debateForm: document.getElementById('adminDebateForm'),
+  debateFormTitle: document.getElementById('adminDebateFormTitle'),
+  debateFormHelper: document.getElementById('adminDebateFormHelper'),
+  debateDocId: document.getElementById('adminDebateDocId'),
+  debatePosition: document.getElementById('adminDebatePosition'),
+  debateScholarName: document.getElementById('adminDebateScholarName'),
+  debateScholarAffiliation: document.getElementById('adminDebateScholarAffiliation'),
+  debateArgumentSummary: document.getElementById('adminDebateArgumentSummary'),
+  debateArgumentSummaryMeta: document.getElementById('adminDebateArgumentSummaryMeta'),
+  debateSourceUrl: document.getElementById('adminDebateSourceUrl'),
+  debateMadhab: document.getElementById('adminDebateMadhab'),
+  debateOrder: document.getElementById('adminDebateOrder'),
+  debateStatus: document.getElementById('adminDebateStatus'),
+  saveDebatePositionButton: document.getElementById('adminSaveDebatePositionButton'),
+  resetDebateForm: document.getElementById('adminResetDebateForm'),
+  debateFormError: document.getElementById('adminDebateFormError'),
   liveNotificationForm: document.getElementById('adminLiveNotificationForm'),
   liveNotificationTitle: document.getElementById('adminLiveNotificationTitle'),
   liveNotificationTitleMeta: document.getElementById('adminLiveNotificationTitleMeta'),
@@ -472,6 +527,18 @@ const state = {
   amanahLoadPromise: null,
   amanahUnavailableReason: '',
   saveAmanahProductInFlight: false,
+  cryptoProducts: [],
+  cryptoLoaded: false,
+  cryptoLoading: false,
+  cryptoLoadPromise: null,
+  cryptoUnavailableReason: '',
+  saveCryptoProductInFlight: false,
+  debatePositions: [],
+  debateLoaded: false,
+  debateLoading: false,
+  debateLoadPromise: null,
+  debateUnavailableReason: '',
+  saveDebatePositionInFlight: false,
   liveNotificationSummary: null,
   liveNotificationCampaigns: [],
   liveNotificationLoading: false,
@@ -714,6 +781,24 @@ function setAdminPage(pageKey, options) {
       });
     }
   }
+
+  if (next === 'amanah-crypto' && state.user) {
+    ensureCryptoProductsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('amanah_crypto_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
+
+  if (next === 'amanah-debate' && state.user) {
+    ensureDebatePositionsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('amanah_debate_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
 }
 
 function showBanner(message, tone) {
@@ -806,6 +891,18 @@ function getActionableErrorMessage(error, fallbackMessage) {
     if (error?.adminCallable === 'upsertFinanceProductAdmin') {
       return 'Amanah product save timed out. Refresh the product list before saving again.';
     }
+    if (error?.adminCallable === 'listCryptoProductsAdmin') {
+      return 'Crypto project list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertCryptoProductAdmin') {
+      return 'Crypto project save timed out. Refresh the project list before saving again.';
+    }
+    if (error?.adminCallable === 'listDebatePositionsAdmin') {
+      return 'Debate position list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertDebatePositionAdmin') {
+      return 'Debate position save timed out. Refresh the position list before saving again.';
+    }
     return 'This request timed out before the backend responded. Try again.';
   }
 
@@ -817,6 +914,10 @@ function getActionableErrorMessage(error, fallbackMessage) {
     if (
       error?.adminCallable === 'listFinanceProductsAdmin'
       || error?.adminCallable === 'upsertFinanceProductAdmin'
+      || error?.adminCallable === 'listCryptoProductsAdmin'
+      || error?.adminCallable === 'upsertCryptoProductAdmin'
+      || error?.adminCallable === 'listDebatePositionsAdmin'
+      || error?.adminCallable === 'upsertDebatePositionAdmin'
     ) {
       return 'Admin access required. This account is not allowlisted for Nuria Amanah admin.';
     }
@@ -861,6 +962,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (message.includes('invite_not_found')) {
       return 'This partner claim link does not exist anymore. Create a new claim link and send that one.';
+    }
+    if (message.includes('crypto_product_not_found')) {
+      return 'This crypto project no longer exists. Refresh the project list and try again.';
+    }
+    if (message.includes('debate_position_not_found')) {
+      return 'This debate position no longer exists. Refresh the position list and try again.';
     }
     if (message.includes('product_not_found')) {
       return 'This Amanah product no longer exists. Refresh the product list and try again.';
@@ -961,12 +1068,72 @@ function getActionableErrorMessage(error, fallbackMessage) {
     return 'Sharia explanation is too long. Keep it within 2400 characters.';
   }
 
+  if (message.includes('name_and_certifier_required')) {
+    return 'Project name and Sharia certifier are both required.';
+  }
+
+  if (message.includes('argument_summary_required')) {
+    return 'Argument summary is required.';
+  }
+
+  if (message.includes('invalid_risk_level')) {
+    return 'Risk level is invalid. Pick low, medium, high, or very_high.';
+  }
+
+  if (message.includes('invalid_position')) {
+    return 'Position is invalid. Pick permissible, impermissible, conditional, or under_review.';
+  }
+
+  if (message.includes('invalid_madhab')) {
+    return 'Madhab is invalid. Pick hanafi, maliki, shafii, hanbali, or general.';
+  }
+
+  if (message.includes('invalid_logo_url')) {
+    return 'Logo URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_website_url')) {
+    return 'Website URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_sharia_certificate_url')) {
+    return 'Sharia certificate URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_source_url')) {
+    return 'Source URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_verified_date')) {
+    return 'Verified date must use the YYYY-MM-DD format.';
+  }
+
+  if (message.includes('invalid_next_review_date')) {
+    return 'Next review date must use the YYYY-MM-DD format.';
+  }
+
+  if (message.includes('argument_summary_too_long')) {
+    return 'Argument summary is too long. Keep it within 1600 characters.';
+  }
+
+  if (message.includes('participation_method_too_long')) {
+    return 'Participation method is too long. Keep it within 300 characters.';
+  }
+
   if (message.includes('amanah_upsert_failed')) {
     return 'The Amanah product could not be saved. Try again.';
   }
 
   if (message.includes('amanah_list_failed')) {
     return 'The Amanah product catalogue could not be loaded. Try again.';
+  }
+
+  if (message.includes('_too_long')) {
+    return 'One of the fields is too long. Shorten the value and save again.';
+  }
+
+  if (message.includes('invalid_')) {
+    return 'One of the fields has an invalid value. Check the form and save again.';
   }
 
   if (message.includes('app check') || message.includes('recaptcha')) {
@@ -6891,6 +7058,490 @@ async function handleAmanahProductSave(event) {
   }
 }
 
+// ── Nuria Amanah crypto project catalogue ────────────────────────────────
+
+function setCryptoFormError(message) {
+  if (!elements.cryptoFormError) {
+    return;
+  }
+
+  elements.cryptoFormError.hidden = !message;
+  elements.cryptoFormError.textContent = message || '';
+}
+
+function setCryptoFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.cryptoFormTitle) {
+    elements.cryptoFormTitle.textContent = editing ? 'Edit project' : 'Create project';
+  }
+  if (elements.cryptoFormHelper) {
+    elements.cryptoFormHelper.textContent = editing
+      ? 'Update the selected crypto project. Saving writes straight to the live crypto_products collection.'
+      : 'Create a new Sharia-certified crypto project for the Nuria Amanah catalogue.';
+  }
+}
+
+function renderCryptoExplanationMeta() {
+  if (!elements.cryptoShariaExplanationMeta) return;
+  const length = String(elements.cryptoShariaExplanation?.value || '').length;
+  elements.cryptoShariaExplanationMeta.textContent = `${length} / ${AMANAH_CRYPTO_EXPLANATION_MAX_CHARS} characters`;
+}
+
+function renderCryptoProductsTable() {
+  if (!elements.cryptoTableBody) return;
+
+  const items = state.cryptoProducts || [];
+
+  elements.cryptoTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr>
+          <td>
+            <button type="button" class="admin-link-button" data-crypto-product-id="${escapeHtml(item.productId)}">
+              ${escapeHtml(item.name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.sharia_certifier || '-')}</td>
+          <td>${escapeHtml(item.product_type || '-')}</td>
+          <td>${escapeHtml(item.risk_level || '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${item.nuria_verified === true ? 'Yes' : '-'}</td>
+          <td>${escapeHtml(formatAmanahTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.cryptoEmpty) {
+    if (state.cryptoUnavailableReason) {
+      elements.cryptoEmpty.textContent = state.cryptoUnavailableReason;
+    } else {
+      elements.cryptoEmpty.textContent = 'No crypto projects yet. Create your first Amanah crypto entry with the form.';
+    }
+    elements.cryptoEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetCryptoProductForm(item) {
+  const value = item || null;
+
+  if (!elements.cryptoForm) {
+    return;
+  }
+
+  setCryptoFormError('');
+  setCryptoFormMode(value ? 'edit' : 'create');
+  elements.cryptoForm.reset();
+
+  elements.cryptoProductId.value = value ? String(value.productId || '') : '';
+  elements.cryptoName.value = value ? String(value.name || '') : '';
+  elements.cryptoShariaCertifier.value = value ? String(value.sharia_certifier || '') : '';
+  elements.cryptoProviderName.value = value ? String(value.provider_name || '') : '';
+  elements.cryptoLogoUrl.value = value ? String(value.logo_url || '') : '';
+  elements.cryptoWebsiteUrl.value = value ? String(value.website_url || '') : '';
+  elements.cryptoShariaCertificateUrl.value = value ? String(value.sharia_certificate_url || '') : '';
+  elements.cryptoProductType.value = value?.product_type || 'blockchain';
+  elements.cryptoShariaExplanation.value = value ? String(value.sharia_explanation || '') : '';
+  elements.cryptoGeography.value = value && Array.isArray(value.geography_available)
+    ? value.geography_available.join(', ')
+    : '';
+  elements.cryptoRiskLevel.value = value?.risk_level || 'medium';
+  elements.cryptoParticipationMethod.value = value ? String(value.participation_method || '') : '';
+  elements.cryptoNuriaVerified.checked = value?.nuria_verified === true;
+  elements.cryptoVerifiedBy.value = value ? String(value.verified_by || '') : '';
+  elements.cryptoVerifiedDate.value = value ? String(value.verified_date || '') : '';
+  elements.cryptoNextReviewDate.value = value ? String(value.next_review_date || '') : '';
+  elements.cryptoExternalUrl.value = value ? String(value.external_url || '') : '';
+  elements.cryptoAffiliateProvider.value = value ? String(value.affiliate_provider || '') : '';
+  elements.cryptoStatus.value = value?.status || 'pending_review';
+  renderCryptoExplanationMeta();
+}
+
+function resetCryptoState() {
+  state.cryptoProducts = [];
+  state.cryptoLoaded = false;
+  state.cryptoLoading = false;
+  state.cryptoLoadPromise = null;
+  state.cryptoUnavailableReason = '';
+  state.saveCryptoProductInFlight = false;
+  resetCryptoProductForm(null);
+  renderCryptoProductsTable();
+}
+
+async function loadCryptoProducts() {
+  const data = await callAdminFunction('listCryptoProductsAdmin', {});
+
+  state.cryptoProducts = Array.isArray(data?.products) ? data.products : [];
+}
+
+async function ensureCryptoProductsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.cryptoLoadPromise && !settings.force) {
+    return state.cryptoLoadPromise;
+  }
+
+  if (state.cryptoLoaded && !settings.force) {
+    renderCryptoProductsTable();
+    return state.cryptoProducts;
+  }
+
+  const task = (async () => {
+    state.cryptoLoading = true;
+    setButtonBusy(elements.refreshCryptoProducts, true, 'Refreshing');
+
+    try {
+      await loadCryptoProducts();
+      state.cryptoLoaded = true;
+      state.cryptoUnavailableReason = '';
+      renderCryptoProductsTable();
+      return state.cryptoProducts;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Amanah crypto catalogue could not be loaded. Try again.'
+      );
+      state.cryptoProducts = [];
+      state.cryptoUnavailableReason = message;
+      renderCryptoProductsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.cryptoLoading = false;
+      state.cryptoLoadPromise = null;
+      setButtonBusy(elements.refreshCryptoProducts, false);
+    }
+  })();
+
+  state.cryptoLoadPromise = task;
+  return task;
+}
+
+async function handleCryptoProductSave(event) {
+  event.preventDefault();
+
+  if (state.saveCryptoProductInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setCryptoFormError('');
+
+  const productId = String(elements.cryptoProductId.value || '').trim();
+  const editing = Boolean(productId);
+  const name = String(elements.cryptoName.value || '').trim();
+  const shariaCertifier = String(elements.cryptoShariaCertifier.value || '').trim();
+  const nuriaVerified = elements.cryptoNuriaVerified.checked === true;
+  const verifiedBy = String(elements.cryptoVerifiedBy.value || '').trim();
+
+  if (!name || !shariaCertifier) {
+    setCryptoFormError('Project name and Sharia certifier are both required.');
+    showBanner('Fix the highlighted project form issue and submit again.', 'info');
+    return;
+  }
+
+  if (nuriaVerified && !verifiedBy) {
+    setCryptoFormError('Nuria verified projects must name the reviewing scholar. Fill in Verified by or untick Nuria verified.');
+    showBanner('Fix the highlighted project form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    name,
+    provider_name: String(elements.cryptoProviderName.value || '').trim(),
+    logo_url: String(elements.cryptoLogoUrl.value || '').trim(),
+    website_url: String(elements.cryptoWebsiteUrl.value || '').trim(),
+    product_type: elements.cryptoProductType.value,
+    sharia_certifier: shariaCertifier,
+    sharia_certificate_url: String(elements.cryptoShariaCertificateUrl.value || '').trim(),
+    sharia_explanation: String(elements.cryptoShariaExplanation.value || '').trim(),
+    geography_available: parseAmanahListInput(elements.cryptoGeography.value),
+    risk_level: elements.cryptoRiskLevel.value,
+    participation_method: String(elements.cryptoParticipationMethod.value || '').trim(),
+    nuria_verified: nuriaVerified,
+    verified_by: verifiedBy,
+    verified_date: String(elements.cryptoVerifiedDate.value || '').trim(),
+    next_review_date: String(elements.cryptoNextReviewDate.value || '').trim(),
+    external_url: String(elements.cryptoExternalUrl.value || '').trim(),
+    affiliate_provider: String(elements.cryptoAffiliateProvider.value || '').trim(),
+    status: elements.cryptoStatus.value,
+  };
+
+  if (editing) {
+    payload.productId = productId;
+  }
+
+  state.saveCryptoProductInFlight = true;
+  setButtonBusy(elements.saveCryptoProductButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertCryptoProductAdmin', payload);
+    const savedProductId = String(data?.productId || productId || '').trim();
+
+    track('amanah_crypto_admin_product_saved', {
+      mode: editing ? 'update' : 'create',
+      product_id: savedProductId,
+      product_type: payload.product_type,
+    });
+
+    await ensureCryptoProductsLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.cryptoProducts || []).find(
+      (item) => item.productId === savedProductId
+    ) || null;
+    resetCryptoProductForm(saved);
+    showBanner(
+      editing
+        ? `Updated crypto project ${name}.`
+        : `Created crypto project ${name}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated crypto project ${name}.`
+        : `Created crypto project ${name}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setCryptoFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveCryptoProductInFlight = false;
+    setButtonBusy(elements.saveCryptoProductButton, false);
+  }
+}
+
+// ── Nuria Amanah scholars' debate positions ──────────────────────────────
+
+function setDebateFormError(message) {
+  if (!elements.debateFormError) {
+    return;
+  }
+
+  elements.debateFormError.hidden = !message;
+  elements.debateFormError.textContent = message || '';
+}
+
+function setDebateFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.debateFormTitle) {
+    elements.debateFormTitle.textContent = editing ? 'Edit position' : 'Create position';
+  }
+  if (elements.debateFormHelper) {
+    elements.debateFormHelper.textContent = editing
+      ? 'Update the selected debate position. Saving writes straight to the live scholars_debate_positions collection.'
+      : 'Create a new curated debate position for the Nuria Amanah crypto debate.';
+  }
+}
+
+function renderDebateSummaryMeta() {
+  if (!elements.debateArgumentSummaryMeta) return;
+  const length = String(elements.debateArgumentSummary?.value || '').length;
+  elements.debateArgumentSummaryMeta.textContent = `${length} / ${AMANAH_DEBATE_SUMMARY_MAX_CHARS} characters`;
+}
+
+function renderDebatePositionsTable() {
+  if (!elements.debateTableBody) return;
+
+  const items = state.debatePositions || [];
+
+  elements.debateTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr>
+          <td>
+            <button type="button" class="admin-link-button" data-debate-position-id="${escapeHtml(item.docId)}">
+              ${escapeHtml(item.scholar_name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.position || '-')}</td>
+          <td>${escapeHtml(item.madhab || '-')}</td>
+          <td>${escapeHtml(item.order != null ? String(item.order) : '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${escapeHtml(formatAmanahTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.debateEmpty) {
+    if (state.debateUnavailableReason) {
+      elements.debateEmpty.textContent = state.debateUnavailableReason;
+    } else {
+      elements.debateEmpty.textContent = 'No debate positions yet. Create your first debate position with the form.';
+    }
+    elements.debateEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetDebatePositionForm(item) {
+  const value = item || null;
+
+  if (!elements.debateForm) {
+    return;
+  }
+
+  setDebateFormError('');
+  setDebateFormMode(value ? 'edit' : 'create');
+  elements.debateForm.reset();
+
+  elements.debateDocId.value = value ? String(value.docId || '') : '';
+  elements.debatePosition.value = value?.position || 'under_review';
+  elements.debateScholarName.value = value ? String(value.scholar_name || '') : '';
+  elements.debateScholarAffiliation.value = value ? String(value.scholar_affiliation || '') : '';
+  elements.debateArgumentSummary.value = value ? String(value.argument_summary || '') : '';
+  elements.debateSourceUrl.value = value ? String(value.source_url || '') : '';
+  elements.debateMadhab.value = value?.madhab || 'general';
+  elements.debateOrder.value = value && value.order != null
+    ? String(value.order)
+    : '';
+  elements.debateStatus.value = value?.status || 'pending_review';
+  renderDebateSummaryMeta();
+}
+
+function resetDebateState() {
+  state.debatePositions = [];
+  state.debateLoaded = false;
+  state.debateLoading = false;
+  state.debateLoadPromise = null;
+  state.debateUnavailableReason = '';
+  state.saveDebatePositionInFlight = false;
+  resetDebatePositionForm(null);
+  renderDebatePositionsTable();
+}
+
+async function loadDebatePositions() {
+  const data = await callAdminFunction('listDebatePositionsAdmin', {});
+
+  state.debatePositions = Array.isArray(data?.positions) ? data.positions : [];
+}
+
+async function ensureDebatePositionsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.debateLoadPromise && !settings.force) {
+    return state.debateLoadPromise;
+  }
+
+  if (state.debateLoaded && !settings.force) {
+    renderDebatePositionsTable();
+    return state.debatePositions;
+  }
+
+  const task = (async () => {
+    state.debateLoading = true;
+    setButtonBusy(elements.refreshDebatePositions, true, 'Refreshing');
+
+    try {
+      await loadDebatePositions();
+      state.debateLoaded = true;
+      state.debateUnavailableReason = '';
+      renderDebatePositionsTable();
+      return state.debatePositions;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The debate positions could not be loaded. Try again.'
+      );
+      state.debatePositions = [];
+      state.debateUnavailableReason = message;
+      renderDebatePositionsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.debateLoading = false;
+      state.debateLoadPromise = null;
+      setButtonBusy(elements.refreshDebatePositions, false);
+    }
+  })();
+
+  state.debateLoadPromise = task;
+  return task;
+}
+
+async function handleDebatePositionSave(event) {
+  event.preventDefault();
+
+  if (state.saveDebatePositionInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setDebateFormError('');
+
+  const docId = String(elements.debateDocId.value || '').trim();
+  const editing = Boolean(docId);
+  const scholarName = String(elements.debateScholarName.value || '').trim();
+  const argumentSummary = String(elements.debateArgumentSummary.value || '').trim();
+
+  if (!argumentSummary) {
+    setDebateFormError('Argument summary is required.');
+    showBanner('Fix the highlighted position form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    position: elements.debatePosition.value,
+    scholar_name: scholarName,
+    scholar_affiliation: String(elements.debateScholarAffiliation.value || '').trim(),
+    argument_summary: argumentSummary,
+    source_url: String(elements.debateSourceUrl.value || '').trim(),
+    madhab: elements.debateMadhab.value,
+    order: parseAmanahOptionalNumber(elements.debateOrder.value) ?? 0,
+    status: elements.debateStatus.value,
+  };
+
+  if (editing) {
+    payload.docId = docId;
+  }
+
+  state.saveDebatePositionInFlight = true;
+  setButtonBusy(elements.saveDebatePositionButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertDebatePositionAdmin', payload);
+    const savedDocId = String(data?.docId || docId || '').trim();
+
+    track('amanah_debate_admin_position_saved', {
+      mode: editing ? 'update' : 'create',
+      doc_id: savedDocId,
+      position: payload.position,
+    });
+
+    await ensureDebatePositionsLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.debatePositions || []).find(
+      (item) => item.docId === savedDocId
+    ) || null;
+    resetDebatePositionForm(saved);
+    const label = scholarName ? ` for ${scholarName}` : '';
+    showBanner(
+      editing
+        ? `Updated debate position${label}.`
+        : `Created debate position${label}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated debate position${label}.`
+        : `Created debate position${label}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setDebateFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveDebatePositionInFlight = false;
+    setButtonBusy(elements.saveDebatePositionButton, false);
+  }
+}
+
 function setCodeFormMode(mode) {
   const editing = mode === 'edit';
 
@@ -9861,6 +10512,54 @@ function bindEvents() {
       clearBanner();
     }
   });
+  elements.refreshCryptoProducts?.addEventListener('click', () => {
+    clearBanner();
+    ensureCryptoProductsLoaded({ force: true }).catch(() => {});
+  });
+  elements.newCryptoProduct?.addEventListener('click', () => resetCryptoProductForm(null));
+  elements.resetCryptoForm?.addEventListener('click', () => resetCryptoProductForm(null));
+  elements.cryptoForm?.addEventListener('submit', handleCryptoProductSave);
+  elements.cryptoShariaExplanation?.addEventListener('input', () => {
+    setCryptoFormError('');
+    renderCryptoExplanationMeta();
+  });
+  elements.cryptoTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-crypto-product-id]');
+    if (!button) return;
+
+    const item = (state.cryptoProducts || []).find(
+      (product) => product.productId === button.dataset.cryptoProductId
+    );
+
+    if (item) {
+      resetCryptoProductForm(item);
+      clearBanner();
+    }
+  });
+  elements.refreshDebatePositions?.addEventListener('click', () => {
+    clearBanner();
+    ensureDebatePositionsLoaded({ force: true }).catch(() => {});
+  });
+  elements.newDebatePosition?.addEventListener('click', () => resetDebatePositionForm(null));
+  elements.resetDebateForm?.addEventListener('click', () => resetDebatePositionForm(null));
+  elements.debateForm?.addEventListener('submit', handleDebatePositionSave);
+  elements.debateArgumentSummary?.addEventListener('input', () => {
+    setDebateFormError('');
+    renderDebateSummaryMeta();
+  });
+  elements.debateTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-debate-position-id]');
+    if (!button) return;
+
+    const item = (state.debatePositions || []).find(
+      (position) => position.docId === button.dataset.debatePositionId
+    );
+
+    if (item) {
+      resetDebatePositionForm(item);
+      clearBanner();
+    }
+  });
   elements.refreshLiveNotificationAudience?.addEventListener('click', () => {
     clearBanner();
     estimateLiveNotificationAudience({ silent: false }).catch(() => {});
@@ -10030,6 +10729,8 @@ function initializeFormDefaults() {
   renderDashboardCopy();
   resetLiveNotificationState();
   resetAmanahState();
+  resetCryptoState();
+  resetDebateState();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
@@ -10050,6 +10751,8 @@ function applyAuthState(user) {
     renderDashboardCopy();
     resetLiveNotificationState();
     resetAmanahState();
+    resetCryptoState();
+    resetDebateState();
     stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
@@ -10061,6 +10764,8 @@ function applyAuthState(user) {
     renderDashboardCopy();
     resetLiveNotificationState();
     resetAmanahState();
+    resetCryptoState();
+    resetDebateState();
   }
 
   if (wasLoggedOut) {
