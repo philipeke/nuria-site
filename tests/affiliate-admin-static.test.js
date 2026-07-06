@@ -50,7 +50,16 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260614-auth-errors'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260706-amanah'));
+});
+
+run('amanah catalogue tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="amanah"'));
+  assert(affiliateAdminHtml.includes('adminSectionAmanah'));
+  assert(affiliateAdminHtml.includes('adminAmanahForm'));
+  assert(affiliateAdminScript.includes("callAdminFunction('listFinanceProductsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertFinanceProductAdmin'"));
+  assert(affiliateAdminScript.includes('verified_requires_scholar'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
