@@ -42,6 +42,7 @@ const ADMIN_PAGE_PATHS = {
   'report-detail': '/internal/affiliate-admin/report-detail/',
   'live-notifications': '/internal/affiliate-admin/live-notifications/',
   'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
+  amanah: '/internal/affiliate-admin/amanah/',
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;
@@ -51,6 +52,7 @@ const AUTH_BOOTSTRAP_TIMEOUT_MS = 2500;
 const AUTH_STUCK_TIMEOUT_MS = 6000;
 const ADMIN_CALL_TIMEOUT_MS = 15000;
 const DASHBOARD_LOAD_TIMEOUT_MS = 25000;
+const AMANAH_EXPLANATION_MAX_CHARS = 2400;
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -253,6 +255,38 @@ const elements = {
   dashboardCopyPreviewBody: document.getElementById('adminDashboardCopyPreviewBody'),
   dashboardCopyPreviewEmpty: document.getElementById('adminDashboardCopyPreviewEmpty'),
   dashboardCopyMetadata: document.getElementById('adminDashboardCopyMetadata'),
+  refreshAmanahProducts: document.getElementById('adminRefreshAmanahProducts'),
+  newAmanahProduct: document.getElementById('adminNewAmanahProduct'),
+  amanahTableBody: document.getElementById('adminAmanahTableBody'),
+  amanahEmpty: document.getElementById('adminAmanahEmpty'),
+  amanahForm: document.getElementById('adminAmanahForm'),
+  amanahFormTitle: document.getElementById('adminAmanahFormTitle'),
+  amanahFormHelper: document.getElementById('adminAmanahFormHelper'),
+  amanahProductId: document.getElementById('adminAmanahProductId'),
+  amanahName: document.getElementById('adminAmanahName'),
+  amanahProviderName: document.getElementById('adminAmanahProviderName'),
+  amanahProviderLogoUrl: document.getElementById('adminAmanahProviderLogoUrl'),
+  amanahProductType: document.getElementById('adminAmanahProductType'),
+  amanahShariaStructure: document.getElementById('adminAmanahShariaStructure'),
+  amanahGeography: document.getElementById('adminAmanahGeography'),
+  amanahCurrency: document.getElementById('adminAmanahCurrency'),
+  amanahShariaExplanation: document.getElementById('adminAmanahShariaExplanation'),
+  amanahShariaExplanationMeta: document.getElementById('adminAmanahShariaExplanationMeta'),
+  amanahMinimumAmount: document.getElementById('adminAmanahMinimumAmount'),
+  amanahMinimumCurrency: document.getElementById('adminAmanahMinimumCurrency'),
+  amanahExpectedReturnMin: document.getElementById('adminAmanahExpectedReturnMin'),
+  amanahExpectedReturnMax: document.getElementById('adminAmanahExpectedReturnMax'),
+  amanahNuriaVerified: document.getElementById('adminAmanahNuriaVerified'),
+  amanahVerifiedByScholar: document.getElementById('adminAmanahVerifiedByScholar'),
+  amanahVerifiedDate: document.getElementById('adminAmanahVerifiedDate'),
+  amanahNextReviewDate: document.getElementById('adminAmanahNextReviewDate'),
+  amanahExternalUrl: document.getElementById('adminAmanahExternalUrl'),
+  amanahAffiliateProvider: document.getElementById('adminAmanahAffiliateProvider'),
+  amanahStatus: document.getElementById('adminAmanahStatus'),
+  amanahFscsEquivalent: document.getElementById('adminAmanahFscsEquivalent'),
+  saveAmanahProductButton: document.getElementById('adminSaveAmanahProductButton'),
+  resetAmanahForm: document.getElementById('adminResetAmanahForm'),
+  amanahFormError: document.getElementById('adminAmanahFormError'),
   liveNotificationForm: document.getElementById('adminLiveNotificationForm'),
   liveNotificationTitle: document.getElementById('adminLiveNotificationTitle'),
   liveNotificationTitleMeta: document.getElementById('adminLiveNotificationTitleMeta'),
@@ -432,6 +466,12 @@ const state = {
   dashboardCopyLocaleSearch: '',
   dashboardCopyPreviewLocale: '',
   dashboardCopyPreviewTouched: false,
+  amanahProducts: [],
+  amanahLoaded: false,
+  amanahLoading: false,
+  amanahLoadPromise: null,
+  amanahUnavailableReason: '',
+  saveAmanahProductInFlight: false,
   liveNotificationSummary: null,
   liveNotificationCampaigns: [],
   liveNotificationLoading: false,
@@ -665,6 +705,15 @@ function setAdminPage(pageKey, options) {
       });
     }
   }
+
+  if (next === 'amanah' && state.user) {
+    ensureAmanahProductsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('amanah_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
 }
 
 function showBanner(message, tone) {
@@ -751,6 +800,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
     if (error?.adminCallable === 'findUsersForPushTest') {
       return 'User search timed out. Try a more specific query.';
     }
+    if (error?.adminCallable === 'listFinanceProductsAdmin') {
+      return 'Amanah product list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertFinanceProductAdmin') {
+      return 'Amanah product save timed out. Refresh the product list before saving again.';
+    }
     return 'This request timed out before the backend responded. Try again.';
   }
 
@@ -759,6 +814,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
   }
 
   if (code === 'permission-denied') {
+    if (
+      error?.adminCallable === 'listFinanceProductsAdmin'
+      || error?.adminCallable === 'upsertFinanceProductAdmin'
+    ) {
+      return 'Admin access required. This account is not allowlisted for Nuria Amanah admin.';
+    }
     if (message.includes('admin_access_required') || message.includes('admin_role_required')) {
       return 'Signed in, but this account is not allowlisted for affiliate admin access.';
     }
@@ -800,6 +861,9 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (message.includes('invite_not_found')) {
       return 'This partner claim link does not exist anymore. Create a new claim link and send that one.';
+    }
+    if (message.includes('product_not_found')) {
+      return 'This Amanah product no longer exists. Refresh the product list and try again.';
     }
     return 'The requested record was not found.';
   }
@@ -863,6 +927,46 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (message.includes('copy_required')) {
     return 'English title or body is required when the dashboard placeholder is enabled.';
+  }
+
+  if (message.includes('name_and_provider_required')) {
+    return 'Product name and provider name are both required.';
+  }
+
+  if (message.includes('verified_requires_scholar')) {
+    return 'Nuria verified products must name the reviewing scholar. Fill in Verified by scholar or untick Nuria verified.';
+  }
+
+  if (message.includes('invalid_product_type')) {
+    return 'Product type is invalid. Pick one of the listed product types.';
+  }
+
+  if (message.includes('invalid_sharia_structure')) {
+    return 'Sharia structure is invalid. Pick one of the listed structures.';
+  }
+
+  if (message.includes('invalid_status')) {
+    return 'Status is invalid. Pick active, pending_review, rejected, or archived.';
+  }
+
+  if (message.includes('invalid_external_url')) {
+    return 'External URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_provider_logo_url')) {
+    return 'Provider logo URL must be a valid https:// link.';
+  }
+
+  if (message.includes('sharia_explanation_too_long')) {
+    return 'Sharia explanation is too long. Keep it within 2400 characters.';
+  }
+
+  if (message.includes('amanah_upsert_failed')) {
+    return 'The Amanah product could not be saved. Try again.';
+  }
+
+  if (message.includes('amanah_list_failed')) {
+    return 'The Amanah product catalogue could not be loaded. Try again.';
   }
 
   if (message.includes('app check') || message.includes('recaptcha')) {
@@ -6500,6 +6604,293 @@ async function handleDashboardCopySave(event) {
   }
 }
 
+// ── Nuria Amanah product catalogue ───────────────────────────────────────
+
+function setAmanahFormError(message) {
+  if (!elements.amanahFormError) {
+    return;
+  }
+
+  elements.amanahFormError.hidden = !message;
+  elements.amanahFormError.textContent = message || '';
+}
+
+function setAmanahFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.amanahFormTitle) {
+    elements.amanahFormTitle.textContent = editing ? 'Edit product' : 'Create product';
+  }
+  if (elements.amanahFormHelper) {
+    elements.amanahFormHelper.textContent = editing
+      ? 'Update the selected catalogue entry. Saving writes straight to the live finance_products collection.'
+      : 'Create a new finance product for the Nuria Amanah catalogue.';
+  }
+}
+
+function formatAmanahTimestamp(millis) {
+  const value = Number(millis);
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  return formatTimestamp({ iso: new Date(value).toISOString() });
+}
+
+function parseAmanahListInput(value) {
+  return String(value || '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function parseAmanahOptionalNumber(value) {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) return null;
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function renderAmanahExplanationMeta() {
+  if (!elements.amanahShariaExplanationMeta) return;
+  const length = String(elements.amanahShariaExplanation?.value || '').length;
+  elements.amanahShariaExplanationMeta.textContent = `${length} / ${AMANAH_EXPLANATION_MAX_CHARS} characters`;
+}
+
+function renderAmanahProductsTable() {
+  if (!elements.amanahTableBody) return;
+
+  const items = state.amanahProducts || [];
+
+  elements.amanahTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr>
+          <td>
+            <button type="button" class="admin-link-button" data-amanah-product-id="${escapeHtml(item.productId)}">
+              ${escapeHtml(item.name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.provider_name || '-')}</td>
+          <td>${escapeHtml(item.product_type || '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${item.nuria_verified === true ? 'Yes' : '-'}</td>
+          <td>${escapeHtml(formatAmanahTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.amanahEmpty) {
+    if (state.amanahUnavailableReason) {
+      elements.amanahEmpty.textContent = state.amanahUnavailableReason;
+    } else {
+      elements.amanahEmpty.textContent = 'No finance products yet. Create your first Amanah catalogue entry with the form.';
+    }
+    elements.amanahEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetAmanahProductForm(item) {
+  const value = item || null;
+
+  if (!elements.amanahForm) {
+    return;
+  }
+
+  setAmanahFormError('');
+  setAmanahFormMode(value ? 'edit' : 'create');
+  elements.amanahForm.reset();
+
+  elements.amanahProductId.value = value ? String(value.productId || '') : '';
+  elements.amanahName.value = value ? String(value.name || '') : '';
+  elements.amanahProviderName.value = value ? String(value.provider_name || '') : '';
+  elements.amanahProviderLogoUrl.value = value ? String(value.provider_logo_url || '') : '';
+  elements.amanahProductType.value = value?.product_type || 'savings';
+  elements.amanahShariaStructure.value = value?.sharia_structure || 'murabaha';
+  elements.amanahGeography.value = value && Array.isArray(value.geography)
+    ? value.geography.join(', ')
+    : '';
+  elements.amanahCurrency.value = value && Array.isArray(value.currency)
+    ? value.currency.join(', ')
+    : '';
+  elements.amanahShariaExplanation.value = value ? String(value.sharia_explanation || '') : '';
+  elements.amanahMinimumAmount.value = value && value.minimum_amount != null
+    ? String(value.minimum_amount)
+    : '';
+  elements.amanahMinimumCurrency.value = value ? String(value.minimum_currency || '') : '';
+  elements.amanahExpectedReturnMin.value = value && value.expected_return_min != null
+    ? String(value.expected_return_min)
+    : '';
+  elements.amanahExpectedReturnMax.value = value && value.expected_return_max != null
+    ? String(value.expected_return_max)
+    : '';
+  elements.amanahNuriaVerified.checked = value?.nuria_verified === true;
+  elements.amanahVerifiedByScholar.value = value ? String(value.verified_by_scholar || '') : '';
+  elements.amanahVerifiedDate.value = value ? String(value.verified_date || '') : '';
+  elements.amanahNextReviewDate.value = value ? String(value.next_review_date || '') : '';
+  elements.amanahExternalUrl.value = value ? String(value.external_url || '') : '';
+  elements.amanahAffiliateProvider.value = value ? String(value.affiliate_provider || '') : '';
+  elements.amanahFscsEquivalent.checked = value?.fscs_equivalent === true;
+  elements.amanahStatus.value = value?.status || 'pending_review';
+  renderAmanahExplanationMeta();
+}
+
+function resetAmanahState() {
+  state.amanahProducts = [];
+  state.amanahLoaded = false;
+  state.amanahLoading = false;
+  state.amanahLoadPromise = null;
+  state.amanahUnavailableReason = '';
+  state.saveAmanahProductInFlight = false;
+  resetAmanahProductForm(null);
+  renderAmanahProductsTable();
+}
+
+async function loadAmanahProducts() {
+  const data = await callAdminFunction('listFinanceProductsAdmin', {});
+
+  state.amanahProducts = Array.isArray(data?.products) ? data.products : [];
+}
+
+async function ensureAmanahProductsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.amanahLoadPromise && !settings.force) {
+    return state.amanahLoadPromise;
+  }
+
+  if (state.amanahLoaded && !settings.force) {
+    renderAmanahProductsTable();
+    return state.amanahProducts;
+  }
+
+  const task = (async () => {
+    state.amanahLoading = true;
+    setButtonBusy(elements.refreshAmanahProducts, true, 'Refreshing');
+
+    try {
+      await loadAmanahProducts();
+      state.amanahLoaded = true;
+      state.amanahUnavailableReason = '';
+      renderAmanahProductsTable();
+      return state.amanahProducts;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Amanah product catalogue could not be loaded. Try again.'
+      );
+      state.amanahProducts = [];
+      state.amanahUnavailableReason = message;
+      renderAmanahProductsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.amanahLoading = false;
+      state.amanahLoadPromise = null;
+      setButtonBusy(elements.refreshAmanahProducts, false);
+    }
+  })();
+
+  state.amanahLoadPromise = task;
+  return task;
+}
+
+async function handleAmanahProductSave(event) {
+  event.preventDefault();
+
+  if (state.saveAmanahProductInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setAmanahFormError('');
+
+  const productId = String(elements.amanahProductId.value || '').trim();
+  const editing = Boolean(productId);
+  const name = String(elements.amanahName.value || '').trim();
+  const providerName = String(elements.amanahProviderName.value || '').trim();
+  const nuriaVerified = elements.amanahNuriaVerified.checked === true;
+  const verifiedByScholar = String(elements.amanahVerifiedByScholar.value || '').trim();
+
+  if (!name || !providerName) {
+    setAmanahFormError('Product name and provider name are both required.');
+    showBanner('Fix the highlighted product form issue and submit again.', 'info');
+    return;
+  }
+
+  if (nuriaVerified && !verifiedByScholar) {
+    setAmanahFormError('Nuria verified products must name the reviewing scholar. Fill in Verified by scholar or untick Nuria verified.');
+    showBanner('Fix the highlighted product form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    name,
+    provider_name: providerName,
+    provider_logo_url: String(elements.amanahProviderLogoUrl.value || '').trim(),
+    product_type: elements.amanahProductType.value,
+    geography: parseAmanahListInput(elements.amanahGeography.value),
+    currency: parseAmanahListInput(elements.amanahCurrency.value),
+    sharia_structure: elements.amanahShariaStructure.value,
+    sharia_explanation: String(elements.amanahShariaExplanation.value || '').trim(),
+    minimum_amount: parseAmanahOptionalNumber(elements.amanahMinimumAmount.value),
+    minimum_currency: String(elements.amanahMinimumCurrency.value || '').trim().toUpperCase(),
+    expected_return_min: parseAmanahOptionalNumber(elements.amanahExpectedReturnMin.value),
+    expected_return_max: parseAmanahOptionalNumber(elements.amanahExpectedReturnMax.value),
+    nuria_verified: nuriaVerified,
+    verified_by_scholar: verifiedByScholar,
+    verified_date: String(elements.amanahVerifiedDate.value || '').trim(),
+    next_review_date: String(elements.amanahNextReviewDate.value || '').trim(),
+    external_url: String(elements.amanahExternalUrl.value || '').trim(),
+    affiliate_provider: String(elements.amanahAffiliateProvider.value || '').trim(),
+    fscs_equivalent: elements.amanahFscsEquivalent.checked === true,
+    status: elements.amanahStatus.value,
+  };
+
+  if (editing) {
+    payload.productId = productId;
+  }
+
+  state.saveAmanahProductInFlight = true;
+  setButtonBusy(elements.saveAmanahProductButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertFinanceProductAdmin', payload);
+    const savedProductId = String(data?.productId || productId || '').trim();
+
+    track('amanah_admin_product_saved', {
+      mode: editing ? 'update' : 'create',
+      product_id: savedProductId,
+      product_type: payload.product_type,
+    });
+
+    await ensureAmanahProductsLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.amanahProducts || []).find(
+      (item) => item.productId === savedProductId
+    ) || null;
+    resetAmanahProductForm(saved);
+    showBanner(
+      editing
+        ? `Updated Amanah product ${name}.`
+        : `Created Amanah product ${name}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated Amanah product ${name}.`
+        : `Created Amanah product ${name}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setAmanahFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveAmanahProductInFlight = false;
+    setButtonBusy(elements.saveAmanahProductButton, false);
+  }
+}
+
 function setCodeFormMode(mode) {
   const editing = mode === 'edit';
 
@@ -9446,6 +9837,30 @@ function bindEvents() {
   elements.dashboardCopyLocaleSearch?.addEventListener('input', handleDashboardCopyLocaleSearchInput);
   elements.dashboardCopyTranslationsList?.addEventListener('input', handleDashboardCopyTranslationInput);
   elements.dashboardCopyPreviewLocale?.addEventListener('change', handleDashboardCopyPreviewLocaleChange);
+  elements.refreshAmanahProducts?.addEventListener('click', () => {
+    clearBanner();
+    ensureAmanahProductsLoaded({ force: true }).catch(() => {});
+  });
+  elements.newAmanahProduct?.addEventListener('click', () => resetAmanahProductForm(null));
+  elements.resetAmanahForm?.addEventListener('click', () => resetAmanahProductForm(null));
+  elements.amanahForm?.addEventListener('submit', handleAmanahProductSave);
+  elements.amanahShariaExplanation?.addEventListener('input', () => {
+    setAmanahFormError('');
+    renderAmanahExplanationMeta();
+  });
+  elements.amanahTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-amanah-product-id]');
+    if (!button) return;
+
+    const item = (state.amanahProducts || []).find(
+      (product) => product.productId === button.dataset.amanahProductId
+    );
+
+    if (item) {
+      resetAmanahProductForm(item);
+      clearBanner();
+    }
+  });
   elements.refreshLiveNotificationAudience?.addEventListener('click', () => {
     clearBanner();
     estimateLiveNotificationAudience({ silent: false }).catch(() => {});
@@ -9614,6 +10029,7 @@ function initializeFormDefaults() {
   resetDashboardCopyState({ preservePreviewLocale: false });
   renderDashboardCopy();
   resetLiveNotificationState();
+  resetAmanahState();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
@@ -9633,6 +10049,7 @@ function applyAuthState(user) {
     resetDashboardCopyState({ preservePreviewLocale: false });
     renderDashboardCopy();
     resetLiveNotificationState();
+    resetAmanahState();
     stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
@@ -9643,6 +10060,7 @@ function applyAuthState(user) {
     resetDashboardCopyState({ preservePreviewLocale: true });
     renderDashboardCopy();
     resetLiveNotificationState();
+    resetAmanahState();
   }
 
   if (wasLoggedOut) {

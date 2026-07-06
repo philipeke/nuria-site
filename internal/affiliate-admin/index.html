@@ -130,6 +130,7 @@
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
                 <a href="/internal/affiliate-admin/live-notifications/" class="admin-section-nav__link" data-admin-page-link="live-notifications">Live Notifications</a>
                 <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-section-nav__link" data-admin-page-link="dashboard-copy">Placeholder</a>
+                <a href="/internal/affiliate-admin/amanah/" class="admin-section-nav__link" data-admin-page-link="amanah">Nuria Amanah</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
               </div>
 
@@ -344,6 +345,10 @@
                 <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="dashboard-copy">
                   <span class="admin-mini-item__title">Placeholder</span>
                   <span class="admin-mini-item__meta">Write the text shown inside the app dashboard</span>
+                </a>
+                <a href="/internal/affiliate-admin/amanah/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="amanah">
+                  <span class="admin-mini-item__title">Nuria Amanah</span>
+                  <span class="admin-mini-item__meta">Manage the halal finance product catalogue</span>
                 </a>
               </div>
             </div>
@@ -1939,6 +1944,323 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionAmanah" data-admin-page="amanah" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Amanah</p>
+              <h2 class="admin-panel__title">Halal finance product catalogue</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshAmanahProducts">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewAmanahProduct">
+                New product
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Manage the finance products shown inside Nuria Amanah. Click a product in the table to edit it, or use New product to add a catalogue entry. New products start as pending_review until approved.
+          </p>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Provider</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Verified</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="adminAmanahTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminAmanahEmpty" hidden>
+                No finance products yet. Create your first Amanah catalogue entry with the form.
+              </p>
+            </div>
+
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminAmanahForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminAmanahFormTitle">Create product</h3>
+                <p class="admin-panel__helper" id="adminAmanahFormHelper">
+                  Create a new finance product for the Nuria Amanah catalogue.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminAmanahProductId" value="" />
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahName">Product name</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahName"
+                  name="name"
+                  type="text"
+                  placeholder="Sharia-compliant savings account"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahProviderName">Provider name</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahProviderName"
+                  name="providerName"
+                  type="text"
+                  placeholder="Al Rayan Bank"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahProviderLogoUrl">Provider logo URL</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahProviderLogoUrl"
+                  name="providerLogoUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://example.com/logo.png"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Leave empty if no hosted logo exists yet.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahProductType">Product type</label>
+                  <select class="form-input form-select" id="adminAmanahProductType" name="productType">
+                    <option value="savings">savings</option>
+                    <option value="current">current</option>
+                    <option value="mortgage">mortgage</option>
+                    <option value="sme">sme</option>
+                    <option value="investment_fund">investment_fund</option>
+                    <option value="sukuk">sukuk</option>
+                    <option value="real_estate">real_estate</option>
+                    <option value="takaful">takaful</option>
+                    <option value="stocks_screener">stocks_screener</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahShariaStructure">Sharia structure</label>
+                  <select class="form-input form-select" id="adminAmanahShariaStructure" name="shariaStructure">
+                    <option value="murabaha">murabaha</option>
+                    <option value="mudarabah">mudarabah</option>
+                    <option value="musharakah">musharakah</option>
+                    <option value="diminishing_musharakah">diminishing_musharakah</option>
+                    <option value="wakala">wakala</option>
+                    <option value="qard">qard</option>
+                    <option value="ijara">ijara</option>
+                    <option value="takaful">takaful</option>
+                    <option value="other">other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahGeography">Geography</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahGeography"
+                    name="geography"
+                    type="text"
+                    placeholder="gb, se, ae"
+                  />
+                  <p class="admin-panel__helper">
+                    Comma-separated country codes.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahCurrency">Currency</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahCurrency"
+                    name="currency"
+                    type="text"
+                    placeholder="GBP, SEK, AED"
+                  />
+                  <p class="admin-panel__helper">
+                    Comma-separated ISO currency codes.
+                  </p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahShariaExplanation">Sharia explanation</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminAmanahShariaExplanation"
+                  name="shariaExplanation"
+                  rows="5"
+                  maxlength="2400"
+                  placeholder="Explain in plain language how this product stays sharia-compliant"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminAmanahShariaExplanationMeta">0 / 2400 characters</p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahMinimumAmount">Minimum amount</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahMinimumAmount"
+                    name="minimumAmount"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="500"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahMinimumCurrency">Minimum currency</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahMinimumCurrency"
+                    name="minimumCurrency"
+                    type="text"
+                    maxlength="3"
+                    placeholder="GBP"
+                  />
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahExpectedReturnMin">Expected return min (%)</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahExpectedReturnMin"
+                    name="expectedReturnMin"
+                    type="number"
+                    step="any"
+                    placeholder="2.5"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahExpectedReturnMax">Expected return max (%)</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahExpectedReturnMax"
+                    name="expectedReturnMax"
+                    type="number"
+                    step="any"
+                    placeholder="4.1"
+                  />
+                </div>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminAmanahNuriaVerified" name="nuriaVerified" />
+                <span>Nuria verified</span>
+              </label>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahVerifiedByScholar">Verified by scholar</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahVerifiedByScholar"
+                  name="verifiedByScholar"
+                  type="text"
+                  placeholder="Sheikh full name"
+                />
+                <p class="admin-panel__helper">
+                  Required when Nuria verified is checked. The Verified badge always carries an accountable reviewer.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahVerifiedDate">Verified date</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahVerifiedDate"
+                    name="verifiedDate"
+                    type="date"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahNextReviewDate">Next review date</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahNextReviewDate"
+                    name="nextReviewDate"
+                    type="date"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahExternalUrl">External URL</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahExternalUrl"
+                  name="externalUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://provider.com/product"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Where users continue to the provider.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahAffiliateProvider">Affiliate provider</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahAffiliateProvider"
+                    name="affiliateProvider"
+                    type="text"
+                    placeholder="impact, awin, direct"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahStatus">Status</label>
+                  <select class="form-input form-select" id="adminAmanahStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="pending_review" selected>pending_review</option>
+                    <option value="rejected">rejected</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminAmanahFscsEquivalent" name="fscsEquivalent" />
+                <span>FSCS-equivalent deposit protection</span>
+              </label>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveAmanahProductButton">
+                  Save product
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetAmanahForm">
+                  Reset
+                </button>
+              </div>
+
+              <p class="admin-form-error" id="adminAmanahFormError" hidden></p>
+            </form>
+            </div>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings" hidden>
           <div class="admin-panel__header">
             <div>
@@ -2112,6 +2434,6 @@
   <script src="../../js/i18n.js"></script>
   <script src="../../js/main.js?v=20260629j"></script>
   <script src="../../js/affiliate-partner-registry.js"></script>
-  <script type="module" src="../../js/affiliate-admin.js?v=20260614-auth-errors"></script>
+  <script type="module" src="../../js/affiliate-admin.js?v=20260706-amanah"></script>
 </body>
 </html>
