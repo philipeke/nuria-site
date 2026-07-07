@@ -133,6 +133,7 @@
                 <a href="/internal/affiliate-admin/amanah/" class="admin-section-nav__link" data-admin-page-link="amanah">Nuria Amanah</a>
                 <a href="/internal/affiliate-admin/amanah-crypto/" class="admin-section-nav__link" data-admin-page-link="amanah-crypto">Crypto Projects</a>
                 <a href="/internal/affiliate-admin/amanah-debate/" class="admin-section-nav__link" data-admin-page-link="amanah-debate">Debate Positions</a>
+                <a href="/internal/affiliate-admin/haqq-templates/" class="admin-section-nav__link" data-admin-page-link="haqq-templates">Haqq templates</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
               </div>
 
@@ -359,6 +360,10 @@
                 <a href="/internal/affiliate-admin/amanah-debate/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="amanah-debate">
                   <span class="admin-mini-item__title">Debate Positions</span>
                   <span class="admin-mini-item__meta">Curate the scholars&#39; crypto debate positions</span>
+                </a>
+                <a href="/internal/affiliate-admin/haqq-templates/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="haqq-templates">
+                  <span class="admin-mini-item__title">Haqq templates</span>
+                  <span class="admin-mini-item__meta">Manage the Haqq legal document template library</span>
                 </a>
               </div>
             </div>
@@ -2734,6 +2739,236 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionHaqqTemplates" data-admin-page="haqq-templates" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Haqq</p>
+              <h2 class="admin-panel__title">Legal document templates</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshHaqqTemplates">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewHaqqTemplate">
+                New template
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Manage the document templates offered inside Nuria Haqq. Click a template in the table to edit it, or use New template to add one. New templates start as pending_review until approved.
+          </p>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Tier</th>
+                    <th>Status</th>
+                    <th>Reviewed</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="adminHaqqTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminHaqqEmpty" hidden>
+                No Haqq templates yet. Create your first document template with the form.
+              </p>
+            </div>
+
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminHaqqForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminHaqqFormTitle">Create template</h3>
+                <p class="admin-panel__helper" id="adminHaqqFormHelper">
+                  Create a new legal document template for Nuria Haqq.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminHaqqTemplateId" value="" />
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqDisplayName">Display name</label>
+                <input
+                  class="form-input"
+                  id="adminHaqqDisplayName"
+                  name="displayName"
+                  type="text"
+                  maxlength="160"
+                  placeholder="Simple service agreement"
+                  required
+                />
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqTemplateType">Template type</label>
+                  <select class="form-input form-select" id="adminHaqqTemplateType" name="templateType">
+                    <option value="service_agreement" selected>service_agreement</option>
+                    <option value="musharakah">musharakah</option>
+                    <option value="nda">nda</option>
+                    <option value="ijara">ijara</option>
+                    <option value="supplier_agreement">supplier_agreement</option>
+                    <option value="employment">employment</option>
+                    <option value="qard_hasan">qard_hasan</option>
+                    <option value="rental">rental</option>
+                    <option value="freelance">freelance</option>
+                    <option value="mahr">mahr</option>
+                    <option value="wasiyyah">wasiyyah</option>
+                    <option value="suq_service">suq_service</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqTier">Tier</label>
+                  <select class="form-input form-select" id="adminHaqqTier" name="tier">
+                    <option value="free" selected>free</option>
+                    <option value="paid">paid</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqDescription">Description</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminHaqqDescription"
+                  name="description"
+                  rows="4"
+                  maxlength="600"
+                  placeholder="Explain in plain language what this template covers and when to use it"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminHaqqDescriptionMeta">0 / 600 characters</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqFieldsSchema">Fields schema (JSON)</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminHaqqFieldsSchema"
+                  name="fieldsSchema"
+                  rows="10"
+                  spellcheck="false"
+                  placeholder='[
+  {
+    "key": "client_name",
+    "label": "Client name",
+    "type": "text",
+    "required": true,
+    "maxLength": 200,
+    "hint": "Full legal name"
+  }
+]'
+                ></textarea>
+                <p class="admin-panel__helper">
+                  JSON array of form fields. Each field: key (lowercase snake_case), label, type (text, textarea, number, date), optional required, maxLength (1-5000), and hint. Max 40 fields; keys must be unique.
+                </p>
+                <p class="admin-form-error" id="adminHaqqFieldsSchemaError" hidden></p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqHtmlTemplate">HTML template</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminHaqqHtmlTemplate"
+                  name="htmlTemplate"
+                  rows="12"
+                  maxlength="60000"
+                  spellcheck="false"
+                  placeholder="&lt;h1&gt;Service Agreement&lt;/h1&gt;&lt;p&gt;Between {{client_name}} ...&lt;/p&gt;"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminHaqqHtmlTemplateMeta">0 / 60000 characters</p>
+                <p class="admin-panel__helper">
+                  Every {{placeholder}} must match a fields schema key ({{generated_date}} and {{document_id}} are built in). The backend rejects script/iframe/object/embed tags and remote http(s) src attributes.
+                </p>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminHaqqShariaReviewed" name="shariaReviewed" />
+                <span>Sharia reviewed</span>
+              </label>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqShariaReviewer">Sharia reviewer</label>
+                <input
+                  class="form-input"
+                  id="adminHaqqShariaReviewer"
+                  name="shariaReviewer"
+                  type="text"
+                  maxlength="160"
+                  placeholder="Sheikh full name"
+                />
+                <p class="admin-panel__helper">
+                  Required when Sharia reviewed is checked. The Reviewed badge always carries an accountable reviewer.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqReviewedDate">Reviewed date</label>
+                  <input
+                    class="form-input"
+                    id="adminHaqqReviewedDate"
+                    name="reviewedDate"
+                    type="date"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqNextReviewDate">Next review date</label>
+                  <input
+                    class="form-input"
+                    id="adminHaqqNextReviewDate"
+                    name="nextReviewDate"
+                    type="date"
+                  />
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqJurisdiction">Jurisdiction</label>
+                  <input
+                    class="form-input"
+                    id="adminHaqqJurisdiction"
+                    name="jurisdiction"
+                    type="text"
+                    placeholder="gb, se, ae"
+                  />
+                  <p class="admin-panel__helper">
+                    Comma-separated country codes.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqStatus">Status</label>
+                  <select class="form-input form-select" id="adminHaqqStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="pending_review" selected>pending_review</option>
+                    <option value="rejected">rejected</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveHaqqTemplateButton">
+                  Save template
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetHaqqForm">
+                  Reset
+                </button>
+              </div>
+
+              <p class="admin-form-error" id="adminHaqqFormError" hidden></p>
+            </form>
+            </div>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings" hidden>
           <div class="admin-panel__header">
             <div>
@@ -2907,6 +3142,6 @@
   <script src="../../js/i18n.js"></script>
   <script src="../../js/main.js?v=20260629j"></script>
   <script src="../../js/affiliate-partner-registry.js"></script>
-  <script type="module" src="../../js/affiliate-admin.js?v=20260706b-amanah-crypto"></script>
+  <script type="module" src="../../js/affiliate-admin.js?v=20260707b-haqq-templates"></script>
 </body>
 </html>

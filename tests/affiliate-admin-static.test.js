@@ -55,10 +55,14 @@ const amanahDebateRouteRedirectHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'amanah-debate', 'index.html'),
   'utf8'
 );
+const haqqTemplatesRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'haqq-templates', 'index.html'),
+  'utf8'
+);
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260706b-amanah-crypto'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260707b-haqq-templates'));
 });
 
 run('amanah catalogue tab is exposed in admin center', () => {
@@ -90,6 +94,28 @@ run('amanah debate positions tab is exposed in admin center', () => {
   assert(affiliateAdminScript.includes("callAdminFunction('upsertDebatePositionAdmin'"));
   assert(affiliateAdminScript.includes('argument_summary_required'));
   assert(affiliateAdminScript.includes('debate_position_not_found'));
+});
+
+run('haqq templates tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="haqq-templates"'));
+  assert(affiliateAdminHtml.includes('adminSectionHaqqTemplates'));
+  assert(affiliateAdminHtml.includes('adminHaqqForm'));
+  assert(affiliateAdminHtml.includes('adminHaqqFieldsSchema'));
+  assert(affiliateAdminHtml.includes('adminHaqqHtmlTemplate'));
+  assert(affiliateAdminScript.includes("'haqq-templates': '/internal/affiliate-admin/haqq-templates/'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('listHaqqTemplatesAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertHaqqTemplateAdmin'"));
+  assert(affiliateAdminScript.includes('display_name_required'));
+  assert(affiliateAdminScript.includes('reviewed_requires_reviewer'));
+  assert(affiliateAdminScript.includes('invalid_fields_schema'));
+  assert(affiliateAdminScript.includes('haqq_template_not_found'));
+});
+
+run('haqq templates form validates the fields schema JSON client-side', () => {
+  assert(affiliateAdminScript.includes('function parseHaqqFieldsSchemaInput('));
+  assert(affiliateAdminScript.includes('function validateHaqqHtmlTemplateInput('));
+  assert(affiliateAdminScript.includes('setHaqqFieldsSchemaError(schemaResult.error)'));
+  assert(affiliateAdminScript.includes('HAQQ_FIELD_KEY_RE'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -269,6 +295,7 @@ run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(subscriberRouteRedirectHtml.includes('?page=subscribers'));
   assert(amanahCryptoRouteRedirectHtml.includes('?page=amanah-crypto'));
   assert(amanahDebateRouteRedirectHtml.includes('?page=amanah-debate'));
+  assert(haqqTemplatesRouteRedirectHtml.includes('?page=haqq-templates'));
 });
 
 if (process.exitCode && process.exitCode !== 0) {

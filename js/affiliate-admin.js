@@ -45,6 +45,7 @@ const ADMIN_PAGE_PATHS = {
   amanah: '/internal/affiliate-admin/amanah/',
   'amanah-crypto': '/internal/affiliate-admin/amanah-crypto/',
   'amanah-debate': '/internal/affiliate-admin/amanah-debate/',
+  'haqq-templates': '/internal/affiliate-admin/haqq-templates/',
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;
@@ -58,6 +59,16 @@ const AMANAH_EXPLANATION_MAX_CHARS = 2400;
 const AMANAH_CRYPTO_EXPLANATION_MAX_CHARS = 2400;
 const AMANAH_CRYPTO_PARTICIPATION_MAX_CHARS = 300;
 const AMANAH_DEBATE_SUMMARY_MAX_CHARS = 1600;
+const HAQQ_DISPLAY_NAME_MAX_CHARS = 160;
+const HAQQ_DESCRIPTION_MAX_CHARS = 600;
+const HAQQ_HTML_TEMPLATE_MAX_CHARS = 60000;
+const HAQQ_MAX_SCHEMA_FIELDS = 40;
+const HAQQ_FIELD_LABEL_MAX_CHARS = 160;
+const HAQQ_FIELD_MAX_LENGTH_LIMIT = 5000;
+const HAQQ_FIELD_TYPES = ['text', 'textarea', 'number', 'date'];
+const HAQQ_FIELD_KEY_RE = /^[a-z][a-z0-9_]{0,39}$/;
+// Placeholders injected by the backend generator; always allowed in HTML.
+const HAQQ_BUILTIN_PLACEHOLDERS = ['generated_date', 'document_id'];
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -342,6 +353,32 @@ const elements = {
   saveDebatePositionButton: document.getElementById('adminSaveDebatePositionButton'),
   resetDebateForm: document.getElementById('adminResetDebateForm'),
   debateFormError: document.getElementById('adminDebateFormError'),
+  refreshHaqqTemplates: document.getElementById('adminRefreshHaqqTemplates'),
+  newHaqqTemplate: document.getElementById('adminNewHaqqTemplate'),
+  haqqTableBody: document.getElementById('adminHaqqTableBody'),
+  haqqEmpty: document.getElementById('adminHaqqEmpty'),
+  haqqForm: document.getElementById('adminHaqqForm'),
+  haqqFormTitle: document.getElementById('adminHaqqFormTitle'),
+  haqqFormHelper: document.getElementById('adminHaqqFormHelper'),
+  haqqTemplateId: document.getElementById('adminHaqqTemplateId'),
+  haqqTemplateType: document.getElementById('adminHaqqTemplateType'),
+  haqqDisplayName: document.getElementById('adminHaqqDisplayName'),
+  haqqDescription: document.getElementById('adminHaqqDescription'),
+  haqqDescriptionMeta: document.getElementById('adminHaqqDescriptionMeta'),
+  haqqFieldsSchema: document.getElementById('adminHaqqFieldsSchema'),
+  haqqFieldsSchemaError: document.getElementById('adminHaqqFieldsSchemaError'),
+  haqqHtmlTemplate: document.getElementById('adminHaqqHtmlTemplate'),
+  haqqHtmlTemplateMeta: document.getElementById('adminHaqqHtmlTemplateMeta'),
+  haqqShariaReviewed: document.getElementById('adminHaqqShariaReviewed'),
+  haqqShariaReviewer: document.getElementById('adminHaqqShariaReviewer'),
+  haqqReviewedDate: document.getElementById('adminHaqqReviewedDate'),
+  haqqNextReviewDate: document.getElementById('adminHaqqNextReviewDate'),
+  haqqTier: document.getElementById('adminHaqqTier'),
+  haqqJurisdiction: document.getElementById('adminHaqqJurisdiction'),
+  haqqStatus: document.getElementById('adminHaqqStatus'),
+  saveHaqqTemplateButton: document.getElementById('adminSaveHaqqTemplateButton'),
+  resetHaqqForm: document.getElementById('adminResetHaqqForm'),
+  haqqFormError: document.getElementById('adminHaqqFormError'),
   liveNotificationForm: document.getElementById('adminLiveNotificationForm'),
   liveNotificationTitle: document.getElementById('adminLiveNotificationTitle'),
   liveNotificationTitleMeta: document.getElementById('adminLiveNotificationTitleMeta'),
@@ -539,6 +576,12 @@ const state = {
   debateLoadPromise: null,
   debateUnavailableReason: '',
   saveDebatePositionInFlight: false,
+  haqqTemplates: [],
+  haqqLoaded: false,
+  haqqLoading: false,
+  haqqLoadPromise: null,
+  haqqUnavailableReason: '',
+  saveHaqqTemplateInFlight: false,
   liveNotificationSummary: null,
   liveNotificationCampaigns: [],
   liveNotificationLoading: false,
@@ -799,6 +842,15 @@ function setAdminPage(pageKey, options) {
       });
     }
   }
+
+  if (next === 'haqq-templates' && state.user) {
+    ensureHaqqTemplatesLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('haqq_templates_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
 }
 
 function showBanner(message, tone) {
@@ -903,6 +955,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
     if (error?.adminCallable === 'upsertDebatePositionAdmin') {
       return 'Debate position save timed out. Refresh the position list before saving again.';
     }
+    if (error?.adminCallable === 'listHaqqTemplatesAdmin') {
+      return 'Haqq template list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertHaqqTemplateAdmin') {
+      return 'Haqq template save timed out. Refresh the template list before saving again.';
+    }
     return 'This request timed out before the backend responded. Try again.';
   }
 
@@ -920,6 +978,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
       || error?.adminCallable === 'upsertDebatePositionAdmin'
     ) {
       return 'Admin access required. This account is not allowlisted for Nuria Amanah admin.';
+    }
+    if (
+      error?.adminCallable === 'listHaqqTemplatesAdmin'
+      || error?.adminCallable === 'upsertHaqqTemplateAdmin'
+    ) {
+      return 'Admin access required. This account is not allowlisted for Haqq template admin.';
     }
     if (message.includes('admin_access_required') || message.includes('admin_role_required')) {
       return 'Signed in, but this account is not allowlisted for affiliate admin access.';
@@ -968,6 +1032,9 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (message.includes('debate_position_not_found')) {
       return 'This debate position no longer exists. Refresh the position list and try again.';
+    }
+    if (message.includes('haqq_template_not_found')) {
+      return 'This Haqq template no longer exists. Refresh the template list and try again.';
     }
     if (message.includes('product_not_found')) {
       return 'This Amanah product no longer exists. Refresh the product list and try again.';
@@ -1120,12 +1187,56 @@ function getActionableErrorMessage(error, fallbackMessage) {
     return 'Participation method is too long. Keep it within 300 characters.';
   }
 
+  if (message.includes('display_name_required')) {
+    return 'Display name is required.';
+  }
+
+  if (message.includes('reviewed_requires_reviewer')) {
+    return 'Sharia reviewed templates must name the reviewer. Fill in Sharia reviewer or untick Sharia reviewed.';
+  }
+
+  if (message.includes('fields_schema_too_long')) {
+    return `Fields schema has too many fields. Keep it within ${HAQQ_MAX_SCHEMA_FIELDS} fields.`;
+  }
+
+  if (message.includes('invalid_fields_schema')) {
+    return 'Fields schema is invalid. Provide a JSON array of fields with unique snake_case keys, labels, and valid types (text, textarea, number, date).';
+  }
+
+  if (message.includes('html_template_required')) {
+    return 'HTML template is required.';
+  }
+
+  if (message.includes('invalid_html_template')) {
+    return 'HTML template is invalid. Remove script/iframe/embed tags and remote http(s) src attributes, and make sure every {{placeholder}} matches a fields schema key.';
+  }
+
+  if (message.includes('invalid_template_type')) {
+    return 'Template type is invalid. Pick one of the listed template types.';
+  }
+
+  if (message.includes('invalid_tier')) {
+    return 'Tier is invalid. Pick free or paid.';
+  }
+
   if (message.includes('amanah_upsert_failed')) {
     return 'The Amanah product could not be saved. Try again.';
   }
 
   if (message.includes('amanah_list_failed')) {
     return 'The Amanah product catalogue could not be loaded. Try again.';
+  }
+
+  if (message.includes('invalid_reviewed_date')) {
+    return 'Reviewed date must use the YYYY-MM-DD format.';
+  }
+
+  if (message.includes('haqq_upsert_failed')) {
+    return 'The Haqq template could not be saved. Try again.';
+  }
+
+  if (message.includes('haqq_list_failed')) {
+    return 'The Haqq template list could not be loaded. Try again.';
   }
 
   if (message.includes('_too_long')) {
@@ -7542,6 +7653,414 @@ async function handleDebatePositionSave(event) {
   }
 }
 
+// ── Haqq legal document templates ────────────────────────────────────────
+
+function setHaqqFormError(message) {
+  if (!elements.haqqFormError) {
+    return;
+  }
+
+  elements.haqqFormError.hidden = !message;
+  elements.haqqFormError.textContent = message || '';
+}
+
+function setHaqqFieldsSchemaError(message) {
+  if (!elements.haqqFieldsSchemaError) {
+    return;
+  }
+
+  elements.haqqFieldsSchemaError.hidden = !message;
+  elements.haqqFieldsSchemaError.textContent = message || '';
+}
+
+function setHaqqFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.haqqFormTitle) {
+    elements.haqqFormTitle.textContent = editing ? 'Edit template' : 'Create template';
+  }
+  if (elements.haqqFormHelper) {
+    elements.haqqFormHelper.textContent = editing
+      ? 'Update the selected template. Saving writes straight to the live haqq_templates collection.'
+      : 'Create a new legal document template for Nuria Haqq.';
+  }
+}
+
+function formatHaqqTimestamp(millis) {
+  const value = Number(millis);
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  return formatTimestamp({ iso: new Date(value).toISOString() });
+}
+
+function parseHaqqListInput(value) {
+  return String(value || '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Client-side mirror of the backend fields_schema contract: a JSON array of
+ * { key, label, type, required, maxLength, hint } entries. Returns
+ * { fields, error } — a non-empty error means the input must not be sent.
+ */
+function parseHaqqFieldsSchemaInput(rawText) {
+  const text = String(rawText || '').trim();
+  if (!text) {
+    return { fields: null, error: 'Fields schema is required. Provide a JSON array with at least one field.' };
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    return { fields: null, error: `Fields schema is not valid JSON: ${error.message}` };
+  }
+
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    return { fields: null, error: 'Fields schema must be a JSON array with at least one field.' };
+  }
+  if (parsed.length > HAQQ_MAX_SCHEMA_FIELDS) {
+    return { fields: null, error: `Fields schema supports at most ${HAQQ_MAX_SCHEMA_FIELDS} fields.` };
+  }
+
+  const seenKeys = new Set();
+  for (let index = 0; index < parsed.length; index += 1) {
+    const entry = parsed[index];
+    const where = `Field ${index + 1}`;
+
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      return { fields: null, error: `${where} must be an object like {"key": "...", "label": "...", "type": "text"}.` };
+    }
+
+    const key = typeof entry.key === 'string' ? entry.key.trim() : '';
+    if (!HAQQ_FIELD_KEY_RE.test(key)) {
+      return { fields: null, error: `${where}: "key" must be lowercase snake_case (start with a letter, max 40 chars).` };
+    }
+    if (seenKeys.has(key)) {
+      return { fields: null, error: `${where}: duplicate key "${key}". Every field key must be unique.` };
+    }
+    seenKeys.add(key);
+
+    const label = typeof entry.label === 'string' ? entry.label.trim() : '';
+    if (!label) {
+      return { fields: null, error: `${where} ("${key}"): "label" is required.` };
+    }
+    if (label.length > HAQQ_FIELD_LABEL_MAX_CHARS) {
+      return { fields: null, error: `${where} ("${key}"): "label" must be ${HAQQ_FIELD_LABEL_MAX_CHARS} characters or fewer.` };
+    }
+
+    if (!HAQQ_FIELD_TYPES.includes(entry.type)) {
+      return { fields: null, error: `${where} ("${key}"): "type" must be one of ${HAQQ_FIELD_TYPES.join(', ')}.` };
+    }
+
+    if (entry.required !== undefined && typeof entry.required !== 'boolean') {
+      return { fields: null, error: `${where} ("${key}"): "required" must be true or false.` };
+    }
+
+    if (entry.maxLength !== undefined) {
+      if (
+        typeof entry.maxLength !== 'number'
+        || !Number.isInteger(entry.maxLength)
+        || entry.maxLength <= 0
+        || entry.maxLength > HAQQ_FIELD_MAX_LENGTH_LIMIT
+      ) {
+        return { fields: null, error: `${where} ("${key}"): "maxLength" must be an integer between 1 and ${HAQQ_FIELD_MAX_LENGTH_LIMIT}.` };
+      }
+    }
+
+    if (entry.hint !== undefined) {
+      if (typeof entry.hint !== 'string') {
+        return { fields: null, error: `${where} ("${key}"): "hint" must be a string.` };
+      }
+      if (entry.hint.trim().length > HAQQ_FIELD_LABEL_MAX_CHARS) {
+        return { fields: null, error: `${where} ("${key}"): "hint" must be ${HAQQ_FIELD_LABEL_MAX_CHARS} characters or fewer.` };
+      }
+    }
+  }
+
+  return { fields: parsed, error: '' };
+}
+
+/**
+ * Client-side mirror of the backend HTML template guardrails: no script/
+ * iframe/object/embed tags or remote http(s) src, and every {{placeholder}}
+ * must match a fields schema key (or a built-in generator placeholder).
+ */
+function validateHaqqHtmlTemplateInput(html, fields) {
+  const trimmed = String(html || '').trim();
+  if (!trimmed) {
+    return 'HTML template is required.';
+  }
+  if (trimmed.length > HAQQ_HTML_TEMPLATE_MAX_CHARS) {
+    return `HTML template is too long. Keep it within ${HAQQ_HTML_TEMPLATE_MAX_CHARS} characters.`;
+  }
+  if (/<script|<iframe|<object|<embed|src\s*=\s*["']https?:/i.test(trimmed)) {
+    return 'HTML template must not contain script/iframe/object/embed tags or remote http(s) src attributes.';
+  }
+
+  const allowed = new Set(HAQQ_BUILTIN_PLACEHOLDERS);
+  (Array.isArray(fields) ? fields : []).forEach((field) => {
+    if (field && typeof field.key === 'string') {
+      allowed.add(field.key.trim());
+    }
+  });
+  const placeholderRe = /\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g;
+  let match;
+  while ((match = placeholderRe.exec(trimmed)) !== null) {
+    if (!allowed.has(match[1])) {
+      return `HTML template references unknown placeholder {{${match[1]}}}. Add it to the fields schema or remove it.`;
+    }
+  }
+
+  return '';
+}
+
+function renderHaqqDescriptionMeta() {
+  if (!elements.haqqDescriptionMeta) return;
+  const length = String(elements.haqqDescription?.value || '').length;
+  elements.haqqDescriptionMeta.textContent = `${length} / ${HAQQ_DESCRIPTION_MAX_CHARS} characters`;
+}
+
+function renderHaqqHtmlTemplateMeta() {
+  if (!elements.haqqHtmlTemplateMeta) return;
+  const length = String(elements.haqqHtmlTemplate?.value || '').length;
+  elements.haqqHtmlTemplateMeta.textContent = `${length} / ${HAQQ_HTML_TEMPLATE_MAX_CHARS} characters`;
+}
+
+function renderHaqqTemplatesTable() {
+  if (!elements.haqqTableBody) return;
+
+  const items = state.haqqTemplates || [];
+
+  elements.haqqTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr data-haqq-template-id="${escapeHtml(item.templateId)}">
+          <td>
+            <button type="button" class="admin-link-button">
+              ${escapeHtml(item.display_name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.template_type || '-')}</td>
+          <td>${escapeHtml(item.tier || '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${item.sharia_reviewed === true ? 'Yes' : '-'}</td>
+          <td>${escapeHtml(formatHaqqTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.haqqEmpty) {
+    if (state.haqqUnavailableReason) {
+      elements.haqqEmpty.textContent = state.haqqUnavailableReason;
+    } else {
+      elements.haqqEmpty.textContent = 'No Haqq templates yet. Create your first document template with the form.';
+    }
+    elements.haqqEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetHaqqTemplateForm(item) {
+  const value = item || null;
+
+  if (!elements.haqqForm) {
+    return;
+  }
+
+  setHaqqFormError('');
+  setHaqqFieldsSchemaError('');
+  setHaqqFormMode(value ? 'edit' : 'create');
+  elements.haqqForm.reset();
+
+  elements.haqqTemplateId.value = value ? String(value.templateId || '') : '';
+  elements.haqqTemplateType.value = value?.template_type || 'service_agreement';
+  elements.haqqDisplayName.value = value ? String(value.display_name || '') : '';
+  elements.haqqDescription.value = value ? String(value.description || '') : '';
+  elements.haqqFieldsSchema.value = value && Array.isArray(value.fields_schema)
+    ? JSON.stringify(value.fields_schema, null, 2)
+    : '';
+  elements.haqqHtmlTemplate.value = value ? String(value.html_template || '') : '';
+  elements.haqqShariaReviewed.checked = value?.sharia_reviewed === true;
+  elements.haqqShariaReviewer.value = value ? String(value.sharia_reviewer || '') : '';
+  elements.haqqReviewedDate.value = value ? String(value.reviewed_date || '') : '';
+  elements.haqqNextReviewDate.value = value ? String(value.next_review_date || '') : '';
+  elements.haqqTier.value = value?.tier || 'free';
+  elements.haqqJurisdiction.value = value && Array.isArray(value.jurisdiction)
+    ? value.jurisdiction.join(', ')
+    : '';
+  elements.haqqStatus.value = value?.status || 'pending_review';
+  renderHaqqDescriptionMeta();
+  renderHaqqHtmlTemplateMeta();
+}
+
+function resetHaqqState() {
+  state.haqqTemplates = [];
+  state.haqqLoaded = false;
+  state.haqqLoading = false;
+  state.haqqLoadPromise = null;
+  state.haqqUnavailableReason = '';
+  state.saveHaqqTemplateInFlight = false;
+  resetHaqqTemplateForm(null);
+  renderHaqqTemplatesTable();
+}
+
+async function loadHaqqTemplates() {
+  const data = await callAdminFunction('listHaqqTemplatesAdmin', {});
+
+  state.haqqTemplates = Array.isArray(data?.templates) ? data.templates : [];
+}
+
+async function ensureHaqqTemplatesLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.haqqLoadPromise && !settings.force) {
+    return state.haqqLoadPromise;
+  }
+
+  if (state.haqqLoaded && !settings.force) {
+    renderHaqqTemplatesTable();
+    return state.haqqTemplates;
+  }
+
+  const task = (async () => {
+    state.haqqLoading = true;
+    setButtonBusy(elements.refreshHaqqTemplates, true, 'Refreshing');
+
+    try {
+      await loadHaqqTemplates();
+      state.haqqLoaded = true;
+      state.haqqUnavailableReason = '';
+      renderHaqqTemplatesTable();
+      return state.haqqTemplates;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Haqq template list could not be loaded. Try again.'
+      );
+      state.haqqTemplates = [];
+      state.haqqUnavailableReason = message;
+      renderHaqqTemplatesTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.haqqLoading = false;
+      state.haqqLoadPromise = null;
+      setButtonBusy(elements.refreshHaqqTemplates, false);
+    }
+  })();
+
+  state.haqqLoadPromise = task;
+  return task;
+}
+
+async function handleHaqqTemplateSave(event) {
+  event.preventDefault();
+
+  if (state.saveHaqqTemplateInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setHaqqFormError('');
+  setHaqqFieldsSchemaError('');
+
+  const templateId = String(elements.haqqTemplateId.value || '').trim();
+  const editing = Boolean(templateId);
+  const displayName = String(elements.haqqDisplayName.value || '').trim();
+  const shariaReviewed = elements.haqqShariaReviewed.checked === true;
+  const shariaReviewer = String(elements.haqqShariaReviewer.value || '').trim();
+
+  if (!displayName) {
+    setHaqqFormError('Display name is required.');
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  if (shariaReviewed && !shariaReviewer) {
+    setHaqqFormError('Sharia reviewed templates must name the reviewer. Fill in Sharia reviewer or untick Sharia reviewed.');
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  const schemaResult = parseHaqqFieldsSchemaInput(elements.haqqFieldsSchema.value);
+  if (schemaResult.error) {
+    setHaqqFieldsSchemaError(schemaResult.error);
+    setHaqqFormError('Fix the fields schema JSON and submit again.');
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  const htmlTemplate = String(elements.haqqHtmlTemplate.value || '').trim();
+  const htmlError = validateHaqqHtmlTemplateInput(htmlTemplate, schemaResult.fields);
+  if (htmlError) {
+    setHaqqFormError(htmlError);
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    template_type: elements.haqqTemplateType.value,
+    display_name: displayName,
+    description: String(elements.haqqDescription.value || '').trim(),
+    fields_schema: schemaResult.fields,
+    html_template: htmlTemplate,
+    sharia_reviewed: shariaReviewed,
+    sharia_reviewer: shariaReviewer,
+    reviewed_date: String(elements.haqqReviewedDate.value || '').trim(),
+    next_review_date: String(elements.haqqNextReviewDate.value || '').trim(),
+    tier: elements.haqqTier.value,
+    jurisdiction: parseHaqqListInput(elements.haqqJurisdiction.value),
+    status: elements.haqqStatus.value,
+  };
+
+  if (editing) {
+    payload.templateId = templateId;
+  }
+
+  state.saveHaqqTemplateInFlight = true;
+  setButtonBusy(elements.saveHaqqTemplateButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertHaqqTemplateAdmin', payload);
+    const savedTemplateId = String(data?.templateId || templateId || '').trim();
+
+    track('haqq_templates_admin_saved', {
+      mode: editing ? 'update' : 'create',
+      template_id: savedTemplateId,
+      template_type: payload.template_type,
+    });
+
+    await ensureHaqqTemplatesLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.haqqTemplates || []).find(
+      (item) => item.templateId === savedTemplateId
+    ) || null;
+    resetHaqqTemplateForm(saved);
+    showBanner(
+      editing
+        ? `Updated Haqq template ${displayName}.`
+        : `Created Haqq template ${displayName}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated Haqq template ${displayName}.`
+        : `Created Haqq template ${displayName}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setHaqqFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveHaqqTemplateInFlight = false;
+    setButtonBusy(elements.saveHaqqTemplateButton, false);
+  }
+}
+
 function setCodeFormMode(mode) {
   const editing = mode === 'edit';
 
@@ -10560,6 +11079,38 @@ function bindEvents() {
       clearBanner();
     }
   });
+  elements.refreshHaqqTemplates?.addEventListener('click', () => {
+    clearBanner();
+    ensureHaqqTemplatesLoaded({ force: true }).catch(() => {});
+  });
+  elements.newHaqqTemplate?.addEventListener('click', () => resetHaqqTemplateForm(null));
+  elements.resetHaqqForm?.addEventListener('click', () => resetHaqqTemplateForm(null));
+  elements.haqqForm?.addEventListener('submit', handleHaqqTemplateSave);
+  elements.haqqDescription?.addEventListener('input', () => {
+    setHaqqFormError('');
+    renderHaqqDescriptionMeta();
+  });
+  elements.haqqHtmlTemplate?.addEventListener('input', () => {
+    setHaqqFormError('');
+    renderHaqqHtmlTemplateMeta();
+  });
+  elements.haqqFieldsSchema?.addEventListener('input', () => {
+    setHaqqFormError('');
+    setHaqqFieldsSchemaError('');
+  });
+  elements.haqqTableBody?.addEventListener('click', (event) => {
+    const row = event.target.closest('[data-haqq-template-id]');
+    if (!row) return;
+
+    const item = (state.haqqTemplates || []).find(
+      (template) => template.templateId === row.dataset.haqqTemplateId
+    );
+
+    if (item) {
+      resetHaqqTemplateForm(item);
+      clearBanner();
+    }
+  });
   elements.refreshLiveNotificationAudience?.addEventListener('click', () => {
     clearBanner();
     estimateLiveNotificationAudience({ silent: false }).catch(() => {});
@@ -10731,6 +11282,7 @@ function initializeFormDefaults() {
   resetAmanahState();
   resetCryptoState();
   resetDebateState();
+  resetHaqqState();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
@@ -10753,6 +11305,7 @@ function applyAuthState(user) {
     resetAmanahState();
     resetCryptoState();
     resetDebateState();
+    resetHaqqState();
     stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
@@ -10766,6 +11319,7 @@ function applyAuthState(user) {
     resetAmanahState();
     resetCryptoState();
     resetDebateState();
+    resetHaqqState();
   }
 
   if (wasLoggedOut) {
