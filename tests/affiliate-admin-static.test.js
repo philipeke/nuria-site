@@ -59,10 +59,14 @@ const haqqTemplatesRouteRedirectHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'haqq-templates', 'index.html'),
   'utf8'
 );
+const suqModerationRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'suq-moderation', 'index.html'),
+  'utf8'
+);
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260707b-haqq-templates'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260708-suq-moderation'));
 });
 
 run('amanah catalogue tab is exposed in admin center', () => {
@@ -109,6 +113,31 @@ run('haqq templates tab is exposed in admin center', () => {
   assert(affiliateAdminScript.includes('reviewed_requires_reviewer'));
   assert(affiliateAdminScript.includes('invalid_fields_schema'));
   assert(affiliateAdminScript.includes('haqq_template_not_found'));
+});
+
+run('suq moderation tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="suq-moderation"'));
+  assert(affiliateAdminHtml.includes('adminSectionSuqModeration'));
+  assert(affiliateAdminHtml.includes('adminRefreshSuqFlags'));
+  assert(affiliateAdminHtml.includes('adminSuqFlagsTableBody'));
+  assert(affiliateAdminHtml.includes('adminSuqFlagsEmpty'));
+  assert(affiliateAdminScript.includes("'suq-moderation': '/internal/affiliate-admin/suq-moderation/'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('listModerationFlagsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('resolveModerationFlagAdmin'"));
+  assert(affiliateAdminScript.includes('flag_required'));
+  assert(affiliateAdminScript.includes('invalid_action'));
+  assert(affiliateAdminScript.includes('flag_not_found'));
+  assert(affiliateAdminScript.includes('suq_admin_failed'));
+  assert(affiliateAdminScript.includes('not allowlisted for Suq moderation admin'));
+});
+
+run('suq moderation remove action confirms and explains the consequences', () => {
+  assert(affiliateAdminScript.includes("data-suq-flag-action=\"dismiss\""));
+  assert(affiliateAdminScript.includes("data-suq-flag-action=\"remove_content\""));
+  assert(affiliateAdminScript.includes('listing -> removed, profile -> suspended, review -> deleted'));
+  assert(affiliateAdminScript.includes('function handleSuqFlagResolve('));
+  assert(affiliateAdminScript.includes('function resetSuqModerationState('));
+  assert(affiliateAdminScript.includes('No open moderation flags. The Suq queue is clear.'));
 });
 
 run('haqq templates form validates the fields schema JSON client-side', () => {
@@ -296,6 +325,7 @@ run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(amanahCryptoRouteRedirectHtml.includes('?page=amanah-crypto'));
   assert(amanahDebateRouteRedirectHtml.includes('?page=amanah-debate'));
   assert(haqqTemplatesRouteRedirectHtml.includes('?page=haqq-templates'));
+  assert(suqModerationRouteRedirectHtml.includes('?page=suq-moderation'));
 });
 
 if (process.exitCode && process.exitCode !== 0) {

@@ -134,6 +134,7 @@
                 <a href="/internal/affiliate-admin/amanah-crypto/" class="admin-section-nav__link" data-admin-page-link="amanah-crypto">Crypto Projects</a>
                 <a href="/internal/affiliate-admin/amanah-debate/" class="admin-section-nav__link" data-admin-page-link="amanah-debate">Debate Positions</a>
                 <a href="/internal/affiliate-admin/haqq-templates/" class="admin-section-nav__link" data-admin-page-link="haqq-templates">Haqq templates</a>
+                <a href="/internal/affiliate-admin/suq-moderation/" class="admin-section-nav__link" data-admin-page-link="suq-moderation">Suq moderation</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
               </div>
 
@@ -364,6 +365,10 @@
                 <a href="/internal/affiliate-admin/haqq-templates/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="haqq-templates">
                   <span class="admin-mini-item__title">Haqq templates</span>
                   <span class="admin-mini-item__meta">Manage the Haqq legal document template library</span>
+                </a>
+                <a href="/internal/affiliate-admin/suq-moderation/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="suq-moderation">
+                  <span class="admin-mini-item__title">Suq moderation</span>
+                  <span class="admin-mini-item__meta">Review flagged Suq listings, seller profiles, and reviews</span>
                 </a>
               </div>
             </div>
@@ -2969,6 +2974,43 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionSuqModeration" data-admin-page="suq-moderation" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Suq</p>
+              <h2 class="admin-panel__title">Moderation queue</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshSuqFlags">
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Review open moderation flags raised by users against Suq content. Dismiss keeps the content live and closes the flag. Remove content acts on the flagged item: listing -&gt; removed, seller profile -&gt; suspended, review -&gt; deleted.
+          </p>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Reason</th>
+                  <th>Flagged content</th>
+                  <th>Flagged by</th>
+                  <th>Flagged</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminSuqFlagsTableBody"></tbody>
+            </table>
+            <p class="admin-empty" id="adminSuqFlagsEmpty" hidden>
+              No open moderation flags. The Suq queue is clear.
+            </p>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings" hidden>
           <div class="admin-panel__header">
             <div>
@@ -3142,6 +3184,6 @@
   <script src="../../js/i18n.js"></script>
   <script src="../../js/main.js?v=20260629j"></script>
   <script src="../../js/affiliate-partner-registry.js"></script>
-  <script type="module" src="../../js/affiliate-admin.js?v=20260707b-haqq-templates"></script>
+  <script type="module" src="../../js/affiliate-admin.js?v=20260708-suq-moderation"></script>
 </body>
 </html>

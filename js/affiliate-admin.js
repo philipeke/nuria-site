@@ -46,6 +46,7 @@ const ADMIN_PAGE_PATHS = {
   'amanah-crypto': '/internal/affiliate-admin/amanah-crypto/',
   'amanah-debate': '/internal/affiliate-admin/amanah-debate/',
   'haqq-templates': '/internal/affiliate-admin/haqq-templates/',
+  'suq-moderation': '/internal/affiliate-admin/suq-moderation/',
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;
@@ -69,6 +70,12 @@ const HAQQ_FIELD_TYPES = ['text', 'textarea', 'number', 'date'];
 const HAQQ_FIELD_KEY_RE = /^[a-z][a-z0-9_]{0,39}$/;
 // Placeholders injected by the backend generator; always allowed in HTML.
 const HAQQ_BUILTIN_PLACEHOLDERS = ['generated_date', 'document_id'];
+const SUQ_FLAG_SNAPSHOT_MAX_CHARS = 160;
+const SUQ_FLAG_TARGET_LABELS = {
+  listing: 'Listing',
+  profile: 'Seller profile',
+  review: 'Review',
+};
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -379,6 +386,9 @@ const elements = {
   saveHaqqTemplateButton: document.getElementById('adminSaveHaqqTemplateButton'),
   resetHaqqForm: document.getElementById('adminResetHaqqForm'),
   haqqFormError: document.getElementById('adminHaqqFormError'),
+  refreshSuqFlags: document.getElementById('adminRefreshSuqFlags'),
+  suqFlagsTableBody: document.getElementById('adminSuqFlagsTableBody'),
+  suqFlagsEmpty: document.getElementById('adminSuqFlagsEmpty'),
   liveNotificationForm: document.getElementById('adminLiveNotificationForm'),
   liveNotificationTitle: document.getElementById('adminLiveNotificationTitle'),
   liveNotificationTitleMeta: document.getElementById('adminLiveNotificationTitleMeta'),
@@ -582,6 +592,12 @@ const state = {
   haqqLoadPromise: null,
   haqqUnavailableReason: '',
   saveHaqqTemplateInFlight: false,
+  suqFlags: [],
+  suqFlagsLoaded: false,
+  suqFlagsLoading: false,
+  suqFlagsLoadPromise: null,
+  suqFlagsUnavailableReason: '',
+  resolveSuqFlagInFlightId: '',
   liveNotificationSummary: null,
   liveNotificationCampaigns: [],
   liveNotificationLoading: false,
@@ -851,6 +867,15 @@ function setAdminPage(pageKey, options) {
       });
     }
   }
+
+  if (next === 'suq-moderation' && state.user) {
+    ensureSuqFlagsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('suq_moderation_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
 }
 
 function showBanner(message, tone) {
@@ -961,6 +986,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
     if (error?.adminCallable === 'upsertHaqqTemplateAdmin') {
       return 'Haqq template save timed out. Refresh the template list before saving again.';
     }
+    if (error?.adminCallable === 'listModerationFlagsAdmin') {
+      return 'Suq moderation queue timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'resolveModerationFlagAdmin') {
+      return 'Suq flag action timed out. Refresh the queue before acting again.';
+    }
     return 'This request timed out before the backend responded. Try again.';
   }
 
@@ -984,6 +1015,12 @@ function getActionableErrorMessage(error, fallbackMessage) {
       || error?.adminCallable === 'upsertHaqqTemplateAdmin'
     ) {
       return 'Admin access required. This account is not allowlisted for Haqq template admin.';
+    }
+    if (
+      error?.adminCallable === 'listModerationFlagsAdmin'
+      || error?.adminCallable === 'resolveModerationFlagAdmin'
+    ) {
+      return 'Admin access required. This account is not allowlisted for Suq moderation admin.';
     }
     if (message.includes('admin_access_required') || message.includes('admin_role_required')) {
       return 'Signed in, but this account is not allowlisted for affiliate admin access.';
@@ -1035,6 +1072,9 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (message.includes('haqq_template_not_found')) {
       return 'This Haqq template no longer exists. Refresh the template list and try again.';
+    }
+    if (message.includes('flag_not_found')) {
+      return 'This moderation flag no longer exists. Refresh the queue and try again.';
     }
     if (message.includes('product_not_found')) {
       return 'This Amanah product no longer exists. Refresh the product list and try again.';
@@ -1237,6 +1277,18 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (message.includes('haqq_list_failed')) {
     return 'The Haqq template list could not be loaded. Try again.';
+  }
+
+  if (message.includes('flag_required')) {
+    return 'Flag ID is missing. Refresh the moderation queue and try again.';
+  }
+
+  if (message.includes('invalid_action')) {
+    return 'Moderation action is invalid. Use Dismiss or Remove content.';
+  }
+
+  if (message.includes('suq_admin_failed')) {
+    return 'The Suq moderation action could not be completed. Try again.';
   }
 
   if (message.includes('_too_long')) {
@@ -8061,6 +8113,219 @@ async function handleHaqqTemplateSave(event) {
   }
 }
 
+// ── Suq moderation flags ─────────────────────────────────────────────────
+
+function formatSuqFlagTimestamp(millis) {
+  const value = Number(millis);
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  return formatTimestamp({ iso: new Date(value).toISOString() });
+}
+
+function truncateSuqSnapshotText(value) {
+  const text = String(value ?? '').trim();
+  if (text.length <= SUQ_FLAG_SNAPSHOT_MAX_CHARS) return text;
+  return `${text.slice(0, SUQ_FLAG_SNAPSHOT_MAX_CHARS - 1)}…`;
+}
+
+/**
+ * Key fields shown for the flagged content, per target type. The backend
+ * snapshot is null when the content was already deleted.
+ */
+function buildSuqFlagSnapshotEntries(flag) {
+  const target = flag?.target && typeof flag.target === 'object' ? flag.target : null;
+  if (!target) return [];
+
+  const entries = [];
+  const push = (label, rawValue) => {
+    const text = truncateSuqSnapshotText(rawValue);
+    if (text) entries.push({ label, text });
+  };
+  const type = String(flag?.target_type || '');
+
+  if (type === 'listing') {
+    push('Title', target.title);
+    push('Seller', target.seller_name);
+    push(
+      'Category',
+      Array.isArray(target.categories) ? target.categories.join(', ') : target.category
+    );
+    push('Status', target.status);
+  } else if (type === 'profile') {
+    push('Name', target.display_name);
+    push('Country', target.country);
+    push('Bio', target.bio);
+    push('Status', target.status);
+  } else if (type === 'review') {
+    if (Number.isFinite(Number(target.rating))) {
+      push('Rating', `${Number(target.rating)} / 5`);
+    }
+    push('Comment', target.comment);
+    push('Reviewer', target.reviewer_id);
+  } else {
+    push('Status', target.status);
+  }
+
+  return entries;
+}
+
+function renderSuqFlagsTable() {
+  if (!elements.suqFlagsTableBody) return;
+
+  const items = state.suqFlags || [];
+
+  elements.suqFlagsTableBody.innerHTML = items
+    .map((flag) => {
+      const typeKey = String(flag.target_type || '');
+      const typeLabel = SUQ_FLAG_TARGET_LABELS[typeKey] || typeKey || 'Unknown';
+      const snapshotEntries = buildSuqFlagSnapshotEntries(flag);
+      const snapshotHtml = snapshotEntries.length
+        ? snapshotEntries
+          .map(
+            (entry) =>
+              `<div><strong>${escapeHtml(entry.label)}:</strong> ${escapeHtml(entry.text)}</div>`
+          )
+          .join('')
+        : '<div>Flagged content is no longer available.</div>';
+      const busy = state.resolveSuqFlagInFlightId === flag.flagId;
+      return `
+        <tr data-suq-flag-id="${escapeHtml(flag.flagId)}">
+          <td><span class="admin-status admin-status--${escapeHtml(typeKey || 'unknown')}">${escapeHtml(typeLabel)}</span></td>
+          <td>${escapeHtml(truncateSuqSnapshotText(flag.reason) || '-')}</td>
+          <td>${snapshotHtml}</td>
+          <td>${escapeHtml(flag.flagged_by || '-')}</td>
+          <td>${escapeHtml(formatSuqFlagTimestamp(flag.createdAt))}</td>
+          <td>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" data-suq-flag-action="dismiss"${busy ? ' disabled' : ''}>
+                Dismiss
+              </button>
+              <button type="button" class="btn btn--gold" data-suq-flag-action="remove_content"${busy ? ' disabled' : ''}>
+                Remove content
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.suqFlagsEmpty) {
+    if (state.suqFlagsUnavailableReason) {
+      elements.suqFlagsEmpty.textContent = state.suqFlagsUnavailableReason;
+    } else {
+      elements.suqFlagsEmpty.textContent = 'No open moderation flags. The Suq queue is clear.';
+    }
+    elements.suqFlagsEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetSuqModerationState() {
+  state.suqFlags = [];
+  state.suqFlagsLoaded = false;
+  state.suqFlagsLoading = false;
+  state.suqFlagsLoadPromise = null;
+  state.suqFlagsUnavailableReason = '';
+  state.resolveSuqFlagInFlightId = '';
+  renderSuqFlagsTable();
+}
+
+async function loadSuqFlags() {
+  const data = await callAdminFunction('listModerationFlagsAdmin', {});
+
+  state.suqFlags = Array.isArray(data?.flags) ? data.flags : [];
+}
+
+async function ensureSuqFlagsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.suqFlagsLoadPromise && !settings.force) {
+    return state.suqFlagsLoadPromise;
+  }
+
+  if (state.suqFlagsLoaded && !settings.force) {
+    renderSuqFlagsTable();
+    return state.suqFlags;
+  }
+
+  const task = (async () => {
+    state.suqFlagsLoading = true;
+    setButtonBusy(elements.refreshSuqFlags, true, 'Refreshing');
+
+    try {
+      await loadSuqFlags();
+      state.suqFlagsLoaded = true;
+      state.suqFlagsUnavailableReason = '';
+      renderSuqFlagsTable();
+      return state.suqFlags;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Suq moderation queue could not be loaded. Try again.'
+      );
+      state.suqFlags = [];
+      state.suqFlagsUnavailableReason = message;
+      renderSuqFlagsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.suqFlagsLoading = false;
+      state.suqFlagsLoadPromise = null;
+      setButtonBusy(elements.refreshSuqFlags, false);
+    }
+  })();
+
+  state.suqFlagsLoadPromise = task;
+  return task;
+}
+
+async function handleSuqFlagResolve(flagId, action) {
+  if (state.resolveSuqFlagInFlightId) return;
+  if (!['dismiss', 'remove_content'].includes(action)) return;
+
+  const flag = (state.suqFlags || []).find((item) => item.flagId === flagId) || null;
+  if (!flag) return;
+
+  const typeKey = String(flag.target_type || '');
+  const typeLabel = (SUQ_FLAG_TARGET_LABELS[typeKey] || 'content').toLowerCase();
+
+  if (action === 'remove_content') {
+    const confirmed = window.confirm(
+      `Remove the flagged ${typeLabel}?\n\nThis acts on live Suq content: listing -> removed, profile -> suspended, review -> deleted.\n\nThe flag is marked as resolved.`
+    );
+    if (!confirmed) return;
+  }
+
+  state.resolveSuqFlagInFlightId = flagId;
+  renderSuqFlagsTable();
+
+  try {
+    await callAdminFunction('resolveModerationFlagAdmin', { flagId, action });
+
+    track('suq_moderation_admin_resolved', {
+      flag_id: flagId,
+      action,
+      target_type: typeKey,
+    });
+
+    const summary = action === 'dismiss'
+      ? `Dismissed Suq moderation flag on ${typeLabel} ${flag.target_id || flagId}.`
+      : `Removed flagged Suq ${typeLabel} ${flag.target_id || flagId}.`;
+    showBanner(summary, 'success');
+    addActivityLog(summary, 'success');
+
+    state.resolveSuqFlagInFlightId = '';
+    await ensureSuqFlagsLoaded({ force: true, silent: true }).catch(() => {});
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    showBanner(actionable, 'error');
+  } finally {
+    state.resolveSuqFlagInFlightId = '';
+    renderSuqFlagsTable();
+  }
+}
+
 function setCodeFormMode(mode) {
   const editing = mode === 'edit';
 
@@ -11111,6 +11376,19 @@ function bindEvents() {
       clearBanner();
     }
   });
+  elements.refreshSuqFlags?.addEventListener('click', () => {
+    clearBanner();
+    ensureSuqFlagsLoaded({ force: true }).catch(() => {});
+  });
+  elements.suqFlagsTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-suq-flag-action]');
+    if (!button || button.disabled) return;
+
+    const row = button.closest('[data-suq-flag-id]');
+    if (!row) return;
+
+    handleSuqFlagResolve(row.dataset.suqFlagId, button.dataset.suqFlagAction).catch(() => {});
+  });
   elements.refreshLiveNotificationAudience?.addEventListener('click', () => {
     clearBanner();
     estimateLiveNotificationAudience({ silent: false }).catch(() => {});
@@ -11283,6 +11561,7 @@ function initializeFormDefaults() {
   resetCryptoState();
   resetDebateState();
   resetHaqqState();
+  resetSuqModerationState();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
@@ -11306,6 +11585,7 @@ function applyAuthState(user) {
     resetCryptoState();
     resetDebateState();
     resetHaqqState();
+    resetSuqModerationState();
     stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
@@ -11320,6 +11600,7 @@ function applyAuthState(user) {
     resetCryptoState();
     resetDebateState();
     resetHaqqState();
+    resetSuqModerationState();
   }
 
   if (wasLoggedOut) {
