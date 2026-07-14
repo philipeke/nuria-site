@@ -47,10 +47,104 @@ const subscriberRouteRedirectHtml = fs.readFileSync(
   path.join(repoRoot, 'internal', 'affiliate-admin', 'subscribers', 'index.html'),
   'utf8'
 );
+const amanahCryptoRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'amanah-crypto', 'index.html'),
+  'utf8'
+);
+const amanahDebateRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'amanah-debate', 'index.html'),
+  'utf8'
+);
+const haqqTemplatesRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'haqq-templates', 'index.html'),
+  'utf8'
+);
+const suqModerationRouteRedirectHtml = fs.readFileSync(
+  path.join(repoRoot, 'internal', 'affiliate-admin', 'suq-moderation', 'index.html'),
+  'utf8'
+);
 
 run('loads partner registry helper script before the admin module', () => {
   assert(affiliateAdminHtml.includes('../../js/affiliate-partner-registry.js'));
-  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260614-auth-errors'));
+  assert(affiliateAdminHtml.includes('../../js/affiliate-admin.js?v=20260708-suq-moderation'));
+});
+
+run('amanah catalogue tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="amanah"'));
+  assert(affiliateAdminHtml.includes('adminSectionAmanah'));
+  assert(affiliateAdminHtml.includes('adminAmanahForm'));
+  assert(affiliateAdminScript.includes("callAdminFunction('listFinanceProductsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertFinanceProductAdmin'"));
+  assert(affiliateAdminScript.includes('verified_requires_scholar'));
+});
+
+run('amanah crypto projects tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="amanah-crypto"'));
+  assert(affiliateAdminHtml.includes('adminSectionAmanahCrypto'));
+  assert(affiliateAdminHtml.includes('adminCryptoForm'));
+  assert(affiliateAdminHtml.includes('adminCryptoShariaCertifier'));
+  assert(affiliateAdminScript.includes("callAdminFunction('listCryptoProductsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertCryptoProductAdmin'"));
+  assert(affiliateAdminScript.includes('name_and_certifier_required'));
+  assert(affiliateAdminScript.includes('crypto_product_not_found'));
+});
+
+run('amanah debate positions tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="amanah-debate"'));
+  assert(affiliateAdminHtml.includes('adminSectionAmanahDebate'));
+  assert(affiliateAdminHtml.includes('adminDebateForm'));
+  assert(affiliateAdminHtml.includes('adminDebateArgumentSummary'));
+  assert(affiliateAdminScript.includes("callAdminFunction('listDebatePositionsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertDebatePositionAdmin'"));
+  assert(affiliateAdminScript.includes('argument_summary_required'));
+  assert(affiliateAdminScript.includes('debate_position_not_found'));
+});
+
+run('haqq templates tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="haqq-templates"'));
+  assert(affiliateAdminHtml.includes('adminSectionHaqqTemplates'));
+  assert(affiliateAdminHtml.includes('adminHaqqForm'));
+  assert(affiliateAdminHtml.includes('adminHaqqFieldsSchema'));
+  assert(affiliateAdminHtml.includes('adminHaqqHtmlTemplate'));
+  assert(affiliateAdminScript.includes("'haqq-templates': '/internal/affiliate-admin/haqq-templates/'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('listHaqqTemplatesAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('upsertHaqqTemplateAdmin'"));
+  assert(affiliateAdminScript.includes('display_name_required'));
+  assert(affiliateAdminScript.includes('reviewed_requires_reviewer'));
+  assert(affiliateAdminScript.includes('invalid_fields_schema'));
+  assert(affiliateAdminScript.includes('haqq_template_not_found'));
+});
+
+run('suq moderation tab is exposed in admin center', () => {
+  assert(affiliateAdminHtml.includes('data-admin-page-link="suq-moderation"'));
+  assert(affiliateAdminHtml.includes('adminSectionSuqModeration'));
+  assert(affiliateAdminHtml.includes('adminRefreshSuqFlags'));
+  assert(affiliateAdminHtml.includes('adminSuqFlagsTableBody'));
+  assert(affiliateAdminHtml.includes('adminSuqFlagsEmpty'));
+  assert(affiliateAdminScript.includes("'suq-moderation': '/internal/affiliate-admin/suq-moderation/'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('listModerationFlagsAdmin'"));
+  assert(affiliateAdminScript.includes("callAdminFunction('resolveModerationFlagAdmin'"));
+  assert(affiliateAdminScript.includes('flag_required'));
+  assert(affiliateAdminScript.includes('invalid_action'));
+  assert(affiliateAdminScript.includes('flag_not_found'));
+  assert(affiliateAdminScript.includes('suq_admin_failed'));
+  assert(affiliateAdminScript.includes('not allowlisted for Suq moderation admin'));
+});
+
+run('suq moderation remove action confirms and explains the consequences', () => {
+  assert(affiliateAdminScript.includes("data-suq-flag-action=\"dismiss\""));
+  assert(affiliateAdminScript.includes("data-suq-flag-action=\"remove_content\""));
+  assert(affiliateAdminScript.includes('listing -> removed, profile -> suspended, review -> deleted'));
+  assert(affiliateAdminScript.includes('function handleSuqFlagResolve('));
+  assert(affiliateAdminScript.includes('function resetSuqModerationState('));
+  assert(affiliateAdminScript.includes('No open moderation flags. The Suq queue is clear.'));
+});
+
+run('haqq templates form validates the fields schema JSON client-side', () => {
+  assert(affiliateAdminScript.includes('function parseHaqqFieldsSchemaInput('));
+  assert(affiliateAdminScript.includes('function validateHaqqHtmlTemplateInput('));
+  assert(affiliateAdminScript.includes('setHaqqFieldsSchemaError(schemaResult.error)'));
+  assert(affiliateAdminScript.includes('HAQQ_FIELD_KEY_RE'));
 });
 
 run('site admin fetches partners from the secure affiliate registry callable', () => {
@@ -228,6 +322,10 @@ run('partner portal link previews use the Nuria logo metadata image', () => {
 run('direct admin subroutes redirect into the shared admin shell', () => {
   assert(partnerRouteRedirectHtml.includes('?page=partners'));
   assert(subscriberRouteRedirectHtml.includes('?page=subscribers'));
+  assert(amanahCryptoRouteRedirectHtml.includes('?page=amanah-crypto'));
+  assert(amanahDebateRouteRedirectHtml.includes('?page=amanah-debate'));
+  assert(haqqTemplatesRouteRedirectHtml.includes('?page=haqq-templates'));
+  assert(suqModerationRouteRedirectHtml.includes('?page=suq-moderation'));
 });
 
 if (process.exitCode && process.exitCode !== 0) {

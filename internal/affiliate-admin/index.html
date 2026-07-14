@@ -130,6 +130,11 @@
                 <a href="/internal/affiliate-admin/report-detail/" class="admin-section-nav__link" data-admin-page-link="report-detail">Report detail</a>
                 <a href="/internal/affiliate-admin/live-notifications/" class="admin-section-nav__link" data-admin-page-link="live-notifications">Live Notifications</a>
                 <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-section-nav__link" data-admin-page-link="dashboard-copy">Placeholder</a>
+                <a href="/internal/affiliate-admin/amanah/" class="admin-section-nav__link" data-admin-page-link="amanah">Nuria Amanah</a>
+                <a href="/internal/affiliate-admin/amanah-crypto/" class="admin-section-nav__link" data-admin-page-link="amanah-crypto">Crypto Projects</a>
+                <a href="/internal/affiliate-admin/amanah-debate/" class="admin-section-nav__link" data-admin-page-link="amanah-debate">Debate Positions</a>
+                <a href="/internal/affiliate-admin/haqq-templates/" class="admin-section-nav__link" data-admin-page-link="haqq-templates">Haqq templates</a>
+                <a href="/internal/affiliate-admin/suq-moderation/" class="admin-section-nav__link" data-admin-page-link="suq-moderation">Suq moderation</a>
                 <a href="/internal/affiliate-admin/settings/" class="admin-section-nav__link" data-admin-page-link="settings">Settings</a>
               </div>
 
@@ -344,6 +349,26 @@
                 <a href="/internal/affiliate-admin/dashboard-copy/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="dashboard-copy">
                   <span class="admin-mini-item__title">Placeholder</span>
                   <span class="admin-mini-item__meta">Write the text shown inside the app dashboard</span>
+                </a>
+                <a href="/internal/affiliate-admin/amanah/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="amanah">
+                  <span class="admin-mini-item__title">Nuria Amanah</span>
+                  <span class="admin-mini-item__meta">Manage the halal finance product catalogue</span>
+                </a>
+                <a href="/internal/affiliate-admin/amanah-crypto/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="amanah-crypto">
+                  <span class="admin-mini-item__title">Crypto Projects</span>
+                  <span class="admin-mini-item__meta">Manage the Sharia-certified crypto catalogue</span>
+                </a>
+                <a href="/internal/affiliate-admin/amanah-debate/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="amanah-debate">
+                  <span class="admin-mini-item__title">Debate Positions</span>
+                  <span class="admin-mini-item__meta">Curate the scholars&#39; crypto debate positions</span>
+                </a>
+                <a href="/internal/affiliate-admin/haqq-templates/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="haqq-templates">
+                  <span class="admin-mini-item__title">Haqq templates</span>
+                  <span class="admin-mini-item__meta">Manage the Haqq legal document template library</span>
+                </a>
+                <a href="/internal/affiliate-admin/suq-moderation/" class="admin-mini-item admin-mini-item--button" data-admin-page-link="suq-moderation">
+                  <span class="admin-mini-item__title">Suq moderation</span>
+                  <span class="admin-mini-item__meta">Review flagged Suq listings, seller profiles, and reviews</span>
                 </a>
               </div>
             </div>
@@ -1939,6 +1964,1053 @@
           </div>
         </article>
 
+        <article class="admin-panel" id="adminSectionAmanah" data-admin-page="amanah" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Amanah</p>
+              <h2 class="admin-panel__title">Halal finance product catalogue</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshAmanahProducts">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewAmanahProduct">
+                New product
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Manage the finance products shown inside Nuria Amanah. Click a product in the table to edit it, or use New product to add a catalogue entry. New products start as pending_review until approved.
+          </p>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Provider</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Verified</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="adminAmanahTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminAmanahEmpty" hidden>
+                No finance products yet. Create your first Amanah catalogue entry with the form.
+              </p>
+            </div>
+
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminAmanahForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminAmanahFormTitle">Create product</h3>
+                <p class="admin-panel__helper" id="adminAmanahFormHelper">
+                  Create a new finance product for the Nuria Amanah catalogue.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminAmanahProductId" value="" />
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahName">Product name</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahName"
+                  name="name"
+                  type="text"
+                  placeholder="Sharia-compliant savings account"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahProviderName">Provider name</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahProviderName"
+                  name="providerName"
+                  type="text"
+                  placeholder="Al Rayan Bank"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahProviderLogoUrl">Provider logo URL</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahProviderLogoUrl"
+                  name="providerLogoUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://example.com/logo.png"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Leave empty if no hosted logo exists yet.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahProductType">Product type</label>
+                  <select class="form-input form-select" id="adminAmanahProductType" name="productType">
+                    <option value="savings">savings</option>
+                    <option value="current">current</option>
+                    <option value="mortgage">mortgage</option>
+                    <option value="sme">sme</option>
+                    <option value="investment_fund">investment_fund</option>
+                    <option value="sukuk">sukuk</option>
+                    <option value="real_estate">real_estate</option>
+                    <option value="takaful">takaful</option>
+                    <option value="stocks_screener">stocks_screener</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahShariaStructure">Sharia structure</label>
+                  <select class="form-input form-select" id="adminAmanahShariaStructure" name="shariaStructure">
+                    <option value="murabaha">murabaha</option>
+                    <option value="mudarabah">mudarabah</option>
+                    <option value="musharakah">musharakah</option>
+                    <option value="diminishing_musharakah">diminishing_musharakah</option>
+                    <option value="wakala">wakala</option>
+                    <option value="qard">qard</option>
+                    <option value="ijara">ijara</option>
+                    <option value="takaful">takaful</option>
+                    <option value="other">other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahGeography">Geography</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahGeography"
+                    name="geography"
+                    type="text"
+                    placeholder="gb, se, ae"
+                  />
+                  <p class="admin-panel__helper">
+                    Comma-separated country codes.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahCurrency">Currency</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahCurrency"
+                    name="currency"
+                    type="text"
+                    placeholder="GBP, SEK, AED"
+                  />
+                  <p class="admin-panel__helper">
+                    Comma-separated ISO currency codes.
+                  </p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahShariaExplanation">Sharia explanation</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminAmanahShariaExplanation"
+                  name="shariaExplanation"
+                  rows="5"
+                  maxlength="2400"
+                  placeholder="Explain in plain language how this product stays sharia-compliant"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminAmanahShariaExplanationMeta">0 / 2400 characters</p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahMinimumAmount">Minimum amount</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahMinimumAmount"
+                    name="minimumAmount"
+                    type="number"
+                    min="0"
+                    step="any"
+                    placeholder="500"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahMinimumCurrency">Minimum currency</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahMinimumCurrency"
+                    name="minimumCurrency"
+                    type="text"
+                    maxlength="3"
+                    placeholder="GBP"
+                  />
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahExpectedReturnMin">Expected return min (%)</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahExpectedReturnMin"
+                    name="expectedReturnMin"
+                    type="number"
+                    step="any"
+                    placeholder="2.5"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahExpectedReturnMax">Expected return max (%)</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahExpectedReturnMax"
+                    name="expectedReturnMax"
+                    type="number"
+                    step="any"
+                    placeholder="4.1"
+                  />
+                </div>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminAmanahNuriaVerified" name="nuriaVerified" />
+                <span>Nuria verified</span>
+              </label>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahVerifiedByScholar">Verified by scholar</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahVerifiedByScholar"
+                  name="verifiedByScholar"
+                  type="text"
+                  placeholder="Sheikh full name"
+                />
+                <p class="admin-panel__helper">
+                  Required when Nuria verified is checked. The Verified badge always carries an accountable reviewer.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahVerifiedDate">Verified date</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahVerifiedDate"
+                    name="verifiedDate"
+                    type="date"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahNextReviewDate">Next review date</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahNextReviewDate"
+                    name="nextReviewDate"
+                    type="date"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminAmanahExternalUrl">External URL</label>
+                <input
+                  class="form-input"
+                  id="adminAmanahExternalUrl"
+                  name="externalUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://provider.com/product"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Where users continue to the provider.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahAffiliateProvider">Affiliate provider</label>
+                  <input
+                    class="form-input"
+                    id="adminAmanahAffiliateProvider"
+                    name="affiliateProvider"
+                    type="text"
+                    placeholder="impact, awin, direct"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminAmanahStatus">Status</label>
+                  <select class="form-input form-select" id="adminAmanahStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="pending_review" selected>pending_review</option>
+                    <option value="rejected">rejected</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminAmanahFscsEquivalent" name="fscsEquivalent" />
+                <span>FSCS-equivalent deposit protection</span>
+              </label>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveAmanahProductButton">
+                  Save product
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetAmanahForm">
+                  Reset
+                </button>
+              </div>
+
+              <p class="admin-form-error" id="adminAmanahFormError" hidden></p>
+            </form>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-panel" id="adminSectionAmanahCrypto" data-admin-page="amanah-crypto" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Amanah</p>
+              <h2 class="admin-panel__title">Sharia-certified crypto projects</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshCryptoProducts">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewCryptoProduct">
+                New project
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Manage the crypto projects shown inside Nuria Amanah. Click a project in the table to edit it, or use New project to add a catalogue entry. New projects start as pending_review until approved.
+          </p>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Certifier</th>
+                    <th>Type</th>
+                    <th>Risk</th>
+                    <th>Status</th>
+                    <th>Verified</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="adminCryptoTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminCryptoEmpty" hidden>
+                No crypto projects yet. Create your first Amanah crypto entry with the form.
+              </p>
+            </div>
+
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminCryptoForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminCryptoFormTitle">Create project</h3>
+                <p class="admin-panel__helper" id="adminCryptoFormHelper">
+                  Create a new Sharia-certified crypto project for the Nuria Amanah catalogue.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminCryptoProductId" value="" />
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoName">Project name</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoName"
+                  name="name"
+                  type="text"
+                  placeholder="Sharia-screened blockchain project"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoShariaCertifier">Sharia certifier</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoShariaCertifier"
+                  name="shariaCertifier"
+                  type="text"
+                  placeholder="Amanie Advisors"
+                  required
+                />
+                <p class="admin-panel__helper">
+                  Required. Only formally certified projects are listed at all.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoProviderName">Provider name</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoProviderName"
+                  name="providerName"
+                  type="text"
+                  placeholder="Project foundation or company"
+                />
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoLogoUrl">Logo URL</label>
+                  <input
+                    class="form-input"
+                    id="adminCryptoLogoUrl"
+                    name="logoUrl"
+                    type="url"
+                    inputmode="url"
+                    placeholder="https://example.com/logo.png"
+                  />
+                  <p class="admin-panel__helper">
+                    https URL only. Leave empty if no hosted logo exists yet.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoWebsiteUrl">Website URL</label>
+                  <input
+                    class="form-input"
+                    id="adminCryptoWebsiteUrl"
+                    name="websiteUrl"
+                    type="url"
+                    inputmode="url"
+                    placeholder="https://project.org"
+                  />
+                  <p class="admin-panel__helper">
+                    https URL only. Official project website.
+                  </p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoShariaCertificateUrl">Sharia certificate URL</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoShariaCertificateUrl"
+                  name="shariaCertificateUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://certifier.com/certificate.pdf"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Public link to the certification document.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoProductType">Product type</label>
+                  <select class="form-input form-select" id="adminCryptoProductType" name="productType">
+                    <option value="blockchain" selected>blockchain</option>
+                    <option value="defi_platform">defi_platform</option>
+                    <option value="exchange">exchange</option>
+                    <option value="investment_product">investment_product</option>
+                    <option value="token">token</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoRiskLevel">Risk level</label>
+                  <select class="form-input form-select" id="adminCryptoRiskLevel" name="riskLevel">
+                    <option value="low">low</option>
+                    <option value="medium" selected>medium</option>
+                    <option value="high">high</option>
+                    <option value="very_high">very_high</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoShariaExplanation">Sharia explanation</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminCryptoShariaExplanation"
+                  name="shariaExplanation"
+                  rows="5"
+                  maxlength="2400"
+                  placeholder="Explain in plain language why this project is considered sharia-compliant"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminCryptoShariaExplanationMeta">0 / 2400 characters</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoGeography">Geography available</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoGeography"
+                  name="geographyAvailable"
+                  type="text"
+                  placeholder="gb, se, ae"
+                />
+                <p class="admin-panel__helper">
+                  Comma-separated country codes.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoParticipationMethod">Participation method</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoParticipationMethod"
+                  name="participationMethod"
+                  type="text"
+                  maxlength="300"
+                  placeholder="How users participate: staking, direct purchase, fund..."
+                />
+                <p class="admin-panel__helper">
+                  Max 300 characters.
+                </p>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminCryptoNuriaVerified" name="nuriaVerified" />
+                <span>Nuria verified</span>
+              </label>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoVerifiedBy">Verified by</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoVerifiedBy"
+                  name="verifiedBy"
+                  type="text"
+                  placeholder="Sheikh full name"
+                />
+                <p class="admin-panel__helper">
+                  Required when Nuria verified is checked. The Verified badge always carries an accountable reviewer.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoVerifiedDate">Verified date</label>
+                  <input
+                    class="form-input"
+                    id="adminCryptoVerifiedDate"
+                    name="verifiedDate"
+                    type="date"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoNextReviewDate">Next review date</label>
+                  <input
+                    class="form-input"
+                    id="adminCryptoNextReviewDate"
+                    name="nextReviewDate"
+                    type="date"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminCryptoExternalUrl">External URL</label>
+                <input
+                  class="form-input"
+                  id="adminCryptoExternalUrl"
+                  name="externalUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://provider.com/product"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Where users continue to the provider.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoAffiliateProvider">Affiliate provider</label>
+                  <input
+                    class="form-input"
+                    id="adminCryptoAffiliateProvider"
+                    name="affiliateProvider"
+                    type="text"
+                    placeholder="impact, awin, direct"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminCryptoStatus">Status</label>
+                  <select class="form-input form-select" id="adminCryptoStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="pending_review" selected>pending_review</option>
+                    <option value="rejected">rejected</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveCryptoProductButton">
+                  Save project
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetCryptoForm">
+                  Reset
+                </button>
+              </div>
+
+              <p class="admin-form-error" id="adminCryptoFormError" hidden></p>
+            </form>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-panel" id="adminSectionAmanahDebate" data-admin-page="amanah-debate" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Amanah</p>
+              <h2 class="admin-panel__title">Scholars&#39; debate positions</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshDebatePositions">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewDebatePosition">
+                New position
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Curate the scholars&#39; debate positions shown inside Nuria Amanah. Click a position in the table to edit it, or use New position to add an entry. New positions start as pending_review until approved.
+          </p>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Scholar</th>
+                    <th>Position</th>
+                    <th>Madhab</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="adminDebateTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminDebateEmpty" hidden>
+                No debate positions yet. Create your first debate position with the form.
+              </p>
+            </div>
+
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminDebateForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminDebateFormTitle">Create position</h3>
+                <p class="admin-panel__helper" id="adminDebateFormHelper">
+                  Create a new curated debate position for the Nuria Amanah crypto debate.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminDebateDocId" value="" />
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminDebatePosition">Position</label>
+                  <select class="form-input form-select" id="adminDebatePosition" name="position">
+                    <option value="permissible">permissible</option>
+                    <option value="impermissible">impermissible</option>
+                    <option value="conditional">conditional</option>
+                    <option value="under_review" selected>under_review</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminDebateMadhab">Madhab</label>
+                  <select class="form-input form-select" id="adminDebateMadhab" name="madhab">
+                    <option value="hanafi">hanafi</option>
+                    <option value="maliki">maliki</option>
+                    <option value="shafii">shafii</option>
+                    <option value="hanbali">hanbali</option>
+                    <option value="general" selected>general</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminDebateScholarName">Scholar name</label>
+                <input
+                  class="form-input"
+                  id="adminDebateScholarName"
+                  name="scholarName"
+                  type="text"
+                  placeholder="Sheikh full name"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminDebateScholarAffiliation">Scholar affiliation</label>
+                <input
+                  class="form-input"
+                  id="adminDebateScholarAffiliation"
+                  name="scholarAffiliation"
+                  type="text"
+                  placeholder="Institution or council"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminDebateArgumentSummary">Argument summary</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminDebateArgumentSummary"
+                  name="argumentSummary"
+                  rows="5"
+                  maxlength="1600"
+                  placeholder="Summarize the scholar's argument in plain language"
+                  required
+                ></textarea>
+                <p class="admin-panel__helper" id="adminDebateArgumentSummaryMeta">0 / 1600 characters</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminDebateSourceUrl">Source URL</label>
+                <input
+                  class="form-input"
+                  id="adminDebateSourceUrl"
+                  name="sourceUrl"
+                  type="url"
+                  inputmode="url"
+                  placeholder="https://source.org/fatwa"
+                />
+                <p class="admin-panel__helper">
+                  https URL only. Where the position is published.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminDebateOrder">Order</label>
+                  <input
+                    class="form-input"
+                    id="adminDebateOrder"
+                    name="order"
+                    type="number"
+                    step="1"
+                    placeholder="0"
+                  />
+                  <p class="admin-panel__helper">
+                    Lower numbers are shown first.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminDebateStatus">Status</label>
+                  <select class="form-input form-select" id="adminDebateStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="pending_review" selected>pending_review</option>
+                    <option value="rejected">rejected</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveDebatePositionButton">
+                  Save position
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetDebateForm">
+                  Reset
+                </button>
+              </div>
+
+              <p class="admin-form-error" id="adminDebateFormError" hidden></p>
+            </form>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-panel" id="adminSectionHaqqTemplates" data-admin-page="haqq-templates" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Haqq</p>
+              <h2 class="admin-panel__title">Legal document templates</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshHaqqTemplates">
+                Refresh
+              </button>
+              <button type="button" class="btn btn--outline" id="adminNewHaqqTemplate">
+                New template
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Manage the document templates offered inside Nuria Haqq. Click a template in the table to edit it, or use New template to add one. New templates start as pending_review until approved.
+          </p>
+
+          <div class="admin-split">
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Tier</th>
+                    <th>Status</th>
+                    <th>Reviewed</th>
+                    <th>Updated</th>
+                  </tr>
+                </thead>
+                <tbody id="adminHaqqTableBody"></tbody>
+              </table>
+              <p class="admin-empty" id="adminHaqqEmpty" hidden>
+                No Haqq templates yet. Create your first document template with the form.
+              </p>
+            </div>
+
+            <div class="admin-code-form-wrap">
+            <form class="admin-form" id="adminHaqqForm">
+              <div class="admin-form__header">
+                <h3 class="admin-section-title" id="adminHaqqFormTitle">Create template</h3>
+                <p class="admin-panel__helper" id="adminHaqqFormHelper">
+                  Create a new legal document template for Nuria Haqq.
+                </p>
+              </div>
+
+              <input type="hidden" id="adminHaqqTemplateId" value="" />
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqDisplayName">Display name</label>
+                <input
+                  class="form-input"
+                  id="adminHaqqDisplayName"
+                  name="displayName"
+                  type="text"
+                  maxlength="160"
+                  placeholder="Simple service agreement"
+                  required
+                />
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqTemplateType">Template type</label>
+                  <select class="form-input form-select" id="adminHaqqTemplateType" name="templateType">
+                    <option value="service_agreement" selected>service_agreement</option>
+                    <option value="musharakah">musharakah</option>
+                    <option value="nda">nda</option>
+                    <option value="ijara">ijara</option>
+                    <option value="supplier_agreement">supplier_agreement</option>
+                    <option value="employment">employment</option>
+                    <option value="qard_hasan">qard_hasan</option>
+                    <option value="rental">rental</option>
+                    <option value="freelance">freelance</option>
+                    <option value="mahr">mahr</option>
+                    <option value="wasiyyah">wasiyyah</option>
+                    <option value="suq_service">suq_service</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqTier">Tier</label>
+                  <select class="form-input form-select" id="adminHaqqTier" name="tier">
+                    <option value="free" selected>free</option>
+                    <option value="paid">paid</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqDescription">Description</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminHaqqDescription"
+                  name="description"
+                  rows="4"
+                  maxlength="600"
+                  placeholder="Explain in plain language what this template covers and when to use it"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminHaqqDescriptionMeta">0 / 600 characters</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqFieldsSchema">Fields schema (JSON)</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminHaqqFieldsSchema"
+                  name="fieldsSchema"
+                  rows="10"
+                  spellcheck="false"
+                  placeholder='[
+  {
+    "key": "client_name",
+    "label": "Client name",
+    "type": "text",
+    "required": true,
+    "maxLength": 200,
+    "hint": "Full legal name"
+  }
+]'
+                ></textarea>
+                <p class="admin-panel__helper">
+                  JSON array of form fields. Each field: key (lowercase snake_case), label, type (text, textarea, number, date), optional required, maxLength (1-5000), and hint. Max 40 fields; keys must be unique.
+                </p>
+                <p class="admin-form-error" id="adminHaqqFieldsSchemaError" hidden></p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqHtmlTemplate">HTML template</label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="adminHaqqHtmlTemplate"
+                  name="htmlTemplate"
+                  rows="12"
+                  maxlength="60000"
+                  spellcheck="false"
+                  placeholder="&lt;h1&gt;Service Agreement&lt;/h1&gt;&lt;p&gt;Between {{client_name}} ...&lt;/p&gt;"
+                ></textarea>
+                <p class="admin-panel__helper" id="adminHaqqHtmlTemplateMeta">0 / 60000 characters</p>
+                <p class="admin-panel__helper">
+                  Every {{placeholder}} must match a fields schema key ({{generated_date}} and {{document_id}} are built in). The backend rejects script/iframe/object/embed tags and remote http(s) src attributes.
+                </p>
+              </div>
+
+              <label class="admin-checkbox">
+                <input type="checkbox" id="adminHaqqShariaReviewed" name="shariaReviewed" />
+                <span>Sharia reviewed</span>
+              </label>
+
+              <div class="form-group">
+                <label class="form-label" for="adminHaqqShariaReviewer">Sharia reviewer</label>
+                <input
+                  class="form-input"
+                  id="adminHaqqShariaReviewer"
+                  name="shariaReviewer"
+                  type="text"
+                  maxlength="160"
+                  placeholder="Sheikh full name"
+                />
+                <p class="admin-panel__helper">
+                  Required when Sharia reviewed is checked. The Reviewed badge always carries an accountable reviewer.
+                </p>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqReviewedDate">Reviewed date</label>
+                  <input
+                    class="form-input"
+                    id="adminHaqqReviewedDate"
+                    name="reviewedDate"
+                    type="date"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqNextReviewDate">Next review date</label>
+                  <input
+                    class="form-input"
+                    id="adminHaqqNextReviewDate"
+                    name="nextReviewDate"
+                    type="date"
+                  />
+                </div>
+              </div>
+
+              <div class="admin-form__grid">
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqJurisdiction">Jurisdiction</label>
+                  <input
+                    class="form-input"
+                    id="adminHaqqJurisdiction"
+                    name="jurisdiction"
+                    type="text"
+                    placeholder="gb, se, ae"
+                  />
+                  <p class="admin-panel__helper">
+                    Comma-separated country codes.
+                  </p>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="adminHaqqStatus">Status</label>
+                  <select class="form-input form-select" id="adminHaqqStatus" name="status">
+                    <option value="active">active</option>
+                    <option value="pending_review" selected>pending_review</option>
+                    <option value="rejected">rejected</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="admin-form__actions">
+                <button type="submit" class="btn btn--gold" id="adminSaveHaqqTemplateButton">
+                  Save template
+                </button>
+                <button type="button" class="btn btn--outline" id="adminResetHaqqForm">
+                  Reset
+                </button>
+              </div>
+
+              <p class="admin-form-error" id="adminHaqqFormError" hidden></p>
+            </form>
+            </div>
+          </div>
+        </article>
+
+        <article class="admin-panel" id="adminSectionSuqModeration" data-admin-page="suq-moderation" hidden>
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Nuria Suq</p>
+              <h2 class="admin-panel__title">Moderation queue</h2>
+            </div>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" id="adminRefreshSuqFlags">
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <p class="admin-panel__helper">
+            Review open moderation flags raised by users against Suq content. Dismiss keeps the content live and closes the flag. Remove content acts on the flagged item: listing -&gt; removed, seller profile -&gt; suspended, review -&gt; deleted.
+          </p>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Reason</th>
+                  <th>Flagged content</th>
+                  <th>Flagged by</th>
+                  <th>Flagged</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminSuqFlagsTableBody"></tbody>
+            </table>
+            <p class="admin-empty" id="adminSuqFlagsEmpty" hidden>
+              No open moderation flags. The Suq queue is clear.
+            </p>
+          </div>
+        </article>
+
         <article class="admin-panel" id="adminSectionSettings" data-admin-page="settings" hidden>
           <div class="admin-panel__header">
             <div>
@@ -2112,6 +3184,6 @@
   <script src="../../js/i18n.js"></script>
   <script src="../../js/main.js?v=20260629j"></script>
   <script src="../../js/affiliate-partner-registry.js"></script>
-  <script type="module" src="../../js/affiliate-admin.js?v=20260614-auth-errors"></script>
+  <script type="module" src="../../js/affiliate-admin.js?v=20260708-suq-moderation"></script>
 </body>
 </html>

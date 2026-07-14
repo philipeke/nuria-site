@@ -42,6 +42,11 @@ const ADMIN_PAGE_PATHS = {
   'report-detail': '/internal/affiliate-admin/report-detail/',
   'live-notifications': '/internal/affiliate-admin/live-notifications/',
   'dashboard-copy': '/internal/affiliate-admin/dashboard-copy/',
+  amanah: '/internal/affiliate-admin/amanah/',
+  'amanah-crypto': '/internal/affiliate-admin/amanah-crypto/',
+  'amanah-debate': '/internal/affiliate-admin/amanah-debate/',
+  'haqq-templates': '/internal/affiliate-admin/haqq-templates/',
+  'suq-moderation': '/internal/affiliate-admin/suq-moderation/',
   settings: '/internal/affiliate-admin/settings/',
 };
 const DASHBOARD_COPY_CALL_TIMEOUT_MS = 8000;
@@ -51,6 +56,26 @@ const AUTH_BOOTSTRAP_TIMEOUT_MS = 2500;
 const AUTH_STUCK_TIMEOUT_MS = 6000;
 const ADMIN_CALL_TIMEOUT_MS = 15000;
 const DASHBOARD_LOAD_TIMEOUT_MS = 25000;
+const AMANAH_EXPLANATION_MAX_CHARS = 2400;
+const AMANAH_CRYPTO_EXPLANATION_MAX_CHARS = 2400;
+const AMANAH_CRYPTO_PARTICIPATION_MAX_CHARS = 300;
+const AMANAH_DEBATE_SUMMARY_MAX_CHARS = 1600;
+const HAQQ_DISPLAY_NAME_MAX_CHARS = 160;
+const HAQQ_DESCRIPTION_MAX_CHARS = 600;
+const HAQQ_HTML_TEMPLATE_MAX_CHARS = 60000;
+const HAQQ_MAX_SCHEMA_FIELDS = 40;
+const HAQQ_FIELD_LABEL_MAX_CHARS = 160;
+const HAQQ_FIELD_MAX_LENGTH_LIMIT = 5000;
+const HAQQ_FIELD_TYPES = ['text', 'textarea', 'number', 'date'];
+const HAQQ_FIELD_KEY_RE = /^[a-z][a-z0-9_]{0,39}$/;
+// Placeholders injected by the backend generator; always allowed in HTML.
+const HAQQ_BUILTIN_PLACEHOLDERS = ['generated_date', 'document_id'];
+const SUQ_FLAG_SNAPSHOT_MAX_CHARS = 160;
+const SUQ_FLAG_TARGET_LABELS = {
+  listing: 'Listing',
+  profile: 'Seller profile',
+  review: 'Review',
+};
 
 /** Legal publisher block (matches site privacy/terms). Used in PDF & Excel exports. */
 const EXPORT_PUBLISHER = {
@@ -253,6 +278,117 @@ const elements = {
   dashboardCopyPreviewBody: document.getElementById('adminDashboardCopyPreviewBody'),
   dashboardCopyPreviewEmpty: document.getElementById('adminDashboardCopyPreviewEmpty'),
   dashboardCopyMetadata: document.getElementById('adminDashboardCopyMetadata'),
+  refreshAmanahProducts: document.getElementById('adminRefreshAmanahProducts'),
+  newAmanahProduct: document.getElementById('adminNewAmanahProduct'),
+  amanahTableBody: document.getElementById('adminAmanahTableBody'),
+  amanahEmpty: document.getElementById('adminAmanahEmpty'),
+  amanahForm: document.getElementById('adminAmanahForm'),
+  amanahFormTitle: document.getElementById('adminAmanahFormTitle'),
+  amanahFormHelper: document.getElementById('adminAmanahFormHelper'),
+  amanahProductId: document.getElementById('adminAmanahProductId'),
+  amanahName: document.getElementById('adminAmanahName'),
+  amanahProviderName: document.getElementById('adminAmanahProviderName'),
+  amanahProviderLogoUrl: document.getElementById('adminAmanahProviderLogoUrl'),
+  amanahProductType: document.getElementById('adminAmanahProductType'),
+  amanahShariaStructure: document.getElementById('adminAmanahShariaStructure'),
+  amanahGeography: document.getElementById('adminAmanahGeography'),
+  amanahCurrency: document.getElementById('adminAmanahCurrency'),
+  amanahShariaExplanation: document.getElementById('adminAmanahShariaExplanation'),
+  amanahShariaExplanationMeta: document.getElementById('adminAmanahShariaExplanationMeta'),
+  amanahMinimumAmount: document.getElementById('adminAmanahMinimumAmount'),
+  amanahMinimumCurrency: document.getElementById('adminAmanahMinimumCurrency'),
+  amanahExpectedReturnMin: document.getElementById('adminAmanahExpectedReturnMin'),
+  amanahExpectedReturnMax: document.getElementById('adminAmanahExpectedReturnMax'),
+  amanahNuriaVerified: document.getElementById('adminAmanahNuriaVerified'),
+  amanahVerifiedByScholar: document.getElementById('adminAmanahVerifiedByScholar'),
+  amanahVerifiedDate: document.getElementById('adminAmanahVerifiedDate'),
+  amanahNextReviewDate: document.getElementById('adminAmanahNextReviewDate'),
+  amanahExternalUrl: document.getElementById('adminAmanahExternalUrl'),
+  amanahAffiliateProvider: document.getElementById('adminAmanahAffiliateProvider'),
+  amanahStatus: document.getElementById('adminAmanahStatus'),
+  amanahFscsEquivalent: document.getElementById('adminAmanahFscsEquivalent'),
+  saveAmanahProductButton: document.getElementById('adminSaveAmanahProductButton'),
+  resetAmanahForm: document.getElementById('adminResetAmanahForm'),
+  amanahFormError: document.getElementById('adminAmanahFormError'),
+  refreshCryptoProducts: document.getElementById('adminRefreshCryptoProducts'),
+  newCryptoProduct: document.getElementById('adminNewCryptoProduct'),
+  cryptoTableBody: document.getElementById('adminCryptoTableBody'),
+  cryptoEmpty: document.getElementById('adminCryptoEmpty'),
+  cryptoForm: document.getElementById('adminCryptoForm'),
+  cryptoFormTitle: document.getElementById('adminCryptoFormTitle'),
+  cryptoFormHelper: document.getElementById('adminCryptoFormHelper'),
+  cryptoProductId: document.getElementById('adminCryptoProductId'),
+  cryptoName: document.getElementById('adminCryptoName'),
+  cryptoShariaCertifier: document.getElementById('adminCryptoShariaCertifier'),
+  cryptoProviderName: document.getElementById('adminCryptoProviderName'),
+  cryptoLogoUrl: document.getElementById('adminCryptoLogoUrl'),
+  cryptoWebsiteUrl: document.getElementById('adminCryptoWebsiteUrl'),
+  cryptoShariaCertificateUrl: document.getElementById('adminCryptoShariaCertificateUrl'),
+  cryptoProductType: document.getElementById('adminCryptoProductType'),
+  cryptoShariaExplanation: document.getElementById('adminCryptoShariaExplanation'),
+  cryptoShariaExplanationMeta: document.getElementById('adminCryptoShariaExplanationMeta'),
+  cryptoGeography: document.getElementById('adminCryptoGeography'),
+  cryptoRiskLevel: document.getElementById('adminCryptoRiskLevel'),
+  cryptoParticipationMethod: document.getElementById('adminCryptoParticipationMethod'),
+  cryptoNuriaVerified: document.getElementById('adminCryptoNuriaVerified'),
+  cryptoVerifiedBy: document.getElementById('adminCryptoVerifiedBy'),
+  cryptoVerifiedDate: document.getElementById('adminCryptoVerifiedDate'),
+  cryptoNextReviewDate: document.getElementById('adminCryptoNextReviewDate'),
+  cryptoExternalUrl: document.getElementById('adminCryptoExternalUrl'),
+  cryptoAffiliateProvider: document.getElementById('adminCryptoAffiliateProvider'),
+  cryptoStatus: document.getElementById('adminCryptoStatus'),
+  saveCryptoProductButton: document.getElementById('adminSaveCryptoProductButton'),
+  resetCryptoForm: document.getElementById('adminResetCryptoForm'),
+  cryptoFormError: document.getElementById('adminCryptoFormError'),
+  refreshDebatePositions: document.getElementById('adminRefreshDebatePositions'),
+  newDebatePosition: document.getElementById('adminNewDebatePosition'),
+  debateTableBody: document.getElementById('adminDebateTableBody'),
+  debateEmpty: document.getElementById('adminDebateEmpty'),
+  debateForm: document.getElementById('adminDebateForm'),
+  debateFormTitle: document.getElementById('adminDebateFormTitle'),
+  debateFormHelper: document.getElementById('adminDebateFormHelper'),
+  debateDocId: document.getElementById('adminDebateDocId'),
+  debatePosition: document.getElementById('adminDebatePosition'),
+  debateScholarName: document.getElementById('adminDebateScholarName'),
+  debateScholarAffiliation: document.getElementById('adminDebateScholarAffiliation'),
+  debateArgumentSummary: document.getElementById('adminDebateArgumentSummary'),
+  debateArgumentSummaryMeta: document.getElementById('adminDebateArgumentSummaryMeta'),
+  debateSourceUrl: document.getElementById('adminDebateSourceUrl'),
+  debateMadhab: document.getElementById('adminDebateMadhab'),
+  debateOrder: document.getElementById('adminDebateOrder'),
+  debateStatus: document.getElementById('adminDebateStatus'),
+  saveDebatePositionButton: document.getElementById('adminSaveDebatePositionButton'),
+  resetDebateForm: document.getElementById('adminResetDebateForm'),
+  debateFormError: document.getElementById('adminDebateFormError'),
+  refreshHaqqTemplates: document.getElementById('adminRefreshHaqqTemplates'),
+  newHaqqTemplate: document.getElementById('adminNewHaqqTemplate'),
+  haqqTableBody: document.getElementById('adminHaqqTableBody'),
+  haqqEmpty: document.getElementById('adminHaqqEmpty'),
+  haqqForm: document.getElementById('adminHaqqForm'),
+  haqqFormTitle: document.getElementById('adminHaqqFormTitle'),
+  haqqFormHelper: document.getElementById('adminHaqqFormHelper'),
+  haqqTemplateId: document.getElementById('adminHaqqTemplateId'),
+  haqqTemplateType: document.getElementById('adminHaqqTemplateType'),
+  haqqDisplayName: document.getElementById('adminHaqqDisplayName'),
+  haqqDescription: document.getElementById('adminHaqqDescription'),
+  haqqDescriptionMeta: document.getElementById('adminHaqqDescriptionMeta'),
+  haqqFieldsSchema: document.getElementById('adminHaqqFieldsSchema'),
+  haqqFieldsSchemaError: document.getElementById('adminHaqqFieldsSchemaError'),
+  haqqHtmlTemplate: document.getElementById('adminHaqqHtmlTemplate'),
+  haqqHtmlTemplateMeta: document.getElementById('adminHaqqHtmlTemplateMeta'),
+  haqqShariaReviewed: document.getElementById('adminHaqqShariaReviewed'),
+  haqqShariaReviewer: document.getElementById('adminHaqqShariaReviewer'),
+  haqqReviewedDate: document.getElementById('adminHaqqReviewedDate'),
+  haqqNextReviewDate: document.getElementById('adminHaqqNextReviewDate'),
+  haqqTier: document.getElementById('adminHaqqTier'),
+  haqqJurisdiction: document.getElementById('adminHaqqJurisdiction'),
+  haqqStatus: document.getElementById('adminHaqqStatus'),
+  saveHaqqTemplateButton: document.getElementById('adminSaveHaqqTemplateButton'),
+  resetHaqqForm: document.getElementById('adminResetHaqqForm'),
+  haqqFormError: document.getElementById('adminHaqqFormError'),
+  refreshSuqFlags: document.getElementById('adminRefreshSuqFlags'),
+  suqFlagsTableBody: document.getElementById('adminSuqFlagsTableBody'),
+  suqFlagsEmpty: document.getElementById('adminSuqFlagsEmpty'),
   liveNotificationForm: document.getElementById('adminLiveNotificationForm'),
   liveNotificationTitle: document.getElementById('adminLiveNotificationTitle'),
   liveNotificationTitleMeta: document.getElementById('adminLiveNotificationTitleMeta'),
@@ -432,6 +568,36 @@ const state = {
   dashboardCopyLocaleSearch: '',
   dashboardCopyPreviewLocale: '',
   dashboardCopyPreviewTouched: false,
+  amanahProducts: [],
+  amanahLoaded: false,
+  amanahLoading: false,
+  amanahLoadPromise: null,
+  amanahUnavailableReason: '',
+  saveAmanahProductInFlight: false,
+  cryptoProducts: [],
+  cryptoLoaded: false,
+  cryptoLoading: false,
+  cryptoLoadPromise: null,
+  cryptoUnavailableReason: '',
+  saveCryptoProductInFlight: false,
+  debatePositions: [],
+  debateLoaded: false,
+  debateLoading: false,
+  debateLoadPromise: null,
+  debateUnavailableReason: '',
+  saveDebatePositionInFlight: false,
+  haqqTemplates: [],
+  haqqLoaded: false,
+  haqqLoading: false,
+  haqqLoadPromise: null,
+  haqqUnavailableReason: '',
+  saveHaqqTemplateInFlight: false,
+  suqFlags: [],
+  suqFlagsLoaded: false,
+  suqFlagsLoading: false,
+  suqFlagsLoadPromise: null,
+  suqFlagsUnavailableReason: '',
+  resolveSuqFlagInFlightId: '',
   liveNotificationSummary: null,
   liveNotificationCampaigns: [],
   liveNotificationLoading: false,
@@ -665,6 +831,51 @@ function setAdminPage(pageKey, options) {
       });
     }
   }
+
+  if (next === 'amanah' && state.user) {
+    ensureAmanahProductsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('amanah_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
+
+  if (next === 'amanah-crypto' && state.user) {
+    ensureCryptoProductsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('amanah_crypto_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
+
+  if (next === 'amanah-debate' && state.user) {
+    ensureDebatePositionsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('amanah_debate_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
+
+  if (next === 'haqq-templates' && state.user) {
+    ensureHaqqTemplatesLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('haqq_templates_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
+
+  if (next === 'suq-moderation' && state.user) {
+    ensureSuqFlagsLoaded({ silent: true }).catch(() => {});
+    if (previousPage !== next) {
+      track('suq_moderation_admin_viewed', {
+        route: ADMIN_PAGE_PATHS[next],
+      });
+    }
+  }
 }
 
 function showBanner(message, tone) {
@@ -751,6 +962,36 @@ function getActionableErrorMessage(error, fallbackMessage) {
     if (error?.adminCallable === 'findUsersForPushTest') {
       return 'User search timed out. Try a more specific query.';
     }
+    if (error?.adminCallable === 'listFinanceProductsAdmin') {
+      return 'Amanah product list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertFinanceProductAdmin') {
+      return 'Amanah product save timed out. Refresh the product list before saving again.';
+    }
+    if (error?.adminCallable === 'listCryptoProductsAdmin') {
+      return 'Crypto project list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertCryptoProductAdmin') {
+      return 'Crypto project save timed out. Refresh the project list before saving again.';
+    }
+    if (error?.adminCallable === 'listDebatePositionsAdmin') {
+      return 'Debate position list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertDebatePositionAdmin') {
+      return 'Debate position save timed out. Refresh the position list before saving again.';
+    }
+    if (error?.adminCallable === 'listHaqqTemplatesAdmin') {
+      return 'Haqq template list timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'upsertHaqqTemplateAdmin') {
+      return 'Haqq template save timed out. Refresh the template list before saving again.';
+    }
+    if (error?.adminCallable === 'listModerationFlagsAdmin') {
+      return 'Suq moderation queue timed out. Try Refresh again.';
+    }
+    if (error?.adminCallable === 'resolveModerationFlagAdmin') {
+      return 'Suq flag action timed out. Refresh the queue before acting again.';
+    }
     return 'This request timed out before the backend responded. Try again.';
   }
 
@@ -759,6 +1000,28 @@ function getActionableErrorMessage(error, fallbackMessage) {
   }
 
   if (code === 'permission-denied') {
+    if (
+      error?.adminCallable === 'listFinanceProductsAdmin'
+      || error?.adminCallable === 'upsertFinanceProductAdmin'
+      || error?.adminCallable === 'listCryptoProductsAdmin'
+      || error?.adminCallable === 'upsertCryptoProductAdmin'
+      || error?.adminCallable === 'listDebatePositionsAdmin'
+      || error?.adminCallable === 'upsertDebatePositionAdmin'
+    ) {
+      return 'Admin access required. This account is not allowlisted for Nuria Amanah admin.';
+    }
+    if (
+      error?.adminCallable === 'listHaqqTemplatesAdmin'
+      || error?.adminCallable === 'upsertHaqqTemplateAdmin'
+    ) {
+      return 'Admin access required. This account is not allowlisted for Haqq template admin.';
+    }
+    if (
+      error?.adminCallable === 'listModerationFlagsAdmin'
+      || error?.adminCallable === 'resolveModerationFlagAdmin'
+    ) {
+      return 'Admin access required. This account is not allowlisted for Suq moderation admin.';
+    }
     if (message.includes('admin_access_required') || message.includes('admin_role_required')) {
       return 'Signed in, but this account is not allowlisted for affiliate admin access.';
     }
@@ -800,6 +1063,21 @@ function getActionableErrorMessage(error, fallbackMessage) {
     }
     if (message.includes('invite_not_found')) {
       return 'This partner claim link does not exist anymore. Create a new claim link and send that one.';
+    }
+    if (message.includes('crypto_product_not_found')) {
+      return 'This crypto project no longer exists. Refresh the project list and try again.';
+    }
+    if (message.includes('debate_position_not_found')) {
+      return 'This debate position no longer exists. Refresh the position list and try again.';
+    }
+    if (message.includes('haqq_template_not_found')) {
+      return 'This Haqq template no longer exists. Refresh the template list and try again.';
+    }
+    if (message.includes('flag_not_found')) {
+      return 'This moderation flag no longer exists. Refresh the queue and try again.';
+    }
+    if (message.includes('product_not_found')) {
+      return 'This Amanah product no longer exists. Refresh the product list and try again.';
     }
     return 'The requested record was not found.';
   }
@@ -863,6 +1141,162 @@ function getActionableErrorMessage(error, fallbackMessage) {
 
   if (message.includes('copy_required')) {
     return 'English title or body is required when the dashboard placeholder is enabled.';
+  }
+
+  if (message.includes('name_and_provider_required')) {
+    return 'Product name and provider name are both required.';
+  }
+
+  if (message.includes('verified_requires_scholar')) {
+    return 'Nuria verified products must name the reviewing scholar. Fill in Verified by scholar or untick Nuria verified.';
+  }
+
+  if (message.includes('invalid_product_type')) {
+    return 'Product type is invalid. Pick one of the listed product types.';
+  }
+
+  if (message.includes('invalid_sharia_structure')) {
+    return 'Sharia structure is invalid. Pick one of the listed structures.';
+  }
+
+  if (message.includes('invalid_status')) {
+    return 'Status is invalid. Pick active, pending_review, rejected, or archived.';
+  }
+
+  if (message.includes('invalid_external_url')) {
+    return 'External URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_provider_logo_url')) {
+    return 'Provider logo URL must be a valid https:// link.';
+  }
+
+  if (message.includes('sharia_explanation_too_long')) {
+    return 'Sharia explanation is too long. Keep it within 2400 characters.';
+  }
+
+  if (message.includes('name_and_certifier_required')) {
+    return 'Project name and Sharia certifier are both required.';
+  }
+
+  if (message.includes('argument_summary_required')) {
+    return 'Argument summary is required.';
+  }
+
+  if (message.includes('invalid_risk_level')) {
+    return 'Risk level is invalid. Pick low, medium, high, or very_high.';
+  }
+
+  if (message.includes('invalid_position')) {
+    return 'Position is invalid. Pick permissible, impermissible, conditional, or under_review.';
+  }
+
+  if (message.includes('invalid_madhab')) {
+    return 'Madhab is invalid. Pick hanafi, maliki, shafii, hanbali, or general.';
+  }
+
+  if (message.includes('invalid_logo_url')) {
+    return 'Logo URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_website_url')) {
+    return 'Website URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_sharia_certificate_url')) {
+    return 'Sharia certificate URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_source_url')) {
+    return 'Source URL must be a valid https:// link.';
+  }
+
+  if (message.includes('invalid_verified_date')) {
+    return 'Verified date must use the YYYY-MM-DD format.';
+  }
+
+  if (message.includes('invalid_next_review_date')) {
+    return 'Next review date must use the YYYY-MM-DD format.';
+  }
+
+  if (message.includes('argument_summary_too_long')) {
+    return 'Argument summary is too long. Keep it within 1600 characters.';
+  }
+
+  if (message.includes('participation_method_too_long')) {
+    return 'Participation method is too long. Keep it within 300 characters.';
+  }
+
+  if (message.includes('display_name_required')) {
+    return 'Display name is required.';
+  }
+
+  if (message.includes('reviewed_requires_reviewer')) {
+    return 'Sharia reviewed templates must name the reviewer. Fill in Sharia reviewer or untick Sharia reviewed.';
+  }
+
+  if (message.includes('fields_schema_too_long')) {
+    return `Fields schema has too many fields. Keep it within ${HAQQ_MAX_SCHEMA_FIELDS} fields.`;
+  }
+
+  if (message.includes('invalid_fields_schema')) {
+    return 'Fields schema is invalid. Provide a JSON array of fields with unique snake_case keys, labels, and valid types (text, textarea, number, date).';
+  }
+
+  if (message.includes('html_template_required')) {
+    return 'HTML template is required.';
+  }
+
+  if (message.includes('invalid_html_template')) {
+    return 'HTML template is invalid. Remove script/iframe/embed tags and remote http(s) src attributes, and make sure every {{placeholder}} matches a fields schema key.';
+  }
+
+  if (message.includes('invalid_template_type')) {
+    return 'Template type is invalid. Pick one of the listed template types.';
+  }
+
+  if (message.includes('invalid_tier')) {
+    return 'Tier is invalid. Pick free or paid.';
+  }
+
+  if (message.includes('amanah_upsert_failed')) {
+    return 'The Amanah product could not be saved. Try again.';
+  }
+
+  if (message.includes('amanah_list_failed')) {
+    return 'The Amanah product catalogue could not be loaded. Try again.';
+  }
+
+  if (message.includes('invalid_reviewed_date')) {
+    return 'Reviewed date must use the YYYY-MM-DD format.';
+  }
+
+  if (message.includes('haqq_upsert_failed')) {
+    return 'The Haqq template could not be saved. Try again.';
+  }
+
+  if (message.includes('haqq_list_failed')) {
+    return 'The Haqq template list could not be loaded. Try again.';
+  }
+
+  if (message.includes('flag_required')) {
+    return 'Flag ID is missing. Refresh the moderation queue and try again.';
+  }
+
+  if (message.includes('invalid_action')) {
+    return 'Moderation action is invalid. Use Dismiss or Remove content.';
+  }
+
+  if (message.includes('suq_admin_failed')) {
+    return 'The Suq moderation action could not be completed. Try again.';
+  }
+
+  if (message.includes('_too_long')) {
+    return 'One of the fields is too long. Shorten the value and save again.';
+  }
+
+  if (message.includes('invalid_')) {
+    return 'One of the fields has an invalid value. Check the form and save again.';
   }
 
   if (message.includes('app check') || message.includes('recaptcha')) {
@@ -6500,6 +6934,1398 @@ async function handleDashboardCopySave(event) {
   }
 }
 
+// ── Nuria Amanah product catalogue ───────────────────────────────────────
+
+function setAmanahFormError(message) {
+  if (!elements.amanahFormError) {
+    return;
+  }
+
+  elements.amanahFormError.hidden = !message;
+  elements.amanahFormError.textContent = message || '';
+}
+
+function setAmanahFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.amanahFormTitle) {
+    elements.amanahFormTitle.textContent = editing ? 'Edit product' : 'Create product';
+  }
+  if (elements.amanahFormHelper) {
+    elements.amanahFormHelper.textContent = editing
+      ? 'Update the selected catalogue entry. Saving writes straight to the live finance_products collection.'
+      : 'Create a new finance product for the Nuria Amanah catalogue.';
+  }
+}
+
+function formatAmanahTimestamp(millis) {
+  const value = Number(millis);
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  return formatTimestamp({ iso: new Date(value).toISOString() });
+}
+
+function parseAmanahListInput(value) {
+  return String(value || '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function parseAmanahOptionalNumber(value) {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) return null;
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function renderAmanahExplanationMeta() {
+  if (!elements.amanahShariaExplanationMeta) return;
+  const length = String(elements.amanahShariaExplanation?.value || '').length;
+  elements.amanahShariaExplanationMeta.textContent = `${length} / ${AMANAH_EXPLANATION_MAX_CHARS} characters`;
+}
+
+function renderAmanahProductsTable() {
+  if (!elements.amanahTableBody) return;
+
+  const items = state.amanahProducts || [];
+
+  elements.amanahTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr>
+          <td>
+            <button type="button" class="admin-link-button" data-amanah-product-id="${escapeHtml(item.productId)}">
+              ${escapeHtml(item.name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.provider_name || '-')}</td>
+          <td>${escapeHtml(item.product_type || '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${item.nuria_verified === true ? 'Yes' : '-'}</td>
+          <td>${escapeHtml(formatAmanahTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.amanahEmpty) {
+    if (state.amanahUnavailableReason) {
+      elements.amanahEmpty.textContent = state.amanahUnavailableReason;
+    } else {
+      elements.amanahEmpty.textContent = 'No finance products yet. Create your first Amanah catalogue entry with the form.';
+    }
+    elements.amanahEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetAmanahProductForm(item) {
+  const value = item || null;
+
+  if (!elements.amanahForm) {
+    return;
+  }
+
+  setAmanahFormError('');
+  setAmanahFormMode(value ? 'edit' : 'create');
+  elements.amanahForm.reset();
+
+  elements.amanahProductId.value = value ? String(value.productId || '') : '';
+  elements.amanahName.value = value ? String(value.name || '') : '';
+  elements.amanahProviderName.value = value ? String(value.provider_name || '') : '';
+  elements.amanahProviderLogoUrl.value = value ? String(value.provider_logo_url || '') : '';
+  elements.amanahProductType.value = value?.product_type || 'savings';
+  elements.amanahShariaStructure.value = value?.sharia_structure || 'murabaha';
+  elements.amanahGeography.value = value && Array.isArray(value.geography)
+    ? value.geography.join(', ')
+    : '';
+  elements.amanahCurrency.value = value && Array.isArray(value.currency)
+    ? value.currency.join(', ')
+    : '';
+  elements.amanahShariaExplanation.value = value ? String(value.sharia_explanation || '') : '';
+  elements.amanahMinimumAmount.value = value && value.minimum_amount != null
+    ? String(value.minimum_amount)
+    : '';
+  elements.amanahMinimumCurrency.value = value ? String(value.minimum_currency || '') : '';
+  elements.amanahExpectedReturnMin.value = value && value.expected_return_min != null
+    ? String(value.expected_return_min)
+    : '';
+  elements.amanahExpectedReturnMax.value = value && value.expected_return_max != null
+    ? String(value.expected_return_max)
+    : '';
+  elements.amanahNuriaVerified.checked = value?.nuria_verified === true;
+  elements.amanahVerifiedByScholar.value = value ? String(value.verified_by_scholar || '') : '';
+  elements.amanahVerifiedDate.value = value ? String(value.verified_date || '') : '';
+  elements.amanahNextReviewDate.value = value ? String(value.next_review_date || '') : '';
+  elements.amanahExternalUrl.value = value ? String(value.external_url || '') : '';
+  elements.amanahAffiliateProvider.value = value ? String(value.affiliate_provider || '') : '';
+  elements.amanahFscsEquivalent.checked = value?.fscs_equivalent === true;
+  elements.amanahStatus.value = value?.status || 'pending_review';
+  renderAmanahExplanationMeta();
+}
+
+function resetAmanahState() {
+  state.amanahProducts = [];
+  state.amanahLoaded = false;
+  state.amanahLoading = false;
+  state.amanahLoadPromise = null;
+  state.amanahUnavailableReason = '';
+  state.saveAmanahProductInFlight = false;
+  resetAmanahProductForm(null);
+  renderAmanahProductsTable();
+}
+
+async function loadAmanahProducts() {
+  const data = await callAdminFunction('listFinanceProductsAdmin', {});
+
+  state.amanahProducts = Array.isArray(data?.products) ? data.products : [];
+}
+
+async function ensureAmanahProductsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.amanahLoadPromise && !settings.force) {
+    return state.amanahLoadPromise;
+  }
+
+  if (state.amanahLoaded && !settings.force) {
+    renderAmanahProductsTable();
+    return state.amanahProducts;
+  }
+
+  const task = (async () => {
+    state.amanahLoading = true;
+    setButtonBusy(elements.refreshAmanahProducts, true, 'Refreshing');
+
+    try {
+      await loadAmanahProducts();
+      state.amanahLoaded = true;
+      state.amanahUnavailableReason = '';
+      renderAmanahProductsTable();
+      return state.amanahProducts;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Amanah product catalogue could not be loaded. Try again.'
+      );
+      state.amanahProducts = [];
+      state.amanahUnavailableReason = message;
+      renderAmanahProductsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.amanahLoading = false;
+      state.amanahLoadPromise = null;
+      setButtonBusy(elements.refreshAmanahProducts, false);
+    }
+  })();
+
+  state.amanahLoadPromise = task;
+  return task;
+}
+
+async function handleAmanahProductSave(event) {
+  event.preventDefault();
+
+  if (state.saveAmanahProductInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setAmanahFormError('');
+
+  const productId = String(elements.amanahProductId.value || '').trim();
+  const editing = Boolean(productId);
+  const name = String(elements.amanahName.value || '').trim();
+  const providerName = String(elements.amanahProviderName.value || '').trim();
+  const nuriaVerified = elements.amanahNuriaVerified.checked === true;
+  const verifiedByScholar = String(elements.amanahVerifiedByScholar.value || '').trim();
+
+  if (!name || !providerName) {
+    setAmanahFormError('Product name and provider name are both required.');
+    showBanner('Fix the highlighted product form issue and submit again.', 'info');
+    return;
+  }
+
+  if (nuriaVerified && !verifiedByScholar) {
+    setAmanahFormError('Nuria verified products must name the reviewing scholar. Fill in Verified by scholar or untick Nuria verified.');
+    showBanner('Fix the highlighted product form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    name,
+    provider_name: providerName,
+    provider_logo_url: String(elements.amanahProviderLogoUrl.value || '').trim(),
+    product_type: elements.amanahProductType.value,
+    geography: parseAmanahListInput(elements.amanahGeography.value),
+    currency: parseAmanahListInput(elements.amanahCurrency.value),
+    sharia_structure: elements.amanahShariaStructure.value,
+    sharia_explanation: String(elements.amanahShariaExplanation.value || '').trim(),
+    minimum_amount: parseAmanahOptionalNumber(elements.amanahMinimumAmount.value),
+    minimum_currency: String(elements.amanahMinimumCurrency.value || '').trim().toUpperCase(),
+    expected_return_min: parseAmanahOptionalNumber(elements.amanahExpectedReturnMin.value),
+    expected_return_max: parseAmanahOptionalNumber(elements.amanahExpectedReturnMax.value),
+    nuria_verified: nuriaVerified,
+    verified_by_scholar: verifiedByScholar,
+    verified_date: String(elements.amanahVerifiedDate.value || '').trim(),
+    next_review_date: String(elements.amanahNextReviewDate.value || '').trim(),
+    external_url: String(elements.amanahExternalUrl.value || '').trim(),
+    affiliate_provider: String(elements.amanahAffiliateProvider.value || '').trim(),
+    fscs_equivalent: elements.amanahFscsEquivalent.checked === true,
+    status: elements.amanahStatus.value,
+  };
+
+  if (editing) {
+    payload.productId = productId;
+  }
+
+  state.saveAmanahProductInFlight = true;
+  setButtonBusy(elements.saveAmanahProductButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertFinanceProductAdmin', payload);
+    const savedProductId = String(data?.productId || productId || '').trim();
+
+    track('amanah_admin_product_saved', {
+      mode: editing ? 'update' : 'create',
+      product_id: savedProductId,
+      product_type: payload.product_type,
+    });
+
+    await ensureAmanahProductsLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.amanahProducts || []).find(
+      (item) => item.productId === savedProductId
+    ) || null;
+    resetAmanahProductForm(saved);
+    showBanner(
+      editing
+        ? `Updated Amanah product ${name}.`
+        : `Created Amanah product ${name}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated Amanah product ${name}.`
+        : `Created Amanah product ${name}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setAmanahFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveAmanahProductInFlight = false;
+    setButtonBusy(elements.saveAmanahProductButton, false);
+  }
+}
+
+// ── Nuria Amanah crypto project catalogue ────────────────────────────────
+
+function setCryptoFormError(message) {
+  if (!elements.cryptoFormError) {
+    return;
+  }
+
+  elements.cryptoFormError.hidden = !message;
+  elements.cryptoFormError.textContent = message || '';
+}
+
+function setCryptoFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.cryptoFormTitle) {
+    elements.cryptoFormTitle.textContent = editing ? 'Edit project' : 'Create project';
+  }
+  if (elements.cryptoFormHelper) {
+    elements.cryptoFormHelper.textContent = editing
+      ? 'Update the selected crypto project. Saving writes straight to the live crypto_products collection.'
+      : 'Create a new Sharia-certified crypto project for the Nuria Amanah catalogue.';
+  }
+}
+
+function renderCryptoExplanationMeta() {
+  if (!elements.cryptoShariaExplanationMeta) return;
+  const length = String(elements.cryptoShariaExplanation?.value || '').length;
+  elements.cryptoShariaExplanationMeta.textContent = `${length} / ${AMANAH_CRYPTO_EXPLANATION_MAX_CHARS} characters`;
+}
+
+function renderCryptoProductsTable() {
+  if (!elements.cryptoTableBody) return;
+
+  const items = state.cryptoProducts || [];
+
+  elements.cryptoTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr>
+          <td>
+            <button type="button" class="admin-link-button" data-crypto-product-id="${escapeHtml(item.productId)}">
+              ${escapeHtml(item.name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.sharia_certifier || '-')}</td>
+          <td>${escapeHtml(item.product_type || '-')}</td>
+          <td>${escapeHtml(item.risk_level || '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${item.nuria_verified === true ? 'Yes' : '-'}</td>
+          <td>${escapeHtml(formatAmanahTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.cryptoEmpty) {
+    if (state.cryptoUnavailableReason) {
+      elements.cryptoEmpty.textContent = state.cryptoUnavailableReason;
+    } else {
+      elements.cryptoEmpty.textContent = 'No crypto projects yet. Create your first Amanah crypto entry with the form.';
+    }
+    elements.cryptoEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetCryptoProductForm(item) {
+  const value = item || null;
+
+  if (!elements.cryptoForm) {
+    return;
+  }
+
+  setCryptoFormError('');
+  setCryptoFormMode(value ? 'edit' : 'create');
+  elements.cryptoForm.reset();
+
+  elements.cryptoProductId.value = value ? String(value.productId || '') : '';
+  elements.cryptoName.value = value ? String(value.name || '') : '';
+  elements.cryptoShariaCertifier.value = value ? String(value.sharia_certifier || '') : '';
+  elements.cryptoProviderName.value = value ? String(value.provider_name || '') : '';
+  elements.cryptoLogoUrl.value = value ? String(value.logo_url || '') : '';
+  elements.cryptoWebsiteUrl.value = value ? String(value.website_url || '') : '';
+  elements.cryptoShariaCertificateUrl.value = value ? String(value.sharia_certificate_url || '') : '';
+  elements.cryptoProductType.value = value?.product_type || 'blockchain';
+  elements.cryptoShariaExplanation.value = value ? String(value.sharia_explanation || '') : '';
+  elements.cryptoGeography.value = value && Array.isArray(value.geography_available)
+    ? value.geography_available.join(', ')
+    : '';
+  elements.cryptoRiskLevel.value = value?.risk_level || 'medium';
+  elements.cryptoParticipationMethod.value = value ? String(value.participation_method || '') : '';
+  elements.cryptoNuriaVerified.checked = value?.nuria_verified === true;
+  elements.cryptoVerifiedBy.value = value ? String(value.verified_by || '') : '';
+  elements.cryptoVerifiedDate.value = value ? String(value.verified_date || '') : '';
+  elements.cryptoNextReviewDate.value = value ? String(value.next_review_date || '') : '';
+  elements.cryptoExternalUrl.value = value ? String(value.external_url || '') : '';
+  elements.cryptoAffiliateProvider.value = value ? String(value.affiliate_provider || '') : '';
+  elements.cryptoStatus.value = value?.status || 'pending_review';
+  renderCryptoExplanationMeta();
+}
+
+function resetCryptoState() {
+  state.cryptoProducts = [];
+  state.cryptoLoaded = false;
+  state.cryptoLoading = false;
+  state.cryptoLoadPromise = null;
+  state.cryptoUnavailableReason = '';
+  state.saveCryptoProductInFlight = false;
+  resetCryptoProductForm(null);
+  renderCryptoProductsTable();
+}
+
+async function loadCryptoProducts() {
+  const data = await callAdminFunction('listCryptoProductsAdmin', {});
+
+  state.cryptoProducts = Array.isArray(data?.products) ? data.products : [];
+}
+
+async function ensureCryptoProductsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.cryptoLoadPromise && !settings.force) {
+    return state.cryptoLoadPromise;
+  }
+
+  if (state.cryptoLoaded && !settings.force) {
+    renderCryptoProductsTable();
+    return state.cryptoProducts;
+  }
+
+  const task = (async () => {
+    state.cryptoLoading = true;
+    setButtonBusy(elements.refreshCryptoProducts, true, 'Refreshing');
+
+    try {
+      await loadCryptoProducts();
+      state.cryptoLoaded = true;
+      state.cryptoUnavailableReason = '';
+      renderCryptoProductsTable();
+      return state.cryptoProducts;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Amanah crypto catalogue could not be loaded. Try again.'
+      );
+      state.cryptoProducts = [];
+      state.cryptoUnavailableReason = message;
+      renderCryptoProductsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.cryptoLoading = false;
+      state.cryptoLoadPromise = null;
+      setButtonBusy(elements.refreshCryptoProducts, false);
+    }
+  })();
+
+  state.cryptoLoadPromise = task;
+  return task;
+}
+
+async function handleCryptoProductSave(event) {
+  event.preventDefault();
+
+  if (state.saveCryptoProductInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setCryptoFormError('');
+
+  const productId = String(elements.cryptoProductId.value || '').trim();
+  const editing = Boolean(productId);
+  const name = String(elements.cryptoName.value || '').trim();
+  const shariaCertifier = String(elements.cryptoShariaCertifier.value || '').trim();
+  const nuriaVerified = elements.cryptoNuriaVerified.checked === true;
+  const verifiedBy = String(elements.cryptoVerifiedBy.value || '').trim();
+
+  if (!name || !shariaCertifier) {
+    setCryptoFormError('Project name and Sharia certifier are both required.');
+    showBanner('Fix the highlighted project form issue and submit again.', 'info');
+    return;
+  }
+
+  if (nuriaVerified && !verifiedBy) {
+    setCryptoFormError('Nuria verified projects must name the reviewing scholar. Fill in Verified by or untick Nuria verified.');
+    showBanner('Fix the highlighted project form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    name,
+    provider_name: String(elements.cryptoProviderName.value || '').trim(),
+    logo_url: String(elements.cryptoLogoUrl.value || '').trim(),
+    website_url: String(elements.cryptoWebsiteUrl.value || '').trim(),
+    product_type: elements.cryptoProductType.value,
+    sharia_certifier: shariaCertifier,
+    sharia_certificate_url: String(elements.cryptoShariaCertificateUrl.value || '').trim(),
+    sharia_explanation: String(elements.cryptoShariaExplanation.value || '').trim(),
+    geography_available: parseAmanahListInput(elements.cryptoGeography.value),
+    risk_level: elements.cryptoRiskLevel.value,
+    participation_method: String(elements.cryptoParticipationMethod.value || '').trim(),
+    nuria_verified: nuriaVerified,
+    verified_by: verifiedBy,
+    verified_date: String(elements.cryptoVerifiedDate.value || '').trim(),
+    next_review_date: String(elements.cryptoNextReviewDate.value || '').trim(),
+    external_url: String(elements.cryptoExternalUrl.value || '').trim(),
+    affiliate_provider: String(elements.cryptoAffiliateProvider.value || '').trim(),
+    status: elements.cryptoStatus.value,
+  };
+
+  if (editing) {
+    payload.productId = productId;
+  }
+
+  state.saveCryptoProductInFlight = true;
+  setButtonBusy(elements.saveCryptoProductButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertCryptoProductAdmin', payload);
+    const savedProductId = String(data?.productId || productId || '').trim();
+
+    track('amanah_crypto_admin_product_saved', {
+      mode: editing ? 'update' : 'create',
+      product_id: savedProductId,
+      product_type: payload.product_type,
+    });
+
+    await ensureCryptoProductsLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.cryptoProducts || []).find(
+      (item) => item.productId === savedProductId
+    ) || null;
+    resetCryptoProductForm(saved);
+    showBanner(
+      editing
+        ? `Updated crypto project ${name}.`
+        : `Created crypto project ${name}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated crypto project ${name}.`
+        : `Created crypto project ${name}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setCryptoFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveCryptoProductInFlight = false;
+    setButtonBusy(elements.saveCryptoProductButton, false);
+  }
+}
+
+// ── Nuria Amanah scholars' debate positions ──────────────────────────────
+
+function setDebateFormError(message) {
+  if (!elements.debateFormError) {
+    return;
+  }
+
+  elements.debateFormError.hidden = !message;
+  elements.debateFormError.textContent = message || '';
+}
+
+function setDebateFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.debateFormTitle) {
+    elements.debateFormTitle.textContent = editing ? 'Edit position' : 'Create position';
+  }
+  if (elements.debateFormHelper) {
+    elements.debateFormHelper.textContent = editing
+      ? 'Update the selected debate position. Saving writes straight to the live scholars_debate_positions collection.'
+      : 'Create a new curated debate position for the Nuria Amanah crypto debate.';
+  }
+}
+
+function renderDebateSummaryMeta() {
+  if (!elements.debateArgumentSummaryMeta) return;
+  const length = String(elements.debateArgumentSummary?.value || '').length;
+  elements.debateArgumentSummaryMeta.textContent = `${length} / ${AMANAH_DEBATE_SUMMARY_MAX_CHARS} characters`;
+}
+
+function renderDebatePositionsTable() {
+  if (!elements.debateTableBody) return;
+
+  const items = state.debatePositions || [];
+
+  elements.debateTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr>
+          <td>
+            <button type="button" class="admin-link-button" data-debate-position-id="${escapeHtml(item.docId)}">
+              ${escapeHtml(item.scholar_name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.position || '-')}</td>
+          <td>${escapeHtml(item.madhab || '-')}</td>
+          <td>${escapeHtml(item.order != null ? String(item.order) : '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${escapeHtml(formatAmanahTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.debateEmpty) {
+    if (state.debateUnavailableReason) {
+      elements.debateEmpty.textContent = state.debateUnavailableReason;
+    } else {
+      elements.debateEmpty.textContent = 'No debate positions yet. Create your first debate position with the form.';
+    }
+    elements.debateEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetDebatePositionForm(item) {
+  const value = item || null;
+
+  if (!elements.debateForm) {
+    return;
+  }
+
+  setDebateFormError('');
+  setDebateFormMode(value ? 'edit' : 'create');
+  elements.debateForm.reset();
+
+  elements.debateDocId.value = value ? String(value.docId || '') : '';
+  elements.debatePosition.value = value?.position || 'under_review';
+  elements.debateScholarName.value = value ? String(value.scholar_name || '') : '';
+  elements.debateScholarAffiliation.value = value ? String(value.scholar_affiliation || '') : '';
+  elements.debateArgumentSummary.value = value ? String(value.argument_summary || '') : '';
+  elements.debateSourceUrl.value = value ? String(value.source_url || '') : '';
+  elements.debateMadhab.value = value?.madhab || 'general';
+  elements.debateOrder.value = value && value.order != null
+    ? String(value.order)
+    : '';
+  elements.debateStatus.value = value?.status || 'pending_review';
+  renderDebateSummaryMeta();
+}
+
+function resetDebateState() {
+  state.debatePositions = [];
+  state.debateLoaded = false;
+  state.debateLoading = false;
+  state.debateLoadPromise = null;
+  state.debateUnavailableReason = '';
+  state.saveDebatePositionInFlight = false;
+  resetDebatePositionForm(null);
+  renderDebatePositionsTable();
+}
+
+async function loadDebatePositions() {
+  const data = await callAdminFunction('listDebatePositionsAdmin', {});
+
+  state.debatePositions = Array.isArray(data?.positions) ? data.positions : [];
+}
+
+async function ensureDebatePositionsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.debateLoadPromise && !settings.force) {
+    return state.debateLoadPromise;
+  }
+
+  if (state.debateLoaded && !settings.force) {
+    renderDebatePositionsTable();
+    return state.debatePositions;
+  }
+
+  const task = (async () => {
+    state.debateLoading = true;
+    setButtonBusy(elements.refreshDebatePositions, true, 'Refreshing');
+
+    try {
+      await loadDebatePositions();
+      state.debateLoaded = true;
+      state.debateUnavailableReason = '';
+      renderDebatePositionsTable();
+      return state.debatePositions;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The debate positions could not be loaded. Try again.'
+      );
+      state.debatePositions = [];
+      state.debateUnavailableReason = message;
+      renderDebatePositionsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.debateLoading = false;
+      state.debateLoadPromise = null;
+      setButtonBusy(elements.refreshDebatePositions, false);
+    }
+  })();
+
+  state.debateLoadPromise = task;
+  return task;
+}
+
+async function handleDebatePositionSave(event) {
+  event.preventDefault();
+
+  if (state.saveDebatePositionInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setDebateFormError('');
+
+  const docId = String(elements.debateDocId.value || '').trim();
+  const editing = Boolean(docId);
+  const scholarName = String(elements.debateScholarName.value || '').trim();
+  const argumentSummary = String(elements.debateArgumentSummary.value || '').trim();
+
+  if (!argumentSummary) {
+    setDebateFormError('Argument summary is required.');
+    showBanner('Fix the highlighted position form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    position: elements.debatePosition.value,
+    scholar_name: scholarName,
+    scholar_affiliation: String(elements.debateScholarAffiliation.value || '').trim(),
+    argument_summary: argumentSummary,
+    source_url: String(elements.debateSourceUrl.value || '').trim(),
+    madhab: elements.debateMadhab.value,
+    order: parseAmanahOptionalNumber(elements.debateOrder.value) ?? 0,
+    status: elements.debateStatus.value,
+  };
+
+  if (editing) {
+    payload.docId = docId;
+  }
+
+  state.saveDebatePositionInFlight = true;
+  setButtonBusy(elements.saveDebatePositionButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertDebatePositionAdmin', payload);
+    const savedDocId = String(data?.docId || docId || '').trim();
+
+    track('amanah_debate_admin_position_saved', {
+      mode: editing ? 'update' : 'create',
+      doc_id: savedDocId,
+      position: payload.position,
+    });
+
+    await ensureDebatePositionsLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.debatePositions || []).find(
+      (item) => item.docId === savedDocId
+    ) || null;
+    resetDebatePositionForm(saved);
+    const label = scholarName ? ` for ${scholarName}` : '';
+    showBanner(
+      editing
+        ? `Updated debate position${label}.`
+        : `Created debate position${label}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated debate position${label}.`
+        : `Created debate position${label}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setDebateFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveDebatePositionInFlight = false;
+    setButtonBusy(elements.saveDebatePositionButton, false);
+  }
+}
+
+// ── Haqq legal document templates ────────────────────────────────────────
+
+function setHaqqFormError(message) {
+  if (!elements.haqqFormError) {
+    return;
+  }
+
+  elements.haqqFormError.hidden = !message;
+  elements.haqqFormError.textContent = message || '';
+}
+
+function setHaqqFieldsSchemaError(message) {
+  if (!elements.haqqFieldsSchemaError) {
+    return;
+  }
+
+  elements.haqqFieldsSchemaError.hidden = !message;
+  elements.haqqFieldsSchemaError.textContent = message || '';
+}
+
+function setHaqqFormMode(mode) {
+  const editing = mode === 'edit';
+
+  if (elements.haqqFormTitle) {
+    elements.haqqFormTitle.textContent = editing ? 'Edit template' : 'Create template';
+  }
+  if (elements.haqqFormHelper) {
+    elements.haqqFormHelper.textContent = editing
+      ? 'Update the selected template. Saving writes straight to the live haqq_templates collection.'
+      : 'Create a new legal document template for Nuria Haqq.';
+  }
+}
+
+function formatHaqqTimestamp(millis) {
+  const value = Number(millis);
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  return formatTimestamp({ iso: new Date(value).toISOString() });
+}
+
+function parseHaqqListInput(value) {
+  return String(value || '')
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Client-side mirror of the backend fields_schema contract: a JSON array of
+ * { key, label, type, required, maxLength, hint } entries. Returns
+ * { fields, error } — a non-empty error means the input must not be sent.
+ */
+function parseHaqqFieldsSchemaInput(rawText) {
+  const text = String(rawText || '').trim();
+  if (!text) {
+    return { fields: null, error: 'Fields schema is required. Provide a JSON array with at least one field.' };
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    return { fields: null, error: `Fields schema is not valid JSON: ${error.message}` };
+  }
+
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    return { fields: null, error: 'Fields schema must be a JSON array with at least one field.' };
+  }
+  if (parsed.length > HAQQ_MAX_SCHEMA_FIELDS) {
+    return { fields: null, error: `Fields schema supports at most ${HAQQ_MAX_SCHEMA_FIELDS} fields.` };
+  }
+
+  const seenKeys = new Set();
+  for (let index = 0; index < parsed.length; index += 1) {
+    const entry = parsed[index];
+    const where = `Field ${index + 1}`;
+
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      return { fields: null, error: `${where} must be an object like {"key": "...", "label": "...", "type": "text"}.` };
+    }
+
+    const key = typeof entry.key === 'string' ? entry.key.trim() : '';
+    if (!HAQQ_FIELD_KEY_RE.test(key)) {
+      return { fields: null, error: `${where}: "key" must be lowercase snake_case (start with a letter, max 40 chars).` };
+    }
+    if (seenKeys.has(key)) {
+      return { fields: null, error: `${where}: duplicate key "${key}". Every field key must be unique.` };
+    }
+    seenKeys.add(key);
+
+    const label = typeof entry.label === 'string' ? entry.label.trim() : '';
+    if (!label) {
+      return { fields: null, error: `${where} ("${key}"): "label" is required.` };
+    }
+    if (label.length > HAQQ_FIELD_LABEL_MAX_CHARS) {
+      return { fields: null, error: `${where} ("${key}"): "label" must be ${HAQQ_FIELD_LABEL_MAX_CHARS} characters or fewer.` };
+    }
+
+    if (!HAQQ_FIELD_TYPES.includes(entry.type)) {
+      return { fields: null, error: `${where} ("${key}"): "type" must be one of ${HAQQ_FIELD_TYPES.join(', ')}.` };
+    }
+
+    if (entry.required !== undefined && typeof entry.required !== 'boolean') {
+      return { fields: null, error: `${where} ("${key}"): "required" must be true or false.` };
+    }
+
+    if (entry.maxLength !== undefined) {
+      if (
+        typeof entry.maxLength !== 'number'
+        || !Number.isInteger(entry.maxLength)
+        || entry.maxLength <= 0
+        || entry.maxLength > HAQQ_FIELD_MAX_LENGTH_LIMIT
+      ) {
+        return { fields: null, error: `${where} ("${key}"): "maxLength" must be an integer between 1 and ${HAQQ_FIELD_MAX_LENGTH_LIMIT}.` };
+      }
+    }
+
+    if (entry.hint !== undefined) {
+      if (typeof entry.hint !== 'string') {
+        return { fields: null, error: `${where} ("${key}"): "hint" must be a string.` };
+      }
+      if (entry.hint.trim().length > HAQQ_FIELD_LABEL_MAX_CHARS) {
+        return { fields: null, error: `${where} ("${key}"): "hint" must be ${HAQQ_FIELD_LABEL_MAX_CHARS} characters or fewer.` };
+      }
+    }
+  }
+
+  return { fields: parsed, error: '' };
+}
+
+/**
+ * Client-side mirror of the backend HTML template guardrails: no script/
+ * iframe/object/embed tags or remote http(s) src, and every {{placeholder}}
+ * must match a fields schema key (or a built-in generator placeholder).
+ */
+function validateHaqqHtmlTemplateInput(html, fields) {
+  const trimmed = String(html || '').trim();
+  if (!trimmed) {
+    return 'HTML template is required.';
+  }
+  if (trimmed.length > HAQQ_HTML_TEMPLATE_MAX_CHARS) {
+    return `HTML template is too long. Keep it within ${HAQQ_HTML_TEMPLATE_MAX_CHARS} characters.`;
+  }
+  if (/<script|<iframe|<object|<embed|src\s*=\s*["']https?:/i.test(trimmed)) {
+    return 'HTML template must not contain script/iframe/object/embed tags or remote http(s) src attributes.';
+  }
+
+  const allowed = new Set(HAQQ_BUILTIN_PLACEHOLDERS);
+  (Array.isArray(fields) ? fields : []).forEach((field) => {
+    if (field && typeof field.key === 'string') {
+      allowed.add(field.key.trim());
+    }
+  });
+  const placeholderRe = /\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g;
+  let match;
+  while ((match = placeholderRe.exec(trimmed)) !== null) {
+    if (!allowed.has(match[1])) {
+      return `HTML template references unknown placeholder {{${match[1]}}}. Add it to the fields schema or remove it.`;
+    }
+  }
+
+  return '';
+}
+
+function renderHaqqDescriptionMeta() {
+  if (!elements.haqqDescriptionMeta) return;
+  const length = String(elements.haqqDescription?.value || '').length;
+  elements.haqqDescriptionMeta.textContent = `${length} / ${HAQQ_DESCRIPTION_MAX_CHARS} characters`;
+}
+
+function renderHaqqHtmlTemplateMeta() {
+  if (!elements.haqqHtmlTemplateMeta) return;
+  const length = String(elements.haqqHtmlTemplate?.value || '').length;
+  elements.haqqHtmlTemplateMeta.textContent = `${length} / ${HAQQ_HTML_TEMPLATE_MAX_CHARS} characters`;
+}
+
+function renderHaqqTemplatesTable() {
+  if (!elements.haqqTableBody) return;
+
+  const items = state.haqqTemplates || [];
+
+  elements.haqqTableBody.innerHTML = items
+    .map((item) => {
+      return `
+        <tr data-haqq-template-id="${escapeHtml(item.templateId)}">
+          <td>
+            <button type="button" class="admin-link-button">
+              ${escapeHtml(item.display_name || '-')}
+            </button>
+          </td>
+          <td>${escapeHtml(item.template_type || '-')}</td>
+          <td>${escapeHtml(item.tier || '-')}</td>
+          <td><span class="admin-status admin-status--${escapeHtml(item.status || 'unknown')}">${escapeHtml(item.status || '-')}</span></td>
+          <td>${item.sharia_reviewed === true ? 'Yes' : '-'}</td>
+          <td>${escapeHtml(formatHaqqTimestamp(item.updatedAt))}</td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.haqqEmpty) {
+    if (state.haqqUnavailableReason) {
+      elements.haqqEmpty.textContent = state.haqqUnavailableReason;
+    } else {
+      elements.haqqEmpty.textContent = 'No Haqq templates yet. Create your first document template with the form.';
+    }
+    elements.haqqEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetHaqqTemplateForm(item) {
+  const value = item || null;
+
+  if (!elements.haqqForm) {
+    return;
+  }
+
+  setHaqqFormError('');
+  setHaqqFieldsSchemaError('');
+  setHaqqFormMode(value ? 'edit' : 'create');
+  elements.haqqForm.reset();
+
+  elements.haqqTemplateId.value = value ? String(value.templateId || '') : '';
+  elements.haqqTemplateType.value = value?.template_type || 'service_agreement';
+  elements.haqqDisplayName.value = value ? String(value.display_name || '') : '';
+  elements.haqqDescription.value = value ? String(value.description || '') : '';
+  elements.haqqFieldsSchema.value = value && Array.isArray(value.fields_schema)
+    ? JSON.stringify(value.fields_schema, null, 2)
+    : '';
+  elements.haqqHtmlTemplate.value = value ? String(value.html_template || '') : '';
+  elements.haqqShariaReviewed.checked = value?.sharia_reviewed === true;
+  elements.haqqShariaReviewer.value = value ? String(value.sharia_reviewer || '') : '';
+  elements.haqqReviewedDate.value = value ? String(value.reviewed_date || '') : '';
+  elements.haqqNextReviewDate.value = value ? String(value.next_review_date || '') : '';
+  elements.haqqTier.value = value?.tier || 'free';
+  elements.haqqJurisdiction.value = value && Array.isArray(value.jurisdiction)
+    ? value.jurisdiction.join(', ')
+    : '';
+  elements.haqqStatus.value = value?.status || 'pending_review';
+  renderHaqqDescriptionMeta();
+  renderHaqqHtmlTemplateMeta();
+}
+
+function resetHaqqState() {
+  state.haqqTemplates = [];
+  state.haqqLoaded = false;
+  state.haqqLoading = false;
+  state.haqqLoadPromise = null;
+  state.haqqUnavailableReason = '';
+  state.saveHaqqTemplateInFlight = false;
+  resetHaqqTemplateForm(null);
+  renderHaqqTemplatesTable();
+}
+
+async function loadHaqqTemplates() {
+  const data = await callAdminFunction('listHaqqTemplatesAdmin', {});
+
+  state.haqqTemplates = Array.isArray(data?.templates) ? data.templates : [];
+}
+
+async function ensureHaqqTemplatesLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.haqqLoadPromise && !settings.force) {
+    return state.haqqLoadPromise;
+  }
+
+  if (state.haqqLoaded && !settings.force) {
+    renderHaqqTemplatesTable();
+    return state.haqqTemplates;
+  }
+
+  const task = (async () => {
+    state.haqqLoading = true;
+    setButtonBusy(elements.refreshHaqqTemplates, true, 'Refreshing');
+
+    try {
+      await loadHaqqTemplates();
+      state.haqqLoaded = true;
+      state.haqqUnavailableReason = '';
+      renderHaqqTemplatesTable();
+      return state.haqqTemplates;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Haqq template list could not be loaded. Try again.'
+      );
+      state.haqqTemplates = [];
+      state.haqqUnavailableReason = message;
+      renderHaqqTemplatesTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.haqqLoading = false;
+      state.haqqLoadPromise = null;
+      setButtonBusy(elements.refreshHaqqTemplates, false);
+    }
+  })();
+
+  state.haqqLoadPromise = task;
+  return task;
+}
+
+async function handleHaqqTemplateSave(event) {
+  event.preventDefault();
+
+  if (state.saveHaqqTemplateInFlight) {
+    return;
+  }
+
+  clearBanner();
+  setHaqqFormError('');
+  setHaqqFieldsSchemaError('');
+
+  const templateId = String(elements.haqqTemplateId.value || '').trim();
+  const editing = Boolean(templateId);
+  const displayName = String(elements.haqqDisplayName.value || '').trim();
+  const shariaReviewed = elements.haqqShariaReviewed.checked === true;
+  const shariaReviewer = String(elements.haqqShariaReviewer.value || '').trim();
+
+  if (!displayName) {
+    setHaqqFormError('Display name is required.');
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  if (shariaReviewed && !shariaReviewer) {
+    setHaqqFormError('Sharia reviewed templates must name the reviewer. Fill in Sharia reviewer or untick Sharia reviewed.');
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  const schemaResult = parseHaqqFieldsSchemaInput(elements.haqqFieldsSchema.value);
+  if (schemaResult.error) {
+    setHaqqFieldsSchemaError(schemaResult.error);
+    setHaqqFormError('Fix the fields schema JSON and submit again.');
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  const htmlTemplate = String(elements.haqqHtmlTemplate.value || '').trim();
+  const htmlError = validateHaqqHtmlTemplateInput(htmlTemplate, schemaResult.fields);
+  if (htmlError) {
+    setHaqqFormError(htmlError);
+    showBanner('Fix the highlighted template form issue and submit again.', 'info');
+    return;
+  }
+
+  const payload = {
+    template_type: elements.haqqTemplateType.value,
+    display_name: displayName,
+    description: String(elements.haqqDescription.value || '').trim(),
+    fields_schema: schemaResult.fields,
+    html_template: htmlTemplate,
+    sharia_reviewed: shariaReviewed,
+    sharia_reviewer: shariaReviewer,
+    reviewed_date: String(elements.haqqReviewedDate.value || '').trim(),
+    next_review_date: String(elements.haqqNextReviewDate.value || '').trim(),
+    tier: elements.haqqTier.value,
+    jurisdiction: parseHaqqListInput(elements.haqqJurisdiction.value),
+    status: elements.haqqStatus.value,
+  };
+
+  if (editing) {
+    payload.templateId = templateId;
+  }
+
+  state.saveHaqqTemplateInFlight = true;
+  setButtonBusy(elements.saveHaqqTemplateButton, true, 'Saving');
+
+  try {
+    const data = await callAdminFunction('upsertHaqqTemplateAdmin', payload);
+    const savedTemplateId = String(data?.templateId || templateId || '').trim();
+
+    track('haqq_templates_admin_saved', {
+      mode: editing ? 'update' : 'create',
+      template_id: savedTemplateId,
+      template_type: payload.template_type,
+    });
+
+    await ensureHaqqTemplatesLoaded({ force: true, silent: true }).catch(() => {});
+    const saved = (state.haqqTemplates || []).find(
+      (item) => item.templateId === savedTemplateId
+    ) || null;
+    resetHaqqTemplateForm(saved);
+    showBanner(
+      editing
+        ? `Updated Haqq template ${displayName}.`
+        : `Created Haqq template ${displayName}.`,
+      'success'
+    );
+    addActivityLog(
+      editing
+        ? `Updated Haqq template ${displayName}.`
+        : `Created Haqq template ${displayName}.`,
+      'success'
+    );
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    setHaqqFormError(actionable);
+    showBanner(actionable, 'error');
+  } finally {
+    state.saveHaqqTemplateInFlight = false;
+    setButtonBusy(elements.saveHaqqTemplateButton, false);
+  }
+}
+
+// ── Suq moderation flags ─────────────────────────────────────────────────
+
+function formatSuqFlagTimestamp(millis) {
+  const value = Number(millis);
+  if (!Number.isFinite(value) || value <= 0) return '-';
+  return formatTimestamp({ iso: new Date(value).toISOString() });
+}
+
+function truncateSuqSnapshotText(value) {
+  const text = String(value ?? '').trim();
+  if (text.length <= SUQ_FLAG_SNAPSHOT_MAX_CHARS) return text;
+  return `${text.slice(0, SUQ_FLAG_SNAPSHOT_MAX_CHARS - 1)}…`;
+}
+
+/**
+ * Key fields shown for the flagged content, per target type. The backend
+ * snapshot is null when the content was already deleted.
+ */
+function buildSuqFlagSnapshotEntries(flag) {
+  const target = flag?.target && typeof flag.target === 'object' ? flag.target : null;
+  if (!target) return [];
+
+  const entries = [];
+  const push = (label, rawValue) => {
+    const text = truncateSuqSnapshotText(rawValue);
+    if (text) entries.push({ label, text });
+  };
+  const type = String(flag?.target_type || '');
+
+  if (type === 'listing') {
+    push('Title', target.title);
+    push('Seller', target.seller_name);
+    push(
+      'Category',
+      Array.isArray(target.categories) ? target.categories.join(', ') : target.category
+    );
+    push('Status', target.status);
+  } else if (type === 'profile') {
+    push('Name', target.display_name);
+    push('Country', target.country);
+    push('Bio', target.bio);
+    push('Status', target.status);
+  } else if (type === 'review') {
+    if (Number.isFinite(Number(target.rating))) {
+      push('Rating', `${Number(target.rating)} / 5`);
+    }
+    push('Comment', target.comment);
+    push('Reviewer', target.reviewer_id);
+  } else {
+    push('Status', target.status);
+  }
+
+  return entries;
+}
+
+function renderSuqFlagsTable() {
+  if (!elements.suqFlagsTableBody) return;
+
+  const items = state.suqFlags || [];
+
+  elements.suqFlagsTableBody.innerHTML = items
+    .map((flag) => {
+      const typeKey = String(flag.target_type || '');
+      const typeLabel = SUQ_FLAG_TARGET_LABELS[typeKey] || typeKey || 'Unknown';
+      const snapshotEntries = buildSuqFlagSnapshotEntries(flag);
+      const snapshotHtml = snapshotEntries.length
+        ? snapshotEntries
+          .map(
+            (entry) =>
+              `<div><strong>${escapeHtml(entry.label)}:</strong> ${escapeHtml(entry.text)}</div>`
+          )
+          .join('')
+        : '<div>Flagged content is no longer available.</div>';
+      const busy = state.resolveSuqFlagInFlightId === flag.flagId;
+      return `
+        <tr data-suq-flag-id="${escapeHtml(flag.flagId)}">
+          <td><span class="admin-status admin-status--${escapeHtml(typeKey || 'unknown')}">${escapeHtml(typeLabel)}</span></td>
+          <td>${escapeHtml(truncateSuqSnapshotText(flag.reason) || '-')}</td>
+          <td>${snapshotHtml}</td>
+          <td>${escapeHtml(flag.flagged_by || '-')}</td>
+          <td>${escapeHtml(formatSuqFlagTimestamp(flag.createdAt))}</td>
+          <td>
+            <div class="admin-panel__actions">
+              <button type="button" class="btn btn--outline" data-suq-flag-action="dismiss"${busy ? ' disabled' : ''}>
+                Dismiss
+              </button>
+              <button type="button" class="btn btn--gold" data-suq-flag-action="remove_content"${busy ? ' disabled' : ''}>
+                Remove content
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+
+  if (elements.suqFlagsEmpty) {
+    if (state.suqFlagsUnavailableReason) {
+      elements.suqFlagsEmpty.textContent = state.suqFlagsUnavailableReason;
+    } else {
+      elements.suqFlagsEmpty.textContent = 'No open moderation flags. The Suq queue is clear.';
+    }
+    elements.suqFlagsEmpty.hidden = items.length > 0;
+  }
+}
+
+function resetSuqModerationState() {
+  state.suqFlags = [];
+  state.suqFlagsLoaded = false;
+  state.suqFlagsLoading = false;
+  state.suqFlagsLoadPromise = null;
+  state.suqFlagsUnavailableReason = '';
+  state.resolveSuqFlagInFlightId = '';
+  renderSuqFlagsTable();
+}
+
+async function loadSuqFlags() {
+  const data = await callAdminFunction('listModerationFlagsAdmin', {});
+
+  state.suqFlags = Array.isArray(data?.flags) ? data.flags : [];
+}
+
+async function ensureSuqFlagsLoaded(options) {
+  const settings = Object.assign({ force: false, silent: false }, options || {});
+
+  if (state.suqFlagsLoadPromise && !settings.force) {
+    return state.suqFlagsLoadPromise;
+  }
+
+  if (state.suqFlagsLoaded && !settings.force) {
+    renderSuqFlagsTable();
+    return state.suqFlags;
+  }
+
+  const task = (async () => {
+    state.suqFlagsLoading = true;
+    setButtonBusy(elements.refreshSuqFlags, true, 'Refreshing');
+
+    try {
+      await loadSuqFlags();
+      state.suqFlagsLoaded = true;
+      state.suqFlagsUnavailableReason = '';
+      renderSuqFlagsTable();
+      return state.suqFlags;
+    } catch (error) {
+      const message = getActionableErrorMessage(
+        error,
+        'The Suq moderation queue could not be loaded. Try again.'
+      );
+      state.suqFlags = [];
+      state.suqFlagsUnavailableReason = message;
+      renderSuqFlagsTable();
+      if (!settings.silent) {
+        showBanner(message, 'error');
+      }
+      throw error;
+    } finally {
+      state.suqFlagsLoading = false;
+      state.suqFlagsLoadPromise = null;
+      setButtonBusy(elements.refreshSuqFlags, false);
+    }
+  })();
+
+  state.suqFlagsLoadPromise = task;
+  return task;
+}
+
+async function handleSuqFlagResolve(flagId, action) {
+  if (state.resolveSuqFlagInFlightId) return;
+  if (!['dismiss', 'remove_content'].includes(action)) return;
+
+  const flag = (state.suqFlags || []).find((item) => item.flagId === flagId) || null;
+  if (!flag) return;
+
+  const typeKey = String(flag.target_type || '');
+  const typeLabel = (SUQ_FLAG_TARGET_LABELS[typeKey] || 'content').toLowerCase();
+
+  if (action === 'remove_content') {
+    const confirmed = window.confirm(
+      `Remove the flagged ${typeLabel}?\n\nThis acts on live Suq content: listing -> removed, profile -> suspended, review -> deleted.\n\nThe flag is marked as resolved.`
+    );
+    if (!confirmed) return;
+  }
+
+  state.resolveSuqFlagInFlightId = flagId;
+  renderSuqFlagsTable();
+
+  try {
+    await callAdminFunction('resolveModerationFlagAdmin', { flagId, action });
+
+    track('suq_moderation_admin_resolved', {
+      flag_id: flagId,
+      action,
+      target_type: typeKey,
+    });
+
+    const summary = action === 'dismiss'
+      ? `Dismissed Suq moderation flag on ${typeLabel} ${flag.target_id || flagId}.`
+      : `Removed flagged Suq ${typeLabel} ${flag.target_id || flagId}.`;
+    showBanner(summary, 'success');
+    addActivityLog(summary, 'success');
+
+    state.resolveSuqFlagInFlightId = '';
+    await ensureSuqFlagsLoaded({ force: true, silent: true }).catch(() => {});
+  } catch (error) {
+    const actionable = getActionableErrorMessage(error, getErrorParts(error).message);
+    showBanner(actionable, 'error');
+  } finally {
+    state.resolveSuqFlagInFlightId = '';
+    renderSuqFlagsTable();
+  }
+}
+
 function setCodeFormMode(mode) {
   const editing = mode === 'edit';
 
@@ -9446,6 +11272,123 @@ function bindEvents() {
   elements.dashboardCopyLocaleSearch?.addEventListener('input', handleDashboardCopyLocaleSearchInput);
   elements.dashboardCopyTranslationsList?.addEventListener('input', handleDashboardCopyTranslationInput);
   elements.dashboardCopyPreviewLocale?.addEventListener('change', handleDashboardCopyPreviewLocaleChange);
+  elements.refreshAmanahProducts?.addEventListener('click', () => {
+    clearBanner();
+    ensureAmanahProductsLoaded({ force: true }).catch(() => {});
+  });
+  elements.newAmanahProduct?.addEventListener('click', () => resetAmanahProductForm(null));
+  elements.resetAmanahForm?.addEventListener('click', () => resetAmanahProductForm(null));
+  elements.amanahForm?.addEventListener('submit', handleAmanahProductSave);
+  elements.amanahShariaExplanation?.addEventListener('input', () => {
+    setAmanahFormError('');
+    renderAmanahExplanationMeta();
+  });
+  elements.amanahTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-amanah-product-id]');
+    if (!button) return;
+
+    const item = (state.amanahProducts || []).find(
+      (product) => product.productId === button.dataset.amanahProductId
+    );
+
+    if (item) {
+      resetAmanahProductForm(item);
+      clearBanner();
+    }
+  });
+  elements.refreshCryptoProducts?.addEventListener('click', () => {
+    clearBanner();
+    ensureCryptoProductsLoaded({ force: true }).catch(() => {});
+  });
+  elements.newCryptoProduct?.addEventListener('click', () => resetCryptoProductForm(null));
+  elements.resetCryptoForm?.addEventListener('click', () => resetCryptoProductForm(null));
+  elements.cryptoForm?.addEventListener('submit', handleCryptoProductSave);
+  elements.cryptoShariaExplanation?.addEventListener('input', () => {
+    setCryptoFormError('');
+    renderCryptoExplanationMeta();
+  });
+  elements.cryptoTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-crypto-product-id]');
+    if (!button) return;
+
+    const item = (state.cryptoProducts || []).find(
+      (product) => product.productId === button.dataset.cryptoProductId
+    );
+
+    if (item) {
+      resetCryptoProductForm(item);
+      clearBanner();
+    }
+  });
+  elements.refreshDebatePositions?.addEventListener('click', () => {
+    clearBanner();
+    ensureDebatePositionsLoaded({ force: true }).catch(() => {});
+  });
+  elements.newDebatePosition?.addEventListener('click', () => resetDebatePositionForm(null));
+  elements.resetDebateForm?.addEventListener('click', () => resetDebatePositionForm(null));
+  elements.debateForm?.addEventListener('submit', handleDebatePositionSave);
+  elements.debateArgumentSummary?.addEventListener('input', () => {
+    setDebateFormError('');
+    renderDebateSummaryMeta();
+  });
+  elements.debateTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-debate-position-id]');
+    if (!button) return;
+
+    const item = (state.debatePositions || []).find(
+      (position) => position.docId === button.dataset.debatePositionId
+    );
+
+    if (item) {
+      resetDebatePositionForm(item);
+      clearBanner();
+    }
+  });
+  elements.refreshHaqqTemplates?.addEventListener('click', () => {
+    clearBanner();
+    ensureHaqqTemplatesLoaded({ force: true }).catch(() => {});
+  });
+  elements.newHaqqTemplate?.addEventListener('click', () => resetHaqqTemplateForm(null));
+  elements.resetHaqqForm?.addEventListener('click', () => resetHaqqTemplateForm(null));
+  elements.haqqForm?.addEventListener('submit', handleHaqqTemplateSave);
+  elements.haqqDescription?.addEventListener('input', () => {
+    setHaqqFormError('');
+    renderHaqqDescriptionMeta();
+  });
+  elements.haqqHtmlTemplate?.addEventListener('input', () => {
+    setHaqqFormError('');
+    renderHaqqHtmlTemplateMeta();
+  });
+  elements.haqqFieldsSchema?.addEventListener('input', () => {
+    setHaqqFormError('');
+    setHaqqFieldsSchemaError('');
+  });
+  elements.haqqTableBody?.addEventListener('click', (event) => {
+    const row = event.target.closest('[data-haqq-template-id]');
+    if (!row) return;
+
+    const item = (state.haqqTemplates || []).find(
+      (template) => template.templateId === row.dataset.haqqTemplateId
+    );
+
+    if (item) {
+      resetHaqqTemplateForm(item);
+      clearBanner();
+    }
+  });
+  elements.refreshSuqFlags?.addEventListener('click', () => {
+    clearBanner();
+    ensureSuqFlagsLoaded({ force: true }).catch(() => {});
+  });
+  elements.suqFlagsTableBody?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-suq-flag-action]');
+    if (!button || button.disabled) return;
+
+    const row = button.closest('[data-suq-flag-id]');
+    if (!row) return;
+
+    handleSuqFlagResolve(row.dataset.suqFlagId, button.dataset.suqFlagAction).catch(() => {});
+  });
   elements.refreshLiveNotificationAudience?.addEventListener('click', () => {
     clearBanner();
     estimateLiveNotificationAudience({ silent: false }).catch(() => {});
@@ -9614,6 +11557,11 @@ function initializeFormDefaults() {
   resetDashboardCopyState({ preservePreviewLocale: false });
   renderDashboardCopy();
   resetLiveNotificationState();
+  resetAmanahState();
+  resetCryptoState();
+  resetDebateState();
+  resetHaqqState();
+  resetSuqModerationState();
   syncPartnerTypeFields();
   clearSelectedReport();
 }
@@ -9633,6 +11581,11 @@ function applyAuthState(user) {
     resetDashboardCopyState({ preservePreviewLocale: false });
     renderDashboardCopy();
     resetLiveNotificationState();
+    resetAmanahState();
+    resetCryptoState();
+    resetDebateState();
+    resetHaqqState();
+    resetSuqModerationState();
     stopLoginSuccessSound();
     clearSelectedReport();
     setView('signed-out');
@@ -9643,6 +11596,11 @@ function applyAuthState(user) {
     resetDashboardCopyState({ preservePreviewLocale: true });
     renderDashboardCopy();
     resetLiveNotificationState();
+    resetAmanahState();
+    resetCryptoState();
+    resetDebateState();
+    resetHaqqState();
+    resetSuqModerationState();
   }
 
   if (wasLoggedOut) {
