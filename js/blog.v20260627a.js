@@ -30,6 +30,14 @@
     return document.documentElement.lang || 'en';
   }
 
+  // Consolidated posts (Task 6) redirect to a pillar and are hidden from the
+  // grid so duplicates don't compete for the reader or for ranking.
+  function isMerged(slug) {
+    try {
+      return !!(window.NuriaBlogRedirects && window.NuriaBlogRedirects.resolve(slug));
+    } catch (_e) { return false; }
+  }
+
   function pick(translations) {
     if (!translations) return {};
     const lang = getLang();
@@ -101,7 +109,9 @@
     const tr = pick(post.translations);
     const a = document.createElement('a');
     a.className = 'blog-card';
-    a.href = '?post=' + encodeURIComponent(post.slug);
+    // Canonical indexable path (statically generated). Legacy ?post= links still
+    // work — /blog/index.html redirects them here.
+    a.href = '/blog/' + encodeURIComponent(post.slug) + '/';
 
     if (post.coverImage) {
       const cover = document.createElement('div');
@@ -154,7 +164,7 @@
     grid.innerHTML = '';
     const frag = document.createDocumentFragment();
     state.posts.forEach((p) => {
-      if (p && p.slug) frag.appendChild(buildCard(p));
+      if (p && p.slug && !isMerged(p.slug)) frag.appendChild(buildCard(p));
     });
     grid.appendChild(frag);
   }

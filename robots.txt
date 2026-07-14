@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Allow: /blog/
 Disallow: /internal/
+Disallow: /dashboard/
+Disallow: /invite/
 
 Sitemap: https://nuria.one/sitemap.xml

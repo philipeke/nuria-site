@@ -7,6 +7,7 @@
   <meta name="description" data-i18n-content="blog.hero_subtitle" content="Reflections on Islam, product, and the craft behind Nuria. Written for our community." />
   <meta name="theme-color" content="#050c08" />
   <link rel="canonical" href="https://nuria.one/blog/" />
+  <link rel="alternate" type="application/rss+xml" title="Nuria Journal" href="https://nuria.one/feed.xml" />
   <meta property="og:title" content="Nuria Journal" />
   <meta property="og:description" content="Reflections on Islam, product, and the craft behind Nuria." />
   <meta property="og:type" content="website" />
@@ -31,8 +32,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/styles.css?v=20260629l" />
-  <!-- Article view: hide the landing hero before paint to avoid a flash + gap. -->
-  <script>if(location.search.indexOf('post=')>-1)document.documentElement.classList.add('blog-reading');</script>
+  <!-- Legacy /blog/?post=<slug> now lives at /blog/<slug>/ (indexable). Redirect
+       old query-param links to the canonical path before paint — resolving
+       consolidated posts straight to their pillar. The inline=1 escape hatch
+       (used by 404.html for a not-yet-built post) renders inline instead,
+       avoiding a redirect loop. -->
+  <script src="../js/blog-redirects.js"></script>
+  <script>(function(){var p=new URLSearchParams(location.search);var s=p.get('post');if(!s)return;if(p.get('inline')==='1'){document.documentElement.classList.add('blog-reading');return;}var R=window.NuriaBlogRedirects;var t=(R&&R.resolve&&R.resolve(s))||s;location.replace('/blog/'+encodeURIComponent(t)+'/');})();</script>
 </head>
 <body>
   <div id="site-nav"></div>

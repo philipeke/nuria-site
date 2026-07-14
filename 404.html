@@ -70,6 +70,22 @@
       }
     }());
   </script>
+  <script src="/js/blog-redirects.js"></script>
+  <script>
+    // A /blog/<slug>/ URL that 404s is almost always a post published to the
+    // CMS since the last static build. Fall back to the client renderer so the
+    // link never dies; the daily build then emits its indexable static page.
+    // Consolidated slugs resolve straight to their pillar.
+    (function () {
+      var m = window.location.pathname.match(/^\/blog\/([^/]+)\/?$/);
+      if (m && m[1] !== 'index.html') {
+        var slug = decodeURIComponent(m[1]);
+        var R = window.NuriaBlogRedirects;
+        var target = (R && R.resolve && R.resolve(slug)) || slug;
+        window.location.replace('/blog/?post=' + encodeURIComponent(target) + '&inline=1');
+      }
+    }());
+  </script>
   <script src="/js/i18n.js"></script>
 </head>
 <body>

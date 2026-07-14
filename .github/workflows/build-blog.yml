@@ -1,0 +1,43 @@
+name: Rebuild blog (static SEO pages)
+
+# Posts are authored in the external marketing DB (getBlogFeedHttp) and published
+# ~daily. This job regenerates the static, indexable /blog/<slug>/ pages plus
+# sitemap.xml and feed.xml, and commits them back so GitHub Pages redeploys.
+on:
+  schedule:
+    - cron: '30 9 * * *'   # daily, ~30 min after the 09:00 UTC publish slot
+  workflow_dispatch: {}      # allow manual runs
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-blog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate blog pages + sitemap + feed
+        run: node scripts/build-blog.js
+
+      - name: Commit changes (if any)
+        run: |
+          git config user.name  "nuria-blog-bot"
+          git config user.email "bot@nuria.one"
+          git add blog sitemap.xml feed.xml
+          if git diff --cached --quiet; then
+            echo "No blog changes to commit."
+          else
+            git commit -m "chore(blog): rebuild static posts, sitemap, feed [skip ci]"
+            git push
+          fi
