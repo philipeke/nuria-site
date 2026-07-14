@@ -282,6 +282,14 @@
       opacity: 1;
       text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5);
     }
+    /* Closing kalima — balance the lines and hard-guarantee it wraps inside
+       its 760px box so it can never spill toward the section's clipped edge
+       (any engine, any language). */
+    #download .company-closing .section__title {
+      max-width: 100%;
+      text-wrap: balance;
+      overflow-wrap: break-word;
+    }
   </style>
 </head>
 <body>
