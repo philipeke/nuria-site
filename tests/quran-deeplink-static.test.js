@@ -87,8 +87,8 @@ run('buildSchemeUrl produces the app deep link', () => {
   assert.strictEqual(quranLink.buildSchemeUrl(null, 'nuria'), 'nuria://quran');
 });
 
-run('all six site locales carry the quran landing keys', () => {
-  ['en', 'ar', 'fr', 'id', 'tr', 'ur'].forEach((lang) => {
+run('all seven site locales carry the quran landing keys', () => {
+  ['en', 'ar', 'fr', 'id', 'tr', 'ur', 'ru'].forEach((lang) => {
     const arb = JSON.parse(
       fs.readFileSync(path.join(repoRoot, 'l10n', `site_${lang}.arb`), 'utf8'),
     );
