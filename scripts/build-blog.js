@@ -235,7 +235,11 @@ function buildSitemap(posts) {
 }
 
 function buildFeed(posts) {
-  const now = new Date().toUTCString();
+  // Deterministic: base lastBuildDate on the newest post, not the clock, so a
+  // no-new-posts rebuild produces an identical file (no daily noise commits).
+  const newestIso = posts.reduce((m, p) => (new Date(p.publishedAt) > new Date(m) ? p.publishedAt : m),
+    posts.length ? posts[0].publishedAt : 0);
+  const now = new Date(newestIso).toUTCString();
   const items = posts.map((p) => {
     const en = p.translations.en || pick(p.translations, 'en');
     const url = ORIGIN + '/blog/' + p.slug + '/';
