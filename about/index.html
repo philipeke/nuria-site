@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-title="company.meta_title">Our Story — Nuria Technologies</title>
-  <meta name="description" data-i18n-content="company.meta_desc" content="Two brothers. One night. A company built for 1.8 billion Muslims — the digital home for the global ummah. Free for every Muslim. Always." />
+  <title data-i18n-title="company.meta_title">Our Story. Nuria Technologies</title>
+  <meta name="description" data-i18n-content="company.meta_desc" content="Two brothers. One night. A company built for 1.8 billion Muslims. The digital home for the global ummah. Free for every Muslim. Always." />
   <meta name="theme-color" content="#050c08" />
   <link rel="canonical" href="https://nuria.one/about/" />
   <meta property="og:title" content="The night Adam became Muslim, he had five apps open. That night became Nuria." />
-  <meta property="og:description" content="Nuria Technologies is building the digital home the global ummah has never had — and the verified Islamic AI infrastructure the world needs to trust the answers it gives. This is why." />
+  <meta property="og:description" content="Nuria Technologies is building the digital home the global ummah has never had. And the verified Islamic AI infrastructure the world needs to trust the answers it gives. This is why." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://nuria.one/about/" />
   <meta property="og:site_name" content="Nuria" />
@@ -17,16 +17,16 @@
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="896" />
-  <meta property="og:image:alt" content="Nuria Technologies — نور, light for the global ummah" />
+  <meta property="og:image:alt" content="Nuria Technologies. نور, light for the global ummah" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Our Story — Nuria Technologies" />
-  <meta name="twitter:description" content="Built for the Muslim. Not built off the Muslim. The story behind Nuria — the digital home for the global ummah." />
+  <meta name="twitter:title" content="Our Story. Nuria Technologies" />
+  <meta name="twitter:description" content="Built for the Muslim. Not built off the Muslim. The story behind Nuria. The digital home for the global ummah." />
   <meta name="twitter:image" content="https://nuria.one/assets/sintra/nuria-og.png?v=20260628" />
-  <meta name="twitter:image:alt" content="Nuria Technologies — نور, light for the global ummah" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
-  <link rel="icon" type="image/png" href="/assets/favicon-tab.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+  <meta name="twitter:image:alt" content="Nuria Technologies. نور, light for the global ummah" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png?v=2" />
+  <link rel="icon" type="image/png" href="/assets/favicon-tab.png?v=2" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
@@ -36,7 +36,7 @@
     .company-hero { display: flex; align-items: center; justify-content: center; gap: clamp(1.5rem, 4vw, 3.5rem); flex-wrap: wrap; }
     .company-hero__text { flex: 1 1 380px; max-width: 600px; text-align: left; }
     .company-hero__visual { flex: 0 0 auto; }
-    /* ---- iPhone 17 Pro — pure CSS, vector-sharp at any size ---- */
+    /* ---- iPhone 17 Pro. Pure CSS, vector-sharp at any size ---- */
     .iphone {
       --ip-w: clamp(208px, 27vw, 290px);
       position: relative;
@@ -191,7 +191,7 @@
       #company-numbers .video-stage__media { --video-pos: center 34%; }
     }
 
-    /* Mirror section — Sintra cinematic background image */
+    /* Mirror section. Sintra cinematic background image */
     .company-mirror-section {
       position: relative; isolation: isolate; overflow: hidden;
       padding-top: clamp(4rem, 8vw, 7rem);
@@ -220,7 +220,7 @@
     }
     .company-mirror-section > .container { position: relative; z-index: 1; }
 
-    /* Force bright text — beats body.theme-luxury-stone specificity */
+    /* Force bright text. Beats body.theme-luxury-stone specificity */
     body .company-mirror-section .section__label {
       color: #a8d4b0 !important;
       text-shadow: 0 2px 18px rgba(0,0,0,0.8);
@@ -240,7 +240,21 @@
       line-height: 1.75;
     }
 
-    /* Cards: borderless glass — let the image breathe */
+    /* Center the whole block. Label, title and card copy. On desktop
+       and mobile alike. */
+    .company-mirror-section .section__label,
+    .company-mirror-section .section__title {
+      text-align: center;
+      text-wrap: balance;
+    }
+    .company-mirror-section .section__title {
+      max-width: 26ch;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .company-mirror-section .about-card__text { text-align: center; }
+
+    /* Cards: borderless glass. Let the image breathe */
     .company-mirror-section .about-card {
       background: rgba(6, 14, 9, 0.42);
       border: 1px solid rgba(201, 168, 76, 0.18);
@@ -261,7 +275,7 @@
     @media (max-width: 760px) {
       #download .video-stage__media { --video-pos: center 22%; }
     }
-    /* Closing verse reference + contact line — lift to a bright, legible
+    /* Closing verse reference + contact line. Lift to a bright, legible
        cream over the bright falcon film. */
     #download .company-closing .section__label {
       color: #f0e6cc !important;
@@ -284,12 +298,12 @@
         <p class="page-hero__label" data-i18n="company.hero_label">Nuria Technologies</p>
         <h1 class="page-hero__title" data-i18n-html="company.lead_title">Built for the Muslim. <em>Not built off the Muslim.</em></h1>
         <p class="page-hero__subtitle" data-i18n="company.lead_sub">
-          Nuria Technologies is building the digital home the global ummah has never had — and the
+          Nuria Technologies is building the digital home the global ummah has never had. And the
           verified Islamic AI infrastructure the world needs before it can trust what it hears about the deen.
         </p>
       </div>
       <div class="company-hero__visual">
-        <div class="iphone" role="img" aria-label="The Nuria app — نور, light for the ummah, shown on iPhone">
+        <div class="iphone" role="img" aria-label="The Nuria app. نور, light for the ummah, shown on iPhone">
           <span class="iphone__btn iphone__btn--l iphone__btn--action" aria-hidden="true"></span>
           <span class="iphone__btn iphone__btn--l iphone__btn--volup" aria-hidden="true"></span>
           <span class="iphone__btn iphone__btn--l iphone__btn--voldn" aria-hidden="true"></span>
@@ -340,14 +354,14 @@
       <div class="section__label" data-reveal data-i18n="company.who_label">Who we are</div>
       <h2 class="section__title" data-reveal data-delay="80" data-i18n="company.who_title">The place a Muslim opens first.</h2>
       <p class="section__subtitle" data-reveal data-delay="160" data-i18n="company.who_p1">
-        Not one tool among many — the home where the deen lives whole: the Quran with audio, prayer
+        Not one tool among many. The home where the deen lives whole: the Quran with audio, prayer
         times, the Qibla, dhikr, learning, community, and trustworthy answers, gathered under one light.
       </p>
       <p class="section__subtitle" data-i18n="company.who_p2">
         We are not a startup that went looking for a market. We are two brothers who went looking for an
-        answer — and built it when they could not find it anywhere else. We changed the name to Nuria
+        answer. And built it when they could not find it anywhere else. We changed the name to Nuria
         Technologies not to sound bigger, but to be honest about the scope: a single app fixes one screen;
-        a company can build a whole sphere — and treat the deen as a trust, not a market.
+        a company can build a whole sphere. And treat the deen as a trust, not a market.
       </p>
     </div>
   </section>
@@ -395,7 +409,7 @@
       <div class="section__label" data-reveal data-i18n="company.sphere_label">The Sphere</div>
       <h2 class="section__title" data-reveal data-delay="80" data-i18n="company.sphere_title">One home for the whole life of a Muslim.</h2>
       <p class="section__subtitle" data-reveal data-delay="160" data-i18n="company.sphere_intro">
-        Walk through it room by room. Nothing was bolted on — each piece assumes the others.
+        Walk through it room by room. Nothing was bolted on. Each piece assumes the others.
       </p>
 
       <div class="about-vision">
@@ -406,27 +420,27 @@
             <rect x="46" y="48" width="28" height="28" rx="2"/>
             <rect x="46" y="48" width="28" height="28" rx="2" transform="rotate(45 60 62)"/>
           </svg>
-          <h3 class="about-card__title" data-i18n="company.sphere_app_title">Nuria — the companion in your pocket</h3>
+          <h3 class="about-card__title" data-i18n="company.sphere_app_title">Nuria. The companion in your pocket</h3>
           <p class="about-card__text" data-i18n="company.sphere_app_text">The full Quran word-by-word with audio, precise prayer times, the Qibla, dhikr, duas, and Qaida learning paths. Free, always.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="80">
           <img src="../assets/sintra/nuria-icon-halqa.png?v=20260628" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
-          <h3 class="about-card__title" data-i18n="company.sphere_halqa_title">Halqa — you were never meant to do this alone</h3>
+          <h3 class="about-card__title" data-i18n="company.sphere_halqa_title">Halqa. You were never meant to do this alone</h3>
           <p class="about-card__text" data-i18n="company.sphere_halqa_text">Accountability circles, made of love. Build a circle with family, friends, your study group; set goals together; show up for one another. The ummah is one body.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="160">
           <img src="../assets/sintra/nuria-icon-nuriaone.png?v=20260628" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
-          <h3 class="about-card__title" data-i18n="company.sphere_nuriaone_title">NuriaOne — a scholarly companion, not a chatbot</h3>
-          <p class="about-card__text" data-i18n="company.sphere_nuriaone_text">Our source-citing Islamic AI: it answers from authentic sources and cites them, says what it does not know, and never issues a binding fatwa. Ask NuriaOne anything — and know where the answer comes from.</p>
+          <h3 class="about-card__title" data-i18n="company.sphere_nuriaone_title">NuriaOne. A scholarly companion, not a chatbot</h3>
+          <p class="about-card__text" data-i18n="company.sphere_nuriaone_text">Our source-citing Islamic AI: it answers from authentic sources and cites them, says what it does not know, and never issues a binding fatwa. Ask NuriaOne anything. And know where the answer comes from.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="240">
           <img src="../assets/sintra/nuria-icon-intelligence.png?v=20260628" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
-          <h3 class="about-card__title" data-i18n="company.sphere_intel_title">Nuria Intelligence — the foundation beneath</h3>
+          <h3 class="about-card__title" data-i18n="company.sphere_intel_title">Nuria Intelligence. The foundation beneath</h3>
           <p class="about-card__text" data-i18n="company.sphere_intel_text">A scholar-certified Islamic knowledge layer, exposed through open interfaces so other apps and tools can build on verified Islamic knowledge instead of hallucinated fatwas. The moat is not the model. The moat is the trust.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="320">
           <img src="../assets/sintra/nuria-icon-family-tree.png?v=20260628" alt="" class="about-card__icon-img" width="1024" height="1024" loading="lazy" decoding="async" />
-          <h3 class="about-card__title" data-i18n="company.sphere_family_title">Family Deen Tree — passing the light forward</h3>
+          <h3 class="about-card__title" data-i18n="company.sphere_family_title">Family Deen Tree. Passing the light forward</h3>
           <p class="about-card__text" data-i18n="company.sphere_family_text">Connect your family inside the app, and add a cloud legacy and bequest layer. A light handed down, not an account that ends when you do.</p>
         </div>
       </div>
@@ -443,20 +457,20 @@
   <section class="section" style="padding-top:0;">
     <div class="container">
       <div class="section__label" data-reveal data-i18n="company.belief_label">What we believe</div>
-      <h2 class="section__title" data-reveal data-delay="80" data-i18n="company.belief_title">Constraints we chose — and you can hold us to.</h2>
+      <h2 class="section__title" data-reveal data-delay="80" data-i18n="company.belief_title">Constraints we chose. And you can hold us to.</h2>
 
       <div class="about-vision">
         <div class="about-card animate-on-scroll">
           <h3 class="about-card__title" data-i18n="company.belief_product_title">Your deen is not a product.</h3>
-          <p class="about-card__text" data-i18n="company.belief_product_text">The Quran is free. Prayer times are free. The Qibla, the dhikr, the duas — free. Always. We will never put a paywall between a Muslim and their prayer.</p>
+          <p class="about-card__text" data-i18n="company.belief_product_text">The Quran is free. Prayer times are free. The Qibla, the dhikr, the duas. Free. Always. We will never put a paywall between a Muslim and their prayer.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="80">
           <h3 class="about-card__title" data-i18n="company.belief_locked_title">No Muslim locked out.</h3>
-          <p class="about-card__text" data-i18n="company.belief_locked_text">Not by wealth, language, or tradition. Nuria serves every Muslim — equally. No tradition-based gating, no quiet decision about who counts.</p>
+          <p class="about-card__text" data-i18n="company.belief_locked_text">Not by wealth, language, or tradition. Nuria serves every Muslim. Equally. No tradition-based gating, no quiet decision about who counts.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="160">
           <h3 class="about-card__title" data-i18n="company.belief_madhab_title">Your madhab. Your way.</h3>
-          <p class="about-card__text" data-i18n="company.belief_madhab_text">Hanafi, Maliki, Shafi'i, Hanbali — treated as living traditions, not a dropdown filter you tolerate. Your fiqh is how you pray. So Nuria meets you there.</p>
+          <p class="about-card__text" data-i18n="company.belief_madhab_text">Hanafi, Maliki, Shafi'i, Hanbali. Treated as living traditions, not a dropdown filter you tolerate. Your fiqh is how you pray. So Nuria meets you there.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="240">
           <h3 class="about-card__title" data-i18n="company.belief_precision_title">Precision is an act of worship.</h3>
@@ -464,7 +478,7 @@
         </div>
         <div class="about-card animate-on-scroll" data-delay="320">
           <h3 class="about-card__title" data-i18n="company.belief_ai_title">AI is held to a higher standard than we hold ourselves.</h3>
-          <p class="about-card__text" data-i18n="company.belief_ai_text">When a machine speaks about the deen, it must be more careful than any of us would be — not less. NuriaOne cites its sources, admits what it does not know, and never invents a fatwa.</p>
+          <p class="about-card__text" data-i18n="company.belief_ai_text">When a machine speaks about the deen, it must be more careful than any of us would be. Not less. NuriaOne cites its sources, admits what it does not know, and never invents a fatwa.</p>
         </div>
       </div>
     </div>
@@ -484,18 +498,18 @@
 
       <div class="about-vision" data-stagger style="--stagger-step:140ms;">
         <div class="about-card" data-reveal="clip">
-          <p class="about-card__text" data-i18n="company.mirror_revert">To the one who just arrived — you said the words, the sky did not change but everything did, and then the silence: now what? You are not behind. You are at the beginning of the best thing that will ever happen to you. We built your first day.</p>
+          <p class="about-card__text" data-i18n="company.mirror_revert">To the one who just arrived. You said the words, the sky did not change but everything did, and then the silence: now what? You are not behind. You are at the beginning of the best thing that will ever happen to you. We built your first day.</p>
         </div>
         <div class="about-card" data-reveal="clip">
-          <p class="about-card__text" data-i18n="company.mirror_born">To the one born into it — the words are muscle memory, but somewhere between the school run and the inbox the dhikr got quiet. You are not lapsed. You are tired. Nuria puts it back within arm's reach — your madhab, your way.</p>
+          <p class="about-card__text" data-i18n="company.mirror_born">To the one born into it. The words are muscle memory, but somewhere between the school run and the inbox the dhikr got quiet. You are not lapsed. You are tired. Nuria puts it back within arm's reach. Your madhab, your way.</p>
         </div>
         <div class="about-card" data-reveal="clip">
-          <p class="about-card__text" data-i18n="company.mirror_returning">To the one finding the way back — you never stopped believing, you just stopped showing up. There is no lecture here and no ledger of your absence — only the next prayer, the next ayah, the next breath of dhikr.</p>
+          <p class="about-card__text" data-i18n="company.mirror_returning">To the one finding the way back. You never stopped believing, you just stopped showing up. There is no lecture here and no ledger of your absence. Only the next prayer, the next ayah, the next breath of dhikr.</p>
         </div>
       </div>
 
       <p class="section__subtitle" data-reveal style="text-align:center;margin-top:2rem;" data-i18n="company.mirror_close">
-        Born, reverted, returning — the ummah is one body. We are building for the whole body.
+        Born, reverted, returning. The ummah is one body. We are building for the whole body.
       </p>
     </div>
   </section>
@@ -508,40 +522,40 @@
       <div class="section__label" data-reveal data-i18n="company.free_label">How we keep the deen free</div>
       <h2 class="section__title" data-reveal data-delay="80" data-i18n="company.free_title">You never pay to practice.</h2>
       <p class="section__subtitle" data-reveal data-delay="160" data-i18n="company.free_intro">
-        A free deen still has to be paid for. We are honest about how — because the way a company makes
+        A free deen still has to be paid for. We are honest about how. Because the way a company makes
         its money tells you exactly who it really serves. So here is the whole model, with nothing hidden.
       </p>
       <p class="section__subtitle" data-i18n="company.free_core">
         The deen is free. The Quran with audio, prayer times, the Qibla, your daily dhikr and duas, the
-        first path to reading Arabic — free, for every Muslim, forever. You will never pay to practice
+        first path to reading Arabic. Free, for every Muslim, forever. You will never pay to practice
         your faith. That line does not move.
       </p>
 
       <div class="about-vision">
         <div class="about-card animate-on-scroll">
-          <h3 class="about-card__title" data-i18n="company.free_tier_free_title">Nuria — free, always</h3>
-          <p class="about-card__text" data-i18n="company.free_tier_free_text">Quran, prayer times, Qibla, dhikr, duas, Qaida, Halqa, and core NuriaOne — supported by discreet, Islamic-compliant ads, never between you and your salah.</p>
+          <h3 class="about-card__title" data-i18n="company.free_tier_free_title">Nuria. Free, always</h3>
+          <p class="about-card__text" data-i18n="company.free_tier_free_text">Quran, prayer times, Qibla, dhikr, duas, Qaida, Halqa, and core NuriaOne. Supported by discreet, Islamic-compliant ads, never between you and your salah.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="80">
-          <h3 class="about-card__title" data-i18n="company.free_tier_serene_title">Nuria Serene — one-time</h3>
+          <h3 class="about-card__title" data-i18n="company.free_tier_serene_title">Nuria Serene. One-time</h3>
           <p class="about-card__text" data-i18n="company.free_tier_serene_text">A single purchase that lifts the ads and supports the mission. Not a subscription.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="160">
-          <h3 class="about-card__title" data-i18n="company.free_tier_noor_title">Nuria Noor — one-time</h3>
+          <h3 class="about-card__title" data-i18n="company.free_tier_noor_title">Nuria Noor. One-time</h3>
           <p class="about-card__text" data-i18n="company.free_tier_noor_text">Premium ad-free, plus the Luxury Stone theme and other premium touches. Still one-time. Beauty, never access.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="240">
           <h3 class="about-card__title" data-i18n="company.free_tier_iap_title">À la carte</h3>
-          <p class="about-card__text" data-i18n="company.free_tier_iap_text">Optional cosmetic extras — tasbih designs, theme touches. Delight, never access.</p>
+          <p class="about-card__text" data-i18n="company.free_tier_iap_text">Optional cosmetic extras. Tasbih designs, theme touches. Delight, never access.</p>
         </div>
         <div class="about-card animate-on-scroll" data-delay="320">
-          <h3 class="about-card__title" data-i18n="company.free_tier_advanced_title">Advanced NuriaOne — subscription (coming)</h3>
-          <p class="about-card__text" data-i18n="company.free_tier_advanced_text">Our most advanced source-cited Islamic AI. The one thing that recurs — because trustworthy AI costs real money to run every day.</p>
+          <h3 class="about-card__title" data-i18n="company.free_tier_advanced_title">Advanced NuriaOne. Subscription (coming)</h3>
+          <p class="about-card__text" data-i18n="company.free_tier_advanced_text">Our most advanced source-cited Islamic AI. The one thing that recurs. Because trustworthy AI costs real money to run every day.</p>
         </div>
       </div>
 
       <p class="section__subtitle" style="text-align:center;font-style:italic;margin-top:2rem;" data-i18n="company.free_principle">
-        You never pay to practice. You pay only to go deeper, to personalise, or to sustain — and every
+        You never pay to practice. You pay only to go deeper, to personalise, or to sustain. And every
         time you do, you keep the deen free for a Muslim who can't.
       </p>
     </div>
@@ -604,17 +618,17 @@
         <ul class="about-commit-list">
           <li data-i18n="company.commit_1">The core deen is free. No paywall between a Muslim and their prayer. We never charge for the Quran.</li>
           <li data-i18n="company.commit_2">No Muslim locked out. Every Muslim served equally. No tradition-based gating.</li>
-          <li data-i18n="company.commit_3">Every madhab honoured as a living tradition — Hanafi, Maliki, Shafi'i, Hanbali.</li>
-          <li data-i18n="company.commit_4">NuriaOne cites its sources — or it stays silent. No invented fatwas. No false confidence.</li>
-          <li data-i18n="company.commit_5">You never pay to practice. Serene and Noor are one-time; Advanced NuriaOne is always a choice — never a gate on the deen.</li>
+          <li data-i18n="company.commit_3">Every madhab honoured as a living tradition. Hanafi, Maliki, Shafi'i, Hanbali.</li>
+          <li data-i18n="company.commit_4">NuriaOne cites its sources. Or it stays silent. No invented fatwas. No false confidence.</li>
+          <li data-i18n="company.commit_5">You never pay to practice. Serene and Noor are one-time; Advanced NuriaOne is always a choice. Never a gate on the deen.</li>
           <li data-i18n="company.commit_6">We will never inflate what we are. The trust of one Muslim is an amanah.</li>
         </ul>
 
         <h3 class="support-founder__title" style="margin-top:2.5rem;" data-i18n="company.whynow_title">Why now</h3>
         <p class="section__subtitle" data-i18n="company.whynow_text">
-          The next generation is coming online — the youngest, fastest-growing Muslim populations, getting
+          The next generation is coming online. The youngest, fastest-growing Muslim populations, getting
           their first smartphones now. AI is about to answer religious questions whether we are ready or
-          not — the only question is whether those answers are grounded and cited, or confident and wrong.
+          not. The only question is whether those answers are grounded and cited, or confident and wrong.
           And the ummah is tired of being the product. The window is open. We intend to be the ones
           standing in it.
         </p>

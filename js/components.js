@@ -26,6 +26,7 @@
         '<button class="nav__lang-option" data-lang="id" role="option"><span class="opt-flag">🇮🇩</span><span class="opt-name">Indonesia</span></button>' +
         '<button class="nav__lang-option" data-lang="fr" role="option"><span class="opt-flag">🇫🇷</span><span class="opt-name">Français</span></button>' +
         '<button class="nav__lang-option" data-lang="tr" role="option"><span class="opt-flag">🇹🇷</span><span class="opt-name">Türkçe</span></button>' +
+        '<button class="nav__lang-option" data-lang="ru" role="option"><span class="opt-flag">🇷🇺</span><span class="opt-name">Русский</span></button>' +
       '</div>' +
     '</div>';
 
@@ -85,13 +86,16 @@
             '<div class="footer__col">' +
               '<span class="footer__col-title" data-i18n="footer.col1">App</span>' +
               '<a href="/#about"      data-i18n="footer.about">About Nuria</a>' +
-              '<a href="/about"       data-i18n="footer.company">Company</a>' +
               '<a href="/blog"        data-i18n="footer.blog">Blog</a>' +
               '<a href="/#categories" data-i18n="nav.categories">Reflections</a>' +
               '<a href="/#pricing"    data-i18n="footer.plans">Plans</a>' +
+              '<a href="/#download"   data-i18n="footer.dl">Download</a>' +
+            '</div>' +
+            '<div class="footer__col">' +
+              '<span class="footer__col-title" data-i18n="footer.col_site">Site</span>' +
+              '<a href="/about"       data-i18n="footer.company">Company</a>' +
               '<a href="/ask">NuriaOne</a>' +
               '<a href="/join"        data-i18n="footer.partner">Nuria Partner</a>' +
-              '<a href="/#download"   data-i18n="footer.dl">Download</a>' +
             '</div>' +
             '<div class="footer__col">' +
               '<span class="footer__col-title" data-i18n="footer.col2">Legal</span>' +

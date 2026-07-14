@@ -13,7 +13,7 @@
         sources_title: 'Sources & Standards',
         sources_subtitle:
           "This page explains the concrete source systems, curated collections, and AI guardrails behind Nuria's Quran, duas, prayer tools, tafsir, and reflections.",
-        doc_sources_title: 'Sources & Standards - Nuria',
+        doc_sources_title: 'Sources & Standards: Nuria',
         doc_sources_desc:
           "See the concrete source systems, curated collections, and AI guardrails behind Nuria's Quran, duas, prayer tools, tafsir, and reflections.",
       },
@@ -86,7 +86,7 @@
         sources_title: 'المصادر والمعايير',
         sources_subtitle:
           'توضح هذه الصفحة أنظمة المصادر الفعلية والمجموعات المنسقة والضوابط الصارمة للذكاء الاصطناعي وراء القرآن والأدعية وأدوات الصلاة والتفسير والتأملات في نوريا.',
-        doc_sources_title: 'المصادر والمعايير - نوريا',
+        doc_sources_title: 'المصادر والمعايير: نوريا',
         doc_sources_desc:
           'اطلع على أنظمة المصادر الفعلية والمجموعات المنسقة والضوابط الصارمة للذكاء الاصطناعي وراء القرآن والأدعية وأدوات الصلاة والتفسير والتأملات في نوريا.',
       },
@@ -159,7 +159,7 @@
         sources_title: 'مآخذ اور معیارات',
         sources_subtitle:
           'یہ صفحہ اُن حقیقی ماخذی نظاموں، مرتب مجموعوں اور سخت AI ضوابط کی وضاحت کرتا ہے جن پر Nuria میں قرآن، دعائیں، نماز tools، تفسیر اور reflections قائم ہیں.',
-        doc_sources_title: 'مآخذ اور معیارات - نوریا',
+        doc_sources_title: 'مآخذ اور معیارات: نوریا',
         doc_sources_desc:
           'Nuria کے قرآن، دعاؤں، نماز tools، تفسیر اور reflections کے پیچھے موجود حقیقی source systems، مرتب collections اور سخت AI guardrails دیکھیں.',
       },
@@ -232,7 +232,7 @@
         sources_title: 'Sumber & Standar',
         sources_subtitle:
           'Halaman ini menjelaskan sistem sumber yang nyata, koleksi yang dikurasi, dan pagar pengaman AI yang ketat di balik Quran, doa, alat shalat, tafsir, dan reflections di Nuria.',
-        doc_sources_title: 'Sumber & Standar - Nuria',
+        doc_sources_title: 'Sumber & Standar: Nuria',
         doc_sources_desc:
           'Lihat sistem sumber yang nyata, koleksi yang dikurasi, dan pagar pengaman AI yang ketat di balik Quran, doa, alat shalat, tafsir, dan reflections di Nuria.',
       },
@@ -305,7 +305,7 @@
         sources_title: 'Sources et Standards',
         sources_subtitle:
           'Cette page explique les systèmes de sources concrets, les collections éditorialisées et les garde-fous IA stricts derrière le Coran, les duas, les outils de prière, le tafsir et les réflexions dans Nuria.',
-        doc_sources_title: 'Sources et Standards - Nuria',
+        doc_sources_title: 'Sources et Standards: Nuria',
         doc_sources_desc:
           'Consultez les systèmes de sources concrets, les collections éditorialisées et les garde-fous IA stricts derrière le Coran, les duas, les outils de prière, le tafsir et les réflexions dans Nuria.',
       },
@@ -378,7 +378,7 @@
         sources_title: 'Kaynaklar ve Standartlar',
         sources_subtitle:
           "Bu sayfa, Nuria'daki Kuran, dualar, namaz araçları, tefsir ve tefekkürlerin arkasındaki somut kaynak sistemlerini, kürasyonlu koleksiyonları ve sıkı AI güvenlik sınırlarını açıklar.",
-        doc_sources_title: 'Kaynaklar ve Standartlar - Nuria',
+        doc_sources_title: 'Kaynaklar ve Standartlar: Nuria',
         doc_sources_desc:
           "Nuria'daki Kuran, dualar, namaz araçları, tefsir ve tefekkürlerin arkasındaki somut kaynak sistemlerini, kürasyonlu koleksiyonları ve sıkı AI güvenlik sınırlarını görün.",
       },
