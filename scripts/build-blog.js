@@ -306,7 +306,7 @@ async function main() {
     if (pillar) {
       if (!liveSlugs.has(pillar)) {
         console.warn(`  ! Pillar "${pillar}" for ${post.slug} not in feed — writing full page instead.`);
-        fs.writeFileSync(path.join(dir, 'index.html'), buildPostPage(post), 'utf8');
+        fs.writeFileSync(path.join(dir, 'index.html'), normalizeDashes(buildPostPage(post)), 'utf8');
         canonical.push(post);
         full_pages++;
         continue;
@@ -315,7 +315,7 @@ async function main() {
       stubs++;
       console.log(`  ↪ blog/${post.slug}/ → /blog/${pillar}/ (noindex stub)`);
     } else {
-      fs.writeFileSync(path.join(dir, 'index.html'), buildPostPage(post), 'utf8');
+      fs.writeFileSync(path.join(dir, 'index.html'), normalizeDashes(buildPostPage(post)), 'utf8');
       canonical.push(post);
       full_pages++;
       console.log(`  ✓ blog/${post.slug}/index.html`);
@@ -334,3 +334,11 @@ main().catch((e) => {
   console.error('\nBuild failed:', e.message);
   process.exit(1);
 });
+
+
+// House style (enforced by tests/site-localization-static.test.js): public copy
+// never uses spaced dash punctuation. Editorial content arrives from the blog
+// feed, so normalize "word - word" (em/en dash) to the unspaced form at build.
+function normalizeDashes(html) {
+  return html.replace(/(\S)[ 	]+([—–])[ 	]+(?=\S)/g, '$1$2');
+}
