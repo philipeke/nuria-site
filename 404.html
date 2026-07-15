@@ -40,6 +40,14 @@
     (function () {
       var currentUrl = (window.location.pathname || "") + (window.location.search || "");
 
+      // /dua/<category> (email deeplinks) has no static page per category —
+      // send it to the dua landing page. Devices with the app installed never
+      // reach this 404 (App Links / Universal Links open the app instead).
+      if (/^\/duas?\//i.test(window.location.pathname || "")) {
+        window.location.replace("/dua/");
+        return;
+      }
+
       var quranLink = window.NuriaQuranLink || {};
       if (typeof quranLink.buildQuranRedirectUrl === "function") {
         var quranUrl = quranLink.buildQuranRedirectUrl(window.location);
