@@ -40,4 +40,33 @@ test('canonical short description is byte-identical in yaml and description doc'
   const doc = read('brand/canonical-description.md');
   assert.ok(entity.description_short.length <= 160, 'short description must be <=160 chars');
   assert.ok(doc.includes(entity.description_short), 'canonical-description.md must contain the exact short description');
+  assert.ok(entity.description_micro.length <= 100, 'micro description must be <=100 chars (MCP registry limit)');
+  assert.ok(doc.includes(entity.description_micro), 'canonical-description.md must contain the exact micro description');
+});
+
+test('Gate 1: terminology + user-count policy hold in all public brand output', () => {
+  const entity = parseCanonicalYaml(read('brand/canonical-entity.yaml'));
+  const publicSurfaces = {
+    'brand/schema-org.jsonld': read('brand/schema-org.jsonld'),
+    'brand/canonical-description.md': read('brand/canonical-description.md'),
+    'llms.txt': read('llms.txt'),
+    'index.html embed': (read('index.html').match(/id="nuria-app-schema">\s*([\s\S]*?)\s*<\/script>/) || ['', ''])[1],
+  };
+  for (const [name, text] of Object.entries(publicSurfaces)) {
+    assert.ok(!/scholar[- ](reviewed|certified)/i.test(text),
+      `${name}: use "in scholarly review" until GIFS signs`);
+    assert.ok(!/\b35[\s., ]?000\b/.test(text),
+      `${name}: exact user count must never publish (threshold phrase only)`);
+  }
+  // internal fields stay out of the published schema
+  const schema = read('brand/schema-org.jsonld');
+  for (const v of [entity.user_count_internal, entity.user_count_as_of]) {
+    assert.ok(v && !schema.includes(String(v)), 'internal user fields must not leak into schema');
+  }
+  // platform + review-status facts
+  const parsed = JSON.parse(schema);
+  assert.deepStrictEqual(parsed.operatingSystem, ['iOS', 'Android']);
+  assert.strictEqual(entity.scholarly_review_status, 'in_review');
+  assert.strictEqual(entity.app_status, 'preview');
+  assert.ok(entity.madhab_support.includes('Jafari'), 'five schools in canon');
 });

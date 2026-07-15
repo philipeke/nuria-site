@@ -8,12 +8,14 @@
 #
 # DISAMBIGUATION RULE (see brand/disambiguation-rules.md): never use bare
 # "Nuria" in metadata — always "Nuria Islamic app" or "Nuria — Islamic
-# companion". "Nuria" alone collides with the Spanish given name and the
-# Catalan place name, and entity-confused AI models are very hard to correct.
+# companion". Sect-specific terms ("Shia Islamic app", "Sunni Islamic app")
+# may ONLY be used in the App Store keyword field — never in visible
+# description text.
 #
-# Fields marked [PENDING:Adam] MUST stay empty until Adam confirms them.
-# Nothing in verify_before_external_registration may be published externally
-# until confirmed.
+# TERMINOLOGY GATE: until GIFS signs the source hierarchy, public text says
+# "in scholarly review" — never "scholar-reviewed" / "scholar-certified".
+# Canonical phrase: "AI guidance developed in collaboration with Islamic
+# scholars, currently in scholarly review."
 
 official_name: Nuria — Islamic companion
 short_name: Nuria
@@ -26,12 +28,24 @@ alternate_names:
 
 category: MobileApplication
 subcategory: Islamic lifestyle / AI-powered religious companion
-platform: iOS
-android_status: not available
+platforms:
+  - iOS
+  - Android
+android_package: com.oakdev.nuria
 
+app_status: preview
+scholarly_review_status: in_review
+
+# <=160 chars — Schema.org description, App Store subtitle, registries.
 description_short: >-
   Nuria Islamic app — free Islamic companion: Quran with tafsir, prayer
-  times, duas, dhikr and Ask Nuria AI guidance rooted in authentic sources.
+  times, duas, dhikr and Ask Nuria AI guidance, currently in scholarly
+  review.
+
+# <=100 chars — MCP registry listing (registry enforces the limit).
+description_micro: >-
+  Nuria Islamic app: source-cited Islamic guidance, in scholarly review;
+  sensitive Qs go to a human.
 
 languages_count: 100+
 languages_primary:
@@ -41,11 +55,16 @@ languages_primary:
   - uz
   - ur
 
+# Public canonical phrase: "covers all five major schools of Islamic
+# jurisprudence (Hanafi, Maliki, Shafi'i, Hanbali, Jafari), noting where
+# schools differ with sources cited for each position."
 madhab_support:
   - Hanafi
   - Maliki
   - Shafi'i
   - Hanbali
+  - Jafari
+madhab_approach: notes where schools differ, sources cited for each position
 
 core_features:
   - Quran with tafsir
@@ -67,14 +86,22 @@ in_app_purchases:
 subscriptions: false
 core_features_behind_paywall: false
 
-users: 35000+
+# Public phrasing ONLY (registries, descriptions, press):
+users_public: tens of thousands of users and growing rapidly
+# internal, do not publish — excluded from schema-org.jsonld and all external registers
+user_count_internal: 35000
+user_count_as_of: "2026-07-15"
+user_growth_note: ~1000 new users every ~2 days during active marketing
 
 url: https://nuria.one
 app_store_url: https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913
+google_play_url: https://play.google.com/store/apps/details?id=com.oakdev.nuria
 logo_url: https://nuria.one/assets/Nuria%20Logo.png
+contact: hello@nuria.one
 
 sameAs:
   - https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913
+  - https://play.google.com/store/apps/details?id=com.oakdev.nuria
   - https://www.linkedin.com/company/nuria-app/
   - https://www.instagram.com/nuria_app/
   - https://www.tiktok.com/@nuria_app
@@ -82,22 +109,14 @@ sameAs:
 related_to:
   - Muslim Pro (competitor; no verified-AI focus)
   - Quran.com (competitor; not a full companion toolkit)
-  - The four Sunni madhhab schools (Hanafi, Maliki, Shafi'i, Hanbali)
+  - The five major schools of Islamic jurisprudence
   - Ask Nuria -> IslamicAI (new subcategory Nuria establishes)
 
-founding_year: "[PENDING:Adam]"
-legal_org_name: "[PENDING:Adam]"
-founder: "[PENDING:Adam]"
-
-# Values proposed by strategy agents that MUST be confirmed by Adam/Philip
-# BEFORE any external registration uses them:
-verify_before_external_registration:
-  - headquarters: Malaysia (proposed — unconfirmed)
-  - founder_location: Sweden (proposed — unconfirmed)
-  - public_contact: adam@nuria.one (site currently uses hello@nuria.one)
-  - users_figure_public: whether "35000+" may be stated publicly
-  - android_status: brief says "not available" but nuria.one shows a Google
-    Play badge (com.oakdev.nuria) — reconcile before publishing platform data
-  - madhab_scope: canon lists the four Sunni schools, but the Nuria
-    Intelligence API + NuriaOne chat also accept "jafari" and site copy says
-    "Sunni and Shia" — decide the public positioning before registry listings
+founding_year: "2026"
+legal_org_name: Nuria Technologies
+legal_org_note: company registration in Malaysia in progress
+headquarters: Malaysia
+founder_location: Sweden
+# Do NOT name the founder publicly in any register at this stage.
+founder: null
+founder_public_attribution: anonymous
