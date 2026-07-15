@@ -1,0 +1,44 @@
+{
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  "@id": "https://nuria.one/#app",
+  "name": "Nuria — Islamic companion",
+  "alternateName": [
+    "Nuria Islamic app",
+    "Nuria app",
+    "Nuria: Islamisk vägledning",
+    "Ask Nuria",
+    "NuriaOne"
+  ],
+  "description": "Nuria Islamic app — free Islamic companion: Quran with tafsir, prayer times, duas, dhikr and Ask Nuria AI guidance rooted in authentic sources.",
+  "applicationCategory": "LifestyleApplication",
+  "applicationSubCategory": "Islamic lifestyle / AI-powered religious companion",
+  "operatingSystem": "iOS",
+  "inLanguage": [
+    "en",
+    "ar",
+    "tr",
+    "uz",
+    "ur"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "url": "https://nuria.one",
+  "image": "https://nuria.one/assets/Nuria%20Logo.png",
+  "installUrl": "https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913",
+  "author": {
+    "@id": "https://nuria.one/#organization"
+  },
+  "publisher": {
+    "@id": "https://nuria.one/#organization"
+  },
+  "sameAs": [
+    "https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913",
+    "https://www.linkedin.com/company/nuria-app/",
+    "https://www.instagram.com/nuria_app/",
+    "https://www.tiktok.com/@nuria_app"
+  ]
+}

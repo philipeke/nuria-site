@@ -1,4 +1,4 @@
-# Nuria — Verified Islamic Intelligence
+# Nuria Islamic app — Verified Islamic Intelligence
 
 > Nuria Technologies builds trustworthy Islamic software: the Nuria companion app,
 > NuriaOne (a halal AI assistant for sensitive religious questions), and the Nuria
@@ -12,7 +12,7 @@ Status: preview. Answers return `board_reviewed: false` until our scholar board
 it is real. Every answer carries source citations and an append-only audit id.
 
 ## Products
-- [Nuria app](https://nuria.one/): Islamic companion app (Quran, prayer, duas, guidance) for iOS/Android.
+- [Nuria — Islamic companion](https://nuria.one/): the Nuria Islamic app (Quran, prayer, duas, guidance) for iOS/Android.
 - [NuriaOne](https://nuria.one/ask/): the halal AI assistant — source-grounded chat for religious questions.
 - [About Nuria Technologies](https://nuria.one/about/): the company and mission.
 - [Sources & standards](https://nuria.one/sources/): how content is sourced and verified.
