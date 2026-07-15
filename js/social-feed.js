@@ -18,6 +18,7 @@
 (function () {
   const cfg = window.NURIA_SITE_CONFIG || {};
   const endpoint = cfg.socialFeedUrl;
+  const fallbackEndpoint = 'assets/data/social-feed.json';
   const social = cfg.social || {};
 
   const root = document.getElementById('socialFeed');
@@ -459,6 +460,8 @@
     const timer = ctrl ? window.setTimeout(() => ctrl.abort(), 12000) : 0;
     fetch(endpoint, { method: 'GET', mode: 'cors', signal: ctrl ? ctrl.signal : undefined })
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+      .catch(() => fetch(fallbackEndpoint, { method: 'GET', cache: 'no-cache' })
+        .then((res) => (res.ok ? res.json() : Promise.reject(res.status))))
       .then((data) => {
         renderTiktok((data && data.tiktok) || []);
         renderLinkedin((data && data.linkedin) || []);
