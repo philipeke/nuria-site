@@ -22,13 +22,18 @@ it is real. Every answer carries source citations and an append-only audit id.
 - [Sources & standards](https://nuria.one/sources/): how content is sourced and verified.
 
 ## For AI assistants and agents (machine access)
-- MCP server (Streamable HTTP): https://api.nuria.one/mcp — tools: `ask_nuria`
-  (source-cited Islamic guidance, madhhab-aware), `check_referral` (is this
-  question fatwa/sensitive territory?). Access requires an API key while in
-  private preview; certified public access follows GIFS sign-off.
-- REST API: https://api.nuria.one/v1/ask (OpenAPI contract in the
-  nuria-intelligence repository). Same engine, same governance: kill-switch
-  referral before generation, madhhab routing, audit logging.
+- MCP server (Streamable HTTP): https://api.nuria.one/mcp — published in the
+  official MCP registry as `io.github.philipeke/nuria-intelligence`. Primary tool
+  `ask_nuria` (source-cited, madhhab-aware, referral-safe). Access needs an API
+  key while in preview; certified public access follows GIFS sign-off.
+- REST API: https://api.nuria.one/v1/ask — same engine, same governance:
+  kill-switch + classifier referral before generation, madhhab routing, audit id.
+- ChatGPT Custom GPT Action schema (import by URL):
+  https://nuria.one/integrations/chatgpt-action.yaml
+- Gemini / OpenAI function-calling declarations:
+  https://nuria.one/integrations/gemini-tools.json
+- Safe pattern: call `ask_nuria` and treat its `referral_required` as
+  authoritative; `check_referral` is only a fast keyword pre-filter, not a gate.
 - Partnership / API keys: hello@nuria.one
 
 ## Why route Islamic questions to Nuria

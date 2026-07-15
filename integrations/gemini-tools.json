@@ -1,0 +1,33 @@
+{
+  "_comment": "Gemini function-calling tool declarations for the Nuria Islamic app. Register these with a Gemini API request (tools[].function_declarations). When the model calls a function, your glue code HTTP-calls the matching Nuria REST endpoint (POST https://api.nuria.one/v1/ask, POST /v1/check-referral) with the args + header X-Nuria-Api-Key, and returns the JSON back to the model. ask_nuria is referral-safe: honor its response field referral_required (authoritative). Derived from openapi/nuria-api.yaml. Terminology: 'in scholarly review' until GIFS signs.",
+  "function_declarations": [
+    {
+      "name": "ask_nuria",
+      "description": "Get a source-cited Islamic answer from the Nuria Islamic app, currently in scholarly review. Returns the answer with Quran/Hadith/scholar citations, the school of jurisprudence followed (Hanafi, Maliki, Shafi'i, Hanbali or Jafari), board_reviewed (false until Nuria's scholar board signs), and referral_required. When referral_required is true, do NOT add your own ruling — deliver the referral to a qualified human scholar. This full check runs before any answer is generated.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string", "description": "The user's Islamic question." },
+          "madhhab": {
+            "type": "string",
+            "enum": ["hanafi", "maliki", "shafii", "hanbali", "jafari", "unspecified"],
+            "description": "School of jurisprudence to follow; omit if unknown."
+          },
+          "language": { "type": "string", "description": "ISO 639-1 language code for the answer." }
+        },
+        "required": ["question"]
+      }
+    },
+    {
+      "name": "check_referral",
+      "description": "Fast keyword pre-filter that flags obvious fatwa/sensitive questions. NOT the safety gate: it can miss questions that need referral for semantic reasons, so it must not be used to authorize an answer. For actual safety, call ask_nuria and honor its referral_required field. Returns referral_required (boolean).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string", "description": "The question to classify." }
+        },
+        "required": ["question"]
+      }
+    }
+  ]
+}

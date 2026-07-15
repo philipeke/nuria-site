@@ -1,0 +1,129 @@
+openapi: 3.1.0
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ChatGPT Custom GPT — Action schema for "Ask Nuria — Islamic Guidance".
+#
+# Import this in the GPT builder:  Configure → Actions → Import.
+# It is a single-server subset of openapi/nuria-api.yaml, trimmed to the two
+# operations a GPT needs (/ask and /check-referral).
+#
+# The API is LIVE at the `servers` URL below. Also importable by URL:
+# https://nuria.one/integrations/chatgpt-action.yaml . Auth: API Key custom
+# header X-Nuria-Api-Key (use a dedicated demo key — see chatgpt/README.md).
+# ─────────────────────────────────────────────────────────────────────────────
+
+info:
+  title: Ask Nuria — Islamic Guidance
+  version: 0.1.1
+  description: >-
+    Source-cited Islamic answers, currently in scholarly review. askNuria is
+    referral-safe: its response field referral_required is authoritative (the
+    full check runs before it answers). board_reviewed is false until Nuria's
+    scholar board signs.
+  license:
+    name: Proprietary — Confidential
+    identifier: LicenseRef-Nuria-Proprietary
+
+servers:
+  - url: https://api.nuria.one/v1   # live
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /ask:
+    post:
+      operationId: askNuria
+      summary: Ask an Islamic question and get a source-cited, referral-safe answer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AskRequest' }
+      responses:
+        '200':
+          description: An answer (possibly a referral to a human scholar).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AskResponse' }
+        '400':
+          description: Invalid request (e.g. missing question).
+
+  /check-referral:
+    post:
+      operationId: checkReferral
+      summary: >-
+        Fast keyword pre-filter for obvious referral cases. NOT the safety gate —
+        askNuria's own referral_required is authoritative. Prefer askNuria.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReferralRequest' }
+      responses:
+        '200':
+          description: Referral verdict.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReferralResponse' }
+        '400':
+          description: Invalid request (e.g. missing question).
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Nuria-Api-Key
+
+  schemas:
+    Madhhab:
+      type: string
+      enum: [hanafi, maliki, shafii, hanbali, jafari, unspecified]
+      default: unspecified
+
+    AskRequest:
+      type: object
+      required: [question]
+      properties:
+        question: { type: string }
+        madhhab: { $ref: '#/components/schemas/Madhhab' }
+        language: { type: string, default: en }
+        context: { type: string }
+
+    Source:
+      type: object
+      properties:
+        type: { type: string, enum: [quran, hadith, tafsir, fiqh, scholarly_opinion] }
+        level: { type: integer }
+        reference: { type: string }
+        madhhab: { $ref: '#/components/schemas/Madhhab' }
+        scholar: { type: string }
+        text: { type: string }
+
+    AskResponse:
+      type: object
+      properties:
+        answer: { type: string }
+        madhhab_declared: { $ref: '#/components/schemas/Madhhab' }
+        sources:
+          type: array
+          items: { $ref: '#/components/schemas/Source' }
+        confidence: { type: string, enum: [high, medium, low] }
+        sensitivity: { type: string, enum: [routine, elevated, referral] }
+        hierarchy_version: { type: string }
+        board_reviewed: { type: boolean }
+        referral_required: { type: boolean }
+        audit_id: { type: string }
+
+    ReferralRequest:
+      type: object
+      required: [question]
+      properties:
+        question: { type: string }
+
+    ReferralResponse:
+      type: object
+      properties:
+        referral_required: { type: boolean }
+        reason: { type: string }
