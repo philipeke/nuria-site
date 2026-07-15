@@ -212,8 +212,9 @@
       position: absolute; inset: 0;
       background:
         linear-gradient(180deg,
-          rgba(3, 8, 5, 0.78) 0%,
-          rgba(3, 8, 5, 0.18) 22%,
+          rgba(3, 8, 5, 0.92) 0%,
+          rgba(3, 8, 5, 0.55) 9%,
+          rgba(3, 8, 5, 0.18) 26%,
           rgba(3, 8, 5, 0.12) 50%,
           rgba(3, 8, 5, 0.22) 78%,
           rgba(3, 8, 5, 0.82) 100%);
@@ -253,6 +254,16 @@
       margin-right: auto;
     }
     .company-mirror-section .about-card__text { text-align: center; }
+
+    /* Closing line: center the block under the title and hold it to a tight,
+       balanced measure instead of a wide left-pinned paragraph. */
+    .company-mirror-section .section__subtitle {
+      max-width: 42ch;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 0;
+      text-wrap: balance;
+    }
 
     /* Cards: borderless glass. Let the image breathe */
     .company-mirror-section .about-card {
@@ -495,7 +506,7 @@
   <!-- =========================================================
        THE MIRROR
   ========================================================= -->
-  <section class="section company-mirror-section" style="padding-top:0;">
+  <section class="section company-mirror-section">
     <div class="company-mirror-bg" aria-hidden="true">
       <img src="../assets/sintra/nuria-mirror.png?v=20260629" alt="" class="company-mirror-img" data-kenburns width="1792" height="1024" loading="lazy" decoding="async" />
       <div class="company-mirror-scrim"></div>
@@ -516,7 +527,7 @@
         </div>
       </div>
 
-      <p class="section__subtitle" data-reveal style="text-align:center;margin-top:2rem;" data-i18n="company.mirror_close">
+      <p class="section__subtitle" data-reveal style="text-align:center;margin-top:2.75rem;" data-i18n="company.mirror_close">
         Born, reverted, returning. The ummah is one body. We are building for the whole body.
       </p>
     </div>
