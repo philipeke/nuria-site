@@ -98,3 +98,27 @@ test('Gate 1: terminology + user-count policy hold in all public brand output', 
   assert.strictEqual(entity.app_status, 'preview');
   assert.ok(entity.madhab_support.includes('Jafari'), 'five schools in canon');
 });
+
+test('Gate 1: terminology holds sitewide (js/i18n.js + ask/index.html + English l10n override) — closes the /ask coverage gap', () => {
+  // A live "Halal-certified" / "verified sources" violation shipped to production hiding
+  // in THREE places the original Gate-1 test (above) never scanned: the ask/index.html
+  // static pre-hydration fallback text, and — the actual root cause — l10n/site_en.arb,
+  // which js/i18n.js fetches on every page load and which OVERRIDES the T.en object at
+  // runtime. Editing js/i18n.js alone silently did nothing in production; the arb file is
+  // the real live source. This test covers all three so that class of bug can't hide again.
+  const forbidden = [
+    { re: /scholar[- ](reviewed|certified)/i, why: 'use "in scholarly review" until GIFS signs' },
+    { re: /\bverified\s+(islamic|scholar|guidance|service|source|sources|knowledge)\b/i, why: 'no "verified X" claims before GIFS signs' },
+    { re: /halal[- ]certified/i, why: 'no "halal-certified" claims before GIFS signs' },
+  ];
+  const surfaces = {
+    'js/i18n.js': read('js/i18n.js'),
+    'ask/index.html': read('ask/index.html'),
+    'l10n/site_en.arb': read('l10n/site_en.arb'),
+  };
+  for (const [name, text] of Object.entries(surfaces)) {
+    for (const { re, why } of forbidden) {
+      assert.ok(!re.test(text), `${name}: matched ${re} — ${why}`);
+    }
+  }
+});

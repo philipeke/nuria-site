@@ -152,3 +152,56 @@ test('per-IP rate limit returns 429 after the cap', async () => {
   assert.equal(limited.status, 429, 'over limit => 429');
   assert.ok(limited.headers.get('retry-after'), 'retry-after present');
 });
+
+test('whole-site daily cap: the trial-period cost backstop', async () => {
+  const worker = (await import(workerUrl)).default;
+  const origFetch = globalThis.fetch;
+  const origTimeout = AbortSignal.timeout;
+  AbortSignal.timeout = () => new AbortController().signal;
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify({ answer: 'a', sources: [], board_reviewed: false }), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    });
+
+  try {
+    const store = new Map();
+    const kv = {
+      get: async (k) => (store.has(k) ? store.get(k) : null),
+      put: async (k, val) => { store.set(k, val); },
+    };
+    // Distinct IPs so the per-IP limiter never interferes with this test.
+    const env = { NURIA_API_KEY: 'k', NURIA_DAILY_REQUEST_CAP: '2', RATE_LIMIT: kv };
+
+    const first = await worker.fetch(req({ question: 'q' }, { 'cf-connecting-ip': '1.1.1.1' }), env);
+    assert.equal(first.status, 200, 'request 1 within daily cap');
+    const second = await worker.fetch(req({ question: 'q' }, { 'cf-connecting-ip': '2.2.2.2' }), env);
+    assert.equal(second.status, 200, 'request 2 within daily cap');
+
+    const third = await worker.fetch(req({ question: 'q' }, { 'cf-connecting-ip': '3.3.3.3' }), env);
+    assert.equal(third.status, 429, 'request 3 exceeds the daily cap even from a fresh IP');
+    const body = await third.json();
+    assert.equal(body.error, 'daily_cap_reached');
+    assert.ok(third.headers.get('retry-after'), 'retry-after present');
+  } finally {
+    globalThis.fetch = origFetch;
+    AbortSignal.timeout = origTimeout;
+  }
+});
+
+test('mock mode never counts against the daily cap', async () => {
+  const worker = (await import(workerUrl)).default;
+  const store = new Map();
+  const kv = {
+    get: async (k) => (store.has(k) ? store.get(k) : null),
+    put: async (k, val) => { store.set(k, val); },
+  };
+  const env = { NURIA_MOCK: '1', NURIA_DAILY_REQUEST_CAP: '1', RATE_LIMIT: kv };
+
+  // Five mock requests from distinct IPs, cap set to 1 — all must succeed,
+  // since demo/preview traffic must never be blocked by the real-cost cap.
+  for (let i = 0; i < 5; i++) {
+    const res = await worker.fetch(req({ question: 'q' }, { 'cf-connecting-ip': `4.4.4.${i}` }), env);
+    assert.equal(res.status, 200, `mock request ${i} unaffected by daily cap`);
+  }
+});

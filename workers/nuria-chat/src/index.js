@@ -9,12 +9,13 @@
  * Upstream:            POST {NURIA_API_BASE}/v1/ask
  *
  * Secrets / vars:
- *   NURIA_API_KEY              (secret)  partner key — never in code/git
+ *   NURIA_API_KEY              (secret)  partner/demo key — never in code/git
  *   NURIA_API_BASE             (var)     default https://api.nuria.one
- *   NURIA_RATE_LIMIT_PER_MIN   (var)     default 20
+ *   NURIA_RATE_LIMIT_PER_MIN   (var)     default 8  (per-IP; conservative for trial)
+ *   NURIA_DAILY_REQUEST_CAP    (var)     default 500 (whole-site; the cost backstop)
  *   NURIA_MOCK                 (var)     "1" => return mock answers (pre-launch/dev)
  *   NURIA_ALLOW_LOCALHOST      (var)     "1" => allow localhost origins (dev)
- *   RATE_LIMIT                 (KV)      optional KV namespace for per-IP limiting
+ *   RATE_LIMIT                 (KV)      per-IP limiting + the daily cap counter
  */
 
 const DEFAULT_API_BASE = 'https://api.nuria.one';
@@ -146,6 +147,37 @@ async function rateLimit(env, ip, limitPerMin) {
   return { ok: true };
 }
 
+/**
+ * Whole-site daily request cap — the cost backstop for the "try it" trial
+ * period. Independent of the per-IP limit: a burst spread across many IPs
+ * (or a viral moment) would sail past per-IP limiting but not this. Counts
+ * only requests that actually reach the upstream LLM (i.e. checked after
+ * validation + per-IP limiting), so it tracks real cost exposure, not noise.
+ */
+async function dailyCapCheck(env, cap) {
+  const kv = env.RATE_LIMIT;
+  if (!kv) return { ok: true }; // no KV bound (dev) => skip
+  const day = new Date().toISOString().slice(0, 10); // YYYY-MM-DD, UTC
+  const key = `daily:${day}`;
+  let count = 0;
+  try {
+    const cur = await kv.get(key);
+    count = cur ? parseInt(cur, 10) || 0 : 0;
+  } catch {
+    return { ok: true }; // never let a KV hiccup take the whole site down
+  }
+  if (count >= cap) {
+    return { ok: false };
+  }
+  try {
+    // A day past midnight UTC; a few hours of slack for clock/KV skew.
+    await kv.put(key, String(count + 1), { expirationTtl: 26 * 60 * 60 });
+  } catch {
+    /* best effort */
+  }
+  return { ok: true };
+}
+
 export default {
   async fetch(request, env) {
     if (request.method !== 'POST') {
@@ -172,7 +204,7 @@ export default {
     if (!v.ok) return json({ error: v.error, message: v.message }, v.status);
 
     const ip = request.headers.get('cf-connecting-ip') || '';
-    const limit = Number(env.NURIA_RATE_LIMIT_PER_MIN) > 0 ? Number(env.NURIA_RATE_LIMIT_PER_MIN) : 20;
+    const limit = Number(env.NURIA_RATE_LIMIT_PER_MIN) > 0 ? Number(env.NURIA_RATE_LIMIT_PER_MIN) : 8;
     const rl = await rateLimit(env, ip, limit);
     if (!rl.ok) {
       return json(
@@ -182,9 +214,25 @@ export default {
       );
     }
 
-    // Mock mode — pre-launch / local dev. Lets the island be demoed end-to-end.
+    // Mock mode — pre-launch / local dev. Lets the island be demoed end-to-end
+    // without spending any LLM budget or touching the daily cap.
     if (env.NURIA_MOCK === '1') {
       return json(mockAnswer(v.value), 200);
+    }
+
+    // Cost backstop for the trial period — checked only for real (non-mock)
+    // calls, right before the upstream spend actually happens.
+    const dailyCap = Number(env.NURIA_DAILY_REQUEST_CAP) > 0 ? Number(env.NURIA_DAILY_REQUEST_CAP) : 500;
+    const daily = await dailyCapCheck(env, dailyCap);
+    if (!daily.ok) {
+      return json(
+        {
+          error: 'daily_cap_reached',
+          message: "NuriaOne has reached today's preview limit — please try again tomorrow.",
+        },
+        429,
+        { 'retry-after': '3600' },
+      );
     }
 
     const apiKey = env.NURIA_API_KEY;

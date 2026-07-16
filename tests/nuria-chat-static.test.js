@@ -32,11 +32,11 @@ test('the partner API key never ships to the browser', () => {
   );
 });
 
-test('chat config exposes a same-origin BFF endpoint, disabled by default', () => {
+test('chat config exposes a same-origin BFF endpoint, live for the trial preview', () => {
   const cfg = read('js/site-config.js');
   assert.ok(/chat:\s*{/.test(cfg), 'chat config block present');
   assert.ok(cfg.includes("endpoint: '/api/chat'"), 'same-origin BFF endpoint');
-  assert.ok(/enabled:\s*false/.test(cfg), 'chat off by default (launch-gated)');
+  assert.ok(/enabled:\s*true/.test(cfg), 'chat live (trial launch) — the Worker BFF enforces rate + daily caps');
 });
 
 test('island talks to the BFF endpoint, not the upstream API directly', () => {

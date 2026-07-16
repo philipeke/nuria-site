@@ -13792,6 +13792,9 @@ html.social-modal-open { overflow: hidden; }
 .ask-pricing-note { text-align: center; margin-top: 2.2rem; font-weight: 700; color: var(--color-green); font-size: 0.95rem; }
 
 .ask-cta__by { margin-top: 1.6rem; font-size: 0.82rem; letter-spacing: 0.04em; color: var(--color-text-dimmer); font-weight: 700; }
+.ask-cta__notify { margin-top: 0.6rem; }
+.ask-cta__notify a { font-size: 0.82rem; color: var(--color-text-dimmer); text-decoration: underline; }
+.ask-cta__notify a:hover { color: var(--color-gold-dim); }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 960px) {

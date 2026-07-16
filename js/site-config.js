@@ -25,11 +25,13 @@
     // getBlogFeedHttp -> blogFeedUrl above. No Hashnode dependency.
     firebaseAppCheckSiteKey: '',
     affiliateAdminComplianceMode: 'hybrid',
-    // NuriaOne chat (the verified Islamic AI on /ask). The chat island stays
-    // OFF until the Nuria Intelligence API + GIFS scholar board are ready. The
-    // browser only ever talks to the BFF endpoint below — never the partner key.
+    // NuriaOne chat (the halal AI on /ask) — LIVE as a free trial/preview.
+    // GIFS has not signed yet, so every answer still honestly carries
+    // board_reviewed:false and the "Preview" badge; the Worker BFF caps cost
+    // (see workers/nuria-chat/README.md). The browser only ever talks to the
+    // BFF endpoint below — the API key never reaches the client.
     chat: {
-      enabled: false,          // master switch; flip to true at launch
+      enabled: true,           // master switch — live trial; flip off if the Worker isn't deployed yet
       endpoint: '/api/chat',   // Cloudflare Worker BFF route (same-origin)
       previewParam: 'chat',    // ?chat=1 force-enables for unlisted testing
       mock: false,             // client-side mock answers (no Worker) for local UX preview
