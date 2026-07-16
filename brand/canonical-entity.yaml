@@ -105,6 +105,17 @@ sameAs:
   - https://www.linkedin.com/company/nuria-app/
   - https://www.instagram.com/nuria_app/
   - https://www.tiktok.com/@nuria_app
+  - https://www.wikidata.org/wiki/Q140568552
+
+# Organization node (Nuria Technologies) — separate from the app's sameAs above.
+org_sameAs:
+  - https://www.instagram.com/nuria_app/
+  - https://www.linkedin.com/company/nuria-app/
+  - https://www.tiktok.com/@nuria_app
+  - https://www.wikidata.org/wiki/Q140568144
+
+wikidata_app_qid: Q140568552
+wikidata_org_qid: Q140568144
 
 related_to:
   - Muslim Pro (competitor; no verified-AI focus)

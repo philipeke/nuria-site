@@ -35,21 +35,23 @@
   <meta name="twitter:image"       content="https://nuria.one/assets/Nuria%20Logo.png" />
   <meta name="twitter:image:alt" content="Nuria logo" />
 
-  <!-- Structured data: Organization + MobileApplication. Wikidata Q-ids go in sameAs once the items exist. -->
-  <script type="application/ld+json">
+  <!-- Structured data: Organization + MobileApplication, both generated from
+       brand/canonical-entity.yaml via scripts/build-schema-org.js. Do not hand-edit. -->
+  <script type="application/ld+json" id="nuria-org-schema">
   {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://nuria.one/#organization",
-    "name": "Nuria Technologies",
-    "url": "https://nuria.one/",
-    "logo": "https://nuria.one/assets/Nuria%20Logo.png",
-    "sameAs": [
-      "https://www.instagram.com/nuria_app/",
-      "https://www.linkedin.com/company/nuria-app/",
-      "https://www.tiktok.com/@nuria_app"
-    ]
-  }
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://nuria.one/#organization",
+  "name": "Nuria Technologies",
+  "url": "https://nuria.one/",
+  "logo": "https://nuria.one/assets/Nuria%20Logo.png",
+  "sameAs": [
+    "https://www.instagram.com/nuria_app/",
+    "https://www.linkedin.com/company/nuria-app/",
+    "https://www.tiktok.com/@nuria_app",
+    "https://www.wikidata.org/wiki/Q140568144"
+  ]
+}
   </script>
   <!-- Canonical app entity — generated from brand/canonical-entity.yaml via scripts/build-schema-org.js. Do not hand-edit. -->
   <script type="application/ld+json" id="nuria-app-schema">
@@ -101,7 +103,8 @@
     "https://play.google.com/store/apps/details?id=com.oakdev.nuria",
     "https://www.linkedin.com/company/nuria-app/",
     "https://www.instagram.com/nuria_app/",
-    "https://www.tiktok.com/@nuria_app"
+    "https://www.tiktok.com/@nuria_app",
+    "https://www.wikidata.org/wiki/Q140568552"
   ]
 }
   </script>

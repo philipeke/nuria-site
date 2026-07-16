@@ -7,13 +7,41 @@ const { test } = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8');
-const { parseCanonicalYaml, buildSchema } = require('../scripts/build-schema-org.js');
+const { parseCanonicalYaml, buildSchema, buildOrgSchema } = require('../scripts/build-schema-org.js');
 
 test('schema-org.jsonld is generated from the canonical entity (no dual truth)', () => {
   const entity = parseCanonicalYaml(read('brand/canonical-entity.yaml'));
   const expected = buildSchema(entity);
   const published = JSON.parse(read('brand/schema-org.jsonld'));
   assert.deepStrictEqual(published, expected, 'regenerate: node scripts/build-schema-org.js');
+});
+
+test('schema-org-organization.jsonld is generated from the canonical entity (no dual truth)', () => {
+  const entity = parseCanonicalYaml(read('brand/canonical-entity.yaml'));
+  const expected = buildOrgSchema(entity);
+  const published = JSON.parse(read('brand/schema-org-organization.jsonld'));
+  assert.deepStrictEqual(published, expected, 'regenerate: node scripts/build-schema-org.js');
+});
+
+test('index.html embeds exactly the generated organization schema', () => {
+  const html = read('index.html');
+  const m = html.match(/<script type="application\/ld\+json" id="nuria-org-schema">\s*([\s\S]*?)\s*<\/script>/);
+  assert.ok(m, 'index.html missing the #nuria-org-schema JSON-LD block');
+  const embedded = JSON.parse(m[1]);
+  const published = JSON.parse(read('brand/schema-org-organization.jsonld'));
+  assert.deepStrictEqual(embedded, published, 'index.html org embed drifted from brand/schema-org-organization.jsonld');
+});
+
+test('Wikidata Q-ids are present in both sameAs graphs (closes the sameAs loop)', () => {
+  const entity = parseCanonicalYaml(read('brand/canonical-entity.yaml'));
+  const app = JSON.parse(read('brand/schema-org.jsonld'));
+  const org = JSON.parse(read('brand/schema-org-organization.jsonld'));
+  assert.ok(entity.wikidata_app_qid, 'wikidata_app_qid missing from SSOT');
+  assert.ok(entity.wikidata_org_qid, 'wikidata_org_qid missing from SSOT');
+  assert.ok(app.sameAs.includes(`https://www.wikidata.org/wiki/${entity.wikidata_app_qid}`),
+    'app schema sameAs missing its Wikidata Q-id');
+  assert.ok(org.sameAs.includes(`https://www.wikidata.org/wiki/${entity.wikidata_org_qid}`),
+    'organization schema sameAs missing its Wikidata Q-id');
 });
 
 test('published schema respects the disambiguation rule and hides PENDING fields', () => {

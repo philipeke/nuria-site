@@ -1,6 +1,7 @@
 'use strict';
-// Generates brand/schema-org.jsonld from brand/canonical-entity.yaml (SSOT)
-// and refreshes the embedded copy in index.html (#nuria-app-schema).
+// Generates brand/schema-org.jsonld + brand/schema-org-organization.jsonld from
+// brand/canonical-entity.yaml (SSOT) and refreshes both embedded copies in
+// index.html (#nuria-app-schema, #nuria-org-schema).
 // Run: node scripts/build-schema-org.js
 // Parity is enforced by tests/brand-schema-static.test.js — no dual truth.
 
@@ -9,7 +10,8 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const YAML_PATH = path.join(root, 'brand', 'canonical-entity.yaml');
-const OUT_PATH = path.join(root, 'brand', 'schema-org.jsonld');
+const APP_OUT_PATH = path.join(root, 'brand', 'schema-org.jsonld');
+const ORG_OUT_PATH = path.join(root, 'brand', 'schema-org-organization.jsonld');
 const INDEX_PATH = path.join(root, 'index.html');
 
 // Fields that must NEVER reach any published artifact (schema, registries).
@@ -66,6 +68,27 @@ function unquote(s) {
   return s;
 }
 
+/** Gate-1 + privacy guards shared by every published schema node. */
+function applyGuards(schema, entity) {
+  const published = JSON.stringify(schema);
+  if (/PENDING/i.test(published)) {
+    throw new Error('PENDING value would be published — fill or remove it first');
+  }
+  if (/scholar[- ](reviewed|certified)/i.test(published)) {
+    throw new Error('terminology gate: use "in scholarly review" until GIFS signs');
+  }
+  for (const f of INTERNAL_FIELDS) {
+    const v = entity[f];
+    if (v && published.includes(String(v))) {
+      throw new Error(`internal field ${f} leaked into published schema`);
+    }
+  }
+  if (/\b35\s?000\b|\b35000\b/.test(published)) {
+    throw new Error('exact user count must never publish — use the threshold phrase');
+  }
+  return schema;
+}
+
 function buildSchema(entity) {
   for (const field of ['official_name', 'description_short', 'url']) {
     if (!entity[field]) throw new Error(`canonical-entity.yaml missing ${field}`);
@@ -91,32 +114,33 @@ function buildSchema(entity) {
     publisher: { '@id': orgId },
     sameAs: entity.sameAs || [],
   };
-
-  const published = JSON.stringify(schema);
-  if (/PENDING/i.test(published)) {
-    throw new Error('PENDING value would be published — fill or remove it first');
-  }
-  if (/scholar[- ](reviewed|certified)/i.test(published)) {
-    throw new Error('terminology gate: use "in scholarly review" until GIFS signs');
-  }
-  for (const f of INTERNAL_FIELDS) {
-    const v = entity[f];
-    if (v && published.includes(String(v))) {
-      throw new Error(`internal field ${f} leaked into published schema`);
-    }
-  }
-  if (/\b35\s?000\b|\b35000\b/.test(published)) {
-    throw new Error('exact user count must never publish — use the threshold phrase');
-  }
-  return schema;
+  return applyGuards(schema, entity);
 }
 
-function updateIndexEmbed(schemaJson) {
-  const html = fs.readFileSync(INDEX_PATH, 'utf8');
-  const re = /(<script type="application\/ld\+json" id="nuria-app-schema">\s*)[\s\S]*?(\s*<\/script>)/;
-  if (!re.test(html)) throw new Error('index.html missing #nuria-app-schema block');
-  const updated = html.replace(re, `$1${schemaJson}$2`);
-  fs.writeFileSync(INDEX_PATH, updated, 'utf8');
+/** Organization node (Nuria Technologies) — same SSOT, own schema + embed. */
+function buildOrgSchema(entity) {
+  for (const field of ['legal_org_name', 'url']) {
+    if (!entity[field]) throw new Error(`canonical-entity.yaml missing ${field}`);
+  }
+  const orgId = `${entity.url.replace(/\/$/, '')}/#organization`;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': orgId,
+    name: entity.legal_org_name,
+    url: `${entity.url.replace(/\/$/, '')}/`,
+    logo: entity.logo_url,
+    sameAs: entity.org_sameAs || [],
+  };
+  return applyGuards(schema, entity);
+}
+
+function replaceEmbed(html, id, json) {
+  const re = new RegExp(
+    `(<script type="application/ld\\+json" id="${id}">\\s*)[\\s\\S]*?(\\s*</script>)`,
+  );
+  if (!re.test(html)) throw new Error(`index.html missing #${id} block`);
+  return html.replace(re, `$1${json}$2`);
 }
 
 function main() {
@@ -127,12 +151,24 @@ function main() {
   if (entity.description_short && entity.description_short.length > 160) {
     throw new Error(`description_short is ${entity.description_short.length} chars (limit 160)`);
   }
-  const schema = buildSchema(entity);
-  const json = JSON.stringify(schema, null, 2);
-  fs.writeFileSync(OUT_PATH, json + '\n', 'utf8');
-  updateIndexEmbed(json);
-  console.log(`Wrote ${path.relative(root, OUT_PATH)} + refreshed index.html embed (name: ${schema.name})`);
+
+  const appSchema = buildSchema(entity);
+  const appJson = JSON.stringify(appSchema, null, 2);
+  fs.writeFileSync(APP_OUT_PATH, appJson + '\n', 'utf8');
+
+  const orgSchema = buildOrgSchema(entity);
+  const orgJson = JSON.stringify(orgSchema, null, 2);
+  fs.writeFileSync(ORG_OUT_PATH, orgJson + '\n', 'utf8');
+
+  let html = fs.readFileSync(INDEX_PATH, 'utf8');
+  html = replaceEmbed(html, 'nuria-org-schema', orgJson);
+  html = replaceEmbed(html, 'nuria-app-schema', appJson);
+  fs.writeFileSync(INDEX_PATH, html, 'utf8');
+
+  console.log(`Wrote ${path.relative(root, APP_OUT_PATH)} (name: ${appSchema.name})`);
+  console.log(`Wrote ${path.relative(root, ORG_OUT_PATH)} (name: ${orgSchema.name})`);
+  console.log('Refreshed both index.html embeds.');
 }
 
 if (require.main === module) main();
-module.exports = { parseCanonicalYaml, buildSchema, INTERNAL_FIELDS };
+module.exports = { parseCanonicalYaml, buildSchema, buildOrgSchema, INTERNAL_FIELDS };

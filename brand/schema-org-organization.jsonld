@@ -1,0 +1,14 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://nuria.one/#organization",
+  "name": "Nuria Technologies",
+  "url": "https://nuria.one/",
+  "logo": "https://nuria.one/assets/Nuria%20Logo.png",
+  "sameAs": [
+    "https://www.instagram.com/nuria_app/",
+    "https://www.linkedin.com/company/nuria-app/",
+    "https://www.tiktok.com/@nuria_app",
+    "https://www.wikidata.org/wiki/Q140568144"
+  ]
+}
