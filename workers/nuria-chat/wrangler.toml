@@ -25,9 +25,9 @@ NURIA_DAILY_REQUEST_CAP = "500"     # whole site, per UTC day — the real cost 
 # --- Per-IP + daily-cap counters (KV) ---------------------------------------
 # Create the namespace, then paste its id here:
 #   wrangler kv namespace create RATE_LIMIT
-# [[kv_namespaces]]
-# binding = "RATE_LIMIT"
-# id = "<your-kv-namespace-id>"
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "64ac6d750b2b47a696613c06e7d6b25d"
 
 # --- Secret (NEVER in code/git) --------------------------------------------
 #   wrangler secret put NURIA_API_KEY
