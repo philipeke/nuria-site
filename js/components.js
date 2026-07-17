@@ -30,6 +30,21 @@
       '</div>' +
     '</div>';
 
+  // Global NuriaOne launcher — the same markup lives inline in the homepage nav
+  // (index.html); here it rides the injected nav used on every other page.
+  var NURIA_LAUNCH =
+    '<button class="nuria-launch" data-nuria-launch type="button" aria-haspopup="dialog" aria-controls="nuriaOneModal" data-i18n-aria-label="nuriaone.launch_aria" aria-label="Open NuriaOne, our Islamic AI assistant">' +
+      '<span class="nuria-launch__orb" aria-hidden="true">' +
+        '<span class="nuria-launch__orb-core"></span>' +
+        '<span class="nuria-launch__orb-ring"></span>' +
+        '<span class="nuria-launch__spark"></span>' +
+      '</span>' +
+      '<span class="nuria-launch__label">' +
+        '<span class="nuria-launch__name" data-i18n="nuriaone.launch_name">NuriaOne</span>' +
+        '<span class="nuria-launch__tag" data-i18n="nuriaone.launch_tag">Ask the AI</span>' +
+      '</span>' +
+    '</button>';
+
   var NAV_HTML =
     '<nav class="nav scrolled" id="nav" role="navigation" data-i18n-aria-label="a11y.nav_main" aria-label="Main navigation">' +
       '<div class="nav__container">' +
@@ -54,6 +69,7 @@
           '<a href="/blog"    class="nav__link" data-i18n="nav.blog">Blog</a>' +
           '<a href="/support" class="nav__link" data-i18n="nav.support">Support</a>' +
         '</div>' +
+        NURIA_LAUNCH +
         '<div class="nav__cta">' +
           '<a href="/#download" class="btn btn--gold" data-i18n="nav.download">Download</a>' +
         '</div>' +
@@ -148,4 +164,189 @@
   if (footerEl) {
     footerEl.outerHTML = FOOTER_HTML;
   }
+
+  /* =========================================================================
+     NuriaOne launcher → cinematic command-center overlay
+     A tap on the navbar launcher opens the live NuriaOne chat in a portal
+     overlay, on every page. The chat island (js/nuria-chat.js) mounts into the
+     overlay's [data-nuria-chat] slot and is lazy-loaded on first open, so pages
+     stay fast until someone actually asks. On /ask the page IS the chat (it has
+     its own inline [data-nuria-chat]); there we skip the overlay and let the
+     launcher, if present, jump to the on-page chat instead.
+     ========================================================================= */
+  (function () {
+    var launchers = document.querySelectorAll('[data-nuria-launch]');
+    if (!launchers.length) return;
+
+    var inlineChat = document.querySelector('[data-nuria-chat]'); // the /ask page
+    var EMBERS = '<span style="--x:8%;--d:15s;--delay:0s;--s:.7"></span>' +
+      '<span style="--x:20%;--d:19s;--delay:5s;--s:1"></span>' +
+      '<span style="--x:33%;--d:16s;--delay:9s;--s:.6"></span>' +
+      '<span style="--x:47%;--d:21s;--delay:2s;--s:.9"></span>' +
+      '<span style="--x:61%;--d:17s;--delay:11s;--s:.7"></span>' +
+      '<span style="--x:74%;--d:20s;--delay:4s;--s:1.1"></span>' +
+      '<span style="--x:88%;--d:15s;--delay:8s;--s:.65"></span>' +
+      '<span style="--x:95%;--d:23s;--delay:13s;--s:.8"></span>';
+
+    // On /ask: no overlay — the launcher (if any) scrolls to the inline chat.
+    if (inlineChat) {
+      Array.prototype.forEach.call(launchers, function (btn) {
+        btn.addEventListener('click', function () {
+          inlineChat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+      return;
+    }
+
+    var MODAL_HTML =
+      '<div class="nuria-modal" id="nuriaOneModal" role="dialog" aria-modal="true" aria-labelledby="nuriaModalTitle" hidden>' +
+        '<div class="nuria-modal__backdrop" data-nuria-close></div>' +
+        '<div class="nuria-modal__embers" aria-hidden="true">' + EMBERS + '</div>' +
+        '<div class="nuria-modal__panel" role="document">' +
+          '<span class="nuria-modal__glow" aria-hidden="true"></span>' +
+          '<header class="nuria-modal__head">' +
+            '<span class="nuria-modal__avatar" aria-hidden="true"></span>' +
+            '<span class="nuria-modal__titles">' +
+              '<span class="nuria-modal__title" id="nuriaModalTitle">NuriaOne</span>' +
+              '<span class="nuria-modal__sub" data-i18n="nuriaone.modal_sub">Free preview · in scholarly review</span>' +
+            '</span>' +
+            '<a class="nuria-modal__full" href="/ask" data-i18n="nuriaone.modal_full">Open full page</a>' +
+            '<button class="nuria-modal__close" type="button" data-nuria-close data-i18n-aria-label="nuriaone.modal_close" aria-label="Close">' +
+              '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+            '</button>' +
+          '</header>' +
+          '<div class="nuria-modal__body"><div data-nuria-chat></div></div>' +
+          '<p class="nuria-modal__foot" data-i18n="nuriaone.modal_foot">Every answer shows its sources. Sensitive questions go to a human.</p>' +
+        '</div>' +
+      '</div>';
+
+    var host = document.createElement('div');
+    host.innerHTML = MODAL_HTML;
+    var modal = host.firstChild;
+    document.body.appendChild(modal);
+
+    var panel = modal.querySelector('.nuria-modal__panel');
+    var closeBtn = modal.querySelector('.nuria-modal__close');
+    var chatLoaded = false;
+    var lastFocus = null;
+    var isOpen = false;        // authoritative state — do NOT read modal.hidden for gating
+    var closeTimer = null;     // pending close-teardown fallback
+    var inerted = [];          // body children we made inert while open
+
+    function ensureChat() {
+      if (chatLoaded) return;
+      chatLoaded = true;
+      var s = document.createElement('script');
+      s.src = '/js/nuria-chat.js?v=20260717a';
+      s.async = false;
+      // only mark loaded once it actually loads; on failure allow a later retry
+      s.onload = function () {
+        // the input exists now → move focus onto it if the modal is still open
+        if (isOpen) {
+          var input = modal.querySelector('.nuria-chat__input');
+          if (input) { try { input.focus(); } catch (e) { /* ignore */ } }
+        }
+      };
+      s.onerror = function () { chatLoaded = false; if (s.parentNode) s.parentNode.removeChild(s); };
+      document.body.appendChild(s);
+    }
+
+    // Only VISIBLE focusables count — the chat's consent gate hides the composer/tools
+    // (display:none), and a hidden trailing control would break the wrap-around trap.
+    function focusables() {
+      var all = modal.querySelectorAll(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      );
+      return Array.prototype.filter.call(all, function (el) {
+        return el.offsetParent !== null || el.getClientRects().length > 0;
+      });
+    }
+
+    function onKeydown(e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      var f = focusables();
+      if (!f.length) { e.preventDefault(); return; }
+      var first = f[0], last = f[f.length - 1];
+      var active = document.activeElement;
+      // if focus somehow sits outside the dialog, pull it back in
+      if (!modal.contains(active)) { e.preventDefault(); first.focus(); return; }
+      if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    }
+
+    function setBackgroundInert(on) {
+      if (on) {
+        inerted = [];
+        Array.prototype.forEach.call(document.body.children, function (c) {
+          if (c === modal || c.tagName === 'SCRIPT') return;
+          if (c.hasAttribute('inert')) return;
+          c.setAttribute('inert', '');
+          inerted.push(c);
+        });
+      } else {
+        inerted.forEach(function (c) { c.removeAttribute('inert'); });
+        inerted = [];
+      }
+    }
+
+    function open() {
+      if (isOpen) return;
+      // cancel any close still animating so a quick re-open isn't dropped
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+      panel.removeEventListener('transitionend', finishClose);
+      panel.removeEventListener('transitioncancel', finishClose);
+      isOpen = true;
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add('nuria-modal-open');
+      setBackgroundInert(true);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { if (isOpen) modal.classList.add('is-open'); });
+      });
+      ensureChat();
+      document.addEventListener('keydown', onKeydown);
+      // Move focus into the dialog synchronously so a Tab pressed immediately after
+      // opening can never land on the page behind it. The chat input takes over once
+      // the lazy island mounts (see ensureChat onload).
+      var input = modal.querySelector('.nuria-chat__input');
+      (input || closeBtn || panel).focus();
+      try {
+        if (window.NuriaSite && window.NuriaSite.trackEvent) window.NuriaSite.trackEvent('nuriaone_launch_open', {});
+      } catch (e) { /* ignore */ }
+    }
+
+    // one idempotent teardown for transitionend OR transitioncancel OR the fallback
+    function finishClose() {
+      panel.removeEventListener('transitionend', finishClose);
+      panel.removeEventListener('transitioncancel', finishClose);
+      if (closeTimer) { clearTimeout(closeTimer); closeTimer = null; }
+      if (!isOpen) modal.hidden = true;   // guard: a re-open may have happened
+    }
+
+    function close() {
+      if (!isOpen) return;
+      isOpen = false;
+      modal.classList.remove('is-open');
+      document.removeEventListener('keydown', onKeydown);
+      document.body.classList.remove('nuria-modal-open');
+      setBackgroundInert(false);
+      panel.addEventListener('transitionend', finishClose);
+      panel.addEventListener('transitioncancel', finishClose);
+      // fallback strictly LONGER than the 420ms panel transition, so it only fires
+      // when no transition event does (never races the real one)
+      closeTimer = setTimeout(finishClose, 520);
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
+    }
+
+    Array.prototype.forEach.call(launchers, function (btn) {
+      btn.addEventListener('click', open);
+    });
+    Array.prototype.forEach.call(modal.querySelectorAll('[data-nuria-close]'), function (el) {
+      el.addEventListener('click', close);
+    });
+
+    // Expose a tiny hook so page CTAs (e.g. the homepage spotlight button) can open it too.
+    window.NuriaOne = { open: open, close: close };
+  }());
 }());

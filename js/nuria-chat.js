@@ -104,7 +104,7 @@
   head.appendChild(el('span', 'ask-chat__avatar'));
   const id = el('div', 'ask-chat__id');
   id.appendChild(el('span', 'ask-chat__title', 'NuriaOne'));
-  const statusEl = el('span', 'ask-chat__status', t('chat.status', 'Halal-certified · Source-grounded'));
+  const statusEl = el('span', 'ask-chat__status', t('chat.status', 'In scholarly review · Source-grounded'));
   id.appendChild(statusEl);
   head.appendChild(id);
   head.appendChild(el('span', 'ask-chat__dot'));
@@ -112,7 +112,7 @@
 
   const banner = el('div', 'nuria-chat__banner');
   banner.setAttribute('role', 'note');
-  banner.textContent = t('chat.preview_banner', 'Preview — answers are not yet scholar-certified.');
+  banner.textContent = t('chat.preview_banner', 'Preview. Answers are still in scholarly review.');
   card.appendChild(banner);
 
   const log = el('div', 'nuria-chat__log');
@@ -500,8 +500,8 @@
   /* ---- re-localise static chrome (runs at init and whenever the active
          language's translations are applied / the user switches language) ---- */
   function localizeChrome() {
-    statusEl.textContent = t('chat.status', 'Halal-certified · Source-grounded');
-    banner.textContent = t('chat.preview_banner', 'Preview — answers are not yet scholar-certified.');
+    statusEl.textContent = t('chat.status', 'In scholarly review · Source-grounded');
+    banner.textContent = t('chat.preview_banner', 'Preview. Answers are still in scholarly review.');
     log.setAttribute('aria-label', t('chat.aria_log', 'Conversation with NuriaOne'));
     composer.setAttribute('aria-label', t('chat.aria_composer', 'Ask NuriaOne'));
     madhhabLabel.textContent = t('chat.madhhab', 'Madhhab');

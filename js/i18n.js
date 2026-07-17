@@ -332,6 +332,27 @@ const T = {
       err_timeout: 'That took too long. Please try again.',
       err_network: 'Network problem. Please check your connection and try again.',
     },
+    nuriaone: {
+      // Global NuriaOne launcher (navbar, every page) + the command-center overlay
+      launch_name: 'NuriaOne',
+      launch_tag: 'Ask the AI',
+      launch_aria: 'Open NuriaOne, our Islamic AI assistant',
+      modal_sub: 'Free preview · in scholarly review',
+      modal_full: 'Open full page',
+      modal_foot: 'Every answer shows its sources. Sensitive questions go to a human.',
+      modal_close: 'Close',
+      // Homepage NuriaOne spotlight band
+      home_label: 'Now in free preview',
+      home_title: 'Meet <em>NuriaOne</em>. Your Islamic AI',
+      home_text: 'The halal AI you can ask anything about your deen. Grounded in authentic sources, honest about what it does not know, and built never to invent a ruling. Try it free, right here or in ChatGPT.',
+      home_cta: 'Ask NuriaOne now',
+      home_cta2: 'Open in ChatGPT',
+      home_b1: 'Cites Qur’an and authentic Hadith',
+      home_b2: 'Respects your madhhab',
+      home_b3: 'Sensitive questions go to a human',
+      home_orb_status: 'NuriaOne is reflecting',
+      home_orb_line: 'Grounded in the Qur’an and Sunnah.',
+    },
     site: {
       index_title: 'Nuria. Free Islamic Companion | Serene & Noor',
       index_desc: 'Free Quran, prayer tools, Ask Nuria, and daily Islamic guidance. Remove ads with Nuria Serene, or unlock Luxury Stone and 300 bonus reflections with Nuria Noor.',

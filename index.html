@@ -120,7 +120,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=20260629l" />
+  <link rel="stylesheet" href="css/styles.css?v=20260717a" />
 </head>
 <body>
 
@@ -151,6 +151,18 @@
         <a href="/blog"    class="nav__link" data-i18n="nav.blog">Blog</a>
         <a href="/support" class="nav__link" data-i18n="nav.support">Support</a>
       </div>
+
+      <button class="nuria-launch" data-nuria-launch type="button" aria-haspopup="dialog" aria-controls="nuriaOneModal" data-i18n-aria-label="nuriaone.launch_aria" aria-label="Open NuriaOne, our Islamic AI assistant">
+        <span class="nuria-launch__orb" aria-hidden="true">
+          <span class="nuria-launch__orb-core"></span>
+          <span class="nuria-launch__orb-ring"></span>
+          <span class="nuria-launch__spark"></span>
+        </span>
+        <span class="nuria-launch__label">
+          <span class="nuria-launch__name" data-i18n="nuriaone.launch_name">NuriaOne</span>
+          <span class="nuria-launch__tag" data-i18n="nuriaone.launch_tag">Ask the AI</span>
+        </span>
+      </button>
 
       <div class="nav__download" id="navDownload">
         <button class="btn btn--gold nav__download-btn" id="downloadBtn" aria-haspopup="true" aria-expanded="false" data-i18n="nav.download">Download <span class="download-chevron">▼</span></button>
@@ -310,6 +322,65 @@
         <p class="featured-quote__text" data-i18n="quote1.text">"And whoever fears Allah. He will make for him a way out."</p>
         <cite class="featured-quote__cite" data-i18n="quote1.cite">Quran · At-Talaq 65:2</cite>
       </blockquote>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       NURIAONE SPOTLIGHT — launch the AI right from the homepage
+  ========================================================= -->
+  <section class="nuriaone-band" id="nuriaone" aria-label="NuriaOne — Islamic AI">
+    <div class="nuriaone-band__bg" aria-hidden="true">
+      <span class="nuriaone-band__aura"></span>
+      <div class="nuriaone-band__embers">
+        <span style="--x:6%;  --d:16s; --delay:0s;  --s:.7"></span>
+        <span style="--x:16%; --d:20s; --delay:4s;  --s:1"></span>
+        <span style="--x:27%; --d:15s; --delay:8s;  --s:.6"></span>
+        <span style="--x:39%; --d:22s; --delay:2s;  --s:.9"></span>
+        <span style="--x:52%; --d:17s; --delay:11s; --s:.7"></span>
+        <span style="--x:64%; --d:19s; --delay:5s;  --s:1.1"></span>
+        <span style="--x:77%; --d:16s; --delay:9s;  --s:.65"></span>
+        <span style="--x:89%; --d:21s; --delay:3s;  --s:.85"></span>
+        <span style="--x:96%; --d:18s; --delay:12s; --s:.7"></span>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="nuriaone-band__inner">
+        <div class="nuriaone-band__copy" data-reveal>
+          <span class="nuriaone-band__chip" data-i18n="nuriaone.home_label">Now in free preview</span>
+          <h2 class="nuriaone-band__title" data-i18n-html="nuriaone.home_title">Meet <em>NuriaOne</em>. Your Islamic AI</h2>
+          <p class="nuriaone-band__text" data-i18n="nuriaone.home_text">
+            The halal AI you can ask anything about your deen. Grounded in authentic sources, honest about what it does not know, and built never to invent a ruling. Try it free, right here or in ChatGPT.
+          </p>
+          <ul class="nuriaone-band__points">
+            <li><span class="nuriaone-band__tick" aria-hidden="true">✦</span><span data-i18n="nuriaone.home_b1">Cites Qur’an and authentic Hadith</span></li>
+            <li><span class="nuriaone-band__tick" aria-hidden="true">✦</span><span data-i18n="nuriaone.home_b2">Respects your madhhab</span></li>
+            <li><span class="nuriaone-band__tick" aria-hidden="true">✦</span><span data-i18n="nuriaone.home_b3">Sensitive questions go to a human</span></li>
+          </ul>
+          <div class="nuriaone-band__actions">
+            <button class="btn btn--gold btn--store-lg nuriaone-band__cta" type="button" data-nuria-launch data-i18n="nuriaone.home_cta">Ask NuriaOne now</button>
+            <a class="nuriaone-band__cta2" href="https://chatgpt.com/g/g-6a589ae6b8988191ae24c6adae717202-nuriaone-trusted-islamic-ai" target="_blank" rel="noopener noreferrer" data-i18n="nuriaone.home_cta2">Open in ChatGPT</a>
+          </div>
+        </div>
+
+        <div class="nuriaone-band__stage" data-reveal data-delay="120" aria-hidden="true">
+          <span class="nuriaone-orb" data-nuria-launch role="presentation">
+            <span class="nuriaone-orb__halo"></span>
+            <span class="nuriaone-orb__ring nuriaone-orb__ring--a"></span>
+            <span class="nuriaone-orb__ring nuriaone-orb__ring--b"></span>
+            <span class="nuriaone-orb__core"></span>
+            <span class="nuriaone-orb__mark"></span>
+            <span class="nuriaone-orb__sat nuriaone-orb__sat--1"></span>
+            <span class="nuriaone-orb__sat nuriaone-orb__sat--2"></span>
+            <span class="nuriaone-orb__sat nuriaone-orb__sat--3"></span>
+          </span>
+          <div class="nuriaone-orb__caption">
+            <span class="nuriaone-orb__pulse" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="nuriaone-orb__status" data-i18n="nuriaone.home_orb_status">NuriaOne is reflecting</span>
+            <span class="nuriaone-orb__line" data-i18n="nuriaone.home_orb_line">Grounded in the Qur’an and Sunnah.</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1180,8 +1251,8 @@
 
   <script src="js/site-config.js"></script>
   <script src="js/site-utils.js?v=20260616-stone-default"></script>
-  <script src="js/components.js"></script>
-  <script src="js/i18n.js"></script>
+  <script src="js/components.js?v=20260717a"></script>
+  <script src="js/i18n.js?v=20260717a"></script>
   <script src="js/sources-translations.js"></script>
   <script src="js/main.js?v=20260629j"></script>
   <script src="js/social-feed.js?v=20260625-li-preview"></script>

@@ -108,14 +108,32 @@ test('Gate 1: terminology holds sitewide (js/i18n.js + ask/index.html + English 
   // the real live source. This test covers all three so that class of bug can't hide again.
   const forbidden = [
     { re: /scholar[- ](reviewed|certified)/i, why: 'use "in scholarly review" until GIFS signs' },
-    { re: /\bverified\s+(islamic|scholar|guidance|service|source|sources|knowledge)\b/i, why: 'no "verified X" claims before GIFS signs' },
+    { re: /\bverified\s+(islamic|scholar|guidance|service|source|sources|knowledge|ai)\b/i, why: 'no "verified X" claims before GIFS signs' },
     { re: /halal[- ]certified/i, why: 'no "halal-certified" claims before GIFS signs' },
   ];
+  // Scan EVERY public surface — not a curated list. A curated list is exactly what
+  // let the original "Halal-certified" violation hide (it sat in files the old test
+  // never named). Walk all committed .html plus the JS/arb sources of record.
+  const htmlFiles = [];
+  (function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.isDirectory()) {
+        if (['.git', 'node_modules', 'tmp', 'assets'].includes(e.name)) continue;
+        walk(path.join(dir, e.name));
+      } else if (e.name.endsWith('.html')) {
+        htmlFiles.push(path.relative(root, path.join(dir, e.name)).replace(/\\/g, '/'));
+      }
+    }
+  })(root);
   const surfaces = {
     'js/i18n.js': read('js/i18n.js'),
-    'ask/index.html': read('ask/index.html'),
     'l10n/site_en.arb': read('l10n/site_en.arb'),
+    // the chat island + launcher render site-wide via the NuriaOne overlay, so their
+    // hardcoded English fallback strings are public surfaces too
+    'js/nuria-chat.js': read('js/nuria-chat.js'),
+    'js/components.js': read('js/components.js'),
   };
+  for (const rel of htmlFiles) surfaces[rel] = read(rel);
   for (const [name, text] of Object.entries(surfaces)) {
     for (const { re, why } of forbidden) {
       assert.ok(!re.test(text), `${name}: matched ${re} — ${why}`);
