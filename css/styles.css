@@ -999,6 +999,8 @@ body.theme-luxury-stone .hero__phone-wrap {
 .hero__bismillah {
   font-family: var(--font-arabic);
   font-size: 1.5rem;
+  direction: rtl;
+  text-align: right;
   color: var(--color-gold);
   opacity: 0.9;
   letter-spacing: 0.05em;
@@ -1016,7 +1018,7 @@ body.theme-luxury-stone .hero__phone-wrap {
   margin-bottom: 1rem;
 }
 /*
- * Desktop: Arabic, logo, title, and subtitle share one band. The Arabic sits left above the
+ * Desktop: Arabic, logo, title, and subtitle share one band. The Arabic sits above the
  * mark, while the logo and headline stack are centered on the same axis.
  */
 @media (min-width: 1025px) {
@@ -1025,7 +1027,7 @@ body.theme-luxury-stone .hero__phone-wrap {
     width: var(--hero-copy-width);
     max-width: 470px;
     margin-left: 0;
-    text-align: left;
+    text-align: right;
   }
 
   .hero__logo-wrap {
