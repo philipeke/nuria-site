@@ -96,7 +96,8 @@ test('Gate 1: terminology + user-count policy hold in all public brand output', 
   assert.deepStrictEqual(parsed.operatingSystem, ['iOS', 'Android']);
   assert.strictEqual(entity.scholarly_review_status, 'in_review');
   assert.strictEqual(entity.app_status, 'preview');
-  assert.ok(entity.madhab_support.includes('Jafari'), 'five schools in canon');
+  assert.strictEqual(entity.madhab_support.length, 4, 'four schools in canon');
+  assert.ok(!entity.madhab_support.includes('Jafari'), 'Jafari not in canon');
 });
 
 test('Gate 1: terminology holds sitewide (js/i18n.js + ask/index.html + English l10n override) — closes the /ask coverage gap', () => {

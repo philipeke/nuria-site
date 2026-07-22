@@ -8,9 +8,9 @@
 #
 # DISAMBIGUATION RULE (see brand/disambiguation-rules.md): never use bare
 # "Nuria" in metadata — always "Nuria Islamic app" or "Nuria — Islamic
-# companion". Sect-specific terms ("Shia Islamic app", "Sunni Islamic app")
+# companion". Sect-specific terms ("Sunni Islamic app")
 # may ONLY be used in the App Store keyword field — never in visible
-# description text.
+# description text. Never use Shia/Ja'fari sect terms anywhere.
 #
 # TERMINOLOGY GATE: until GIFS signs the source hierarchy, public text says
 # "in scholarly review" — never "scholar-reviewed" / "scholar-certified".
@@ -55,15 +55,14 @@ languages_primary:
   - uz
   - ur
 
-# Public canonical phrase: "covers all five major schools of Islamic
-# jurisprudence (Hanafi, Maliki, Shafi'i, Hanbali, Jafari), noting where
+# Public canonical phrase: "covers the four major schools of Islamic
+# jurisprudence (Hanafi, Maliki, Shafi'i, Hanbali), noting where
 # schools differ with sources cited for each position."
 madhab_support:
   - Hanafi
   - Maliki
   - Shafi'i
   - Hanbali
-  - Jafari
 madhab_approach: notes where schools differ, sources cited for each position
 
 core_features:

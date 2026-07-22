@@ -22,7 +22,7 @@
   const HISTORY_KEY = 'nuria_chat_history_v1';
   const MADHHAB_KEY = 'nuria_chat_madhhab_v1';
   const MAX_STORED = 40;
-  const MADHHABS = ['unspecified', 'hanafi', 'maliki', 'shafii', 'hanbali', 'jafari'];
+  const MADHHABS = ['unspecified', 'hanafi', 'maliki', 'shafii', 'hanbali'];
 
   /* ---- i18n helper (falls back to English if a key is missing) ---- */
   function t(key, fallback) {

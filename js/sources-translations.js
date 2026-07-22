@@ -45,7 +45,7 @@
           'Cited source families include Quran, Sahih al-Bukhari, Sahih Muslim, Jami al-Tirmidhi, Sunan Abi Dawud, and Ibn Majah.',
         card_prayer_title: 'Prayer times and Qibla',
         card_prayer_text:
-          'Prayer times are calculated through the adhan library with selectable methods such as Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, Turkey, and Tehran. Qibla is computed from your location toward the Kaaba in Makkah using great-circle bearing and device sensors.',
+          'Prayer times are calculated through the adhan library with selectable methods such as Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, and Turkey. Qibla is computed from your location toward the Kaaba in Makkah using great-circle bearing and device sensors.',
         card_prayer_point_1:
           'Prayer calculations: adhan library with selectable regional methods.',
         card_prayer_point_2:
@@ -191,7 +191,7 @@
           'حوالہ جاتی ماخذ میں قرآن، صحیح البخاری، صحیح مسلم، جامع الترمذی، سنن ابی داود اور ابن ماجہ شامل ہیں۔',
         card_prayer_title: 'اوقات نماز اور قبلہ',
         card_prayer_text:
-          'نماز کے اوقات adhan library کے ذریعے calculate ہوتے ہیں اور ان میں Muslim World League، Egyptian، Karachi، Umm al-Qura، Dubai، Moon Sighting Committee، North America، Kuwait، Qatar، Singapore، Turkey اور Tehran جیسے طریقے منتخب کیے جا سکتے ہیں۔ قبلہ آپ کی location سے مکہ میں کعبہ کی سمت device sensors اور great-circle bearing کے ذریعے نکالا جاتا ہے۔',
+          'نماز کے اوقات adhan library کے ذریعے calculate ہوتے ہیں اور ان میں Muslim World League، Egyptian، Karachi، Umm al-Qura، Dubai، Moon Sighting Committee، North America، Kuwait، Qatar، Singapore اور Turkey جیسے طریقے منتخب کیے جا سکتے ہیں۔ قبلہ آپ کی location سے مکہ میں کعبہ کی سمت device sensors اور great-circle bearing کے ذریعے نکالا جاتا ہے۔',
         card_prayer_point_1:
           'نماز کے حسابات: adhan library کے ذریعے منتخب علاقائی طریقوں کے ساتھ۔',
         card_prayer_point_2:
@@ -264,7 +264,7 @@
           'Keluarga sumber yang dirujuk meliputi Quran, Sahih al-Bukhari, Sahih Muslim, Jami al-Tirmidhi, Sunan Abi Dawud, dan Ibn Majah.',
         card_prayer_title: 'Waktu shalat dan Kiblat',
         card_prayer_text:
-          "Waktu shalat dihitung melalui pustaka adhan dengan metode yang bisa dipilih seperti Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, Turkey, dan Tehran. Kiblat dihitung dari lokasi Anda menuju Ka'bah di Makkah menggunakan great-circle bearing dan sensor perangkat.",
+          "Waktu shalat dihitung melalui pustaka adhan dengan metode yang bisa dipilih seperti Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, dan Turkey. Kiblat dihitung dari lokasi Anda menuju Ka'bah di Makkah menggunakan great-circle bearing dan sensor perangkat.",
         card_prayer_point_1:
           'Perhitungan shalat: pustaka adhan dengan metode regional yang bisa dipilih.',
         card_prayer_point_2:
@@ -337,7 +337,7 @@
           'Les familles de sources citées incluent le Coran, Sahih al-Bukhari, Sahih Muslim, Jami al-Tirmidhi, Sunan Abi Dawud et Ibn Majah.',
         card_prayer_title: 'Horaires de prière et Qibla',
         card_prayer_text:
-          "Les horaires de prière sont calculés via la bibliothèque adhan avec des méthodes sélectionnables comme Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, Turkey et Tehran. La Qibla est calculée depuis votre position vers la Kaaba à La Mecque à l'aide du grand cercle et des capteurs de l'appareil.",
+          "Les horaires de prière sont calculés via la bibliothèque adhan avec des méthodes sélectionnables comme Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore et Turkey. La Qibla est calculée depuis votre position vers la Kaaba à La Mecque à l'aide du grand cercle et des capteurs de l'appareil.",
         card_prayer_point_1:
           'Calculs de prière : bibliothèque adhan avec méthodes régionales sélectionnables.',
         card_prayer_point_2:
@@ -410,7 +410,7 @@
           'Atıf yapılan kaynak aileleri arasında Kuran, Sahih al-Bukhari, Sahih Muslim, Jami al-Tirmidhi, Sunan Abi Dawud ve Ibn Majah bulunur.',
         card_prayer_title: 'Namaz vakitleri ve kıble',
         card_prayer_text:
-          "Namaz vakitleri, Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore, Turkey ve Tehran gibi seçilebilir yöntemlerle adhan kütüphanesi üzerinden hesaplanır. Kıble, cihaz sensörleri ve great-circle bearing kullanılarak bulunduğunuz konumdan Mekke'deki Kabe'ye doğru hesaplanır.",
+          "Namaz vakitleri, Muslim World League, Egyptian, Karachi, Umm al-Qura, Dubai, Moon Sighting Committee, North America, Kuwait, Qatar, Singapore ve Turkey gibi seçilebilir yöntemlerle adhan kütüphanesi üzerinden hesaplanır. Kıble, cihaz sensörleri ve great-circle bearing kullanılarak bulunduğunuz konumdan Mekke'deki Kabe'ye doğru hesaplanır.",
         card_prayer_point_1:
           'Namaz hesaplamaları: seçilebilir bölgesel yöntemlerle adhan kütüphanesi.',
         card_prayer_point_2:

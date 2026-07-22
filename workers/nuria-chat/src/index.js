@@ -23,7 +23,7 @@ const MAX_QUESTION = 4000;
 const MAX_CONTEXT = 1000;
 const MAX_HISTORY = 10;
 const MAX_BODY_BYTES = 24 * 1024; // hard cap on request body
-const MADHHABS = new Set(['hanafi', 'maliki', 'shafii', 'hanbali', 'jafari', 'unspecified']);
+const MADHHABS = new Set(['hanafi', 'maliki', 'shafii', 'hanbali', 'unspecified']);
 
 const ALLOWED_ORIGINS = new Set([
   'https://nuria.one',

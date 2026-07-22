@@ -6,8 +6,8 @@
 > Intelligence layer — a source-grounded answer engine exposed as a REST API and
 > a remote MCP server, developed in collaboration with Islamic scholars and
 > currently in scholarly review. Answers cite the Quran, authenticated Hadith,
-> tafsir and fiqh, covering all five major schools of Islamic jurisprudence
-> (Hanafi, Maliki, Shafi'i, Hanbali, Jafari) and noting where schools differ.
+> tafsir and fiqh, covering the four major schools of Islamic jurisprudence
+> (Hanafi, Maliki, Shafi'i, Hanbali) and noting where schools differ.
 > Sensitive/fatwa questions are referred to a qualified human scholar instead of
 > being answered by a model.
 
@@ -44,8 +44,8 @@ it is real. Every answer carries source citations and an append-only audit id.
   append-only audit trail.
 - Referral safety: fatwa-level, medical, mental-health and other sensitive
   questions are stopped before generation and referred to qualified humans.
-- Madhhab-aware: covers all five major schools of Islamic jurisprudence
-  (Hanafi, Maliki, Shafi'i, Hanbali, Jafari), noting where schools differ with
+- Madhhab-aware: covers the four major schools of Islamic jurisprudence
+  (Hanafi, Maliki, Shafi'i, Hanbali), noting where schools differ with
   sources cited for each position.
 
 ## Legal

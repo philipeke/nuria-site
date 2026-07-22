@@ -3,14 +3,14 @@
   "function_declarations": [
     {
       "name": "ask_nuria",
-      "description": "Get a source-cited Islamic answer from the Nuria Islamic app, currently in scholarly review. Returns the answer with Quran/Hadith/scholar citations, the school of jurisprudence followed (Hanafi, Maliki, Shafi'i, Hanbali or Jafari), board_reviewed (false until Nuria's scholar board signs), and referral_required. When referral_required is true, do NOT add your own ruling — deliver the referral to a qualified human scholar. This full check runs before any answer is generated.",
+      "description": "Get a source-cited Islamic answer from the Nuria Islamic app, currently in scholarly review. Returns the answer with Quran/Hadith/scholar citations, the school of jurisprudence followed (Hanafi, Maliki, Shafi'i, Hanbali), board_reviewed (false until Nuria's scholar board signs), and referral_required. When referral_required is true, do NOT add your own ruling — deliver the referral to a qualified human scholar. This full check runs before any answer is generated.",
       "parameters": {
         "type": "object",
         "properties": {
           "question": { "type": "string", "description": "The user's Islamic question." },
           "madhhab": {
             "type": "string",
-            "enum": ["hanafi", "maliki", "shafii", "hanbali", "jafari", "unspecified"],
+            "enum": ["hanafi", "maliki", "shafii", "hanbali", "unspecified"],
             "description": "School of jurisprudence to follow; omit if unknown."
           },
           "language": { "type": "string", "description": "ISO 639-1 language code for the answer." }

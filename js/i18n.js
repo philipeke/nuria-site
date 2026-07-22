@@ -303,7 +303,6 @@ const T = {
       madhhab_maliki: 'Maliki',
       madhhab_shafii: 'Shafii',
       madhhab_hanbali: 'Hanbali',
-      madhhab_jafari: 'Jafari',
       placeholder: 'Ask NuriaOne anything about your deen…',
       send: 'Send',
       clear: 'Clear chat',

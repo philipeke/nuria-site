@@ -79,7 +79,7 @@ components:
   schemas:
     Madhhab:
       type: string
-      enum: [hanafi, maliki, shafii, hanbali, jafari, unspecified]
+      enum: [hanafi, maliki, shafii, hanbali, unspecified]
       default: unspecified
 
     AskRequest:

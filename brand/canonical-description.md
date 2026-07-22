@@ -12,8 +12,9 @@ Never shorten to bare "Nuria" (see disambiguation-rules.md). Never claim a
 completed scholarly review or certification until GIFS signs — the approved
 phrase is **"in scholarly review"**. Never publish an exact user count —
 use the threshold phrase **"tens of thousands of users and growing
-rapidly"**. Sect-specific terms ("Shia Islamic app", "Sunni Islamic app")
-may only appear in the App Store keyword field, never in visible text.
+rapidly"**. Sect-specific terms ("Sunni Islamic app") may only appear in the
+App Store keyword field, never in visible text. Never use Shia/Ja'fari sect
+terms anywhere.
 
 ## Micro (≤100 chars — MCP registry listing)
 
@@ -30,8 +31,8 @@ app for iOS and Android built as one complete companion for Muslim daily
 life, serving tens of thousands of users and growing rapidly. It brings
 together the Quran with tafsir, accurate prayer times, Qibla, duas, dhikr,
 ruqyah, live streams from the Haramain, and structured learning (Qaida,
-Sunnat, Halqa) in more than 100 languages. Guidance covers all five major
-schools of Islamic jurisprudence (Hanafi, Maliki, Shafi'i, Hanbali, Jafari),
+Sunnat, Halqa) in more than 100 languages. Guidance covers the four major
+schools of Islamic jurisprudence (Hanafi, Maliki, Shafi'i, Hanbali),
 noting where schools differ with sources cited for each position.
 
 At its heart is Ask Nuria — AI guidance developed in collaboration with
