@@ -177,8 +177,327 @@
     .about-card__icon-img { width: 112px; height: 112px; object-fit: contain; display: block; margin: 0 auto 0.5rem; }
     .app-icon-svg { width: 96px; height: 96px; display: block; margin: 0 auto 0.5rem; fill: none;
       stroke: var(--color-gold-bright); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
-    .company-founding-banner { width: 100%; max-width: 720px; aspect-ratio: 1200 / 896; object-fit: cover;
-      border-radius: 18px; display: block; margin: 0 auto 2rem; box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3); }
+    /* Founder story. A full-bleed editorial chapter rather than a card. */
+    .company-founder-section {
+      position: relative;
+      isolation: isolate;
+      overflow: clip;
+      padding: clamp(6rem, 10vw, 9rem) 0;
+      border-top: 1px solid rgba(201, 168, 76, 0.2);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.16);
+    }
+    .company-founder__backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background: #030a06;
+    }
+    .company-founder__backdrop::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      opacity: 0.11;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='112' viewBox='0 0 112 112'%3E%3Cg fill='none' stroke='%23d8bd70' stroke-width='.8'%3E%3Cpath d='M56 8 69 43 104 56 69 69 56 104 43 69 8 56 43 43Z'/%3E%3Ccircle cx='56' cy='56' r='28'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 112px 112px;
+      -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 50%, #000 100%);
+              mask-image: linear-gradient(90deg, #000 0%, transparent 50%, #000 100%);
+      animation: company-founder-pattern-drift 34s linear infinite;
+    }
+    .company-founder__backdrop::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(90deg, rgba(2, 8, 5, 0.92) 0%, rgba(3, 12, 8, 0.7) 42%, rgba(2, 8, 5, 0.94) 100%),
+        linear-gradient(180deg, rgba(2, 7, 4, 0.82) 0%, rgba(4, 17, 11, 0.38) 48%, rgba(2, 7, 4, 0.9) 100%),
+        radial-gradient(circle at 22% 42%, rgba(201, 168, 76, 0.2), transparent 32%),
+        radial-gradient(circle at 76% 56%, rgba(45, 190, 108, 0.15), transparent 34%);
+    }
+    .company-founder__backdrop-image {
+      position: absolute;
+      inset: -3%;
+      width: 106%;
+      height: 106%;
+      object-fit: cover;
+      object-position: center 58%;
+      opacity: 0.34;
+      filter: saturate(0.58) contrast(1.06) brightness(0.72);
+      transform: scale(1.03);
+      transform-origin: center 58%;
+      animation: company-founder-backdrop-breathe 20s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    .company-founder__aurora,
+    .company-founder__light-sweep {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .company-founder__aurora {
+      z-index: 2;
+      width: min(88rem, 118vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+    }
+    .company-founder__aurora--gold {
+      top: -34rem;
+      left: -38rem;
+      opacity: 0.18;
+      background: radial-gradient(circle, rgba(216, 189, 112, 0.5) 0%, rgba(201, 168, 76, 0.2) 24%, transparent 68%);
+      animation: company-founder-aurora-gold 17s ease-in-out infinite alternate;
+    }
+    .company-founder__aurora--green {
+      right: -38rem;
+      bottom: -34rem;
+      opacity: 0.17;
+      background: radial-gradient(circle, rgba(77, 181, 119, 0.46) 0%, rgba(24, 112, 68, 0.22) 28%, transparent 68%);
+      animation: company-founder-aurora-green 21s ease-in-out infinite alternate;
+    }
+    .company-founder__light-sweep {
+      z-index: 3;
+      top: -18%;
+      bottom: -18%;
+      left: -48%;
+      width: 38%;
+      opacity: 0;
+      transform: translate3d(-160%, 0, 0) skewX(-15deg);
+      background: linear-gradient(90deg, transparent 0%, rgba(232, 208, 142, 0.03) 18%, rgba(232, 208, 142, 0.16) 50%, rgba(104, 204, 142, 0.06) 76%, transparent 100%);
+      filter: blur(14px);
+      mix-blend-mode: screen;
+      animation: company-founder-light-sweep 13s cubic-bezier(0.45, 0.05, 0.2, 1) infinite;
+    }
+    @keyframes company-founder-pattern-drift {
+      from { background-position: 0 0; }
+      to { background-position: 112px 56px; }
+    }
+    @keyframes company-founder-backdrop-breathe {
+      from { transform: scale(1.03) translate3d(-0.7%, 0, 0); }
+      to { transform: scale(1.09) translate3d(0.7%, -0.8%, 0); }
+    }
+    @keyframes company-founder-aurora-gold {
+      from { transform: translate3d(-5%, -4%, 0) scale(0.9); opacity: 0.12; }
+      to { transform: translate3d(18%, 14%, 0) scale(1.08); opacity: 0.23; }
+    }
+    @keyframes company-founder-aurora-green {
+      from { transform: translate3d(7%, 8%, 0) scale(0.92); opacity: 0.12; }
+      to { transform: translate3d(-18%, -14%, 0) scale(1.1); opacity: 0.22; }
+    }
+    @keyframes company-founder-light-sweep {
+      0%, 12% { transform: translate3d(-160%, 0, 0) skewX(-15deg); opacity: 0; }
+      20% { opacity: 0.18; }
+      46% { opacity: 0.72; }
+      66%, 100% { transform: translate3d(430%, 0, 0) skewX(-15deg); opacity: 0; }
+    }
+    .company-founder-section > .container {
+      position: relative;
+      z-index: 3;
+    }
+    .company-founder__header {
+      max-width: 980px;
+      padding-bottom: clamp(1.8rem, 3vw, 2.5rem);
+      margin-bottom: clamp(3.5rem, 7vw, 5.75rem);
+      border-bottom: 1px solid rgba(201, 168, 76, 0.27);
+    }
+    body .company-founder-section .company-founder__label {
+      margin-bottom: 1rem;
+      color: #d8bd70 !important;
+      letter-spacing: 0.17em;
+      text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+    }
+    body .company-founder-section .company-founder__title {
+      max-width: 17ch;
+      margin: 0;
+      color: #f8f1e2 !important;
+      font-family: var(--font-heading);
+      font-size: clamp(2.65rem, 6vw, 5.35rem);
+      font-weight: 600;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      text-wrap: balance;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.58);
+    }
+    .company-founder__grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
+      align-items: start;
+      gap: clamp(4rem, 8vw, 7.5rem);
+    }
+    .company-founder__figure {
+      position: sticky;
+      top: 8.5rem;
+      width: min(100%, 440px);
+      margin: 0;
+    }
+    .company-founder__portrait {
+      position: relative;
+      isolation: isolate;
+      aspect-ratio: 1 / 1.12;
+      border-radius: 30px;
+    }
+    .company-founder__portrait::before {
+      content: "";
+      position: absolute;
+      inset: 18px -18px -18px 18px;
+      z-index: -1;
+      border: 1px solid rgba(216, 189, 112, 0.48);
+      border-radius: 30px;
+    }
+    .company-founder__portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 0 1px rgba(248, 241, 226, 0.13),
+        inset 0 -90px 100px rgba(1, 6, 4, 0.22),
+        0 34px 80px rgba(0, 0, 0, 0.46);
+      pointer-events: none;
+    }
+    .company-founder__portrait-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+      object-position: center 12%;
+      filter: saturate(0.84) contrast(1.04) brightness(0.94);
+    }
+    .company-founder__caption {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1.25rem;
+      margin-top: 2rem;
+      padding-inline: 0.2rem;
+    }
+    .company-founder__name {
+      color: #f8f1e2;
+      font-family: var(--font-heading);
+      font-size: clamp(1.55rem, 3vw, 2rem);
+      line-height: 1;
+    }
+    body .company-founder-section .company-founder__role {
+      color: #d8bd70 !important;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .company-founder__story {
+      min-width: 0;
+      max-width: 660px;
+      padding-top: clamp(0.2rem, 1vw, 0.8rem);
+    }
+    body .company-founder-section .company-founder__eyebrow {
+      margin: 0 0 0.9rem;
+      color: #8fbea0 !important;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+    }
+    body .company-founder-section .company-founder__story-title {
+      margin: 0 0 1.6rem;
+      color: #f8f1e2 !important;
+      font-family: var(--font-heading);
+      font-size: clamp(1.85rem, 4vw, 2.65rem);
+      font-weight: 600;
+      line-height: 1.16;
+      text-wrap: balance;
+    }
+    body .company-founder-section .company-founder__lead {
+      margin: 0 0 2rem;
+      color: rgba(248, 241, 226, 0.96) !important;
+      font-family: var(--font-heading);
+      font-size: clamp(1.16rem, 2vw, 1.36rem);
+      line-height: 1.68;
+    }
+    .company-founder__body {
+      padding-top: 2rem;
+      border-top: 1px solid rgba(216, 189, 112, 0.18);
+    }
+    body .company-founder-section .company-founder__body p,
+    body .company-founder-section .company-founder__closing {
+      margin: 0 0 1.2rem;
+      color: rgba(229, 238, 231, 0.79) !important;
+      font-size: 0.98rem;
+      line-height: 1.88;
+    }
+    body .company-founder-section .company-founder__closing {
+      margin: 1.85rem 0 0;
+      color: rgba(248, 241, 226, 0.91) !important;
+      font-weight: 700;
+    }
+    .company-founder__quote {
+      margin-top: 2.35rem;
+      padding-block: 0.15rem;
+      padding-inline-start: 1.65rem;
+      border-inline-start: 2px solid #c9a84c;
+    }
+    .company-founder__quote strong {
+      display: block;
+      margin-bottom: 0.55rem;
+      color: #f8f1e2;
+      font-family: var(--font-heading);
+      font-size: clamp(1.2rem, 2vw, 1.48rem);
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .company-founder__quote span {
+      display: block;
+      max-width: 54ch;
+      color: rgba(187, 211, 195, 0.8);
+      font-size: 0.94rem;
+      line-height: 1.75;
+    }
+    html[dir="rtl"] .company-founder__header,
+    html[dir="rtl"] .company-founder__story { text-align: right; }
+    html[dir="rtl"] .company-founder__portrait::before { inset: 18px 18px -18px -18px; }
+    @media (max-width: 900px) {
+      .company-founder__grid { grid-template-columns: 1fr; gap: 4.5rem; }
+      .company-founder__figure {
+        position: relative;
+        top: auto;
+        width: min(100%, 500px);
+      }
+      .company-founder__story { max-width: 720px; }
+      .company-founder__portrait { aspect-ratio: 1 / 1.05; }
+    }
+    @media (max-width: 600px) {
+      .company-founder-section { padding: 5.5rem 0; }
+      .company-founder-section .container { padding-inline: 1.25rem; }
+      .company-founder__header { margin-bottom: 3.25rem; }
+      body .company-founder-section .company-founder__title {
+        font-size: clamp(2.35rem, 12vw, 3.35rem);
+        line-height: 1.06;
+      }
+      .company-founder__grid { gap: 3.75rem; }
+      .company-founder__figure { width: calc(100% - 9px); }
+      .company-founder__portrait { border-radius: 22px; }
+      .company-founder__portrait::before {
+        inset: 9px -9px -9px 9px;
+        border-radius: 22px;
+      }
+      html[dir="rtl"] .company-founder__portrait::before { inset: 9px 9px -9px -9px; }
+      .company-founder__caption { margin-top: 1.55rem; }
+      .company-founder__story-title { max-width: 18ch; }
+      .company-founder__quote { padding-inline-start: 1.2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .company-founder__backdrop::before,
+      .company-founder__backdrop-image,
+      .company-founder__aurora,
+      .company-founder__light-sweep {
+        animation: none !important;
+      }
+      .company-founder__light-sweep { display: none; }
+    }
     @media (max-width: 760px) {
       .company-hero__text { text-align: center; flex-basis: 100%; }
       /* Phone sits below the intro copy on mobile (source order) rather than above it. */
@@ -583,44 +902,53 @@
   <!-- =========================================================
        THE FOUNDING STORY — THE PEOPLE BEHIND NURIA (verified bio)
   ========================================================= -->
-  <section class="section" style="padding-top:0;">
+  <section class="company-founder-section" aria-labelledby="company-founder-title">
+    <div class="company-founder__backdrop" aria-hidden="true">
+      <img src="../assets/sintra/nuria-founding.png?v=20260628" alt="" class="company-founder__backdrop-image" width="1200" height="896" loading="lazy" decoding="async" />
+      <span class="company-founder__aurora company-founder__aurora--gold"></span>
+      <span class="company-founder__aurora company-founder__aurora--green"></span>
+      <span class="company-founder__light-sweep"></span>
+    </div>
+
     <div class="container">
-      <div class="page-content__card company-team-card animate-on-scroll">
-        <img src="../assets/sintra/nuria-founding.png?v=20260628" alt="An open Quran in the warm light of dawn" class="company-founding-banner" width="1200" height="896" loading="lazy" decoding="async" />
-        <p class="section__label" data-i18n="company.team_label">The People Behind Nuria</p>
-        <h2 data-i18n="company.team_title">A small team with one intention</h2>
+      <header class="company-founder__header" data-reveal>
+        <p class="section__label company-founder__label" data-i18n="company.team_label">The People Behind Nuria</p>
+        <h2 class="company-founder__title" id="company-founder-title" data-i18n="company.team_title">A small team with one intention</h2>
+      </header>
 
-        <div class="support-founder animate-on-scroll" data-delay="120">
-          <div class="support-founder__content">
-            <p class="support-founder__eyebrow" data-i18n="supp.founder_eyebrow">Built With Intention</p>
-            <h3 class="support-founder__title" data-i18n="supp.founder_title">About the Product Owner</h3>
-            <div class="support-founder__media">
-              <div class="support-founder__frame">
-                <img src="../assets/adam.jpeg" alt="Adam, Product Owner of Nuria" class="support-founder__image" />
-              </div>
-              <span class="support-founder__badge" data-i18n="supp.founder_badge">Product Owner</span>
-            </div>
-
-            <div class="support-founder__text">
-              <p data-i18n="supp.founder_p1">Adam is the product lead behind Nuria, a project built from personal faith, lived experience, and a clear purpose.</p>
-
-              <p data-i18n="supp.founder_p2">He embraced Islam in adulthood at the Bosnian mosque in Gothenburg, where his reversion was guided by Imam Fuad Colic. However, his connection to Islam goes further back: he has lived closely connected to the faith since the age of 16, shaped both by personal experience and the Muslim community around him.</p>
-
-              <p data-i18n="supp.founder_p3">With a background as a long-time entrepreneur, Adam has built and led several successful ventures. Yet Nuria stands apart from everything else he has done.</p>
-
-              <p data-i18n="supp.founder_p4">Nuria was not created as just another app. It was built out of a real need: a need for something simpler, clean and ad-free, secure, more beautiful, and more meaningful. An app designed by a Muslim, for Muslim needs, shaped by Islam and refined together with other Muslims.</p>
-
-              <p data-i18n="supp.founder_p5">The project has been developed alongside a close circle of fellow believers, together with his lifelong brother Philip, with whom he runs a technology studio.</p>
-
-              <p data-i18n="supp.founder_p6">Together, they share one intention: to build something of real value for the ummah.</p>
-            </div>
-
-            <div class="support-founder__quote">
-              <strong data-i18n="supp.founder_quote_strong">Nuria is the result of that intention.</strong>
-              <span data-i18n="supp.founder_quote_text">A focused effort to create an experience that helps Muslims stay connected to their faith, every day.</span>
-            </div>
+      <div class="company-founder__grid">
+        <figure class="company-founder__figure" data-reveal>
+          <div class="company-founder__portrait">
+            <img src="../assets/adam.jpeg" alt="Adam, Product Owner of Nuria" class="company-founder__portrait-image" width="1080" height="1049" loading="lazy" decoding="async" />
           </div>
-        </div>
+          <figcaption class="company-founder__caption">
+            <span class="company-founder__name">Adam</span>
+            <span class="company-founder__role" data-i18n="supp.founder_badge">Product Owner</span>
+          </figcaption>
+        </figure>
+
+        <article class="company-founder__story" data-reveal data-delay="120">
+          <p class="company-founder__eyebrow" data-i18n="supp.founder_eyebrow">Built With Intention</p>
+          <h3 class="company-founder__story-title" data-i18n="supp.founder_title">About the Product Owner</h3>
+          <p class="company-founder__lead" data-i18n="supp.founder_p1">Adam is the product lead behind Nuria, a project built from personal faith, lived experience, and a clear purpose.</p>
+
+          <div class="company-founder__body">
+            <p data-i18n="supp.founder_p2">He embraced Islam in adulthood at the Bosnian mosque in Gothenburg, where his reversion was guided by Imam Fuad Colic. However, his connection to Islam goes further back: he has lived closely connected to the faith since the age of 16, shaped both by personal experience and the Muslim community around him.</p>
+
+            <p data-i18n="supp.founder_p3">With a background as a long-time entrepreneur, Adam has built and led several successful ventures. Yet Nuria stands apart from everything else he has done.</p>
+
+            <p data-i18n="supp.founder_p4">Nuria was not created as just another app. It was built out of a real need: a need for something simpler, clean and ad-free, secure, more beautiful, and more meaningful. An app designed by a Muslim, for Muslim needs, shaped by Islam and refined together with other Muslims.</p>
+
+            <p data-i18n="supp.founder_p5">The project has been developed alongside a close circle of fellow believers, together with his lifelong brother Philip, with whom he runs a technology studio.</p>
+          </div>
+
+          <p class="company-founder__closing" data-i18n="supp.founder_p6">Together, they share one intention: to build something of real value for the ummah.</p>
+
+          <div class="company-founder__quote">
+            <strong data-i18n="supp.founder_quote_strong">Nuria is the result of that intention.</strong>
+            <span data-i18n="supp.founder_quote_text">A focused effort to create an experience that helps Muslims stay connected to their faith, every day.</span>
+          </div>
+        </article>
       </div>
     </div>
   </section>
