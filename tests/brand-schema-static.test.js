@@ -111,6 +111,13 @@ test('Gate 1: terminology holds sitewide (js/i18n.js + ask/index.html + English 
     { re: /scholar[- ](reviewed|certified)/i, why: 'use "in scholarly review" until GIFS signs' },
     { re: /\bverified\s+(islamic|scholar|guidance|service|source|sources|knowledge|ai)\b/i, why: 'no "verified X" claims before GIFS signs' },
     { re: /halal[- ]certified/i, why: 'no "halal-certified" claims before GIFS signs' },
+    // The above missed the reversed word order ("Certified by scholars") that shipped on the
+    // /ask hero, and GIFS's phase-one scope is explicitly "a guidance note, not a fatwa". Close
+    // both gaps: no "certified/certification" claim about Nuria's own scholar sign-off before GIFS signs.
+    { re: /certified by\b/i, why: 'no "certified by ..." claim before GIFS signs — say "in scholarly review"' },
+    { re: /\bscholar certification\b/i, why: 'no "scholar certification" claim before GIFS signs' },
+    { re: /certification in progress/i, why: 'no "certification in progress" — use "in scholarly review"' },
+    { re: /\bbeing certified\b/i, why: 'no "being certified" claim before GIFS signs' },
   ];
   // Scan EVERY public surface — not a curated list. A curated list is exactly what
   // let the original "Halal-certified" violation hide (it sat in files the old test
