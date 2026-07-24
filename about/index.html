@@ -605,6 +605,60 @@
     @media (max-width: 760px) {
       #download .video-stage__media { --video-pos: center 22%; }
     }
+    /* Closing chapter. Give every line an explicit place in the composition
+       instead of inheriting the generic section margins. */
+    #download.video-stage--feature {
+      min-height: auto;
+      padding-block: clamp(5.5rem, 9vw, 8rem);
+    }
+    #download .company-closing {
+      width: min(100%, 860px);
+      margin-inline: auto;
+      display: grid;
+      justify-items: center;
+      text-align: center;
+    }
+    #download .company-closing__verse {
+      margin: 0;
+      max-width: 28ch;
+      font-family: 'Amiri', serif;
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+      line-height: 1.45;
+    }
+    #download .company-closing__reference {
+      margin: 1.1rem 0 0;
+    }
+    #download .company-closing__story {
+      margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+      max-width: 680px;
+      font-size: clamp(1rem, 1.45vw, 1.18rem);
+      line-height: 1.8;
+    }
+    #download .company-closing__light {
+      margin: 1.5rem 0 0;
+      font-style: italic;
+    }
+    #download .company-closing__statement {
+      margin: clamp(3.25rem, 6vw, 5.25rem) 0 0;
+      max-width: 17ch;
+      font-size: clamp(2.3rem, 5.2vw, 4.6rem);
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+    #download .company-closing__cta {
+      margin: 1.5rem 0 0;
+      font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+    }
+    #download .company-closing__stores {
+      justify-content: center;
+      margin-top: 2.5rem;
+    }
+    #download .company-closing__contact {
+      width: 100%;
+      margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+      padding-top: 1.75rem;
+      border-top: 1px solid rgba(240, 230, 204, 0.25);
+    }
     /* Closing verse reference + contact line. Lift to a bright, legible
        cream over the bright falcon film. */
     #download .company-closing .section__label {
@@ -619,6 +673,27 @@
       max-width: 100%;
       text-wrap: balance;
       overflow-wrap: break-word;
+    }
+    @media (max-width: 640px) {
+      #download.video-stage--feature { padding-block: 4.5rem; }
+      #download .company-closing__statement {
+        max-width: 19ch;
+        font-size: clamp(2rem, 10.5vw, 3rem);
+      }
+      #download .company-closing__stores {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #download .company-closing__stores .btn--store {
+        width: min(100%, 310px);
+        margin-inline: auto;
+      }
+      #download .company-closing__contact {
+        font-size: 0.72rem;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+      }
     }
   </style>
 </head>
@@ -994,18 +1069,18 @@
       <div class="video-stage__scrim"></div>
     </div>
     <div class="container">
-      <div class="company-closing" style="max-width:760px;margin:0 auto;text-align:center;">
-        <p class="section__subtitle" style="font-family:'Amiri',serif;font-size:1.4rem;" data-i18n="company.close_verse">"Verily, with hardship comes ease."</p>
-        <p class="section__label" data-i18n="company.close_verse_ref">Surah Al-Inshirah, 94:5</p>
-        <p class="section__subtitle" style="margin-top:1.5rem;" data-i18n="company.close_body">
+      <div class="company-closing">
+        <p class="section__subtitle company-closing__verse" data-i18n="company.close_verse">"Verily, with hardship comes ease."</p>
+        <p class="section__label company-closing__reference" data-i18n="company.close_verse_ref">Surah Al-Inshirah, 94:5</p>
+        <p class="section__subtitle company-closing__story" data-i18n="company.close_body">
           There was a night when one new Muslim sat alone with a phone full of half-answers. Out of that
           night came a light meant for 1.8 billion more.
         </p>
-        <p class="section__subtitle" style="font-style:italic;" data-i18n="company.close_light">A light that doesn't dim when it's shared.</p>
-        <h2 class="section__title" style="margin-top:1.5rem;" data-i18n="company.close_kalima">There is no god but Allah. And no Muslim should ever have to find Him alone.</h2>
-        <p class="section__subtitle" data-i18n="company.close_cta">Come home to Nuria.</p>
+        <p class="section__subtitle company-closing__light" data-i18n="company.close_light">A light that doesn't dim when it's shared.</p>
+        <h2 class="section__title company-closing__statement" data-i18n="company.close_kalima">There is no god but Allah. And no Muslim should ever have to find Him alone.</h2>
+        <p class="section__subtitle company-closing__cta" data-i18n="company.close_cta">Come home to Nuria.</p>
 
-        <div class="download__buttons" style="justify-content:center;margin-top:2rem;">
+        <div class="download__buttons company-closing__stores">
           <a href="https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913" class="btn btn--store btn--store-lg" data-store-link="app-store" data-i18n-aria-label="a11y.store_apple_short" aria-label="Download on the App Store" target="_blank" rel="noopener noreferrer">
             <svg class="btn__store-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -1026,7 +1101,7 @@
           </a>
         </div>
 
-        <p class="section__label" style="margin-top:2rem;" data-i18n="company.contact_line">Press, partners, and investors: hello@nuria.one</p>
+        <p class="section__label company-closing__contact" data-i18n="company.contact_line">Press, partners, and investors: hello@nuria.one</p>
       </div>
     </div>
   </section>
