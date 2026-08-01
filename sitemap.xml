@@ -36,6 +36,18 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://nuria.one/blog/how-to-read-quran-with-tajweed-beginner/</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nuria.one/blog/how-to-pray-when-travelling-qasr-and-jam/</loc>
+    <lastmod>2026-07-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://nuria.one/blog/sujud-al-sahw-correcting-mistakes-in-prayer/</loc>
     <lastmod>2026-07-31</lastmod>
     <changefreq>monthly</changefreq>
@@ -86,18 +98,6 @@
   <url>
     <loc>https://nuria.one/blog/10-short-surahs-every-muslim-should-memorise/</loc>
     <lastmod>2026-07-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://nuria.one/blog/how-to-read-quran-with-tajweed-beginner/</loc>
-    <lastmod>2026-07-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://nuria.one/blog/how-to-pray-when-travelling-qasr-and-jam/</loc>
-    <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
