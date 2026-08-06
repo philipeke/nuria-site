@@ -87,16 +87,22 @@ function readArb(locale) {
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { '@@locale': locale };
 }
 
+// English-only. Splitting on dashes is safe for our source copy but destroys
+// translations: Russian writes the copula as "X — это Y", French and Turkish
+// use the dash mid-clause too, so turning " — " into ". " leaves a capitalised
+// sentence fragment ("Слова. Это мышечная память").
 function polishDashes(text) {
   return text
     .replace(/\s+[—–]\s+/g, '. ')
     .replace(/\s{2,}/g, ' ')
-    .replace(/\.\s+([a-zа-яё])/g, (_, letter) => `. ${letter.toUpperCase()}`);
+    .replace(/\.\s+([a-z])/g, (_, letter) => `. ${letter.toUpperCase()}`);
 }
 
+// Translations keep their own punctuation. The only normalisation left is the
+// brand name, which must stay Latin and undeclined in every locale.
 function polishLocale(locale, text) {
-  const polished = polishDashes(text);
-  return locale === 'ru' ? polished.replace(/Нури(?:я|и|ю|ей|е)/g, 'Nuria') : polished;
+  const collapsed = text.replace(/\s{2,}/g, ' ');
+  return locale === 'ru' ? collapsed.replace(/Нури(?:я|и|ю|ей|е|ей)/g, 'Nuria') : collapsed;
 }
 
 async function translate(text, locale, attempt = 0) {

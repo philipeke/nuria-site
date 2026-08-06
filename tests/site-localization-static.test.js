@@ -50,9 +50,13 @@ run('every public translation key has an English source and locale coverage', ()
   }));
 });
 
+// House style for the English source copy, which prefers a full stop to a
+// spaced dash. It is deliberately not applied to the translated locales: in
+// Russian the spaced em-dash is the copula ("X — это Y"), and Turkish and Urdu
+// use paired dashes for parentheticals. Enforcing it there is what produced
+// mangled fragments like "Слова. Это мышечная память".
 run('public copy does not use spaced dash punctuation', () => {
-  const files = [...walk(root),
-    ...locales.map((locale) => path.join(root, 'l10n', `site_${locale}.arb`))];
+  const files = [...walk(root), path.join(root, 'l10n', 'site_en.arb')];
   files.forEach((file) => {
     const raw = fs.readFileSync(file, 'utf8');
     const cleaned = file.endsWith('.html') ? raw
