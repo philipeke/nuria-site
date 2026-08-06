@@ -66,3 +66,59 @@ run('public copy does not use spaced dash punctuation', () => {
     copySegments.forEach((source) => assert(!/\S\s+(?:[\u2014\u2013]|&(?:m|n)dash;|-)\s+\S/.test(source), `${path.relative(root, file)} contains spaced dash punctuation`));
   });
 });
+
+// Visible copy with no data-i18n never translates, however good the locale
+// files are. Legal pages are English-only for now by product decision.
+const legalPages = new Set(['privacy/index.html', 'terms/index.html', 'cookies/index.html']);
+// Deliberately untranslated: a brand name, app-screen chrome inside a device
+// mockup whose neighbours are Arabic, and the title of an English-only article.
+const untranslatedByDesign = new Set([
+  'Nuria Serene',
+  'Nuria Noor',
+  'Nuria \u00b7 light for the ummah',
+  "Making the Qur'an your daily companion",
+]);
+const voidTags = new Set(['br', 'img', 'input', 'meta', 'link', 'hr', 'source', 'path', 'circle', 'use', 'stop', 'rect', 'polyline', 'area', 'col', 'embed', 'track', 'wbr']);
+const opaqueTags = new Set(['script', 'style', 'title', 'noscript']);
+
+run('public page copy is reachable by the translation layer', () => {
+  const offenders = [];
+  walk(root).forEach((file) => {
+    const rel = path.relative(root, file).split(path.sep).join('/');
+    // /blog/** is generated English article content (scripts/build-blog.js).
+    if (legalPages.has(rel) || rel.startsWith('blog/')) return;
+    const html = fs.readFileSync(file, 'utf8')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<![^>]*>/g, '');
+    const stack = [];
+    // Only data-i18n / data-i18n-html replace text content. The -aria-label,
+    // -placeholder, -alt, -title and -content variants set an attribute and
+    // leave children untranslated, so they must not mark a subtree as covered.
+    const token = /<\/?([a-zA-Z][\w-]*)((?:"[^"]*"|'[^']*'|[^>])*?)\/?>/g;
+    let last = 0;
+    let match = token.exec(html);
+    while (match !== null) {
+      const text = html.slice(last, match.index);
+      if (text.trim()
+        && !stack.some((frame) => opaqueTags.has(frame.tag))
+        && !stack.some((frame) => frame.covered)) {
+        const flat = text.replace(/&[a-z]+;/gi, ' ').replace(/\s+/g, ' ').trim();
+        if (/[A-Za-z]{3,}(\s+[A-Za-z'\u2019&]{2,}){1,}/.test(flat) && !untranslatedByDesign.has(flat)) {
+          offenders.push(`${rel}: "${flat.slice(0, 70)}"`);
+        }
+      }
+      const tag = match[1].toLowerCase();
+      if (match[0].startsWith('</')) {
+        for (let i = stack.length - 1; i >= 0; i -= 1) {
+          if (stack[i].tag === tag) { stack.length = i; break; }
+        }
+      } else if (!voidTags.has(tag) && !match[0].endsWith('/>')) {
+        const attrs = match[2] || '';
+        stack.push({ tag, covered: /\bdata-i18n(?:-html)?\s*=/.test(attrs) });
+      }
+      last = token.lastIndex;
+      match = token.exec(html);
+    }
+  });
+  assert.deepStrictEqual(offenders, [], `untranslated visible copy:\n  ${offenders.join('\n  ')}`);
+});
