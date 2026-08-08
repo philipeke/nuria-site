@@ -8,7 +8,7 @@
     iosBundleId: 'com.oakdev.nuria',
     androidPackage: 'com.oakdev.nuria',
     affiliateLookupUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/lookupAffiliateCodeHttp',
-    socialFeedUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/getSocialFeedHttp',
+    socialFeedUrl: 'assets/data/social-feed.json',
     blogFeedUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/getBlogFeedHttp',
     blogPostUrl: 'https://us-central1-nuria-mobile-app.cloudfunctions.net/getBlogPostHttp',
     appStoreUrl: 'https://apps.apple.com/se/app/nuria-islamisk-v%C3%A4gledning/id6760123913',

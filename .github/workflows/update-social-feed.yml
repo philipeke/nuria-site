@@ -1,0 +1,42 @@
+name: Refresh homepage social links
+
+# Both sources are public profile/embed pages. No LinkedIn or TikTok API keys
+# are required, and visitors only request the committed static JSON file.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-social-feed
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Read latest public post links
+        run: node scripts/update-social-feed.js
+
+      - name: Commit changes (if any)
+        run: |
+          git config user.name "nuria-social-bot"
+          git config user.email "bot@nuria.one"
+          git add assets/data/social-feed.json
+          if git diff --cached --quiet; then
+            echo "Social feed is already current."
+          else
+            git commit -m "chore(social): refresh homepage posts [skip ci]"
+            git push
+          fi

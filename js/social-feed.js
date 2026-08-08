@@ -11,18 +11,20 @@
  *           embed (full text + media). Older posts are compact headlines that
  *           open the same lightbox with their embedded post on click.
  *
- * Data comes from the getSocialFeedHttp Cloud Function. Each item carries
- * { id, url, title, thumbnailUrl, embedHtml, authorName, publishedAt }.
+ * Data is a static, link-only snapshot generated from the platforms' public
+ * profile/embed pages. Each item carries
+ * { id, url, title, authorName, publishedAt }.
  * Graceful fallback to a "follow us" prompt on empty / error.
  */
 (function () {
   const cfg = window.NURIA_SITE_CONFIG || {};
-  const endpoint = cfg.socialFeedUrl;
-  const fallbackEndpoint = 'assets/data/social-feed.json';
+  // Keep this local and explicit so a cached site-config.js can never switch
+  // the homepage back to the retired/stale Cloud Function.
+  const endpoint = 'assets/data/social-feed.json';
   const social = cfg.social || {};
 
   const root = document.getElementById('socialFeed');
-  if (!root || !endpoint) return;
+  if (!root) return;
 
   const columns = {
     tiktok: {
@@ -458,10 +460,12 @@
     // instead of spinning forever.
     const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
     const timer = ctrl ? window.setTimeout(() => ctrl.abort(), 12000) : 0;
-    fetch(endpoint, { method: 'GET', mode: 'cors', signal: ctrl ? ctrl.signal : undefined })
+    fetch(endpoint, {
+      method: 'GET',
+      cache: 'no-cache',
+      signal: ctrl ? ctrl.signal : undefined,
+    })
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
-      .catch(() => fetch(fallbackEndpoint, { method: 'GET', cache: 'no-cache' })
-        .then((res) => (res.ok ? res.json() : Promise.reject(res.status))))
       .then((data) => {
         renderTiktok((data && data.tiktok) || []);
         renderLinkedin((data && data.linkedin) || []);
