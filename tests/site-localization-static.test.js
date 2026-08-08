@@ -32,6 +32,25 @@ run('Russian is available in language metadata and the shared switcher', () => {
   assert(components.includes('Русский'));
 });
 
+// A few pages ship their own copy of the nav instead of letting components.js
+// inject it. Those copies drift: the homepage and /ambassador silently offered
+// six languages while the shared switcher offered seven, so Russian was live in
+// every .arb file but unreachable from the menu on nuria.one itself.
+run('every hardcoded language switcher offers the full locale set', () => {
+  const optionPattern = /nav__lang-option"\s+data-lang="([a-z]+)"/g;
+  const shared = [...fs.readFileSync(path.join(root, 'js', 'components.js'), 'utf8')
+    .matchAll(optionPattern)].map((m) => m[1]);
+  assert.deepStrictEqual([...shared].sort(), [...locales].sort(),
+    `js/components.js switcher offers ${shared.join(',')} but the site supports ${locales.join(',')}`);
+  walk(root).forEach((file) => {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('nav__lang-option')) return;
+    const offered = [...html.matchAll(optionPattern)].map((m) => m[1]);
+    assert.deepStrictEqual(offered.slice().sort(), [...locales].sort(),
+      `${path.relative(root, file)} switcher offers ${offered.join(',')} — missing ${locales.filter((l) => !offered.includes(l)).join(',') || 'nothing'}`);
+  });
+});
+
 run('every public translation key has an English source and locale coverage', () => {
   const used = new Set();
   walk(root).forEach((file) => {
